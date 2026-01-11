@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Inventory Management</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/sidebar.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/global-features.css">
+  <link rel="stylesheet" href="/css/mobile.css">
+  <link rel="stylesheet" href="/css/utilities.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <style>
+    /* Screen reader only class for accessibility */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
+  </style>
+  <!-- Chart.js for visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+  <!-- Sidebar Container -->
+  <div id="sidebarContainer"></div>
+
+  <!-- Header Container -->
+  <div id="headerContainer"></div>
+
+  <!-- Page Configuration -->
+  <script>
+    window.pageConfig = {
+      searchPlaceholder: 'Search in Items (/)',
+      searchId: 'dashboardSearch'
+    };
+  </script>
+
+  <!-- Main Content -->
+  <div class="main-layout">
+    <div class="content" id="content">
+      <!-- Removed greeting/title and redundant tab bar -->
+
+      <!-- Dashboard Widgets -->
+      <div class="dashboard-grid">
+        <!-- Sales Summary -->
+        <div class="dashboard-widget span-full">
+          <div class="widget-header">
+            <div class="widget-title" id="salesSummaryTitle"><span>📊</span> Sales Summary</div>
+            <label for="salesSummaryFilter" class="sr-only">Filter Sales Summary</label>
+            <select class="widget-filter" id="salesSummaryFilter" aria-labelledby="salesSummaryTitle" title="Filter Sales Summary">
+              <option value="today">Today</option>
+              <option value="week">This Week</option>
+              <option value="month" selected>This Month</option>
+              <option value="year">This Year</option>
+            </select>
+          </div>
+          <div class="widget-content" id="salesSummaryContent">
+            <div class="loading">
+              <div class="spinner"></div>
+              Loading...
+            </div>
+          </div>
+        </div>
+
+        <!-- Purchase Summary -->
+        <div class="dashboard-widget span-full">
+          <div class="widget-header">
+            <div class="widget-title" id="purchaseSummaryTitle"><span>📦</span> Purchase Summary</div>
+            <label for="purchaseSummaryFilter" class="sr-only">Filter Purchase Summary</label>
+            <select class="widget-filter" id="purchaseSummaryFilter" aria-labelledby="purchaseSummaryTitle" title="Filter Purchase Summary">
+              <option value="today">Today</option>
+              <option value="week">This Week</option>
+              <option value="month" selected>This Month</option>
+              <option value="year">This Year</option>
+            </select>
+          </div>
+          <div class="widget-content" id="purchaseSummaryContent">
+            <div class="loading">
+              <div class="spinner"></div>
+              Loading...
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Selling Items -->
+        <div class="dashboard-widget span-full">
+          <div class="widget-header">
+            <div class="widget-title" id="topSellingTitle"><span>🔥</span> Top Selling Items</div>
+            <label for="topSellingFilter" class="sr-only">Filter Top Selling Items</label>
+            <select class="widget-filter" id="topSellingFilter" aria-labelledby="topSellingTitle" title="Filter Top Selling Items">
+              <option value="month">This Month</option>
+              <option value="week">This Week</option>
+              <option value="year">This Year</option>
+            </select>
+          </div>
+          <div class="widget-content" id="topSellingContent">
+            <div class="loading">
+              <div class="spinner"></div>
+              Loading...
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Stocked Items -->
+        <div class="dashboard-widget span-full">
+          <div class="widget-header">
+            <div class="widget-title" id="topStockedTitle"><span>📦</span> Top Stocked Items</div>
+            <label for="topStockedFilter" class="sr-only">Filter Top Stocked Items</label>
+            <select class="widget-filter" id="topStockedFilter" aria-labelledby="topStockedTitle" title="Filter Top Stocked Items">
+              <option value="month">As of: This Month</option>
+            </select>
+          </div>
+          <div class="stocked-tabs">
+            <button class="stocked-tab active" onclick="switchStockedTab('quantity')">By Quantity</button>
+            <button class="stocked-tab" onclick="switchStockedTab('value')">By Value</button>
+          </div>
+          <div class="widget-content" id="topStockedContent">
+            <div class="loading">
+              <div class="spinner"></div>
+              Loading...
+            </div>
+          </div>
+        </div>
+
+        <!-- Pending Actions -->
+        <div class="dashboard-widget span-full pending-actions">
+          <div class="widget-header">
+            <div class="widget-title"><span>⚡</span> Pending Actions</div>
+          </div>
+          <div class="widget-content" id="pendingActionsContent">
+            <div class="loading">
+              <div class="spinner"></div>
+              Loading...
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/utils.js"></script>
+  <script src="/js/layout.js"></script>
+  <script src="/js/app.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/global-features.js"></script>
+  <script src="/js/dashboard.js"></script>
+</body>
+
+</html>

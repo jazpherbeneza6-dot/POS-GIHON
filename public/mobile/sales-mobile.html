@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Mobile Sales - Inventory</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/mobile.css">
+</head>
+<body>
+  <div class="header" style="position: sticky; top: 0; z-index: 100;">
+    <button class="sidebar-toggle" onclick="window.location.href='/index.html'">← Back</button>
+    <div style="flex: 1; text-align: center; font-weight: 600;">New Sale</div>
+    <div style="width: 60px;"></div>
+  </div>
+
+  <div class="content" style="margin-left: 0; padding: 16px; padding-bottom: 200px;">
+    <div class="card">
+      <div class="form-group">
+        <label class="form-label">Customer Name</label>
+        <input type="text" class="form-input mobile-stock-input" id="saleCustomer" placeholder="Optional">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Add Item</label>
+        <button type="button" class="btn btn-primary" onclick="window.location.href='/mobile/scanner.html'" style="width: 100%; padding: 16px; margin-bottom: 12px;">
+          📷 Scan Barcode
+        </button>
+        <select class="form-select mobile-stock-input" id="saleItemSelect" style="margin-bottom: 12px;">
+          <option value="">Or Select Item</option>
+        </select>
+        <div style="display: flex; gap: 8px;">
+          <input type="number" step="0.01" class="form-input" id="saleQuantity" placeholder="Qty" style="flex: 1;">
+          <input type="number" step="0.01" class="form-input" id="salePrice" placeholder="Price" style="flex: 1;">
+          <button type="button" class="btn btn-secondary" onclick="addSaleItem()">Add</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Items in Cart</label>
+        <div id="saleItemsList" style="border: 1px solid #ddd; border-radius: 4px; padding: 12px; min-height: 100px;">
+          <div style="text-align: center; color: #999; padding: 20px;">No items added</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Payment Method</label>
+        <select class="form-select mobile-stock-input" id="salePaymentMethod">
+          <option value="">Select</option>
+          <option value="Cash">Cash</option>
+          <option value="Card">Card</option>
+          <option value="Bank Transfer">Bank Transfer</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fixed Cart Footer -->
+  <div class="mobile-sales-cart">
+    <div class="mobile-sales-total">
+      <span>Total:</span>
+      <span id="saleTotalAmount">$0.00</span>
+    </div>
+    <div class="mobile-sales-actions">
+      <button class="btn btn-secondary" onclick="clearCart()">Clear</button>
+      <button class="btn btn-primary" onclick="completeSale()" style="flex: 2;">Complete Sale</button>
+    </div>
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script src="/js/api.js"></script>
+  <script>
+    let saleItems = [];
+    let allItems = [];
+
+    async function loadItems() {
+      try {
+        allItems = await itemsAPI.getAll();
+        const select = document.getElementById('saleItemSelect');
+        select.innerHTML = '<option value="">Or Select Item</option>' + 
+          allItems.map(item => `<option value="${item.id}" data-price="${item.selling_price}">${item.name} (Stock: ${item.stock_quantity || 0})</option>`).join('');
+        
+        // Check for scanned item
+        const scannedItem = sessionStorage.getItem('scannedItem');
+        if (scannedItem) {
+          const item = JSON.parse(scannedItem);
+          select.value = item.id;
+          document.getElementById('salePrice').value = item.selling_price || 0;
+          document.getElementById('saleQuantity').value = 1;
+          sessionStorage.removeItem('scannedItem');
+        }
+      } catch (error) {
+        console.error('Error loading items:', error);
+      }
+    }
+
+    function addSaleItem() {
+      const itemSelect = document.getElementById('saleItemSelect');
+      const quantityInput = document.getElementById('saleQuantity');
+      const priceInput = document.getElementById('salePrice');
+      
+      const itemId = parseInt(itemSelect.value);
+      const quantity = parseFloat(quantityInput.value);
+      const price = parseFloat(priceInput.value);
+      
+      if (!itemId || !quantity || quantity <= 0) {
+        showAlert('Please select an item and enter quantity', 'error');
+        return;
+      }
+      
+      const item = allItems.find(i => i.id === itemId);
+      if (!item) {
+        showAlert('Item not found', 'error');
+        return;
+      }
+      
+      if (item.stock_quantity < quantity) {
+        showAlert('Insufficient stock', 'error');
+        return;
+      }
+      
+      const unitPrice = price || item.selling_price || 0;
+      const totalPrice = quantity * unitPrice;
+      
+      saleItems.push({
+        item_id: itemId,
+        item_name: item.name,
+        quantity: quantity,
+        unit_price: unitPrice,
+        total_price: totalPrice
+      });
+      
+      renderSaleItems();
+      updateSaleTotal();
+      
+      // Reset inputs
+      itemSelect.value = '';
+      quantityInput.value = '';
+      priceInput.value = '';
+    }
+
+    function removeSaleItem(index) {
+      saleItems.splice(index, 1);
+      renderSaleItems();
+      updateSaleTotal();
+    }
+
+    function renderSaleItems() {
+      const container = document.getElementById('saleItemsList');
+      if (saleItems.length === 0) {
+        container.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">No items added</div>';
+        return;
+      }
+      
+      container.innerHTML = saleItems.map((item, index) => `
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+          <div>
+            <div style="font-weight: 500;">${item.item_name}</div>
+            <div style="font-size: 12px; color: #999;">${item.quantity} x ${formatCurrency(item.unit_price)}</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-weight: 600;">${formatCurrency(item.total_price)}</div>
+            <button class="btn btn-danger" onclick="removeSaleItem(${index})" style="padding: 4px 8px; font-size: 12px; margin-top: 4px;">Remove</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updateSaleTotal() {
+      const total = saleItems.reduce((sum, item) => sum + item.total_price, 0);
+      document.getElementById('saleTotalAmount').textContent = formatCurrency(total);
+    }
+
+    function clearCart() {
+      if (confirm('Clear all items from cart?')) {
+        saleItems = [];
+        renderSaleItems();
+        updateSaleTotal();
+      }
+    }
+
+    async function completeSale() {
+      if (saleItems.length === 0) {
+        showAlert('Please add at least one item', 'error');
+        return;
+      }
+      
+      const data = {
+        customer_name: document.getElementById('saleCustomer').value,
+        items: saleItems.map(item => ({
+          item_id: item.item_id,
+          quantity: item.quantity,
+          unit_price: item.unit_price
+        })),
+        payment_method: document.getElementById('salePaymentMethod').value
+      };
+      
+      try {
+        const sale = await salesAPI.create(data);
+        showAlert('Sale completed successfully!', 'success');
+        setTimeout(() => {
+          window.location.href = `/receipt.html?id=${sale.id}`;
+        }, 1000);
+      } catch (error) {
+        showAlert(error.message || 'Failed to complete sale', 'error');
+      }
+    }
+
+    // Auto-fill price when item selected
+    document.getElementById('saleItemSelect').addEventListener('change', (e) => {
+      const option = e.target.options[e.target.selectedIndex];
+      const price = option.getAttribute('data-price');
+      if (price) {
+        document.getElementById('salePrice').value = price;
+      }
+    });
+
+    loadItems();
+  </script>
+</body>
+</html>
+

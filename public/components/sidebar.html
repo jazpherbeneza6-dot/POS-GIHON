@@ -1,0 +1,85 @@
+<!-- Sidebar Component -->
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-logo">
+            <img src="/images/gihon-logo-new.png" alt="GIHON Logo">
+        </div>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="/index.html" class="nav-item" data-page="index">
+            <span class="nav-item-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+            </span>
+            Home
+        </a>
+        <!-- Items Menu with Submenu -->
+        <button class="nav-item" onclick="toggleItemsSubmenu()" data-page="items-menu" id="itemsMenuToggle">
+            <span class="nav-item-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <path d="M16 10a4 4 0 0 1-8 0"></path>
+                </svg>
+            </span>
+            Items
+            <span class="nav-item-arrow" id="itemsArrow">▸</span>
+        </button>
+        <div class="nav-submenu" id="itemsSubmenu">
+            <a href="/items.html" class="nav-submenu-item" data-page="items">
+                Items
+                <button class="submenu-add-btn"
+                    onclick="event.preventDefault(); event.stopPropagation(); openItemModal();"
+                    title="Add New Item">+</button>
+            </a>
+            <a href="/item-groups.html" class="nav-submenu-item" data-page="item-groups">
+                Item Groups
+                <button class="submenu-add-btn"
+                    onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/new-item-group.html';"
+                    title="Add New Group">+</button>
+            </a>
+        </div>
+
+        <a href="/sales.html" class="nav-item" data-page="sales">
+            <span class="nav-item-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+            </span>
+            Sales
+        </a>
+        <a href="/purchases.html" class="nav-item" data-page="purchases">
+            <span class="nav-item-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <path d="M16 10a4 4 0 0 1-8 0"></path>
+                </svg>
+            </span>
+            Purchases
+        </a>
+        <a href="/reports.html" class="nav-item" data-page="reports">
+            <span class="nav-item-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+            </span>
+            Reports
+        </a>
+
+    </nav>
+</div>
+
+<!-- Sidebar Overlay for Mobile -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>

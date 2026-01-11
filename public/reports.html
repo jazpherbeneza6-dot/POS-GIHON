@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reports & Analytics - GIHON</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/sidebar.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="/css/mobile.css">
+  <link rel="stylesheet" href="/css/utilities.css">
+  <!-- Chart.js for visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- jsPDF for PDF export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+  <style>
+    /* Premium Reports Module Styles */
+    * {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    /* Report Cards Grid */
+    .reports-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .report-card {
+      background: white;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .report-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(135deg, #8e1616 0%, #d84040 100%);
+    }
+
+    .report-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 40px rgba(102, 126, 234, 0.2);
+    }
+
+    .report-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+
+    .report-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1a1f3a;
+      margin-bottom: 8px;
+    }
+
+    .report-description {
+      font-size: 14px;
+      color: #868e96;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .report-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #667eea;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    /* Filter Section */
+    .filter-section {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    .filter-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .filter-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1a1f3a;
+    }
+
+    .filter-controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .filter-group label {
+      display: block;
+      font-size: 12px;
+      color: #868e96;
+      font-weight: 600;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .filter-input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #dee2e6;
+      border-radius: 10px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .filter-input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .filter-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .export-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .export-btn-pdf {
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+      color: white;
+    }
+
+    .export-btn-pdf:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+    }
+
+    .export-btn-csv {
+      background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%);
+      color: white;
+    }
+
+    .export-btn-csv:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(81, 207, 102, 0.4);
+    }
+
+    /* Report Content Area */
+    .report-content {
+      background: white;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+      display: none;
+    }
+
+    .report-content.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .report-content-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .report-content-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: #1a1f3a;
+    }
+
+    .back-btn {
+      padding: 8px 16px;
+      background: #f8f9fa;
+      border: none;
+      border-radius: 8px;
+      color: #495057;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .back-btn:hover {
+      background: #e9ecef;
+    }
+
+    /* Summary Cards */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .summary-card {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      padding: 20px;
+      border-radius: 12px;
+      border-left: 4px solid #667eea;
+    }
+
+    .summary-label {
+      font-size: 12px;
+      color: #868e96;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .summary-value {
+      font-size: 28px;
+      font-weight: 900;
+      color: #1a1f3a;
+    }
+
+    /* Data Table */
+    .data-table-wrapper {
+      overflow-x: auto;
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    .data-table thead {
+      background: linear-gradient(135deg, #1a1f3a 0%, #2d3561 100%);
+    }
+
+    .data-table thead th {
+      padding: 16px;
+      text-align: left;
+      color: white;
+      font-weight: 600;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .data-table tbody tr {
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .data-table tbody tr:hover {
+      background: rgba(102, 126, 234, 0.03);
+    }
+
+    .data-table tbody td {
+      padding: 14px 16px;
+      color: #495057;
+      font-size: 14px;
+    }
+
+    /* Chart Container */
+    .chart-container {
+      position: relative;
+      height: 400px;
+      margin-bottom: 24px;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    /* Empty State */
+    .empty-report {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .empty-report-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      opacity: 0.3;
+    }
+
+    .empty-report-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #495057;
+      margin-bottom: 8px;
+    }
+
+    .empty-report-text {
+      font-size: 14px;
+      color: #868e96;
+    }
+
+    /* Loading State */
+    .loading-report {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .reports-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .filter-controls {
+        grid-template-columns: 1fr;
+      }
+
+      .filter-actions {
+        flex-direction: column;
+      }
+
+      .export-btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .chart-container {
+        height: 300px;
+      }
+    }
+  </style>
+  <!-- All styles moved to reports.css - this entire style block should be removed -->
+</head>
+
+<body>
+  <!-- Sidebar Container -->
+  <div id="sidebarContainer"></div>
+
+  <!-- Header Container -->
+  <div id="headerContainer"></div>
+
+  <!-- Page Configuration -->
+  <script>
+    window.pageConfig = {
+      searchPlaceholder: 'Search reports...'
+    };
+  </script>
+
+  <!-- Main Content -->
+  <div class="main-layout">
+    <div class="content" id="content">
+      <!-- Report Selection View -->
+      <div id="reportSelectionView">
+        <div class="page-title">Reports & Analytics</div>
+
+        <!-- Report Cards -->
+        <div class="reports-grid">
+          <div class="report-card" onclick="loadReport('sales')">
+            <div class="report-icon">💰</div>
+            <div class="report-title">Sales Reports</div>
+            <div class="report-description">
+              Comprehensive sales analytics, revenue trends, top-selling items, and customer insights.
+            </div>
+            <div class="report-action">
+              View Report →
+            </div>
+          </div>
+
+          <div class="report-card" onclick="loadReport('purchases')">
+            <div class="report-icon">📦</div>
+            <div class="report-title">Purchase Reports</div>
+            <div class="report-description">
+              Track purchase orders, supplier performance, spending analysis, and procurement trends.
+            </div>
+            <div class="report-action">
+              View Report →
+            </div>
+          </div>
+
+          <div class="report-card" onclick="loadReport('inventory')">
+            <div class="report-icon">📊</div>
+            <div class="report-title">Inventory Valuation</div>
+            <div class="report-description">
+              Current stock values, inventory worth, cost analysis, and stock aging reports.
+            </div>
+            <div class="report-action">
+              View Report →
+            </div>
+          </div>
+
+          <div class="report-card" onclick="loadReport('movements')">
+            <div class="report-icon">🔄</div>
+            <div class="report-title">Stock Movement Logs</div>
+            <div class="report-description">
+              Complete history of stock transactions, transfers, adjustments, and inventory changes.
+            </div>
+            <div class="report-action">
+              View Report →
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Report Detail View -->
+      <div id="reportDetailView" class="report-detail-view" style="display: none;">
+        <!-- Filters -->
+        <div class="filter-section">
+          <div class="filter-header">
+            <div class="filter-title">📅 Filter & Export</div>
+          </div>
+          <div class="filter-controls">
+            <div class="filter-group">
+              <label>From Date</label>
+              <input type="date" class="filter-input" id="filterFromDate" title="From Date" aria-label="From Date"
+                onchange="handleDateChange()" oninput="handleDateChange()">
+            </div>
+            <div class="filter-group">
+              <label>To Date</label>
+              <input type="date" class="filter-input" id="filterToDate" title="To Date" aria-label="To Date"
+                onchange="handleDateChange()" oninput="handleDateChange()">
+            </div>
+            <div class="filter-group">
+              <label>Quick Select</label>
+              <select class="filter-input" id="filterQuick" onchange="applyQuickFilter()" title="Quick Select"
+                aria-label="Quick Select">
+                <option value="custom">Custom Range</option>
+                <option value="today">Today</option>
+                <option value="yesterday">Yesterday</option>
+                <option value="thisWeek">This Week</option>
+                <option value="lastWeek">Last Week</option>
+                <option value="thisMonth">This Month</option>
+                <option value="lastMonth">Last Month</option>
+                <option value="thisYear">This Year</option>
+              </select>
+            </div>
+          </div>
+          <div class="filter-actions">
+            <button class="export-btn export-btn-pdf" onclick="exportToPDF()">
+              📄 Export PDF
+            </button>
+            <button class="export-btn export-btn-csv" onclick="exportToCSV()">
+              📊 Export CSV
+            </button>
+            <button class="btn btn-primary" onclick="applyFilters()">
+              🔍 Apply Filters
+            </button>
+            <button class="back-btn" onclick="backToReports()">
+              ← Back to Reports
+            </button>
+          </div>
+        </div>
+
+        <!-- Report Content -->
+        <div id="reportContentArea" class="report-content active">
+          <div class="report-content-header">
+            <h2 class="report-content-title" id="reportTitle">Report</h2>
+          </div>
+
+          <!-- Summary Cards -->
+          <div class="summary-grid" id="summaryCards"></div>
+
+          <!-- Charts -->
+          <div class="chart-container" id="chartContainer" style="display: none;">
+            <canvas id="reportChart"></canvas>
+          </div>
+          <div class="chart-container" id="chartContainer2" style="display: none;">
+            <canvas id="reportChart2"></canvas>
+          </div>
+
+          <!-- Data Table -->
+          <div class="data-table-wrapper" id="tableContainer"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/utils.js"></script>
+  <script src="/js/layout.js"></script>
+  <script src="/js/app.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/global-features.js"></script>
+  <script src="/js/reports.js"></script>
+</body>
+
+</html>

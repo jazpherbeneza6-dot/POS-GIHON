@@ -1,0 +1,2608 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Item Group - Inventory Management</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/alert-dialog.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/css/mobile.css">
+    <link rel="stylesheet" href="/css/utilities.css">
+    <style>
+        /* New Item Group Form Styles - Zoho Style with Existing Color Scheme */
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            box-sizing: border-box;
+        }
+
+        .page-container {
+            background: #ffffff;
+            min-height: calc(100vh - 60px);
+        }
+
+        /* Page Header */
+        .form-page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            border-bottom: 1px solid #e9ecef;
+            background: white;
+            position: relative;
+            top: 0;
+            z-index: 100;
+        }
+
+        .form-page-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1f3a;
+        }
+
+        .form-page-close {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: transparent;
+            color: #868e96;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .form-page-close:hover {
+            background: #f1f3f5;
+            color: #1a1f3a;
+        }
+
+        /* Main Form Container */
+        .form-main-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px 24px;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        @media (max-width: 900px) {
+            .form-main-container {
+                flex-direction: column;
+            }
+
+            .form-image-section {
+                order: -1;
+                width: 100%;
+            }
+        }
+
+        /* Form Section */
+        .form-section {
+            background: white;
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* Form Row */
+        .form-row {
+            display: grid;
+            grid-template-columns: 130px 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+            align-items: start;
+            max-width: 550px;
+        }
+
+        .form-row-full {
+            grid-template-columns: 1fr;
+        }
+
+        .form-row-dual {
+            display: grid;
+            grid-template-columns: 130px 1fr 70px 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+            align-items: start;
+            max-width: 750px;
+        }
+
+        /* Form Labels */
+        .form-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #495057;
+            padding-top: 8px;
+        }
+
+        .form-label.required::after {
+            content: '*';
+            color: #8e1616;
+            margin-left: 2px;
+        }
+
+        .form-label-inline {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .form-label-help {
+            width: 16px;
+            height: 16px;
+            border: 1px solid #ced4da;
+            border-radius: 50%;
+            font-size: 10px;
+            color: #868e96;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: help;
+        }
+
+        /* Form Inputs */
+        .form-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #1a1f3a;
+            background: white;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #8e1616;
+            box-shadow: 0 0 0 2px rgba(142, 22, 22, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #adb5bd;
+        }
+
+        .form-textarea {
+            min-height: 60px;
+            resize: vertical;
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23495057' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+            cursor: pointer;
+        }
+
+        /* Radio Buttons */
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            padding-top: 6px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .radio-option input[type="radio"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #8e1616;
+            cursor: pointer;
+        }
+
+        .radio-option label {
+            font-size: 14px;
+            color: #1a1f3a;
+            cursor: pointer;
+        }
+
+        /* Checkbox */
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding-top: 6px;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #8e1616;
+            cursor: pointer;
+        }
+
+        .checkbox-wrapper label {
+            font-size: 14px;
+            color: #1a1f3a;
+            cursor: pointer;
+        }
+
+        /* Section Divider */
+        .section-divider {
+            border-top: 1px solid #e9ecef;
+            margin: 18px 0;
+            width: 74rem;
+        }
+
+        /* Multiple Items Section */
+        .multiple-items-section {
+            margin-top: 16px;
+        }
+
+        .multiple-items-header {
+            display: grid;
+            grid-template-columns: 130px 1fr;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .multiple-items-label {
+            color: #8e1616;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .multiple-items-label.required::after {
+            content: '*';
+            color: #8e1616;
+            margin-left: 2px;
+        }
+
+        /* Attributes Section */
+        .attributes-container {
+            background: transparent;
+            padding: 0;
+            border-radius: 0;
+            margin-top: 12px;
+            margin-left: 142px;
+        }
+
+        .attribute-row {
+            display: grid;
+            grid-template-columns: 250px 1fr 36px;
+            gap: 16px;
+            margin-bottom: 12px;
+            align-items: end;
+        }
+
+        .attribute-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #8e1616;
+            margin-bottom: 6px;
+        }
+
+        .add-attribute-btn {
+            color: #8e1616;
+            font-size: 13px;
+            font-weight: 500;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 0;
+            transition: all 0.2s ease;
+            margin-left: 0;
+        }
+
+        .add-attribute-btn {
+            color: #8e1616;
+            font-size: 13px;
+            font-weight: 500;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 0;
+            transition: all 0.2s ease;
+        }
+
+        .add-attribute-btn:hover {
+            color: #d84040;
+        }
+
+        .remove-attribute-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            color: #868e96;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            margin-top: 22px;
+        }
+
+        .remove-attribute-btn:hover {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        /* Item Type Checkboxes Row */
+        .item-type-row {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            padding: 12px 0;
+            border-top: 1px solid #e9ecef;
+            margin-top: 16px;
+        }
+
+        .item-type-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        /* Items Table */
+        .items-table-container {
+            margin-top: 16px;
+            border: none;
+            border-radius: 0;
+            overflow-x: auto;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            table-layout: auto;
+        }
+
+        .items-table thead {
+            background: transparent;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .items-table th {
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 600;
+            color: #dc2626;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            border: none;
+            background: transparent;
+            vertical-align: bottom;
+        }
+
+        .items-table th .copy-link {
+            color: #3b82f6;
+            font-size: 10px;
+            font-weight: 400;
+            text-decoration: none;
+            cursor: pointer;
+            display: block;
+            margin-top: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0;
+        }
+
+        .items-table th .copy-link:hover {
+            text-decoration: underline;
+        }
+
+        .items-table tbody td {
+            padding: 12px;
+            border: none;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .items-table tbody tr:last-child td {
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .items-table tbody tr:hover {
+            background-color: #fafafa;
+        }
+
+        .table-input {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 3px;
+            font-size: 13px;
+            background: white;
+            transition: all 0.15s ease;
+        }
+
+        .table-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Optimize column widths */
+        .items-table th:nth-child(1),
+        .items-table td:nth-child(1) {
+            min-width: 180px;
+        }
+
+        .items-table th:nth-child(2),
+        .items-table td:nth-child(2) {
+            width: 140px;
+        }
+
+        .items-table th:nth-child(3),
+        .items-table td:nth-child(3) {
+            width: 120px;
+        }
+
+        .items-table th:nth-child(4),
+        .items-table td:nth-child(4) {
+            width: 130px;
+        }
+
+        .items-table th:nth-child(5),
+        .items-table td:nth-child(5),
+        .items-table th:nth-child(6),
+        .items-table td:nth-child(6),
+        .items-table th:nth-child(7),
+        .items-table td:nth-child(7) {
+            width: 110px;
+        }
+
+        .items-table th:nth-child(8),
+        .items-table td:nth-child(8) {
+            width: 120px;
+        }
+
+        /* Image Upload Section */
+        .form-image-section {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 24px 16px;
+            text-align: center;
+            width: 268px;
+            height: fit-content;
+            flex-shrink: 0;
+            align-self: flex-start;
+            position: relative;
+            left: -27px;
+        }
+
+        .image-upload-icon {
+            font-size: 40px;
+            color: #adb5bd;
+            margin-bottom: 12px;
+        }
+
+        .image-upload-text {
+            font-size: 14px;
+            color: #495057;
+            margin-bottom: 4px;
+        }
+
+        .image-upload-link {
+            color: #8e1616;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .image-upload-hint {
+            font-size: 12px;
+            color: #868e96;
+            margin-top: 12px;
+            line-height: 1.5;
+        }
+
+        .image-preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .image-preview-item {
+            width: 60px;
+            height: 60px;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .image-preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-preview-remove {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 16px;
+            height: 16px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Form Footer */
+        .form-footer {
+            display: flex;
+            gap: 10px;
+            padding: 14px 24px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            position: sticky;
+            bottom: 0;
+        }
+
+        .btn-save {
+            padding: 10px 24px;
+            background: #8e1616;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-save:hover {
+            background: #d84040;
+        }
+
+        .btn-cancel {
+            padding: 10px 24px;
+            background: #f1f3f5;
+            color: #495057;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-cancel:hover {
+            background: #e9ecef;
+        }
+
+        /* Toast Notification */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 10px;
+        }
+
+        .toast {
+            padding: 16px 24px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            font-size: 14px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease;
+            min-width: 280px;
+        }
+
+        .toast.success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .toast.error {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Column Visibility Classes */
+        .cost-price-column {
+            transition: opacity 0.2s ease;
+        }
+
+        .selling-price-column {
+            transition: opacity 0.2s ease;
+        }
+
+        .hide-cost-price .cost-price-column {
+            display: none;
+        }
+
+        .hide-selling-price .selling-price-column {
+            display: none;
+        }
+
+        /* Searchable Dropdown */
+        .searchable-dropdown {
+            position: relative;
+            width: 100%;
+        }
+
+        .searchable-dropdown-input {
+            width: 100%;
+            padding: 8px 36px 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #1a1f3a;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .searchable-dropdown-input:focus {
+            outline: none;
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.15);
+        }
+
+        .searchable-dropdown-arrow {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #868e96;
+            transition: transform 0.2s ease;
+        }
+
+        .searchable-dropdown.open .searchable-dropdown-arrow {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+        .searchable-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ced4da;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .searchable-dropdown.open .searchable-dropdown-menu {
+            display: block;
+        }
+
+        .searchable-dropdown-option {
+            padding: 10px 12px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #1a1f3a;
+            transition: background 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .searchable-dropdown-option:hover {
+            background: #f0f7ff;
+        }
+
+        .searchable-dropdown-option.selected {
+            background: #3b82f6 !important;
+            color: white !important;
+            position: relative;
+        }
+
+        .searchable-dropdown-option.selected:hover {
+            background: #2563eb !important;
+        }
+
+        .searchable-dropdown-option.selected::after {
+            content: '✓';
+            position: absolute;
+            right: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .searchable-dropdown-option .option-text {
+            flex: 1;
+        }
+
+        .searchable-dropdown-option .option-delete-btn {
+            display: none;
+            width: 22px;
+            height: 22px;
+            border: none;
+            background: #fee2e2;
+            color: #ef4444;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 4px;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+            margin-left: 8px;
+        }
+
+        .searchable-dropdown-option:hover .option-delete-btn {
+            display: flex;
+        }
+
+        .searchable-dropdown-option .option-delete-btn:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+        .searchable-dropdown-add {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px 12px;
+            border-top: 1px solid #e9ecef;
+            cursor: pointer;
+            font-size: 13px;
+            color: #4a90e2;
+            font-weight: 500;
+            transition: background 0.15s ease;
+            background: #f8f9fa;
+        }
+
+        .searchable-dropdown-add:hover {
+            background: #e8f4fd;
+        }
+
+        .searchable-dropdown-add-icon {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .searchable-dropdown-empty {
+            padding: 12px;
+            text-align: center;
+            color: #868e96;
+            font-size: 13px;
+        }
+
+        /* Enhanced Dropdown with Search */
+        .searchable-dropdown-search {
+            padding: 8px 12px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .searchable-dropdown-search input {
+            width: 100%;
+            padding: 8px 12px 8px 32px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            font-size: 13px;
+            background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23868e96' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E") no-repeat 10px center;
+        }
+
+        .searchable-dropdown-search input:focus {
+            outline: none;
+            border-color: #4a90e2;
+        }
+
+        .searchable-dropdown-manage {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 12px;
+            border-top: 1px solid #e9ecef;
+            cursor: pointer;
+            font-size: 13px;
+            color: #868e96;
+            transition: background 0.15s ease;
+            background: white;
+        }
+
+        .searchable-dropdown-manage:hover {
+            background: #f8f9fa;
+            color: #4a90e2;
+        }
+
+        .searchable-dropdown-manage-icon {
+            font-size: 14px;
+        }
+
+        /* Manage Modal */
+        .manage-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2500;
+        }
+
+        .manage-modal.active {
+            display: flex;
+        }
+
+        .manage-modal-content {
+            background: white;
+            border-radius: 8px;
+            width: 420px;
+            max-width: 90%;
+            max-height: 80vh;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .manage-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .manage-modal-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1f3a;
+        }
+
+        .manage-modal-close {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: transparent;
+            color: #ef4444;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .manage-modal-close:hover {
+            background: #fee2e2;
+        }
+
+        .manage-modal-body {
+            padding: 16px 20px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .manage-modal-add-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            margin-bottom: 16px;
+        }
+
+        .manage-modal-add-btn:hover {
+            background: #357abd;
+        }
+
+        .manage-modal-list-header {
+            font-size: 11px;
+            font-weight: 700;
+            color: #868e96;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e9ecef;
+            margin-bottom: 8px;
+        }
+
+        .manage-modal-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .manage-modal-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+            color: #1a1f3a;
+        }
+
+        .manage-modal-item:last-child {
+            border-bottom: none;
+        }
+
+        .manage-modal-item-delete {
+            width: 24px;
+            height: 24px;
+            border: none;
+            background: transparent;
+            color: #868e96;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.15s ease;
+        }
+
+        .manage-modal-item-delete:hover {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .manage-modal-empty {
+            text-align: center;
+            color: #868e96;
+            font-size: 14px;
+            padding: 20px;
+        }
+
+        /* Add New Item Row */
+        .manage-modal-add-row {
+            display: none;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .manage-modal-add-row.active {
+            display: flex;
+        }
+
+        .manage-modal-add-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .manage-modal-add-input:focus {
+            outline: none;
+            border-color: #4a90e2;
+        }
+
+        .manage-modal-save-btn {
+            padding: 8px 16px;
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .manage-modal-save-btn:hover {
+            background: #059669;
+        }
+
+        .manage-modal-cancel-btn {
+            padding: 8px 12px;
+            background: #f3f4f6;
+            color: #4b5563;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .manage-modal-cancel-btn:hover {
+            background: #e5e7eb;
+        }
+
+        /* Add Option Modal */
+        .add-option-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .add-option-modal.active {
+            display: flex;
+        }
+
+        .add-option-modal-content {
+            background: white;
+            border-radius: 8px;
+            width: 360px;
+            max-width: 90%;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .add-option-modal-header {
+            background: #f8f9fa;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .add-option-modal-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #8e1616;
+        }
+
+        .add-option-modal-title::after {
+            content: '*';
+            color: #8e1616;
+            margin-left: 2px;
+        }
+
+        .add-option-modal-body {
+            padding: 20px;
+        }
+
+        .add-option-modal-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #1a1f3a;
+            transition: all 0.2s ease;
+        }
+
+        .add-option-modal-input:focus {
+            outline: none;
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.15);
+        }
+
+        .add-option-modal-footer {
+            display: flex;
+            gap: 10px;
+            padding: 16px 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .add-option-modal-btn {
+            padding: 8px 20px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .add-option-modal-btn.primary {
+            background: #4a90e2;
+            color: white;
+            border: none;
+        }
+
+        .add-option-modal-btn.primary:hover {
+            background: #357abd;
+        }
+
+        .add-option-modal-btn.secondary {
+            background: white;
+            color: #495057;
+            border: 1px solid #ced4da;
+        }
+
+        .add-option-modal-btn.secondary:hover {
+            background: #f1f3f5;
+        }
+
+        /* Confirmation Modal */
+        .confirm-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            -webkit-backdrop-filter: blur(2px);
+            backdrop-filter: blur(2px);
+        }
+
+        .confirm-modal.active {
+            display: flex;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .confirm-modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 380px;
+            max-width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: scaleIn 0.2s ease;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .confirm-modal-body {
+            padding: 28px 24px;
+            text-align: center;
+        }
+
+        .confirm-modal-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 24px;
+        }
+
+        .confirm-modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1f3a;
+            margin-bottom: 8px;
+        }
+
+        .confirm-modal-message {
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+
+        .confirm-modal-message strong {
+            color: #1a1f3a;
+            font-weight: 600;
+        }
+
+        .confirm-modal-footer {
+            display: flex;
+            gap: 12px;
+            padding: 16px 24px 24px;
+            justify-content: center;
+        }
+
+        .confirm-modal-btn {
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 100px;
+        }
+
+        .confirm-modal-btn.cancel {
+            background: #f3f4f6;
+            color: #4b5563;
+            border: 1px solid #e5e7eb;
+        }
+
+        .confirm-modal-btn.cancel:hover {
+            background: #e5e7eb;
+        }
+
+        .confirm-modal-btn.delete {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .confirm-modal-btn.delete:hover {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+            transform: translateY(-1px);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+
+            .form-row,
+            .form-row-dual {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .form-label {
+                padding-top: 0;
+            }
+
+            .attribute-row {
+                grid-template-columns: 1fr;
+            }
+
+            .items-table-container {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Confirmation Modal -->
+    <div class="confirm-modal" id="confirmModal">
+        <div class="confirm-modal-content">
+            <div class="confirm-modal-body">
+                <div class="confirm-modal-icon">🗑️</div>
+                <div class="confirm-modal-title">Delete Option</div>
+                <div class="confirm-modal-message" id="confirmMessage">
+                    Are you sure you want to delete <strong id="confirmValue"></strong>?
+                </div>
+            </div>
+            <div class="confirm-modal-footer">
+                <button type="button" class="confirm-modal-btn cancel" onclick="cancelDelete()">Cancel</button>
+                <button type="button" class="confirm-modal-btn delete" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Option Modal -->
+    <div class="add-option-modal" id="addOptionModal">
+        <div class="add-option-modal-content">
+            <div class="add-option-modal-header">
+                <div class="add-option-modal-title" id="addOptionModalTitle">Name</div>
+            </div>
+            <div class="add-option-modal-body">
+                <input type="text" class="add-option-modal-input" id="addOptionInput" placeholder=""
+                    title="Enter new option value">
+            </div>
+            <div class="add-option-modal-footer">
+                <button type="button" class="add-option-modal-btn primary" onclick="saveNewOption()">Save</button>
+                <button type="button" class="add-option-modal-btn secondary" onclick="closeAddModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manage Brand Modal -->
+    <div class="manage-modal" id="manageBrandModal">
+        <div class="manage-modal-content">
+            <div class="manage-modal-header">
+                <div class="manage-modal-title">Manage Brands</div>
+                <button type="button" class="manage-modal-close" onclick="closeManageModal('brand')">×</button>
+            </div>
+            <div class="manage-modal-body">
+                <button type="button" class="manage-modal-add-btn" onclick="showAddRow('brand')">
+                    + New Brand
+                </button>
+                <div class="manage-modal-add-row" id="brandAddRow">
+                    <input type="text" class="manage-modal-add-input" id="brandAddInput" placeholder="Enter brand name">
+                    <button type="button" class="manage-modal-save-btn" onclick="saveNewItem('brand')">Save</button>
+                    <button type="button" class="manage-modal-cancel-btn" onclick="hideAddRow('brand')">Cancel</button>
+                </div>
+                <div class="manage-modal-list-header">BRANDS</div>
+                <div class="manage-modal-list" id="brandList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manage Manufacturer Modal -->
+    <div class="manage-modal" id="manageManufacturerModal">
+        <div class="manage-modal-content">
+            <div class="manage-modal-header">
+                <div class="manage-modal-title">Manage Manufacturers</div>
+                <button type="button" class="manage-modal-close" onclick="closeManageModal('manufacturer')">×</button>
+            </div>
+            <div class="manage-modal-body">
+                <button type="button" class="manage-modal-add-btn" onclick="showAddRow('manufacturer')">
+                    + New Manufacturer
+                </button>
+                <div class="manage-modal-add-row" id="manufacturerAddRow">
+                    <input type="text" class="manage-modal-add-input" id="manufacturerAddInput"
+                        placeholder="Enter manufacturer name">
+                    <button type="button" class="manage-modal-save-btn"
+                        onclick="saveNewItem('manufacturer')">Save</button>
+                    <button type="button" class="manage-modal-cancel-btn"
+                        onclick="hideAddRow('manufacturer')">Cancel</button>
+                </div>
+                <div class="manage-modal-list-header">MANUFACTURERS</div>
+                <div class="manage-modal-list" id="manufacturerList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manage Tax Modal -->
+    <div class="manage-modal" id="manageTaxModal">
+        <div class="manage-modal-content">
+            <div class="manage-modal-header">
+                <div class="manage-modal-title">Manage Tax Options</div>
+                <button type="button" class="manage-modal-close" onclick="closeManageModal('tax')">×</button>
+            </div>
+            <div class="manage-modal-body">
+                <button type="button" class="manage-modal-add-btn" onclick="showAddRow('tax')">
+                    + New Tax
+                </button>
+                <div class="manage-modal-add-row" id="taxAddRow">
+                    <input type="text" class="manage-modal-add-input" id="taxAddInput"
+                        placeholder="Enter tax option (e.g., VAT 12%)">
+                    <button type="button" class="manage-modal-save-btn" onclick="saveNewItem('tax')">Save</button>
+                    <button type="button" class="manage-modal-cancel-btn" onclick="hideAddRow('tax')">Cancel</button>
+                </div>
+                <div class="manage-modal-list-header">TAX OPTIONS</div>
+                <div class="manage-modal-list" id="taxList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer"></div>
+
+    <!-- Header Container -->
+    <div id="headerContainer"></div>
+
+    <!-- Page Configuration -->
+    <script>
+        window.pageConfig = {
+            searchPlaceholder: 'Search...',
+            searchId: 'globalSearch',
+            headerButtons: ''
+        };
+    </script>
+
+    <!-- Main Content -->
+    <div class="main-layout">
+        <div class="content page-container" id="content">
+            <!-- Form Header -->
+            <div class="form-page-header">
+                <h1 class="form-page-title">New Item Group</h1>
+                <button class="form-page-close" onclick="goBack()" title="Close">×</button>
+            </div>
+
+            <!-- Form Content -->
+            <form id="itemGroupForm">
+                <div class="form-main-container">
+                    <!-- Left Side - Form Fields -->
+                    <div class="form-section">
+                        <!-- Type Selection -->
+                        <div class="form-row">
+                            <div class="form-label">Type</div>
+                            <div class="radio-group">
+                                <div class="radio-option">
+                                    <input type="radio" name="itemType" id="typeGoods" value="goods" checked>
+                                    <label for="typeGoods">Goods</label>
+                                </div>
+                                <div class="radio-option">
+                                    <input type="radio" name="itemType" id="typeService" value="service">
+                                    <label for="typeService">Service</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item Group Name -->
+                        <div class="form-row">
+                            <div class="form-label required">Item Group Name</div>
+                            <input type="text" class="form-input" id="groupName" required placeholder="">
+                        </div>
+
+                        <!-- Description -->
+                        <div class="form-row">
+                            <div class="form-label">Description</div>
+                            <textarea class="form-input form-textarea" id="groupDescription"></textarea>
+                        </div>
+
+                        <!-- Returnable Item -->
+                        <div class="form-row">
+                            <div></div>
+                            <div class="checkbox-wrapper">
+                                <input type="checkbox" id="returnableItem">
+                                <label for="returnableItem">Returnable Item</label>
+                                <span class="form-label-help"
+                                    title="Check if items in this group can be returned">?</span>
+                            </div>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <!-- Unit and Tax Row -->
+                        <div class="form-row-dual">
+                            <div class="form-label required form-label-inline">
+                                Unit
+                                <span class="form-label-help" title="Unit of measurement">?</span>
+                            </div>
+                            <div class="searchable-dropdown" id="unitDropdown">
+                                <input type="text" class="searchable-dropdown-input" id="unitType"
+                                    placeholder="Select or type to add" autocomplete="off">
+                                <span class="searchable-dropdown-arrow">▾</span>
+                                <div class="searchable-dropdown-menu">
+                                    <div class="searchable-dropdown-options" id="unitOptions"></div>
+                                    <div class="searchable-dropdown-add" onclick="openAddModal('unit', 'Unit Name')">
+                                        <span class="searchable-dropdown-add-icon">+</span>
+                                        <span>Add</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-label form-label-inline">
+                                Tax
+                                <span class="form-label-help" title="Tax rate for this group">?</span>
+                            </div>
+                            <div class="searchable-dropdown" id="taxDropdown">
+                                <input type="text" class="searchable-dropdown-input" id="taxRate"
+                                    placeholder="Select a Tax" autocomplete="off" readonly>
+                                <span class="searchable-dropdown-arrow">▾</span>
+                                <div class="searchable-dropdown-menu">
+                                    <div class="searchable-dropdown-search">
+                                        <input type="text" id="taxSearch" placeholder="Search" autocomplete="off">
+                                    </div>
+                                    <div class="searchable-dropdown-options" id="taxOptions"></div>
+                                    <div class="searchable-dropdown-manage" onclick="openManageModal('tax')">
+                                        <span class="searchable-dropdown-manage-icon">⚙️</span>
+                                        <span>Manage Tax Options</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Manufacturer and Brand Row -->
+                        <div class="form-row-dual">
+                            <div class="form-label">Manufacturer</div>
+                            <div class="searchable-dropdown" id="manufacturerDropdown">
+                                <input type="text" class="searchable-dropdown-input" id="manufacturer"
+                                    placeholder="Select or Add Manufacturer" autocomplete="off" readonly>
+                                <span class="searchable-dropdown-arrow">▾</span>
+                                <div class="searchable-dropdown-menu">
+                                    <div class="searchable-dropdown-search">
+                                        <input type="text" id="manufacturerSearch" placeholder="Search"
+                                            autocomplete="off">
+                                    </div>
+                                    <div class="searchable-dropdown-options" id="manufacturerOptions"></div>
+                                    <div class="searchable-dropdown-manage" onclick="openManageModal('manufacturer')">
+                                        <span class="searchable-dropdown-manage-icon">⚙️</span>
+                                        <span>Manage Manufacturers</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-label">Brand</div>
+                            <div class="searchable-dropdown" id="brandDropdown">
+                                <input type="text" class="searchable-dropdown-input" id="brand"
+                                    placeholder="Select or Add Brand" autocomplete="off" readonly>
+                                <span class="searchable-dropdown-arrow">▾</span>
+                                <div class="searchable-dropdown-menu">
+                                    <div class="searchable-dropdown-search">
+                                        <input type="text" id="brandSearch" placeholder="Search" autocomplete="off">
+                                    </div>
+                                    <div class="searchable-dropdown-options" id="brandOptions"></div>
+                                    <div class="searchable-dropdown-manage" onclick="openManageModal('brand')">
+                                        <span class="searchable-dropdown-manage-icon">⚙️</span>
+                                        <span>Manage Brands</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Inventory Valuation Method -->
+                        <div class="form-row">
+                            <div class="form-label">Inventory Valuation Method</div>
+                            <div class="searchable-dropdown" id="valuationMethodDropdown">
+                                <input type="text" class="searchable-dropdown-input" id="valuationMethod"
+                                    value="FIFO (First In First Out)" placeholder="Select Method" autocomplete="off"
+                                    readonly>
+                                <span class="searchable-dropdown-arrow">▾</span>
+                                <div class="searchable-dropdown-menu">
+                                    <div class="searchable-dropdown-search">
+                                        <input type="text" id="valuationMethodSearch" placeholder="Search"
+                                            autocomplete="off">
+                                    </div>
+                                    <div class="searchable-dropdown-options" id="valuationMethodOptions"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <!-- Multiple Items Section -->
+                        <div class="multiple-items-section">
+                            <div class="multiple-items-header">
+                                <span class="multiple-items-label required">Multiple Items?</span>
+                            </div>
+
+                            <div class="checkbox-wrapper">
+                                <input type="checkbox" id="createAttributes" checked>
+                                <label for="createAttributes">Create Attributes and Options</label>
+                            </div>
+
+                            <!-- Attributes Container -->
+                            <div class="attributes-container" id="attributesContainer">
+                                <div class="attribute-row" data-index="0">
+                                    <div>
+                                        <div class="attribute-label">Attribute*</div>
+                                        <input type="text" class="form-input attribute-select" list="attributeList"
+                                            placeholder="e.g., Color, Size">
+                                        <datalist id="attributeList">
+                                            <option value="Color">
+                                            <option value="Size">
+                                            <option value="Material">
+                                            <option value="Style">
+                                            <option value="Weight">
+                                            <option value="Length">
+                                        </datalist>
+                                    </div>
+                                    <div>
+                                        <div class="attribute-label">Options*</div>
+                                        <input type="text" class="form-input attribute-options"
+                                            placeholder="Enter options separated by comma (e.g., Red, Blue, Green)">
+                                    </div>
+                                    <button type="button" class="remove-attribute-btn" onclick="removeAttribute(this)"
+                                        title="Remove">🗑️</button>
+                                </div>
+                            </div>
+
+                            <button type="button" class="add-attribute-btn" onclick="addAttribute()">
+                                <span>➕</span> Add more attributes
+                            </button>
+                        </div>
+
+                        <!-- Item Type Checkboxes -->
+                        <div class="item-type-row">
+                            <span class="item-type-label">Select your Item Type:</span>
+                            <div class="checkbox-wrapper">
+                                <input type="checkbox" id="sellable" checked>
+                                <label for="sellable">Sellable</label>
+                            </div>
+                            <div class="checkbox-wrapper">
+                                <input type="checkbox" id="purchasable" checked>
+                                <label for="purchasable">Purchasable</label>
+                            </div>
+                            <div class="checkbox-wrapper">
+                                <input type="checkbox" id="trackInventory" checked>
+                                <label for="trackInventory">Track Inventory</label>
+                            </div>
+                        </div>
+
+                        <!-- Items Table -->
+                        <div class="items-table-container" id="itemsTableContainer">
+                            <table class="items-table">
+                                <thead>
+                                    <tr>
+                                        <th>ITEM NAME*</th>
+                                        <th>
+                                            SKU
+                                            <span class="form-label-help" title="Stock Keeping Unit">?</span>
+                                        </th>
+                                        <th class="cost-price-column">
+                                            COST PRICE (PHP)*
+                                            <span class="copy-link" onclick="copyToAllCost()">PER UNIT<br>COPY TO ALL
+                                                <span class="form-label-help">?</span></span>
+                                        </th>
+                                        <th class="selling-price-column">
+                                            SELLING PRICE (PHP)*
+                                            <span class="copy-link" onclick="copyToAllPrice()">PER UNIT<br>COPY TO ALL
+                                                <span class="form-label-help">?</span></span>
+                                        </th>
+                                        <th>
+                                            UPC
+                                            <span class="form-label-help" title="Universal Product Code">?</span>
+                                        </th>
+                                        <th>
+                                            EAN
+                                            <span class="form-label-help" title="European Article Number">?</span>
+                                        </th>
+                                        <th>
+                                            ISBN
+                                            <span class="form-label-help"
+                                                title="International Standard Book Number">?</span>
+                                        </th>
+                                        <th>
+                                            REORDER POINT
+                                            <span class="form-label-help" title="Minimum stock level">?</span>
+                                            <span class="copy-link" onclick="copyToAllReorder()">COPY TO ALL</span>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="itemsTableBody">
+                                    <tr>
+                                        <td><input type="text" class="table-input item-name"
+                                                placeholder="Enter item name"></td>
+                                        <td><input type="text" class="table-input item-sku" placeholder="Auto-generate">
+                                        </td>
+                                        <td class="cost-price-column"><input type="number" class="table-input item-cost"
+                                                placeholder="0.00" step="0.01"></td>
+                                        <td class="selling-price-column"><input type="number"
+                                                class="table-input item-price" placeholder="0.00" step="0.01"></td>
+                                        <td><input type="text" class="table-input item-upc" placeholder=""></td>
+                                        <td><input type="text" class="table-input item-ean" placeholder=""></td>
+                                        <td><input type="text" class="table-input item-isbn" placeholder=""></td>
+                                        <td><input type="number" class="table-input item-reorder" placeholder="10"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+                    <!-- Right Side - Image Upload -->
+                    <div class="form-image-section" onclick="document.getElementById('imageInput').click()">
+                        <div class="image-upload-icon">🖼️</div>
+                        <div class="image-upload-text">
+                            Drag image(s) here or <span class="image-upload-link">Browse images</span>
+                        </div>
+                        <div class="image-upload-hint">
+                            ℹ️ You can add up to 15 images, each not exceeding 5 MB in size and 7000 x 7000 pixels
+                            resolution.
+                        </div>
+                        <input type="file" id="imageInput" multiple accept="image/*" style="display: none;"
+                            onchange="handleImageUpload(event)">
+                        <div class="image-preview-container" id="imagePreviewContainer"></div>
+                    </div>
+                </div>
+
+                <!-- Form Footer -->
+                <div class="form-footer">
+                    <button type="submit" class="btn-save">Save</button>
+                    <button type="button" class="btn-cancel" onclick="goBack()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Layout Scripts -->
+    <script src="/js/layout.js"></script>
+
+    <!-- Form Script -->
+    <script>
+        let attributeCount = 1;
+        let uploadedImages = [];
+
+        // Load dropdown data from localStorage or start with defaults
+        function loadDropdownData() {
+            const savedUnits = localStorage.getItem('unitOptions');
+            const savedBrands = localStorage.getItem('brandOptions');
+            const savedManufacturers = localStorage.getItem('manufacturerOptions');
+            const savedTax = localStorage.getItem('taxOptions');
+            return {
+                unit: savedUnits ? JSON.parse(savedUnits) : [],
+                brand: savedBrands ? JSON.parse(savedBrands) : [],
+                manufacturer: savedManufacturers ? JSON.parse(savedManufacturers) : [],
+                tax: savedTax ? JSON.parse(savedTax) : ['No Tax (0%)', 'VAT (12%)', 'Sales Tax (5%)']
+            };
+        }
+
+        // Save dropdown data to localStorage
+        function saveDropdownData(name) {
+            if (name === 'unit' || !name) {
+                localStorage.setItem('unitOptions', JSON.stringify(dropdownData.unit));
+            }
+            if (name === 'brand' || !name) {
+                localStorage.setItem('brandOptions', JSON.stringify(dropdownData.brand));
+            }
+            if (name === 'manufacturer' || !name) {
+                localStorage.setItem('manufacturerOptions', JSON.stringify(dropdownData.manufacturer));
+            }
+            if (name === 'tax' || !name) {
+                localStorage.setItem('taxOptions', JSON.stringify(dropdownData.tax));
+            }
+        }
+
+        // Dropdown data stores (loaded from localStorage)
+        const dropdownData = loadDropdownData();
+
+        // Initialize searchable dropdowns (unit, brand, manufacturer, tax)
+        function initSearchableDropdowns() {
+            // Setup Unit dropdown
+            setupUnitDropdown();
+
+            // Setup Brand and Manufacturer dropdowns
+            setupEnhancedDropdown('brand', 'brand');
+            setupEnhancedDropdown('manufacturer', 'manufacturer');
+
+            // Setup Tax dropdown
+            setupEnhancedDropdown('tax', 'taxRate');
+
+            // Setup Inventory Valuation Method dropdown
+            setupValuationMethodDropdown();
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.searchable-dropdown')) {
+                    closeAllDropdowns();
+                }
+            });
+        }
+
+        // Setup Unit dropdown (simple style)
+        function setupUnitDropdown() {
+            const dropdown = document.getElementById('unitDropdown');
+            const input = document.getElementById('unitType');
+            const optionsContainer = document.getElementById('unitOptions');
+
+            if (!dropdown || !input) return;
+
+            // Render initial options
+            renderOptions('unit');
+
+            // Toggle dropdown on input click
+            input.addEventListener('click', (e) => {
+                e.stopPropagation();
+                closeAllDropdowns();
+                dropdown.classList.add('open');
+                renderOptions('unit', input.value);
+            });
+
+            // Filter options on input
+            input.addEventListener('input', (e) => {
+                dropdown.classList.add('open');
+                renderOptions('unit', e.target.value);
+            });
+
+            // Handle keyboard navigation
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const firstOption = optionsContainer.querySelector('.searchable-dropdown-option');
+                    if (firstOption) {
+                        selectOption('unit', firstOption.querySelector('.option-text').textContent);
+                    }
+                }
+                if (e.key === 'Escape') {
+                    dropdown.classList.remove('open');
+                }
+            });
+        }
+
+        // Setup enhanced dropdown (brand/manufacturer style with search)
+        function setupEnhancedDropdown(name, inputId) {
+            const dropdown = document.getElementById(`${name}Dropdown`);
+            const input = document.getElementById(inputId);
+            const searchInput = document.getElementById(`${name}Search`);
+            const optionsContainer = document.getElementById(`${name}Options`);
+
+            if (!dropdown || !input) return;
+
+            // Render initial options
+            renderEnhancedOptions(name);
+
+            // Toggle dropdown on input click
+            input.addEventListener('click', (e) => {
+                e.stopPropagation();
+                closeAllDropdowns();
+                dropdown.classList.add('open');
+                renderEnhancedOptions(name, '');
+                if (searchInput) {
+                    searchInput.value = '';
+                    setTimeout(() => searchInput.focus(), 50);
+                }
+            });
+
+            // Prevent dropdown from closing when clicking inside the menu
+            const dropdownMenu = dropdown.querySelector('.searchable-dropdown-menu');
+            if (dropdownMenu) {
+                dropdownMenu.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
+            }
+
+            // Search functionality
+            if (searchInput) {
+                searchInput.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
+
+                searchInput.addEventListener('input', (e) => {
+                    renderEnhancedOptions(name, e.target.value);
+                });
+
+                searchInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        dropdown.classList.remove('open');
+                    }
+                });
+            }
+        }
+
+        // Render options for enhanced dropdown (brand/manufacturer/tax)
+        function renderEnhancedOptions(name, filter = '') {
+            const optionsContainer = document.getElementById(`${name}Options`);
+            if (!optionsContainer) return;
+
+            const inputId = name === 'tax' ? 'taxRate' : name;
+            const currentValue = document.getElementById(inputId)?.value || '';
+
+            const options = dropdownData[name] || [];
+            const filteredOptions = options.filter(opt =>
+                opt.toLowerCase().includes(filter.toLowerCase())
+            );
+
+            if (filteredOptions.length === 0) {
+                optionsContainer.innerHTML = '<div class="searchable-dropdown-empty">No options available</div>';
+                return;
+            }
+
+            optionsContainer.innerHTML = filteredOptions.map(opt => {
+                const isSelected = opt === currentValue ? 'selected' : '';
+                return `
+                <div class="searchable-dropdown-option ${isSelected}" onclick="event.stopPropagation(); selectEnhancedOption('${name}', '${opt.replace(/'/g, "\\'")}')">
+                    <span class="option-text">${opt}</span>
+                </div>
+            `;
+            }).join('');
+        }
+
+        // Select option for enhanced dropdown
+        function selectEnhancedOption(name, value) {
+            const input = document.getElementById(name);
+            const dropdown = document.getElementById(`${name}Dropdown`);
+
+            if (input) {
+                input.value = value;
+            }
+            if (dropdown) {
+                dropdown.classList.remove('open');
+            }
+        }
+
+        // Valuation Methods
+        const valuationMethods = [
+            'FIFO (First In First Out)',
+            'WAC (Weighted Average Costing)'
+        ];
+
+        // Setup Valuation Method dropdown
+        function setupValuationMethodDropdown() {
+            const dropdown = document.getElementById('valuationMethodDropdown');
+            const input = document.getElementById('valuationMethod');
+            const searchInput = document.getElementById('valuationMethodSearch');
+            const optionsContainer = document.getElementById('valuationMethodOptions');
+
+            if (!dropdown || !input) return;
+
+            // Render initial options
+            renderValuationOptions();
+
+            // Toggle dropdown on input click
+            input.addEventListener('click', (e) => {
+                e.stopPropagation();
+                closeAllDropdowns();
+                dropdown.classList.add('open');
+                renderValuationOptions('');
+                if (searchInput) {
+                    searchInput.value = '';
+                    setTimeout(() => searchInput.focus(), 50);
+                }
+            });
+
+            // Prevent dropdown from closing when clicking inside the menu
+            const dropdownMenu = dropdown.querySelector('.searchable-dropdown-menu');
+            if (dropdownMenu) {
+                dropdownMenu.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
+            }
+
+            // Search functionality
+            if (searchInput) {
+                searchInput.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
+
+                searchInput.addEventListener('input', (e) => {
+                    renderValuationOptions(e.target.value);
+                });
+
+                searchInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        dropdown.classList.remove('open');
+                    }
+                });
+            }
+        }
+
+        // Render options for Valuation Method dropdown
+        function renderValuationOptions(filter = '') {
+            const optionsContainer = document.getElementById('valuationMethodOptions');
+            if (!optionsContainer) return;
+
+            const currentValue = document.getElementById('valuationMethod').value;
+
+            const filteredOptions = valuationMethods.filter(opt =>
+                opt.toLowerCase().includes(filter.toLowerCase())
+            );
+
+            if (filteredOptions.length === 0) {
+                optionsContainer.innerHTML = '<div class="searchable-dropdown-empty">No options available</div>';
+                return;
+            }
+
+            optionsContainer.innerHTML = filteredOptions.map(opt => {
+                const isSelected = opt === currentValue ? 'selected' : '';
+                return `
+                <div class="searchable-dropdown-option ${isSelected}" onclick="event.stopPropagation(); selectValuationOption('${opt.replace(/'/g, "\\'")}')">
+                    <span class="option-text">${opt}</span>
+                </div>
+            `;
+            }).join('');
+        }
+
+        // Select option for Valuation Method
+        function selectValuationOption(value) {
+            const input = document.getElementById('valuationMethod');
+            const dropdown = document.getElementById('valuationMethodDropdown');
+
+            if (input) {
+                input.value = value;
+            }
+            if (dropdown) {
+                dropdown.classList.remove('open');
+            }
+        }
+
+        // Close all dropdowns
+        function closeAllDropdowns() {
+            document.querySelectorAll('.searchable-dropdown').forEach(d => d.classList.remove('open'));
+        }
+
+        // Render options for a dropdown
+        function renderOptions(name, filter = '') {
+            const optionsContainer = document.getElementById(`${name}Options`);
+            if (!optionsContainer) return;
+
+            const options = dropdownData[name] || [];
+            const filteredOptions = options.filter(opt =>
+                opt.toLowerCase().includes(filter.toLowerCase())
+            );
+
+            if (filteredOptions.length === 0 && !filter) {
+                optionsContainer.innerHTML = '<div class="searchable-dropdown-empty">No options available</div>';
+                return;
+            }
+
+            optionsContainer.innerHTML = filteredOptions.map(opt => `
+                <div class="searchable-dropdown-option">
+                    <span class="option-text" onclick="selectOption('${name}', '${opt.replace(/'/g, "\\'")}')">${opt}</span>
+                    <button type="button" class="option-delete-btn" onclick="event.stopPropagation(); deleteOption('${name}', '${opt.replace(/'/g, "\\'")}')" title="Delete this option">✕</button>
+                </div>
+            `).join('');
+        }
+
+        // Pending delete state
+        let pendingDeleteName = null;
+        let pendingDeleteValue = null;
+
+        // Show custom confirmation modal for deletion
+        function deleteOption(name, value) {
+            pendingDeleteName = name;
+            pendingDeleteValue = value;
+
+            // Update modal content
+            document.getElementById('confirmValue').textContent = `"${value}"`;
+
+            // Show modal
+            document.getElementById('confirmModal').classList.add('active');
+        }
+
+        // Cancel delete action
+        function cancelDelete() {
+            pendingDeleteName = null;
+            pendingDeleteValue = null;
+            document.getElementById('confirmModal').classList.remove('active');
+        }
+
+        // Confirm delete action
+        function confirmDelete() {
+            if (!pendingDeleteName || !pendingDeleteValue) {
+                cancelDelete();
+                return;
+            }
+
+            const name = pendingDeleteName;
+            const value = pendingDeleteValue;
+
+            // Remove from data store
+            const index = dropdownData[name].findIndex(opt => opt === value);
+            if (index > -1) {
+                dropdownData[name].splice(index, 1);
+            }
+
+            // Clear input if showing deleted value
+            if (name === 'unit') {
+                const input = document.getElementById('unitType');
+                if (input && input.value === value) {
+                    input.value = '';
+                }
+                renderOptions(name);
+            } else {
+                const input = document.getElementById(name);
+                if (input && input.value === value) {
+                    input.value = '';
+                }
+                renderEnhancedOptions(name);
+                renderManageList(name);
+            }
+
+            // Save to localStorage
+            saveDropdownData(name);
+
+            // Close modal
+            cancelDelete();
+
+            showToast(`"${value}" deleted successfully`);
+        }
+
+        // Close confirmation modal on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('confirmModal').classList.contains('active')) {
+                cancelDelete();
+            }
+        });
+
+        // Select an option from dropdown
+        function selectOption(name, value) {
+            const input = document.getElementById('unitType');
+            const dropdown = document.getElementById('unitDropdown');
+
+            if (input) {
+                input.value = value;
+            }
+            if (dropdown) {
+                dropdown.classList.remove('open');
+            }
+        }
+
+        // Current dropdown being edited
+        let currentAddDropdown = null;
+
+        // Open the add modal
+        function openAddModal(name, title) {
+            currentAddDropdown = name;
+            const modal = document.getElementById('addOptionModal');
+            const titleEl = document.getElementById('addOptionModalTitle');
+            const inputEl = document.getElementById('addOptionInput');
+
+            titleEl.textContent = title;
+            inputEl.value = '';
+            inputEl.placeholder = '';
+
+            closeAllDropdowns();
+            modal.classList.add('active');
+
+            setTimeout(() => inputEl.focus(), 100);
+        }
+
+        // Close the add modal
+        function closeAddModal() {
+            const modal = document.getElementById('addOptionModal');
+            modal.classList.remove('active');
+            currentAddDropdown = null;
+        }
+
+        // Save new option from modal
+        function saveNewOption() {
+            const inputEl = document.getElementById('addOptionInput');
+            const newValue = inputEl.value.trim();
+
+            if (!newValue) {
+                showToast('Please enter a value', 'error');
+                return;
+            }
+
+            if (!currentAddDropdown) return;
+
+            // Check if already exists
+            if (dropdownData[currentAddDropdown].some(opt => opt.toLowerCase() === newValue.toLowerCase())) {
+                showToast('This option already exists', 'error');
+                return;
+            }
+
+            // Add to data store
+            dropdownData[currentAddDropdown].push(newValue);
+
+            // Save to localStorage
+            saveDropdownData();
+
+            // Select the new value
+            selectOption(currentAddDropdown, newValue);
+
+            // Re-render options
+            renderOptions(currentAddDropdown);
+
+            // Close modal
+            closeAddModal();
+
+            showToast(`"${newValue}" added successfully`);
+        }
+
+        // Handle Enter key in add modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && document.getElementById('addOptionModal').classList.contains('active')) {
+                e.preventDefault();
+                saveNewOption();
+            }
+            if (e.key === 'Escape' && document.getElementById('addOptionModal').classList.contains('active')) {
+                closeAddModal();
+            }
+        });
+
+        // ============ MANAGE MODAL FUNCTIONS ============
+
+        // Open manage modal
+        function openManageModal(name) {
+            closeAllDropdowns();
+            const modal = document.getElementById(`manage${capitalize(name)}Modal`);
+            if (modal) {
+                renderManageList(name);
+                modal.classList.add('active');
+            }
+        }
+
+        // Close manage modal
+        function closeManageModal(name) {
+            const modal = document.getElementById(`manage${capitalize(name)}Modal`);
+            if (modal) {
+                modal.classList.remove('active');
+                hideAddRow(name);
+            }
+        }
+
+        // Show add row in manage modal
+        function showAddRow(name) {
+            const addRow = document.getElementById(`${name}AddRow`);
+            if (addRow) {
+                addRow.classList.add('active');
+                const input = document.getElementById(`${name}AddInput`);
+                if (input) {
+                    input.value = '';
+                    input.focus();
+                }
+            }
+        }
+
+        // Hide add row in manage modal
+        function hideAddRow(name) {
+            const addRow = document.getElementById(`${name}AddRow`);
+            if (addRow) {
+                addRow.classList.remove('active');
+            }
+        }
+
+        // Save new item from manage modal
+        function saveNewItem(name) {
+            const input = document.getElementById(`${name}AddInput`);
+            const newValue = input.value.trim();
+
+            if (!newValue) {
+                showToast('Please enter a value', 'error');
+                return;
+            }
+
+            // Check if already exists
+            if (dropdownData[name].some(opt => opt.toLowerCase() === newValue.toLowerCase())) {
+                showToast('This option already exists', 'error');
+                return;
+            }
+
+            // Add to data store
+            dropdownData[name].push(newValue);
+
+            // Save to localStorage
+            saveDropdownData(name);
+
+            // Re-render list
+            renderManageList(name);
+            renderEnhancedOptions(name);
+
+            // Hide add row
+            hideAddRow(name);
+
+            showToast(`"${newValue}" added successfully`);
+        }
+
+        // Delete item from manage modal
+        function deleteManageItem(name, value) {
+            pendingDeleteName = name;
+            pendingDeleteValue = value;
+
+            // Update modal content
+            document.getElementById('confirmValue').textContent = `"${value}"`;
+
+            // Show confirmation modal
+            document.getElementById('confirmModal').classList.add('active');
+        }
+
+        // Render manage modal list
+        function renderManageList(name) {
+            const listContainer = document.getElementById(`${name}List`);
+            if (!listContainer) return;
+
+            const items = dropdownData[name] || [];
+
+            if (items.length === 0) {
+                listContainer.innerHTML = '<div class="manage-modal-empty">No items added yet</div>';
+                return;
+            }
+
+            listContainer.innerHTML = items.map(item => `
+                <div class="manage-modal-item">
+                    <span>${item}</span>
+                    <button type="button" class="manage-modal-item-delete" onclick="deleteManageItem('${name}', '${item.replace(/'/g, "\\'")}')">✕</button>
+                </div>
+            `).join('');
+        }
+
+        // Capitalize first letter
+        function capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+
+        // Initialize dropdowns when page loads
+        document.addEventListener('DOMContentLoaded', initSearchableDropdowns);
+
+        // Go back to item groups list
+        function goBack() {
+            window.location.href = '/item-groups.html';
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+        <span class="toast-icon">${type === 'success' ? '✓' : '✕'}</span>
+        <span class="toast-message">${message}</span>
+      `;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Add new attribute row
+        function addAttribute() {
+            const container = document.getElementById('attributesContainer');
+            const newRow = document.createElement('div');
+            newRow.className = 'attribute-row';
+            newRow.dataset.index = attributeCount;
+            newRow.innerHTML = `
+        <div>
+          <div class="attribute-label">Attribute*</div>
+          <input type="text" class="form-input attribute-select" placeholder="e.g., Color, Size">
+        </div>
+        <div>
+          <div class="attribute-label">Options*</div>
+          <input type="text" class="form-input attribute-options" placeholder="Enter options separated by comma">
+        </div>
+        <button type="button" class="remove-attribute-btn" onclick="removeAttribute(this)" title="Remove">🗑️</button>
+      `;
+            container.appendChild(newRow);
+            attributeCount++;
+            updateItemsTable();
+        }
+
+        // Remove attribute row
+        function removeAttribute(btn) {
+            const row = btn.closest('.attribute-row');
+            const container = document.getElementById('attributesContainer');
+            if (container.children.length > 1) {
+                row.remove();
+                updateItemsTable();
+            } else {
+                showToast('At least one attribute is required', 'error');
+            }
+        }
+
+        // Update items table based on attributes
+        function updateItemsTable() {
+            // Get all attributes and their options
+            const attributeRows = document.querySelectorAll('.attribute-row');
+            const attributes = [];
+
+            attributeRows.forEach(row => {
+                const select = row.querySelector('.attribute-select');
+                const optionsInput = row.querySelector('.attribute-options');
+                if (select.value && optionsInput.value) {
+                    const options = optionsInput.value.split(',').map(o => o.trim()).filter(o => o);
+                    if (options.length > 0) {
+                        attributes.push({ name: select.value, options });
+                    }
+                }
+            });
+
+            // Generate combinations
+            if (attributes.length === 0) {
+                // Keep single row
+                return;
+            }
+
+            const combinations = generateCombinations(attributes);
+            const tbody = document.getElementById('itemsTableBody');
+            const groupName = document.getElementById('groupName').value || 'Item';
+
+            tbody.innerHTML = combinations.map((combo, index) => {
+                const itemName = `${groupName} - ${combo.join(' - ')}`;
+                return `
+          <tr>
+            <td><input type="text" class="table-input item-name" value="${itemName}"></td>
+            <td><input type="text" class="table-input item-sku" placeholder="Auto-generate"></td>
+            <td class="cost-price-column"><input type="number" class="table-input item-cost" placeholder="0.00" step="0.01"></td>
+            <td class="selling-price-column"><input type="number" class="table-input item-price" placeholder="0.00" step="0.01"></td>
+            <td><input type="text" class="table-input item-upc" placeholder=""></td>
+            <td><input type="text" class="table-input item-ean" placeholder=""></td>
+            <td><input type="text" class="table-input item-isbn" placeholder=""></td>
+            <td><input type="number" class="table-input item-reorder" placeholder="10"></td>
+          </tr>
+        `;
+            }).join('');
+        }
+
+        // Generate all combinations of attribute options
+        function generateCombinations(attributes) {
+            if (attributes.length === 0) return [[]];
+
+            const [first, ...rest] = attributes;
+            const restCombinations = generateCombinations(rest);
+
+            return first.options.flatMap(option =>
+                restCombinations.map(combo => [option, ...combo])
+            );
+        }
+
+        // Copy cost to all rows
+        function copyToAllCost() {
+            const firstInput = document.querySelector('.item-cost');
+            if (firstInput && firstInput.value) {
+                document.querySelectorAll('.item-cost').forEach(input => {
+                    input.value = firstInput.value;
+                });
+                showToast('Cost copied to all items');
+            }
+        }
+
+        // Copy price to all rows
+        function copyToAllPrice() {
+            const firstInput = document.querySelector('.item-price');
+            if (firstInput && firstInput.value) {
+                document.querySelectorAll('.item-price').forEach(input => {
+                    input.value = firstInput.value;
+                });
+                showToast('Price copied to all items');
+            }
+        }
+
+        // Copy reorder point to all rows
+        function copyToAllReorder() {
+            const firstInput = document.querySelector('.item-reorder');
+            if (firstInput && firstInput.value) {
+                document.querySelectorAll('.item-reorder').forEach(input => {
+                    input.value = firstInput.value;
+                });
+                showToast('Reorder point copied to all items');
+            }
+        }
+
+        // Handle image upload
+        function handleImageUpload(event) {
+            const files = event.target.files;
+            const container = document.getElementById('imagePreviewContainer');
+
+            Array.from(files).forEach((file, index) => {
+                if (uploadedImages.length >= 15) {
+                    showToast('Maximum 15 images allowed', 'error');
+                    return;
+                }
+
+                if (file.size > 5 * 1024 * 1024) {
+                    showToast('Image size must be less than 5MB', 'error');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    uploadedImages.push(e.target.result);
+                    const preview = document.createElement('div');
+                    preview.className = 'image-preview-item';
+                    preview.innerHTML = `
+            <img src="${e.target.result}" alt="Preview">
+            <button type="button" class="image-preview-remove" onclick="removeImage(${uploadedImages.length - 1}, this)">×</button>
+          `;
+                    container.appendChild(preview);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Remove image
+        function removeImage(index, btn) {
+            uploadedImages.splice(index, 1);
+            btn.parentElement.remove();
+        }
+
+        // Listen for attribute/option changes
+        document.addEventListener('input', (e) => {
+            if (e.target.classList.contains('attribute-options') || e.target.classList.contains('attribute-select')) {
+                updateItemsTable();
+            }
+            if (e.target.id === 'groupName') {
+                updateItemsTable();
+            }
+        });
+
+        // Form submission
+        document.getElementById('itemGroupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const groupName = document.getElementById('groupName').value.trim();
+            if (!groupName) {
+                showToast('Item Group Name is required', 'error');
+                return;
+            }
+
+            try {
+                // Create the group first
+                const groupResponse = await fetch('/api/items/groups', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: groupName,
+                        description: document.getElementById('groupDescription').value.trim(),
+                        unit: document.getElementById('unitType')?.value || 'pcs',
+                        brand: document.getElementById('brand')?.value || null,
+                        manufacturer: document.getElementById('manufacturer')?.value || null
+                    })
+                });
+
+                if (!groupResponse.ok) {
+                    const error = await groupResponse.json();
+                    throw new Error(error.error || 'Failed to create group');
+                }
+
+                const group = await groupResponse.json();
+
+                // Get all items from the table
+                const rows = document.querySelectorAll('#itemsTableBody tr');
+                const unit = document.getElementById('unitType').value || 'pcs';
+
+                for (const row of rows) {
+                    const itemName = row.querySelector('.item-name').value.trim();
+                    const cost = parseFloat(row.querySelector('.item-cost').value) || 0;
+                    const price = parseFloat(row.querySelector('.item-price').value) || 0;
+                    const reorder = parseInt(row.querySelector('.item-reorder').value) || 10;
+                    const sku = row.querySelector('.item-sku').value.trim();
+
+                    if (itemName) {
+                        // Create each item
+                        await fetch('/api/items', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                name: itemName,
+                                sku: sku || null,
+                                unit: unit,
+                                quantity: 0,
+                                reorder_point: reorder,
+                                price: price,
+                                cost: cost,
+                                group_id: group.id,
+                                image_url: uploadedImages[0] || null
+                            })
+                        });
+                    }
+                }
+
+                showToast('Item Group created successfully!');
+                setTimeout(() => {
+                    window.location.href = '/item-groups.html';
+                }, 1500);
+
+            } catch (error) {
+                console.error('Error:', error);
+                showToast(error.message, 'error');
+            }
+        });
+
+        // Toggle attributes section based on checkbox
+        document.getElementById('createAttributes').addEventListener('change', (e) => {
+            document.getElementById('attributesContainer').style.display = e.target.checked ? 'block' : 'none';
+        });
+
+        // Toggle column visibility based on item type checkboxes
+        const itemsTable = document.querySelector('.items-table-container');
+
+        // Toggle Selling Price column
+        document.getElementById('sellable').addEventListener('change', (e) => {
+            if (e.target.checked) {
+                itemsTable.classList.remove('hide-selling-price');
+            } else {
+                itemsTable.classList.add('hide-selling-price');
+            }
+        });
+
+        // Toggle Cost Price column
+        document.getElementById('purchasable').addEventListener('change', (e) => {
+            if (e.target.checked) {
+                itemsTable.classList.remove('hide-cost-price');
+            } else {
+                itemsTable.classList.add('hide-cost-price');
+            }
+        });
+    </script>
+</body>
+
+</html>

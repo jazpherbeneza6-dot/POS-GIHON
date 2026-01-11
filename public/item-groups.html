@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Groups - Inventory Management</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/alert-dialog.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/css/mobile.css">
+    <link rel="stylesheet" href="/css/utilities.css">
+    <style>
+        /* Item Groups Page - Zoho Style with Split View */
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        /* Main Split Layout */
+        .split-layout {
+            display: flex;
+            height: calc(100vh - 60px);
+            background: #f5f5f5;
+        }
+
+        .groups-list-panel {
+            width: 280px;
+            min-width: 280px;
+            background: white;
+            border-right: 1px solid #e5e7eb;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .groups-list-panel.active {
+            display: flex;
+        }
+
+        .groups-list-panel.full-width {
+            width: 100%;
+            min-width: 100%;
+        }
+
+        .groups-list-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+        }
+
+        .groups-list-title {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1f3a;
+            cursor: pointer;
+        }
+
+        .groups-list-title:hover {
+            color: #3b82f6;
+        }
+
+        .groups-list-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon-small {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: #3b82f6;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .btn-icon-small.secondary {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .groups-list-items {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .group-list-item {
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #f3f4f6;
+            transition: background 0.1s ease;
+        }
+
+        .group-list-item:hover {
+            background: #f9fafb;
+        }
+
+        .group-list-item.active {
+            background: #eff6ff;
+            border-left: 3px solid #3b82f6;
+            padding-left: 13px;
+        }
+
+        .group-list-item .folder-icon {
+            font-size: 16px;
+        }
+
+        .group-list-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .group-list-item-name {
+            font-size: 13px;
+            color: #3b82f6;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .group-list-item-count {
+            font-size: 11px;
+            color: #9ca3af;
+        }
+
+        /* Right Panel - Detail View */
+        .detail-panel {
+            flex: 1;
+            background: #f5f5f5;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .detail-panel.active {
+            display: flex;
+        }
+
+        .detail-header {
+            background: white;
+            padding: 16px 24px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .detail-header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn-edit-icon {
+            width: 36px;
+            height: 36px;
+            border: 1px solid #e5e7eb;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .btn-add-item {
+            padding: 8px 16px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-more-dropdown {
+            padding: 8px 12px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .detail-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 24px;
+            color: #9ca3af;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .detail-close:hover {
+            color: #6b7280;
+        }
+
+        .detail-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .detail-title-section {
+            margin-bottom: 24px;
+        }
+
+        .detail-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a1f3a;
+            margin-bottom: 4px;
+        }
+
+        .detail-subtitle {
+            font-size: 14px;
+            color: #3b82f6;
+        }
+
+        .detail-info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .info-value {
+            font-size: 14px;
+            color: #1a1f3a;
+            font-weight: 500;
+        }
+
+        .attributes-section {
+            margin-bottom: 24px;
+        }
+
+        .attribute-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .attribute-checkbox {
+            width: 20px;
+            height: 20px;
+            background: #3b82f6;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+
+        .attribute-label {
+            font-size: 14px;
+            color: #1a1f3a;
+        }
+
+        .description-section {
+            margin-bottom: 24px;
+        }
+
+        .description-title {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .description-text {
+            font-size: 14px;
+            color: #1a1f3a;
+            line-height: 1.5;
+        }
+
+        /* Items Table in Detail */
+        .items-detail-table {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+        }
+
+        .items-detail-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .items-detail-table thead {
+            background: #f9fafb;
+        }
+
+        .items-detail-table th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .items-detail-table td {
+            padding: 14px 16px;
+            font-size: 14px;
+            color: #374151;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .items-detail-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .item-image-cell {
+            width: 50px;
+        }
+
+        .item-image {
+            width: 40px;
+            height: 40px;
+            background: #f3f4f6;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .item-details-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .item-name-link {
+            font-weight: 500;
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        .item-name-link:hover {
+            text-decoration: underline;
+        }
+
+        .item-sku {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        /* Full Width Table View */
+        .groups-table-container {
+            background: white;
+            flex: 1;
+            display: block;
+        }
+
+        .groups-table-container.hidden {
+            display: none;
+        }
+
+        .groups-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .groups-table thead {
+            background: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .groups-table th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+        }
+
+        .groups-table tbody tr {
+            border-bottom: 1px solid #f3f4f6;
+            cursor: pointer;
+        }
+
+        .groups-table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .groups-table td {
+            padding: 14px 16px;
+            font-size: 14px;
+            color: #374151;
+        }
+
+        .group-name-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .folder-icon {
+            font-size: 18px;
+        }
+
+        .group-name-link {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .item-count {
+            color: #9ca3af;
+            font-size: 13px;
+        }
+
+        /* Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 24px;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .page-title-dropdown {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 4px;
+        }
+
+        .page-title-dropdown:hover {
+            background: #f3f4f6;
+        }
+
+        .page-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1f3a;
+        }
+
+        .page-title-arrow {
+            font-size: 10px;
+            color: #6b7280;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #e5e7eb;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .btn-new {
+            padding: 6px 14px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-new:hover {
+            background: #2563eb;
+        }
+
+        /* Empty State */
+        .empty-items {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+        }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10000;
+        }
+
+        .toast {
+            padding: 14px 20px;
+            border-radius: 6px;
+            color: white;
+            font-weight: 500;
+            font-size: 14px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.success {
+            background: #10b981;
+        }
+
+        .toast.error {
+            background: #ef4444;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .modal-header button {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer"></div>
+
+    <!-- Header Container -->
+    <div id="headerContainer"></div>
+
+    <!-- Page Configuration -->
+    <script>
+        window.pageConfig = {
+            searchPlaceholder: 'Search item groups...',
+            searchId: 'groupSearch',
+            headerButtons: '',
+            onSearch: function () { if (typeof searchGroups === 'function') searchGroups(); }
+        };
+    </script>
+
+    <!-- Main Content -->
+    <div class="main-layout">
+        <div class="content" id="content" style="padding: 0;">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="page-title-dropdown">
+                    <span class="page-title">Active Item Groups</span>
+                    <span class="page-title-arrow">▼</span>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-icon" title="Filter">☰</button>
+                    <button class="btn-new" onclick="window.location.href='/new-item-group.html'">+ New</button>
+                    <button class="btn-icon" title="More">⋯</button>
+                </div>
+            </div>
+
+            <!-- Split Layout -->
+            <div class="split-layout" id="splitLayout">
+                <!-- Groups List Panel -->
+                <div class="groups-list-panel" id="groupsListPanel">
+                    <div class="groups-list-header">
+                        <div class="groups-list-title">
+                            <span>Active Item Gro...</span>
+                            <span style="font-size: 10px;">▼</span>
+                        </div>
+                        <div class="groups-list-actions">
+                            <button class="btn-icon-small" onclick="window.location.href='/new-item-group.html'"
+                                title="Add Group">+</button>
+                            <button class="btn-icon-small secondary" title="More">⋯</button>
+                        </div>
+                    </div>
+                    <div class="groups-list-items" id="groupsListItems">
+                        <div style="text-align: center; padding: 40px; color: #6b7280;">
+                            Loading...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detail Panel -->
+                <div class="detail-panel" id="detailPanel">
+                    <div class="detail-header">
+                        <div class="detail-header-left">
+                            <button class="btn-edit-icon" title="Edit">✏️</button>
+                            <button class="btn-add-item" onclick="openAddItemModal()">Add Item</button>
+                            <button class="btn-more-dropdown">More ▼</button>
+                        </div>
+                        <button class="detail-close" onclick="closeDetailPanel()">×</button>
+                    </div>
+                    <div class="detail-content" id="detailContent">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Full Width Table (when no detail selected) -->
+                <div class="groups-table-container" id="groupsTableContainer">
+                    <table class="groups-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 40px;"><input type="checkbox" title="Select all groups"></th>
+                                <th>NAME</th>
+                                <th>SKU</th>
+                                <th>STOCK ON HAND</th>
+                                <th>REORDER POINT</th>
+                            </tr>
+                        </thead>
+                        <tbody id="groupsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #ef4444; color: white; border-radius: 8px 8px 0 0;">
+                <h2>⚠️ Delete Group</h2>
+                <button onclick="closeDeleteModal()" style="color: white;">×</button>
+            </div>
+            <div class="modal-body" style="text-align: center;">
+                <p>Are you sure you want to delete this group?</p>
+                <p style="font-weight: 600; color: #ef4444;" id="deleteGroupName"></p>
+                <div style="display: flex; gap: 12px; margin-top: 20px;">
+                    <button class="btn btn-secondary" onclick="closeDeleteModal()" style="flex: 1;">Cancel</button>
+                    <button class="btn btn-danger" onclick="confirmDelete()" style="flex: 1;">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Layout Scripts -->
+    <script src="/js/layout.js"></script>
+
+    <!-- Item Groups Script -->
+    <script>
+        let itemGroups = [];
+        let allItems = [];
+        let deleteGroupId = null;
+        let selectedGroupId = null;
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Load item groups
+        async function loadItemGroups() {
+            try {
+                const response = await fetch('/api/items/groups/list');
+                if (!response.ok) throw new Error('Failed to fetch groups');
+                itemGroups = await response.json();
+
+                // Load all items
+                const itemsResponse = await fetch('/api/items');
+                allItems = await itemsResponse.json();
+
+                // Count items per group
+                const groupData = {};
+                allItems.forEach(item => {
+                    if (item.group_id) {
+                        if (!groupData[item.group_id]) {
+                            groupData[item.group_id] = { count: 0, totalStock: 0, totalReorder: 0 };
+                        }
+                        groupData[item.group_id].count++;
+                        groupData[item.group_id].totalStock += parseFloat(item.stock_quantity) || 0;
+                        groupData[item.group_id].totalReorder += parseFloat(item.reorder_point) || 0;
+                    }
+                });
+
+                // Add data to groups
+                itemGroups = itemGroups.map(group => ({
+                    ...group,
+                    item_count: groupData[group.id]?.count || 0,
+                    total_stock: groupData[group.id]?.totalStock || 0,
+                    total_reorder: groupData[group.id]?.totalReorder || 0
+                }));
+
+                renderGroupsList();
+                renderGroupsTable();
+
+                // Table is visible by default (CSS), no need to add classes
+            } catch (error) {
+                console.error('Error loading groups:', error);
+                showToast('Failed to load item groups', 'error');
+            }
+        }
+
+        // Render groups list (left panel)
+        function renderGroupsList() {
+            const container = document.getElementById('groupsListItems');
+
+            if (itemGroups.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 40px; color: #6b7280;">No groups yet</div>';
+                return;
+            }
+
+            container.innerHTML = itemGroups.map(group => `
+                <div class="group-list-item ${selectedGroupId === group.id ? 'active' : ''}" onclick="selectGroup(${group.id})">
+                    <input type="checkbox" onclick="event.stopPropagation()">
+                    <span class="folder-icon">📁</span>
+                    <div class="group-list-item-info">
+                        <div class="group-list-item-name">${group.name}</div>
+                        <div class="group-list-item-count">(${group.item_count} Items)</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render groups table (full width view)
+        function renderGroupsTable() {
+            const tbody = document.getElementById('groupsTableBody');
+
+            if (itemGroups.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 60px; color: #6b7280;">
+                            <div style="font-size: 48px; margin-bottom: 16px;">📦</div>
+                            <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">No Item Groups Yet</div>
+                            <div style="font-size: 14px; margin-bottom: 20px;">Create your first item group using the + New button</div>
+                            <button class="btn-new" onclick="window.location.href='/new-item-group.html'">+ New Item Group</button>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = itemGroups.map(group => `
+                <tr onclick="selectGroup(${group.id})">
+                    <td onclick="event.stopPropagation()"><input type="checkbox" title="Select ${group.name}"></td>
+                    <td>
+                        <div class="group-name-cell">
+                            <span class="folder-icon">📁</span>
+                            <span class="group-name-link">${group.name}</span>
+                            <span class="item-count">(${group.item_count} Items)</span>
+                        </div>
+                    </td>
+                    <td>-</td>
+                    <td>${group.total_stock.toFixed(2)}</td>
+                    <td>${group.total_reorder || '-'}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Select group and show detail panel
+        function selectGroup(groupId) {
+            selectedGroupId = groupId;
+            const group = itemGroups.find(g => g.id === groupId);
+            if (!group) return;
+
+            // Switch to split view: show left panel + detail, hide table
+            document.getElementById('groupsListPanel').classList.add('active');
+            document.getElementById('groupsTableContainer').classList.add('hidden');
+            document.getElementById('detailPanel').classList.add('active');
+
+            renderGroupsList();
+            renderDetailPanel(group);
+        }
+
+        // Close detail panel
+        function closeDetailPanel() {
+            selectedGroupId = null;
+            // Switch back to table view: hide left panel + detail, show table
+            document.getElementById('detailPanel').classList.remove('active');
+            document.getElementById('groupsListPanel').classList.remove('active');
+            document.getElementById('groupsTableContainer').classList.remove('hidden');
+            renderGroupsList();
+        }
+
+        // Render detail panel content
+        function renderDetailPanel(group) {
+            const content = document.getElementById('detailContent');
+            const groupItems = allItems.filter(item => item.group_id === group.id);
+
+            // Parse attributes from group metadata if available
+            let attributes = [];
+            try {
+                if (group.attributes) {
+                    attributes = JSON.parse(group.attributes);
+                }
+            } catch (e) { }
+
+            content.innerHTML = `
+                <div class="detail-title-section">
+                    <div class="detail-title">${group.name}</div>
+                    <div class="detail-subtitle">${group.item_count} Item(s)</div>
+                </div>
+
+                <div class="detail-info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Unit</div>
+                        <div class="info-value">${group.unit || 'pcs'}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Manufacturer</div>
+                        <div class="info-value">${group.manufacturer || '-'}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Brand</div>
+                        <div class="info-value">${group.brand || '-'}</div>
+                    </div>
+                </div>
+
+                ${attributes.length > 0 ? `
+                <div class="attributes-section">
+                    ${attributes.map(attr => `
+                        <div class="attribute-row">
+                            <div class="attribute-checkbox">✓</div>
+                            <div class="attribute-label">${attr}</div>
+                        </div>
+                    `).join('')}
+                </div>
+                ` : ''}
+
+                <div class="description-section">
+                    <div class="description-title">Description</div>
+                    <div class="description-text">${group.description || 'No description'}</div>
+                </div>
+
+                <div class="items-detail-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 60px;"></th>
+                                <th>ITEM DETAILS</th>
+                                <th>COST PRICE</th>
+                                <th>SELLING PRICE</th>
+                                <th>STOCK ON HAND</th>
+                                <th>REORDER POINT</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${groupItems.length > 0 ? groupItems.map(item => `
+                                <tr>
+                                    <td class="item-image-cell">
+                                        <div class="item-image">
+                                            ${item.image_url ? `<img src="${item.image_url}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 6px;">` : '📦'}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="item-details-cell">
+                                            <a href="#" class="item-name-link">${item.name}</a>
+                                            <div class="item-sku">[${item.sku || 'No SKU'}]</div>
+                                        </div>
+                                    </td>
+                                    <td>PHP${(item.purchase_cost || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+                                    <td>PHP${(item.selling_price || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+                                    <td>${item.stock_quantity || 0}</td>
+                                    <td>${item.reorder_point || 0}</td>
+                                </tr>
+                            `).join('') : `
+                                <tr>
+                                    <td colspan="6" class="empty-items">No items in this group yet</td>
+                                </tr>
+                            `}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // Delete functions
+        function deleteGroup(groupId, groupName) {
+            deleteGroupId = groupId;
+            document.getElementById('deleteGroupName').textContent = groupName;
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+            deleteGroupId = null;
+        }
+
+        async function confirmDelete() {
+            if (!deleteGroupId) return;
+            try {
+                const response = await fetch(`/api/items/groups/${deleteGroupId}`, { method: 'DELETE' });
+                if (!response.ok) throw new Error('Failed to delete');
+                showToast('Group deleted successfully');
+                closeDeleteModal();
+                closeDetailPanel();
+                loadItemGroups();
+            } catch (error) {
+                showToast('Failed to delete group', 'error');
+            }
+        }
+
+        // Search groups
+        function searchGroups() {
+            const searchInput = document.getElementById('groupSearch');
+            if (!searchInput) return;
+            const term = searchInput.value.toLowerCase();
+            const filtered = itemGroups.filter(g =>
+                g.name.toLowerCase().includes(term) ||
+                (g.description && g.description.toLowerCase().includes(term))
+            );
+            const original = itemGroups;
+            itemGroups = filtered;
+            renderGroupsList();
+            renderGroupsTable();
+            itemGroups = original;
+        }
+
+        // Add item modal placeholder
+        function openAddItemModal() {
+            // Navigate to add item page with group pre-selected
+            window.location.href = `/items.html?addToGroup=${selectedGroupId}`;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            document.addEventListener('layoutReady', loadItemGroups);
+        });
+    </script>
+</body>
+
+</html>
