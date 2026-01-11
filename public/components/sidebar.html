@@ -6,76 +6,218 @@
         </div>
     </div>
     <nav class="sidebar-nav">
+        <!-- Home -->
         <a href="/index.html" class="nav-item" data-page="index">
             <span class="nav-item-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                    <path d="M12 3L4 9v12h5v-7h6v7h5V9l-8-6z" />
+                    <path d="M12 1L2 9h3v12h6v-7h2v7h6V9h3L12 1z" fill="none" stroke="currentColor" stroke-width="1.5"
+                        stroke-linejoin="round" />
                 </svg>
             </span>
-            Home
+            <span class="nav-text">Home</span>
         </a>
+
         <!-- Items Menu with Submenu -->
-        <button class="nav-item" onclick="toggleItemsSubmenu()" data-page="items-menu" id="itemsMenuToggle">
-            <span class="nav-item-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <path d="M16 10a4 4 0 0 1-8 0"></path>
-                </svg>
-            </span>
-            Items
-            <span class="nav-item-arrow" id="itemsArrow">▸</span>
-        </button>
-        <div class="nav-submenu" id="itemsSubmenu">
-            <a href="/items.html" class="nav-submenu-item" data-page="items">
-                Items
-                <button class="submenu-add-btn"
-                    onclick="event.preventDefault(); event.stopPropagation(); openItemModal();"
-                    title="Add New Item">+</button>
-            </a>
-            <a href="/item-groups.html" class="nav-submenu-item" data-page="item-groups">
-                Item Groups
-                <button class="submenu-add-btn"
-                    onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/new-item-group.html';"
-                    title="Add New Group">+</button>
-            </a>
+        <div class="nav-group">
+            <button class="nav-item" onclick="toggleItemsSubmenu()" data-page="items-menu" id="itemsMenuToggle">
+                <span class="nav-item-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 2h12l2 5H4l2-5z" />
+                        <rect x="4" y="7" width="16" height="13" rx="2" />
+                        <path d="M9 7v3a3 3 0 0 0 6 0V7" />
+                    </svg>
+                </span>
+                <span class="nav-text">Items</span>
+                <span class="nav-item-arrow" id="itemsArrow">›</span>
+            </button>
+            <div class="nav-submenu" id="itemsSubmenu" data-title="Items">
+                <a href="/items.html" class="nav-submenu-item" data-page="items">
+                    Items
+                    <button class="submenu-add-btn"
+                        onclick="event.preventDefault(); event.stopPropagation(); openItemModal();"
+                        title="Add New Item">+</button>
+                </a>
+                <a href="/item-groups.html" class="nav-submenu-item" data-page="item-groups">
+                    Item Groups
+                    <button class="submenu-add-btn"
+                        onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/new-item-group.html';"
+                        title="Add New Group">+</button>
+                </a>
+            </div>
         </div>
 
-        <a href="/sales.html" class="nav-item" data-page="sales">
-            <span class="nav-item-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="9" cy="21" r="1"></circle>
-                    <circle cx="20" cy="21" r="1"></circle>
-                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                </svg>
-            </span>
-            Sales
-        </a>
-        <a href="/purchases.html" class="nav-item" data-page="purchases">
-            <span class="nav-item-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <path d="M16 10a4 4 0 0 1-8 0"></path>
-                </svg>
-            </span>
-            Purchases
-        </a>
+        <!-- Inventory Menu with Submenu -->
+        <div class="nav-group">
+            <button class="nav-item" onclick="toggleInventorySubmenu()" data-page="inventory-menu"
+                id="inventoryMenuToggle">
+                <span class="nav-item-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17" />
+                        <circle cx="8" cy="21" r="1" fill="currentColor" />
+                        <circle cx="17" cy="21" r="1" fill="currentColor" />
+                        <path d="M16 16v-2" />
+                        <path d="M12 16v-4" />
+                        <path d="M8 16v-1" />
+                    </svg>
+                </span>
+                <span class="nav-text">Inventory</span>
+                <span class="nav-item-arrow" id="inventoryArrow">›</span>
+            </button>
+            <div class="nav-submenu" id="inventorySubmenu" data-title="Inventory">
+                <a href="/inventory-adjustments.html" class="nav-submenu-item" data-page="inventory-adjustments">
+                    Inventory Adjustments
+                    <button class="submenu-add-btn"
+                        onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/inventory-adjustments.html?new=true';"
+                        title="New Adjustment">+</button>
+                </a>
+                <a href="/packages.html" class="nav-submenu-item" data-page="packages">
+                    Packages
+                    <button class="submenu-add-btn"
+                        onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/new-package.html';"
+                        title="New Package">+</button>
+                </a>
+                <a href="/shipments.html" class="nav-submenu-item" data-page="shipments">
+                    Shipments
+                    <button class="submenu-add-btn"
+                        onclick="event.preventDefault(); event.stopPropagation(); window.location.href='/new-shipment.html';"
+                        title="New Shipment">+</button>
+                </a>
+            </div>
+        </div>
+
+        <!-- Sales -->
+        <div class="nav-group">
+            <button class="nav-item" onclick="toggleSalesSubmenu()" data-page="sales-menu" id="salesMenuToggle">
+                <span class="nav-item-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4H6z" />
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <path d="M16 10a4 4 0 0 1-8 0" />
+                    </svg>
+                </span>
+                <span class="nav-text">Sales</span>
+                <span class="nav-item-arrow" id="salesArrow">›</span>
+            </button>
+            <div class="nav-submenu" id="salesSubmenu" data-title="Sales">
+                <a href="#" class="nav-submenu-item" data-page="customers">
+                    Customers
+                    <button class="submenu-add-btn" onclick="event.preventDefault(); event.stopPropagation();"
+                        title="New Customer">+</button>
+                </a>
+                <a href="/sales.html" class="nav-submenu-item" data-page="sales">
+                    Sales Orders
+                    <button class="submenu-add-btn" onclick="event.preventDefault(); event.stopPropagation();"
+                        title="New Sales Order">+</button>
+                </a>
+                <a href="#" class="nav-submenu-item" data-page="invoices">
+                    Invoices
+                    <button class="submenu-add-btn" onclick="event.preventDefault(); event.stopPropagation();"
+                        title="New Invoice">+</button>
+                </a>
+                <a href="#" class="nav-submenu-item" data-page="sales-receipts">
+                    Sales Receipts
+                    <button class="submenu-add-btn" onclick="event.preventDefault(); event.stopPropagation();"
+                        title="New Sales Receipt">+</button>
+                </a>
+                <a href="#" class="nav-submenu-item" data-page="payments-received">
+                    Payments Received
+                    <button class="submenu-add-btn" onclick="event.preventDefault(); event.stopPropagation();"
+                        title="New Payment">+</button>
+                </a>
+                <a href="#" class="nav-submenu-item" data-page="sales-returns">
+                    Sales Returns
+                </a>
+                <a href="#" class="nav-submenu-item" data-page="credit-notes">
+                    Credit Notes
+                    <button class="submenu-add-btn" onclick="event.preventDefault(); event.stopPropagation();"
+                        title="New Credit Note">+</button>
+                </a>
+            </div>
+        </div>
+
+        <!-- Purchases -->
+        <div class="nav-group">
+            <button class="nav-item" onclick="togglePurchasesSubmenu()" data-page="purchases-menu"
+                id="purchasesMenuToggle">
+                <span class="nav-item-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="5" width="18" height="14" rx="2" />
+                        <path d="M3 10h18" />
+                        <circle cx="7" cy="15" r="1" fill="currentColor" />
+                        <path d="M21 5l-3-3H6L3 5" />
+                    </svg>
+                </span>
+                <span class="nav-text">Purchases</span>
+                <span class="nav-item-arrow" id="purchasesArrow">›</span>
+            </button>
+            <div class="nav-submenu" id="purchasesSubmenu" data-title="Purchases">
+                <a href="#" class="nav-submenu-item" data-page="vendors">
+                    Vendors
+                    <button class="submenu-add-btn" onclick="event.preventDefault(); event.stopPropagation();"
+                        title="New Vendor">+</button>
+                </a>
+                <a href="#" class="nav-submenu-item" data-page="expenses">
+                    Expenses
+                    <button class="submenu-add-btn" onclick="event.preventDefault(); event.stopPropagation();"
+                        title="New Expense">+</button>
+                </a>
+                <a href="/purchases.html" class="nav-submenu-item" data-page="purchases">
+                    Purchase Orders
+                    <button class="submenu-add-btn" onclick="event.preventDefault(); event.stopPropagation();"
+                        title="New Purchase Order">+</button>
+                </a>
+                <a href="#" class="nav-submenu-item" data-page="purchase-receives">
+                    Purchase Receives
+                    <button class="submenu-add-btn" onclick="event.preventDefault(); event.stopPropagation();"
+                        title="New Purchase Receive">+</button>
+                </a>
+                <a href="#" class="nav-submenu-item" data-page="bills">
+                    Bills
+                    <button class="submenu-add-btn" onclick="event.preventDefault(); event.stopPropagation();"
+                        title="New Bill">+</button>
+                </a>
+                <a href="#" class="nav-submenu-item" data-page="payments-made">
+                    Payments Made
+                    <button class="submenu-add-btn" onclick="event.preventDefault(); event.stopPropagation();"
+                        title="New Payment">+</button>
+                </a>
+                <a href="#" class="nav-submenu-item" data-page="vendor-credits">
+                    Vendor Credits
+                    <button class="submenu-add-btn" onclick="event.preventDefault(); event.stopPropagation();"
+                        title="New Vendor Credit">+</button>
+                </a>
+            </div>
+        </div>
+
+        <!-- Reports -->
         <a href="/reports.html" class="nav-item" data-page="reports">
             <span class="nav-item-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
                     stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="18" y1="20" x2="18" y2="10"></line>
-                    <line x1="12" y1="20" x2="12" y2="4"></line>
-                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                    <rect x="3" y="3" width="4" height="18" rx="1" />
+                    <rect x="10" y="8" width="4" height="13" rx="1" />
+                    <rect x="17" y="12" width="4" height="9" rx="1" />
                 </svg>
             </span>
-            Reports
+            <span class="nav-text">Reports</span>
+        </a>
+
+        <!-- Documents -->
+        <a href="#" class="nav-item" data-page="documents">
+            <span class="nav-item-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2v11z" />
+                    <path d="M2 10h20" />
+                </svg>
+            </span>
+            <span class="nav-text">Docume...</span>
         </a>
 
     </nav>

@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIFO Cost Lot Tracking - Inventory Management</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', 'Source Sans Pro', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f5f6fa;
+            font-size: 13px;
+        }
+
+        /* Collapsed Sidebar Styles */
+        .sidebar-collapsed {
+            width: 55px !important;
+            min-width: 55px !important;
+        }
+
+        .sidebar-collapsed .sidebar-header {
+            padding: 12px 0 !important;
+            justify-content: center !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 0 !important;
+            text-align: center !important;
+        }
+
+        .sidebar-collapsed .sidebar-logo {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            width: 55px !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        .sidebar-collapsed .sidebar-logo img {
+            width: 45px !important;
+            height: auto !important;
+            max-width: 45px !important;
+            max-height: 45px !important;
+            object-fit: contain !important;
+            left: auto !important;
+            right: auto !important;
+            position: static !important;
+            margin: 0 !important;
+            margin-right: 6.5px !important;
+            padding: 0 !important;
+        }
+
+        .sidebar-collapsed .logo-text,
+        .sidebar-collapsed .nav-submenu,
+        .sidebar-collapsed .nav-item-arrow,
+        .sidebar-collapsed .submenu-add-btn {
+            display: none !important;
+        }
+
+        .sidebar-collapsed .sidebar-nav {
+            padding: 0 !important;
+        }
+
+        .sidebar-collapsed .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 4px !important;
+            text-align: center;
+            border-radius: 0 !important;
+            margin: 0 !important;
+            width: 100%;
+        }
+
+        .sidebar-collapsed .nav-item-icon {
+            margin-right: 0 !important;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-collapsed .nav-item-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .sidebar-collapsed .nav-text {
+            display: block !important;
+            font-size: 9px !important;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 50px;
+            line-height: 1.2;
+        }
+
+        /* Hover Popout Submenu for Collapsed Sidebar */
+        .sidebar-collapsed .nav-group {
+            position: relative;
+        }
+
+        .sidebar-collapsed .nav-submenu {
+            display: none;
+            position: absolute;
+            left: 55px;
+            top: 0;
+            min-width: 200px;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            z-index: 1000;
+            padding: 0;
+            margin-left: 0;
+            overflow: hidden;
+        }
+
+        .sidebar-collapsed .nav-group:hover .nav-submenu {
+            display: block !important;
+        }
+
+        /* Submenu Header */
+        .sidebar-collapsed .nav-submenu::before {
+            content: attr(data-title);
+            display: block;
+            padding: 12px 16px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: #333;
+            color: white;
+        }
+
+        .sidebar-collapsed .nav-submenu .nav-submenu-item {
+            display: flex !important;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #333;
+            text-decoration: none;
+            transition: background 0.2s ease;
+        }
+
+        .sidebar-collapsed .nav-submenu .nav-submenu-item:hover {
+            background: #f8f9fa;
+        }
+
+        .sidebar-collapsed .nav-submenu .submenu-add-btn {
+            display: flex !important;
+            width: 24px;
+            height: 24px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .sidebar-collapsed .nav-submenu .submenu-add-btn:hover {
+            background: #555;
+        }
+
+        /* Main Content with collapsed sidebar */
+        .content-expanded {
+            margin-left: 55px !important;
+        }
+
+        /* Report Header */
+        .report-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .report-header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .hamburger-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 8px;
+            color: #333;
+        }
+
+        .report-breadcrumb {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .report-title-header {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .report-date-range {
+            font-size: 12px;
+            color: #666;
+            margin-left: 8px;
+        }
+
+        .report-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-action-btn {
+            width: 36px;
+            height: 36px;
+            border: 1px solid #e9ecef;
+            background: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #666;
+            font-size: 16px;
+        }
+
+        .header-action-btn:hover {
+            background: #f8f9fa;
+        }
+
+        .export-btn {
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .close-btn {
+            color: #d84040;
+            font-size: 20px;
+        }
+
+        /* Filter Bar */
+        .report-filter-bar {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 20px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .filter-icon {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 13px;
+            background: white;
+            min-width: 120px;
+        }
+
+        .more-filters-btn {
+            padding: 8px 16px;
+            border: 1px solid #e9ecef;
+            background: white;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #4285f4;
+        }
+
+        .run-report-btn {
+            padding: 8px 20px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .run-report-btn:hover {
+            background: #3b78e7;
+        }
+
+        /* Report Content */
+        .report-content {
+            padding: 24px;
+        }
+
+        .report-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            min-height: 500px;
+        }
+
+        .report-info {
+            text-align: center;
+            padding: 32px 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .company-name {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .report-main-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .report-date-info {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .report-date-info span {
+            color: #4285f4;
+        }
+
+        .report-basis {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Report Table */
+        .report-table-container {
+            overflow-x: auto;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table-header-group {
+            background: #f0f4ff;
+        }
+
+        .table-header-group th {
+            padding: 12px 16px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #4285f4;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: center;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .table-header-group th.product-in {
+            background: #e8f0fe;
+            border-right: 2px solid #4285f4;
+        }
+
+        .table-header-group th.product-out {
+            background: #f8f9fa;
+        }
+
+        .report-table thead tr:last-child th {
+            background: #f8f9fa;
+            padding: 10px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #333;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .report-table tbody td {
+            padding: 12px;
+            font-size: 13px;
+            color: #333;
+            border-bottom: 1px solid #f5f5f5;
+            text-align: center;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 60px 24px;
+            color: #999;
+            font-size: 14px;
+        }
+
+        /* Footer Note */
+        .report-footer {
+            padding: 16px 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .currency-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: #28a745;
+            color: white;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 4px;
+        }
+
+        /* Main Layout */
+        .main-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer"></div>
+
+    <div class="main-layout">
+        <div class="content content-expanded" id="content">
+            <!-- Report Header -->
+            <div class="report-header">
+                <div class="report-header-left">
+                    <button class="hamburger-btn" onclick="toggleSidebar()">☰</button>
+                    <div>
+                        <div class="report-breadcrumb">Inventory</div>
+                        <div class="report-title-header">
+                            FIFO Cost Lot Tracking
+                            <span class="report-date-range">• From 01 Jan 2026 To 31 Jan 2026</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="report-header-actions">
+                    <button class="header-action-btn" title="Settings">⚙</button>
+                    <button class="header-action-btn" title="Download">⬇</button>
+                    <button class="header-action-btn" title="Share">↗</button>
+                    <button class="export-btn">
+                        Export <span>▼</span>
+                    </button>
+                    <button class="header-action-btn" title="Refresh">↻</button>
+                    <button class="header-action-btn close-btn"
+                        onclick="window.location.href='/inventory-adjustments.html'" title="Close">✕</button>
+                </div>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="report-filter-bar">
+                <span class="filter-icon">🔍 Filters :</span>
+                <div class="filter-group">
+                    <span class="filter-label">Date Range :</span>
+                    <select class="filter-select" id="dateRange">
+                        <option value="this-month">This Month</option>
+                        <option value="last-month">Last Month</option>
+                        <option value="this-quarter">This Quarter</option>
+                        <option value="this-year">This Year</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <span class="filter-label">Item Name :</span>
+                    <select class="filter-select" id="itemName">
+                        <option value="all">All Items</option>
+                    </select>
+                </div>
+                <button class="more-filters-btn">
+                    <span style="color: #4285f4;">⊕</span> More Filters
+                </button>
+                <button class="run-report-btn" onclick="runReport()">Run Report</button>
+            </div>
+
+            <!-- Report Content -->
+            <div class="report-content">
+                <div class="report-card">
+                    <!-- Report Info Header -->
+                    <div class="report-info">
+                        <div class="company-name">GIHON</div>
+                        <div class="report-main-title">FIFO Cost Lot Tracking</div>
+                        <div class="report-date-info">From <span>01 Jan 2026</span> To <span>31 Jan 2026</span></div>
+                        <div class="report-basis">Report Generation Basis:Product In</div>
+                    </div>
+
+                    <!-- Report Table -->
+                    <div class="report-table-container">
+                        <table class="report-table">
+                            <thead>
+                                <tr class="table-header-group">
+                                    <th colspan="7" class="product-in">PRODUCT IN</th>
+                                    <th colspan="4" class="product-out">PRODUCT OUT</th>
+                                </tr>
+                                <tr>
+                                    <th>DATE</th>
+                                    <th>TRANSACTIONS</th>
+                                    <th>RECEIVED FROM</th>
+                                    <th>ITEM NAME</th>
+                                    <th>QUANTITY</th>
+                                    <th>COST PER UNIT</th>
+                                    <th>TOTAL</th>
+                                    <th>DATE</th>
+                                    <th>TRANSACTIONS</th>
+                                    <th>DISPERSED TO</th>
+                                    <th>QTY DISPERSED</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportTableBody">
+                                <tr>
+                                    <td colspan="11" class="no-data">No data to display</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Footer Note -->
+                <div class="report-footer">
+                    **Amount is displayed in your base currency <span class="currency-badge">PHP</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Layout Script -->
+    <script src="/js/layout.js"></script>
+    <script>
+        // Toggle sidebar expansion
+        let sidebarExpanded = false;
+
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const content = document.querySelector('.content');
+
+            if (sidebar) {
+                sidebarExpanded = !sidebarExpanded;
+                if (sidebarExpanded) {
+                    sidebar.classList.remove('sidebar-collapsed');
+                    content.classList.remove('content-expanded');
+                } else {
+                    sidebar.classList.add('sidebar-collapsed');
+                    content.classList.add('content-expanded');
+                }
+            }
+        }
+
+        // Initialize with collapsed sidebar
+        document.addEventListener('DOMContentLoaded', function () {
+            setTimeout(() => {
+                const sidebar = document.querySelector('.sidebar');
+                if (sidebar) {
+                    sidebar.classList.add('sidebar-collapsed');
+                }
+            }, 100);
+        });
+
+        // Run Report function
+        function runReport() {
+            const dateRange = document.getElementById('dateRange').value;
+            const itemName = document.getElementById('itemName').value;
+            console.log('Running report with:', { dateRange, itemName });
+            alert('Running FIFO Cost Lot Tracking Report...');
+        }
+    </script>
+</body>
+
+</html>

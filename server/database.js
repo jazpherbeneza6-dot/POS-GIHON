@@ -198,9 +198,41 @@ async function init() {
         CREATE INDEX IF NOT EXISTS idx_items_group_id ON items(group_id);
       `);
 
-      // Change total_amount to NUMERIC to support decimals if possible (or keep as is if too risky)
-      // For now, ensuring we can store decimals in new columns.
-      // Note: existing columns are INTEGER. Future update might be needed for precision.
+      // High-precision NUMERIC(38,10) migration for existing columns
+      // This upgrades INTEGER columns to support extremely large values (up to 10^38)
+      console.log('Running high-precision NUMERIC migration...');
+
+      // Items table - upgrade price and quantity columns
+      await pool.query(`ALTER TABLE items ALTER COLUMN selling_price TYPE NUMERIC(38,10);`);
+      await pool.query(`ALTER TABLE items ALTER COLUMN purchase_cost TYPE NUMERIC(38,10);`);
+      await pool.query(`ALTER TABLE items ALTER COLUMN stock_quantity TYPE NUMERIC(38,10);`);
+
+      // Sales table - upgrade total_amount
+      await pool.query(`ALTER TABLE sales ALTER COLUMN total_amount TYPE NUMERIC(38,10);`);
+
+      // Sales items table - upgrade quantity and price columns
+      await pool.query(`ALTER TABLE sales_items ALTER COLUMN quantity TYPE NUMERIC(38,10);`);
+      await pool.query(`ALTER TABLE sales_items ALTER COLUMN unit_price TYPE NUMERIC(38,10);`);
+      await pool.query(`ALTER TABLE sales_items ALTER COLUMN total_price TYPE NUMERIC(38,10);`);
+
+      // Purchases table - upgrade total_amount
+      await pool.query(`ALTER TABLE purchases ALTER COLUMN total_amount TYPE NUMERIC(38,10);`);
+
+      // Purchase items table - upgrade quantity and price columns
+      await pool.query(`ALTER TABLE purchase_items ALTER COLUMN quantity TYPE NUMERIC(38,10);`);
+      await pool.query(`ALTER TABLE purchase_items ALTER COLUMN unit_price TYPE NUMERIC(38,10);`);
+      await pool.query(`ALTER TABLE purchase_items ALTER COLUMN total_price TYPE NUMERIC(38,10);`);
+
+      // Inventory transactions table - upgrade quantity
+      await pool.query(`ALTER TABLE inventory_transactions ALTER COLUMN quantity TYPE NUMERIC(38,10);`);
+
+      // Also upgrade the NUMERIC(10,2) columns added in previous migrations
+      await pool.query(`ALTER TABLE sales ALTER COLUMN discount_amount TYPE NUMERIC(38,10);`);
+      await pool.query(`ALTER TABLE sales ALTER COLUMN tax_amount TYPE NUMERIC(38,10);`);
+      await pool.query(`ALTER TABLE sales ALTER COLUMN subtotal TYPE NUMERIC(38,10);`);
+      await pool.query(`ALTER TABLE purchase_items ALTER COLUMN selling_price TYPE NUMERIC(38,10);`);
+
+      console.log('High-precision NUMERIC migration completed');
       console.log('Database migration completed');
     } catch (migrationError) {
       // Column might already exist, ignore error

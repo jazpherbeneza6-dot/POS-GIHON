@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Shipment - Inventory Management</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', 'Source Sans Pro', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f5f6fa;
+            font-size: 13px;
+        }
+
+        /* Main Content */
+        .main-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 0;
+            background: white;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .switch-link {
+            color: #4285f4;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        .switch-link:hover {
+            text-decoration: underline;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        /* Form Container */
+        .form-container {
+            padding: 0;
+            max-width: 100%;
+        }
+
+        /* Top Form Section - White background */
+        .form-section-top {
+            background: white;
+            padding: 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            font-size: 13px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-label.required {
+            color: #dc2626;
+        }
+
+        .form-input-wrapper {
+            max-width: 400px;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #4285f4;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #666;
+            background: white;
+            cursor: pointer;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+
+        .form-select.default {
+            border: 1px solid #e0e0e0;
+        }
+
+        /* Middle Form Section - Gray background */
+        .form-section-middle {
+            background: #f9fafb;
+            padding: 24px;
+        }
+
+        .form-row-inline {
+            display: grid;
+            grid-template-columns: 140px 1fr 100px 1fr;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-label-small {
+            font-size: 13px;
+            color: #f87171;
+            font-weight: 400;
+        }
+
+        .form-label-gray {
+            font-size: 13px;
+            color: #999;
+            font-weight: 400;
+        }
+
+        .form-input {
+            padding: 10px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            background: white;
+            width: 100%;
+            max-width: 250px;
+            box-sizing: border-box;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+
+        .input-with-icon {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            max-width: 250px;
+        }
+
+        .input-icon {
+            color: #999;
+            font-size: 14px;
+        }
+
+        /* Notes Section */
+        .notes-section {
+            margin-top: 16px;
+        }
+
+        .form-textarea {
+            width: 100%;
+            max-width: 600px;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            resize: vertical;
+            font-family: inherit;
+            min-height: 80px;
+            box-sizing: border-box;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+
+        /* Checkboxes */
+        .checkbox-section {
+            margin-top: 24px;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .checkbox-input {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .checkbox-label {
+            font-size: 13px;
+            color: #999;
+            cursor: pointer;
+        }
+
+        /* Footer Buttons */
+        .form-footer {
+            display: flex;
+            gap: 12px;
+            padding: 24px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .btn-save {
+            padding: 10px 20px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-save:hover {
+            background: #3367d6;
+        }
+
+        .btn-cancel {
+            padding: 10px 20px;
+            background: white;
+            color: #666;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-cancel:hover {
+            background: #f5f5f5;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer"></div>
+
+    <div class="main-layout">
+        <div class="content" id="content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">New Shipment</h1>
+                <div class="header-actions">
+                    <a href="#" class="switch-link">Switch to carrier shipment</a>
+                    <button class="close-btn" onclick="goBack()">×</button>
+                </div>
+            </div>
+
+            <!-- Form Container -->
+            <div class="form-container">
+                <!-- Top Form Section - White -->
+                <div class="form-section-top">
+                    <div class="form-row">
+                        <label class="form-label">Customer Name</label>
+                        <div class="form-input-wrapper">
+                            <select class="form-select" id="customerName">
+                                <option value="">Select Customer</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label required">Sales Order#*</label>
+                        <div class="form-input-wrapper">
+                            <select class="form-select default" id="salesOrder">
+                                <option value="">Select Sales Order</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Middle Form Section - Gray -->
+                <div class="form-section-middle">
+                    <!-- Package -->
+                    <div class="form-row">
+                        <label class="form-label-small">Package#*</label>
+                        <div class="form-input-wrapper">
+                            <select class="form-select default" id="packageNumber">
+                                <option value=""></option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Shipment Order -->
+                    <div class="form-row">
+                        <label class="form-label-small">Shipment Order#*</label>
+                        <div class="input-with-icon">
+                            <input type="text" class="form-input" id="shipmentOrder" placeholder="">
+                            <span class="input-icon">⏱</span>
+                        </div>
+                    </div>
+
+                    <!-- Ship Date -->
+                    <div class="form-row">
+                        <label class="form-label-small">Ship Date*</label>
+                        <input type="text" class="form-input" id="shipDate" placeholder="dd MMM yyyy">
+                    </div>
+
+                    <!-- Carrier and Tracking# -->
+                    <div class="form-row-inline">
+                        <label class="form-label-small">Carrier*</label>
+                        <select class="form-select default" id="carrier" style="max-width: 250px;">
+                            <option value="">Select or type to add</option>
+                        </select>
+                        <label class="form-label-gray">Tracking#</label>
+                        <input type="text" class="form-input" id="trackingNumber" placeholder="">
+                    </div>
+
+                    <!-- Tracking URL -->
+                    <div class="form-row">
+                        <label class="form-label-gray">Tracking URL</label>
+                        <input type="text" class="form-input" id="trackingUrl" placeholder="">
+                    </div>
+
+                    <!-- Shipping Charges -->
+                    <div class="form-row">
+                        <label class="form-label-gray">Shipping Charges (if any)</label>
+                        <input type="text" class="form-input" id="shippingCharges" placeholder="">
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="form-row notes-section">
+                        <label class="form-label-gray">Notes</label>
+                        <textarea class="form-textarea" id="notes" rows="3" placeholder=""></textarea>
+                    </div>
+
+                    <!-- Checkboxes -->
+                    <div class="checkbox-section">
+                        <div class="checkbox-row">
+                            <input type="checkbox" class="checkbox-input" id="alreadyDelivered">
+                            <label class="checkbox-label" for="alreadyDelivered">Shipment already delivered</label>
+                        </div>
+                        <div class="checkbox-row">
+                            <input type="checkbox" class="checkbox-input" id="sendNotification">
+                            <label class="checkbox-label" for="sendNotification">Send Status Notification</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Buttons -->
+                <div class="form-footer">
+                    <button class="btn-save" onclick="saveShipment()">Save</button>
+                    <button class="btn-cancel" onclick="goBack()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Layout Script -->
+    <script src="/js/layout.js"></script>
+    <script>
+        // Go back to shipments list
+        function goBack() {
+            window.location.href = '/shipments.html';
+        }
+
+        // Save Shipment
+        function saveShipment() {
+            const customerName = document.getElementById('customerName').value;
+            const salesOrder = document.getElementById('salesOrder').value;
+            const packageNumber = document.getElementById('packageNumber').value;
+            const shipmentOrder = document.getElementById('shipmentOrder').value;
+            const shipDate = document.getElementById('shipDate').value;
+            const carrier = document.getElementById('carrier').value;
+            const trackingNumber = document.getElementById('trackingNumber').value;
+            const trackingUrl = document.getElementById('trackingUrl').value;
+            const shippingCharges = document.getElementById('shippingCharges').value;
+            const notes = document.getElementById('notes').value;
+            const alreadyDelivered = document.getElementById('alreadyDelivered').checked;
+            const sendNotification = document.getElementById('sendNotification').checked;
+
+            if (!salesOrder) {
+                alert('Please select a Sales Order');
+                return;
+            }
+
+            // Here you would save to the database
+            console.log('Saving shipment:', {
+                customerName,
+                salesOrder,
+                packageNumber,
+                shipmentOrder,
+                shipDate,
+                carrier,
+                trackingNumber,
+                trackingUrl,
+                shippingCharges,
+                notes,
+                alreadyDelivered,
+                sendNotification
+            });
+
+            alert('Shipment saved successfully!');
+            goBack();
+        }
+    </script>
+</body>
+
+</html>

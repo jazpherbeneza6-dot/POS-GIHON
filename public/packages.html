@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Packages - Inventory Management</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', 'Source Sans Pro', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f5f6fa;
+            font-size: 13px;
+        }
+
+        /* Main Content */
+        .main-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 0;
+            background: #f5f6fa;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .view-toggle {
+            display: flex;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .view-btn {
+            padding: 8px 12px;
+            background: white;
+            border: none;
+            cursor: pointer;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .view-btn.active {
+            background: #f0f0f0;
+        }
+
+        .view-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .btn-new {
+            padding: 8px 16px;
+            background: #4ade80;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-new:hover {
+            background: #22c55e;
+        }
+
+        /* Kanban Container */
+        .kanban-container {
+            display: flex;
+            gap: 16px;
+            padding: 24px;
+            overflow-x: auto;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* Kanban Column */
+        .kanban-column {
+            flex: 1;
+            min-width: 280px;
+            max-width: 350px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .column-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            border-radius: 8px 8px 0 0;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .column-header.not-shipped {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .column-header.shipped {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        .column-header.delivered {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .column-menu {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: inherit;
+            opacity: 0.7;
+        }
+
+        .column-menu:hover {
+            opacity: 1;
+        }
+
+        .column-content {
+            flex: 1;
+            padding: 16px;
+            min-height: 400px;
+        }
+
+        .no-records {
+            text-align: center;
+            color: #999;
+            font-size: 13px;
+            padding: 24px 0;
+        }
+
+        /* Package Card */
+        .package-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: box-shadow 0.2s ease;
+        }
+
+        .package-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .package-id {
+            font-weight: 600;
+            color: #4285f4;
+            margin-bottom: 4px;
+        }
+
+        .package-info {
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer"></div>
+
+    <div class="main-layout">
+        <div class="content" id="content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">All Packages</h1>
+                <div class="header-actions">
+                    <div class="view-toggle">
+                        <button class="view-btn" title="List View">☰</button>
+                        <button class="view-btn active" title="Kanban View">▤</button>
+                    </div>
+                    <button class="btn-new" onclick="createNewPackage()">
+                        <span>+</span> New
+                    </button>
+                </div>
+            </div>
+
+            <!-- Kanban Container -->
+            <div class="kanban-container">
+                <!-- Packages, Not Shipped Column -->
+                <div class="kanban-column">
+                    <div class="column-header not-shipped">
+                        <span>Packages, Not Shipped</span>
+                        <button class="column-menu">☰</button>
+                    </div>
+                    <div class="column-content" id="notShippedColumn">
+                        <div class="no-records">No Records Found</div>
+                    </div>
+                </div>
+
+                <!-- Shipped Packages Column -->
+                <div class="kanban-column">
+                    <div class="column-header shipped">
+                        <span>Shipped Packages</span>
+                        <button class="column-menu">☰</button>
+                    </div>
+                    <div class="column-content" id="shippedColumn">
+                        <div class="no-records">No Records Found</div>
+                    </div>
+                </div>
+
+                <!-- Delivered Packages Column -->
+                <div class="kanban-column">
+                    <div class="column-header delivered">
+                        <span>Delivered Packages</span>
+                        <button class="column-menu">☰</button>
+                    </div>
+                    <div class="column-content" id="deliveredColumn">
+                        <div class="no-records">No Records Found</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- New Package Modal -->
+        <div class="modal-overlay" id="newPackageModal">
+            <div class="modal-container">
+                <div class="modal-header">
+                    <div class="modal-title">
+                        <span class="modal-icon">📦</span>
+                        New Package
+                    </div>
+                    <button class="modal-close" onclick="closeNewPackageModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <!-- Top Form Section -->
+                    <div class="form-section-top">
+                        <div class="form-row">
+                            <label class="form-label">Customer Name</label>
+                            <div class="form-input-wrapper">
+                                <select class="form-select" id="customerName">
+                                    <option value="">Select Customer</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label required">Sales Order#*</label>
+                            <div class="form-input-wrapper">
+                                <select class="form-select" id="salesOrder">
+                                    <option value="">Select Sales Order</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Middle Form Section -->
+                    <div class="form-section-middle">
+                        <div class="form-row-inline">
+                            <div class="form-group">
+                                <label class="form-label-small required">Package Slip#*</label>
+                                <div class="input-with-icon">
+                                    <input type="text" class="form-input" id="packageSlip" placeholder="">
+                                    <span class="input-icon">⏱</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label-small required">Date*</label>
+                                <input type="text" class="form-input" id="packageDate" placeholder="dd MMM yyyy">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Info Message -->
+                    <div class="info-message">
+                        <span class="info-icon">ℹ</span>
+                        You can also select or scan the items to be included from the sales order.
+                        <a href="#" class="info-link">Select or Scan Items</a>
+                    </div>
+
+                    <!-- Items Table -->
+                    <div class="items-table-section">
+                        <table class="items-table">
+                            <thead>
+                                <tr>
+                                    <th class="col-description">ITEMS & DESCRIPTION</th>
+                                    <th class="col-ordered">ORDERED</th>
+                                    <th class="col-packed">PACKED</th>
+                                    <th class="col-quantity">QUANTITY TO PACK</th>
+                                </tr>
+                            </thead>
+                            <tbody id="packageItemsBody">
+                                <!-- Items will be added here -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Internal Notes -->
+                    <div class="internal-notes-section">
+                        <label class="form-label-small">INTERNAL NOTES</label>
+                        <textarea class="form-textarea" id="internalNotes" rows="3" placeholder=""></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-save" onclick="saveNewPackage()">Save</button>
+                    <button class="btn-cancel" onclick="closeNewPackageModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            /* Modal Styles */
+            .modal-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 1000;
+                justify-content: center;
+                align-items: flex-start;
+                padding-top: 40px;
+                overflow-y: auto;
+            }
+
+            .modal-overlay.show {
+                display: flex;
+            }
+
+            .modal-container {
+                background: white;
+                border-radius: 8px;
+                width: 90%;
+                max-width: 800px;
+                max-height: calc(100vh - 80px);
+                display: flex;
+                flex-direction: column;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            }
+
+            .modal-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 16px 24px;
+                border-bottom: 1px solid #e9ecef;
+            }
+
+            .modal-title {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 18px;
+                font-weight: 600;
+                color: #333;
+            }
+
+            .modal-icon {
+                font-size: 20px;
+            }
+
+            .modal-close {
+                background: none;
+                border: none;
+                font-size: 28px;
+                color: #999;
+                cursor: pointer;
+                line-height: 1;
+            }
+
+            .modal-close:hover {
+                color: #333;
+            }
+
+            .modal-body {
+                flex: 1;
+                overflow-y: auto;
+                padding: 24px;
+            }
+
+            .modal-footer {
+                display: flex;
+                gap: 12px;
+                padding: 16px 24px;
+                border-top: 1px solid #e9ecef;
+                background: #f9fafb;
+            }
+
+            /* Form Styles */
+            .form-section-top {
+                margin-bottom: 24px;
+            }
+
+            .form-row {
+                display: grid;
+                grid-template-columns: 120px 1fr;
+                align-items: center;
+                gap: 16px;
+                margin-bottom: 16px;
+            }
+
+            .form-label {
+                font-size: 13px;
+                color: #333;
+                font-weight: 500;
+            }
+
+            .form-label.required {
+                color: #dc2626;
+            }
+
+            .form-input-wrapper {
+                max-width: 350px;
+            }
+
+            .form-select {
+                width: 100%;
+                padding: 10px 12px;
+                border: 1px solid #e0e0e0;
+                border-radius: 6px;
+                font-size: 13px;
+                color: #666;
+                background: white;
+                cursor: pointer;
+            }
+
+            .form-select:focus {
+                outline: none;
+                border-color: #4285f4;
+            }
+
+            .form-section-middle {
+                background: #f9fafb;
+                padding: 20px;
+                margin: 0 -24px;
+                margin-bottom: 20px;
+            }
+
+            .form-row-inline {
+                display: flex;
+                gap: 40px;
+            }
+
+            .form-group {
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+            }
+
+            .form-label-small {
+                font-size: 11px;
+                color: #999;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .form-label-small.required {
+                color: #f87171;
+            }
+
+            .input-with-icon {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .form-input {
+                padding: 10px 12px;
+                border: 1px solid #e0e0e0;
+                border-radius: 6px;
+                font-size: 13px;
+                min-width: 200px;
+                background: white;
+            }
+
+            .form-input:focus {
+                outline: none;
+                border-color: #4285f4;
+            }
+
+            .input-icon {
+                color: #999;
+                font-size: 16px;
+            }
+
+            /* Info Message */
+            .info-message {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: #666;
+                font-size: 13px;
+                margin-bottom: 20px;
+            }
+
+            .info-icon {
+                color: #60a5fa;
+            }
+
+            .info-link {
+                color: #f87171;
+                text-decoration: none;
+            }
+
+            .info-link:hover {
+                text-decoration: underline;
+            }
+
+            /* Items Table */
+            .items-table-section {
+                margin-bottom: 24px;
+            }
+
+            .items-table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            .items-table th {
+                text-align: left;
+                padding: 12px 16px;
+                font-size: 11px;
+                font-weight: 600;
+                color: #999;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                border-bottom: 2px solid #e9ecef;
+            }
+
+            .items-table .col-description {
+                width: 40%;
+            }
+
+            .items-table .col-ordered,
+            .items-table .col-packed,
+            .items-table .col-quantity {
+                width: 20%;
+                text-align: center;
+            }
+
+            .items-table td {
+                padding: 12px 16px;
+                border-bottom: 1px solid #f0f0f0;
+            }
+
+            /* Internal Notes */
+            .internal-notes-section {
+                margin-bottom: 16px;
+            }
+
+            .form-textarea {
+                width: 50%;
+                padding: 12px;
+                border: 1px solid #e0e0e0;
+                border-radius: 6px;
+                font-size: 13px;
+                resize: vertical;
+                font-family: inherit;
+            }
+
+            .form-textarea:focus {
+                outline: none;
+                border-color: #4285f4;
+            }
+
+            /* Buttons */
+            .btn-save {
+                padding: 10px 20px;
+                background: #4285f4;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                font-size: 13px;
+                font-weight: 500;
+                cursor: pointer;
+            }
+
+            .btn-save:hover {
+                background: #3367d6;
+            }
+
+            .btn-cancel {
+                padding: 10px 20px;
+                background: #333;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                font-size: 13px;
+                font-weight: 500;
+                cursor: pointer;
+            }
+
+            .btn-cancel:hover {
+                background: #444;
+            }
+        </style>
+
+        <!-- Layout Script -->
+        <script src="/js/layout.js"></script>
+        <script>
+            // Open New Package Page
+            function createNewPackage() {
+                window.location.href = '/new-package.html';
+            }
+
+            // Close New Package Modal
+            function closeNewPackageModal() {
+                document.getElementById('newPackageModal').classList.remove('show');
+            }
+
+            // Save New Package
+            function saveNewPackage() {
+                const customerName = document.getElementById('customerName').value;
+                const salesOrder = document.getElementById('salesOrder').value;
+                const packageSlip = document.getElementById('packageSlip').value;
+                const packageDate = document.getElementById('packageDate').value;
+                const internalNotes = document.getElementById('internalNotes').value;
+
+                if (!salesOrder) {
+                    alert('Please select a Sales Order');
+                    return;
+                }
+
+                if (!packageSlip) {
+                    alert('Please enter Package Slip#');
+                    return;
+                }
+
+                // Here you would save to the database
+                console.log('Saving package:', {
+                    customerName,
+                    salesOrder,
+                    packageSlip,
+                    packageDate,
+                    internalNotes
+                });
+
+                alert('Package saved successfully!');
+                closeNewPackageModal();
+            }
+
+            // Close modal when clicking outside
+            document.getElementById('newPackageModal').addEventListener('click', function (e) {
+                if (e.target === this) {
+                    closeNewPackageModal();
+                }
+            });
+
+            // View toggle
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Check for new=true parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('new') === 'true') {
+                createNewPackage();
+            }
+        </script>
+</body>
+
+</html>

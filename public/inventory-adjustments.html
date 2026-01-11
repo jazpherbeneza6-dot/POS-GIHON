@@ -1,0 +1,2064 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Adjustments - Inventory Management</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/alert-dialog.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            margin: -24px -24px 24px -24px;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1f3a;
+            margin: 0;
+        }
+
+        .page-header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .header-link {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #d84040;
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .header-link:hover {
+            background: rgba(216, 64, 64, 0.1);
+        }
+
+        .header-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .btn-primary {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, #d84040 0%, #8e1616 100%);
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(216, 64, 64, 0.3);
+        }
+
+        .btn-more {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 18px;
+            color: #666;
+        }
+
+        .btn-more:hover {
+            background: #e9ecef;
+        }
+
+        /* More Actions Dropdown Container */
+        .more-actions-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .more-actions-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            min-width: 260px;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            z-index: 200;
+            display: none;
+            padding: 8px 0;
+            margin-top: 8px;
+        }
+
+        .more-actions-menu.show {
+            display: block;
+        }
+
+        .more-actions-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .more-actions-item:hover {
+            background: #4285f4;
+            color: white;
+        }
+
+        .more-actions-item:hover .action-icon {
+            color: white;
+        }
+
+        .more-actions-item:hover .action-arrow {
+            color: white;
+        }
+
+        .action-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            color: #4285f4;
+            transition: color 0.2s ease;
+        }
+
+        .action-text {
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .action-arrow {
+            font-size: 12px;
+            color: #4285f4;
+            transition: color 0.2s ease;
+        }
+
+        /* Submenu Styles */
+        .submenu {
+            position: absolute;
+            top: 0;
+            right: 100%;
+            min-width: 220px;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            display: none;
+            padding: 8px 0;
+            margin-right: 8px;
+        }
+
+        .more-actions-item:hover>.submenu {
+            display: block;
+        }
+
+        .submenu-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .submenu-item:hover {
+            background: #4285f4;
+            color: white;
+        }
+
+        .submenu-item .sort-icon {
+            color: #4285f4;
+            margin-left: 8px;
+        }
+
+        .submenu-item:hover .sort-icon {
+            color: white;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 24px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            margin: -24px -24px 24px -24px;
+            margin-top: 0;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #666;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 13px;
+            background: white;
+            color: #333;
+            cursor: pointer;
+            min-width: 100px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #d84040;
+        }
+
+        /* Custom Dropdown Styles */
+        .custom-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-toggle {
+            padding: 8px 16px;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 13px;
+            background: white;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dropdown-toggle:hover {
+            background: #f8f9fa;
+        }
+
+        .dropdown-toggle.active {
+            background: white;
+            border-radius: 6px 6px 0 0;
+        }
+
+        .dropdown-toggle .arrow {
+            font-size: 10px;
+            transition: transform 0.2s ease;
+        }
+
+        .dropdown-toggle.active .arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            min-width: 250px;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            z-index: 100;
+            display: none;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item.selected {
+            background: #4285f4;
+            color: white;
+        }
+
+        /* When hovering any item in the menu, remove selected styling */
+        .dropdown-menu:hover .dropdown-item.selected:not(.new-view) {
+            background: white;
+            color: #333;
+        }
+
+        /* Hovered item gets the blue highlight */
+        .dropdown-item:not(.new-view):hover {
+            background: #4285f4 !important;
+            color: white !important;
+        }
+
+        .dropdown-item .star-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: #ccc;
+            padding: 0;
+            transition: color 0.2s ease;
+        }
+
+        .dropdown-item .star-btn:hover {
+            color: #ffc107;
+        }
+
+        .dropdown-item .star-btn.favorited {
+            color: #ffc107;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #e9ecef;
+            margin: 0;
+        }
+
+        .dropdown-item.new-view {
+            color: #4285f4;
+            font-weight: 500;
+            background: #f8f9fa;
+        }
+
+        .dropdown-item.new-view:hover {
+            background: #e8f0fe;
+        }
+
+        .dropdown-item .plus-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #4285f4;
+            border-radius: 50%;
+            font-size: 14px;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        /* Period Dropdown Specific Styles */
+        .period-toggle {
+            background: white;
+            color: #333;
+            border: 1px solid #e9ecef;
+        }
+
+        .period-toggle:hover {
+            background: #f8f9fa;
+        }
+
+        .period-toggle.active {
+            background: white;
+        }
+
+        .period-menu {
+            min-width: 200px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .period-item {
+            padding: 12px 16px;
+            justify-content: flex-start;
+        }
+
+        .period-item.selected {
+            background: #4285f4;
+            color: white;
+        }
+
+        /* When hovering any item in the menu, remove selected styling */
+        .period-menu:hover .period-item.selected {
+            background: white;
+            color: #333;
+        }
+
+        /* Hovered item gets the blue highlight */
+        .period-item:hover {
+            background: #4285f4 !important;
+            color: white !important;
+        }
+
+        /* New Custom View Modal Styles */
+        .section-header {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin: 24px 0 16px 0;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .checkbox-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .checkbox-label input {
+            width: 16px;
+            height: 16px;
+        }
+
+        .star-icon {
+            color: #ccc;
+        }
+
+        .criteria-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .criteria-number {
+            width: 24px;
+            height: 24px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .criteria-select {
+            min-width: 150px;
+        }
+
+        .criteria-value {
+            flex: 1;
+            max-width: 200px;
+        }
+
+        .btn-criteria-action {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #e9ecef;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+        }
+
+        .btn-criteria-action:hover {
+            background: #f5f5f5;
+        }
+
+        .btn-add-criterion {
+            background: none;
+            border: none;
+            color: #4285f4;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-add-criterion:hover {
+            text-decoration: underline;
+        }
+
+        .columns-container {
+            display: flex;
+            gap: 24px;
+            margin-top: 16px;
+        }
+
+        .columns-panel {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .columns-panel-header {
+            font-size: 11px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .search-input {
+            width: 100%;
+            margin-bottom: 12px;
+            padding: 8px 12px;
+        }
+
+        .columns-list {
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            min-height: 200px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .column-item {
+            padding: 10px 12px;
+            font-size: 13px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: grab;
+            border-bottom: 1px solid #f5f5f5;
+            transition: background 0.2s ease;
+        }
+
+        .column-item:hover {
+            background: #f8f9fa;
+        }
+
+        .column-item:last-child {
+            border-bottom: none;
+        }
+
+        .drag-handle {
+            color: #ccc;
+            font-size: 12px;
+        }
+
+        .required-mark {
+            color: #d84040;
+            font-size: 12px;
+        }
+
+        .visibility-section {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+
+        .visibility-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .radio-group-horizontal {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .radio-group-horizontal .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border: 1px solid #e9ecef;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .radio-group-horizontal .radio-label:has(input:checked) {
+            background: #e8f0fe;
+            border-color: #4285f4;
+        }
+
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 24px;
+            text-align: center;
+        }
+
+        .empty-state-icon {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 24px;
+            opacity: 0.5;
+        }
+
+        .empty-state-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a1f3a;
+            margin-bottom: 8px;
+        }
+
+        .empty-state-text {
+            font-size: 14px;
+            color: #868e96;
+            margin-bottom: 24px;
+            max-width: 400px;
+        }
+
+        .btn-create {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #d84040 0%, #8e1616 100%);
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-create:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(216, 64, 64, 0.35);
+        }
+
+        /* Adjustments Table */
+        .adjustments-table-wrapper {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            display: none;
+        }
+
+        .adjustments-table-wrapper.has-data {
+            display: block;
+        }
+
+        .adjustments-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .adjustments-table thead {
+            background: linear-gradient(135deg, #181212 0%, #8e1616 100%);
+        }
+
+        .adjustments-table thead th {
+            padding: 16px;
+            text-align: left;
+            color: white;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .adjustments-table tbody tr {
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s ease;
+        }
+
+        .adjustments-table tbody tr:hover {
+            background: #fafafa;
+        }
+
+        .adjustments-table tbody td {
+            padding: 16px;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .adjustment-type {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .type-quantity {
+            background: rgba(216, 64, 64, 0.1);
+            color: #d84040;
+        }
+
+        .type-value {
+            background: rgba(39, 174, 96, 0.1);
+            color: #27ae60;
+        }
+
+        /* Modal Styles - Full Page View */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 260px;
+            /* Offset for sidebar width */
+            right: 0;
+            bottom: 0;
+            background: #f5f5f5;
+            z-index: 100;
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-start;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            background: linear-gradient(135deg, #181212 0%, #8e1616 100%);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #d84040;
+            box-shadow: 0 0 0 3px rgba(216, 64, 64, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn-cancel {
+            padding: 10px 20px;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-cancel:hover {
+            background: #f8f9fa;
+        }
+
+        .btn-save {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #d84040 0%, #8e1616 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(216, 64, 64, 0.3);
+        }
+
+        /* Enhanced Modal Styles */
+        .modal-content {
+            background: white;
+            border-radius: 0;
+            width: 100%;
+            max-width: 100%;
+            min-height: 100vh;
+            overflow-y: auto;
+            transform: none;
+            transition: none;
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            background: white;
+            color: #1a1f3a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: #666;
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        /* Form Row Layout - Horizontal with label on left */
+        .form-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 24px;
+            margin-bottom: 16px;
+        }
+
+        .form-row .form-label {
+            flex: 0 0 120px;
+            text-align: left;
+            padding-top: 10px;
+            margin-bottom: 0;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .form-row .form-input,
+        .form-row .form-select {
+            max-width: 250px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 400;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .form-label.required {
+            color: #d84040;
+        }
+
+        .form-textarea {
+            max-width: 300px;
+            min-height: 80px;
+        }
+
+        /* Radio Group */
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding-top: 0;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .radio-label input[type="radio"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #4285f4;
+        }
+
+        /* Item Table Section */
+        .item-table-section {
+            margin-top: 24px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+        }
+
+        .item-table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .item-table-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .bulk-actions-link {
+            color: #d84040;
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .bulk-actions-link:hover {
+            text-decoration: underline;
+        }
+
+        .item-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .item-table thead th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: #fafafa;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .item-table tbody td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+        }
+
+        .item-select-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .item-drag-handle {
+            color: #ccc;
+            cursor: grab;
+        }
+
+        .item-icon {
+            width: 32px;
+            height: 32px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+        }
+
+        .item-select-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #999;
+        }
+
+        .item-select-input:focus {
+            outline: none;
+            border-color: #d84040;
+        }
+
+        .quantity-input {
+            width: 80px;
+            padding: 8px 12px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            font-size: 13px;
+            text-align: right;
+        }
+
+        .quantity-input:focus {
+            outline: none;
+            border-color: #d84040;
+        }
+
+        .quantity-placeholder {
+            color: #999;
+            font-size: 13px;
+        }
+
+        .row-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-row-menu {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .btn-row-delete {
+            background: none;
+            border: none;
+            color: #e74c3c;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+        }
+
+        .btn-row-delete:hover {
+            color: #c0392b;
+        }
+
+        /* Add Row Buttons */
+        .add-row-buttons {
+            display: flex;
+            gap: 16px;
+            padding: 16px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .btn-add-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: none;
+            border: none;
+            color: #d84040;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .btn-add-row:hover {
+            text-decoration: underline;
+        }
+
+        /* File Upload Section */
+        .file-upload-section {
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .file-upload-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .file-upload-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            background: white;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .file-upload-btn:hover {
+            background: #f8f9fa;
+        }
+
+        .file-upload-hint {
+            font-size: 12px;
+            color: #999;
+            margin-top: 8px;
+        }
+
+        /* Modal Footer */
+        .modal-footer {
+            padding: 16px 24px;
+            background: #f8f9fa;
+            display: flex;
+            gap: 12px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .btn-draft {
+            padding: 10px 20px;
+            background: #d84040;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-draft:hover {
+            background: #c0392b;
+        }
+
+        .btn-convert {
+            padding: 10px 20px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-convert:hover {
+            background: #1a1a1a;
+        }
+
+        .btn-cancel {
+            padding: 10px 20px;
+            background: #666;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-cancel:hover {
+            background: #555;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar Container -->
+        <div id="sidebarContainer"></div>
+
+        <!-- Main Content -->
+        <div class="content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">Inventory Adjustments</h1>
+                <div class="page-header-actions">
+                    <a href="/fifo-report.html" class="header-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="4" height="18" rx="1" />
+                            <rect x="10" y="8" width="4" height="13" rx="1" />
+                            <rect x="17" y="12" width="4" height="9" rx="1" />
+                        </svg>
+                        FIFO Cost Lot Tracking Report
+                    </a>
+                    <button class="btn-primary" onclick="openAdjustmentModal()">
+                        <span>+</span> New
+                    </button>
+                    <!-- More Actions Dropdown -->
+                    <div class="more-actions-container">
+                        <button class="btn-more" onclick="toggleMoreActions()" title="More Actions">⋯</button>
+                        <div class="more-actions-menu" id="moreActionsMenu">
+                            <!-- Sort By with Submenu -->
+                            <div class="more-actions-item">
+                                <span class="action-text">
+                                    <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M7 15l5 5 5-5M7 9l5-5 5 5" />
+                                    </svg>
+                                    Sort by
+                                </span>
+                                <span class="action-arrow">›</span>
+                                <div class="submenu">
+                                    <div class="submenu-item" onclick="sortBy('date')">
+                                        Date <span class="sort-icon">↑</span>
+                                    </div>
+                                    <div class="submenu-item" onclick="sortBy('reason')">
+                                        Reason
+                                    </div>
+                                    <div class="submenu-item" onclick="sortBy('createdTime')">
+                                        Created Time
+                                    </div>
+                                    <div class="submenu-item" onclick="sortBy('modifiedTime')">
+                                        Last Modified Time
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Import with Submenu -->
+                            <div class="more-actions-item">
+                                <span class="action-text">
+                                    <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                        <polyline points="7 10 12 15 17 10" />
+                                        <line x1="12" y1="15" x2="12" y2="3" />
+                                    </svg>
+                                    Import
+                                </span>
+                                <span class="action-arrow">›</span>
+                                <div class="submenu">
+                                    <div class="submenu-item" onclick="importQuantityAdjustments()">
+                                        Import Quantity Adjustments
+                                    </div>
+                                    <div class="submenu-item" onclick="importValueAdjustments()">
+                                        Import Value Adjustments
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Export -->
+                            <div class="more-actions-item" onclick="exportInventoryAdjustments()">
+                                <span class="action-text">
+                                    <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                        <polyline points="17 8 12 3 7 8" />
+                                        <line x1="12" y1="3" x2="12" y2="15" />
+                                    </svg>
+                                    Export Inventory Adjustments
+                                </span>
+                            </div>
+                            <!-- Refresh List -->
+                            <div class="more-actions-item" onclick="refreshList()">
+                                <span class="action-text">
+                                    <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M23 4v6h-6" />
+                                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                                    </svg>
+                                    Refresh List
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <span class="filter-label">Filter By :</span>
+
+                <!-- Custom Type Dropdown -->
+                <div class="custom-dropdown" id="typeDropdown">
+                    <button class="dropdown-toggle" onclick="toggleTypeDropdown()">
+                        Type: All <span class="arrow">▼</span>
+                    </button>
+                    <div class="dropdown-menu" id="typeDropdownMenu">
+                        <div class="dropdown-item selected" onclick="selectFilter('all', 'All')">
+                            <span>All</span>
+                            <button class="star-btn" onclick="event.stopPropagation(); toggleFavorite(this)">☆</button>
+                        </div>
+                        <div class="dropdown-item" onclick="selectFilter('quantity', 'By Quantity')">
+                            <span>By Quantity</span>
+                            <button class="star-btn" onclick="event.stopPropagation(); toggleFavorite(this)">☆</button>
+                        </div>
+                        <div class="dropdown-item" onclick="selectFilter('value', 'By Value')">
+                            <span>By Value</span>
+                            <button class="star-btn" onclick="event.stopPropagation(); toggleFavorite(this)">☆</button>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item new-view" onclick="openCustomViewModal()">
+                            <span><span class="plus-icon">+</span> New Custom View</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Custom Period Dropdown -->
+                <div class="custom-dropdown" id="periodDropdown">
+                    <button class="dropdown-toggle period-toggle" onclick="togglePeriodDropdown()">
+                        Period: All <span class="arrow">▼</span>
+                    </button>
+                    <div class="dropdown-menu period-menu" id="periodDropdownMenu">
+                        <div class="dropdown-item period-item selected" onclick="selectPeriod('all', 'All')">
+                            All
+                        </div>
+                        <div class="dropdown-item period-item" onclick="selectPeriod('today', 'Today')">
+                            Today
+                        </div>
+                        <div class="dropdown-item period-item" onclick="selectPeriod('week', 'This Week')">
+                            This Week
+                        </div>
+                        <div class="dropdown-item period-item" onclick="selectPeriod('month', 'This Month')">
+                            This Month
+                        </div>
+                        <div class="dropdown-item period-item" onclick="selectPeriod('quarter', 'This Quarter')">
+                            This Quarter
+                        </div>
+                        <div class="dropdown-item period-item" onclick="selectPeriod('year', 'This Year')">
+                            This Year
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState">
+                <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="#adb5bd" stroke-width="1.5">
+                    <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+                <h2 class="empty-state-title">Keep Your Inventory Accurate</h2>
+                <p class="empty-state-text">Adjust your inventory to ensure accurate quantity and value.</p>
+                <button class="btn-create" onclick="openAdjustmentModal()">Create Adjustment</button>
+            </div>
+
+            <!-- Adjustments Table (hidden when empty) -->
+            <div class="adjustments-table-wrapper" id="tableWrapper">
+                <table class="adjustments-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Adjustment #</th>
+                            <th>Reason</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adjustmentsTableBody">
+                        <!-- Adjustment rows will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Adjustment Modal -->
+    <div class="modal" id="adjustmentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>New Adjustment</h2>
+                <button class="modal-close" onclick="closeAdjustmentModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <!-- Mode of Adjustment -->
+                <div class="form-row">
+                    <label class="form-label">Mode of adjustment</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="adjustmentMode" value="quantity" checked>
+                            Quantity Adjustment
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="adjustmentMode" value="value">
+                            Value Adjustment
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Reference Number -->
+                <div class="form-row">
+                    <label class="form-label">Reference Number</label>
+                    <input type="text" class="form-input" id="referenceNumber" placeholder="">
+                </div>
+
+                <!-- Date -->
+                <div class="form-row">
+                    <label class="form-label required">Date*</label>
+                    <input type="date" class="form-input" id="adjustmentDate">
+                </div>
+
+                <!-- Account -->
+                <div class="form-row">
+                    <label class="form-label required">Account*</label>
+                    <select class="form-select" id="accountSelect">
+                        <option value="cogs">Cost of Goods Sold</option>
+                        <option value="inventory">Inventory Asset</option>
+                        <option value="expense">Adjustment Expense</option>
+                    </select>
+                </div>
+
+                <!-- Reason -->
+                <div class="form-row">
+                    <label class="form-label required">Reason*</label>
+                    <select class="form-select" id="adjustmentReason">
+                        <option value="">Select a reason</option>
+                        <option value="damaged">Damaged Goods</option>
+                        <option value="expired">Expired Items</option>
+                        <option value="lost">Lost/Missing</option>
+                        <option value="found">Found Items</option>
+                        <option value="correction">Stock Count Correction</option>
+                        <option value="theft">Theft/Shrinkage</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <!-- Description -->
+                <div class="form-row">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" id="adjustmentDescription" placeholder="Max. 500 characters"
+                        maxlength="500"></textarea>
+                </div>
+
+                <!-- Item Table Section -->
+                <div class="item-table-section">
+                    <div class="item-table-header">
+                        <span class="item-table-title">Item Table</span>
+                        <a href="#" class="bulk-actions-link">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <polyline points="12 6 12 12 16 14" />
+                            </svg>
+                            Bulk Actions
+                        </a>
+                    </div>
+                    <table class="item-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 40%">Item Details</th>
+                                <th style="width: 20%">Quantity Available</th>
+                                <th style="width: 20%">New Quantity on Hand</th>
+                                <th style="width: 15%">Quantity Adjusted</th>
+                                <th style="width: 5%"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemTableBody">
+                            <tr>
+                                <td>
+                                    <div class="item-select-cell">
+                                        <span class="item-drag-handle">⋮⋮</span>
+                                        <div class="item-icon">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2">
+                                                <rect x="3" y="3" width="18" height="18" rx="2" />
+                                                <circle cx="8.5" cy="8.5" r="1.5" />
+                                                <polyline points="21 15 16 10 5 21" />
+                                            </svg>
+                                        </div>
+                                        <input type="text" class="item-select-input"
+                                            placeholder="Type or click to select an item.">
+                                    </div>
+                                </td>
+                                <td></td>
+                                <td>
+                                    <input type="number" class="quantity-input" value="0.00" step="0.01">
+                                </td>
+                                <td>
+                                    <span class="quantity-placeholder">Eg. +10, -10</span>
+                                </td>
+                                <td>
+                                    <div class="row-actions">
+                                        <button class="btn-row-menu">⋮</button>
+                                        <button class="btn-row-delete" onclick="removeItemRow(this)">✕</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="add-row-buttons">
+                        <button class="btn-add-row" onclick="addItemRow()">
+                            <span style="color: #d84040; font-weight: bold;">⊕</span> Add New Row
+                        </button>
+                        <button class="btn-add-row" onclick="addItemsInBulk()">
+                            <span style="color: #d84040; font-weight: bold;">⊕</span> Add Items in Bulk
+                        </button>
+                    </div>
+                </div>
+
+                <!-- File Upload Section -->
+                <div class="file-upload-section">
+                    <label class="file-upload-label">Attach File(s) to inventory adjustment</label>
+                    <button class="file-upload-btn">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="17 8 12 3 7 8" />
+                            <line x1="12" y1="3" x2="12" y2="15" />
+                        </svg>
+                        Upload File
+                        <span>▾</span>
+                    </button>
+                    <p class="file-upload-hint">You can upload a maximum of 5 files, 10MB each</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-draft" onclick="saveAsDraft()">Save as Draft</button>
+                <button class="btn-convert" onclick="convertToAdjusted()">Convert to Adjusted</button>
+                <button class="btn-cancel" onclick="closeAdjustmentModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Custom View Modal -->
+    <div class="modal" id="customViewModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>New Custom View</h2>
+                <button class="modal-close" onclick="closeCustomViewModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <!-- Name Field -->
+                <div class="form-row">
+                    <label class="form-label required">Name*</label>
+                    <input type="text" class="form-input" id="viewName" style="max-width: 300px;">
+                    <label class="checkbox-label" style="margin-left: 24px;">
+                        <input type="checkbox" id="markAsFavorite">
+                        <span class="star-icon">☆</span> Mark as Favorite
+                    </label>
+                </div>
+
+                <!-- Define Criteria Section -->
+                <div class="section-header">Define the criteria ( if any )</div>
+                <div class="criteria-row">
+                    <span class="criteria-number">1</span>
+                    <select class="form-select criteria-select">
+                        <option value="">Select a field</option>
+                        <option value="date">Date</option>
+                        <option value="type">Type</option>
+                        <option value="reason">Reason</option>
+                        <option value="status">Status</option>
+                    </select>
+                    <select class="form-select criteria-select">
+                        <option value="">Select a comparator</option>
+                        <option value="equals">Equals</option>
+                        <option value="contains">Contains</option>
+                        <option value="starts">Starts with</option>
+                    </select>
+                    <input type="text" class="form-input criteria-value">
+                    <button class="btn-criteria-action">+</button>
+                    <button class="btn-criteria-action">⧉</button>
+                </div>
+                <button class="btn-add-criterion">
+                    <span style="color: #4285f4;">⊕</span> Add Criterion
+                </button>
+
+                <!-- Columns Preference Section -->
+                <div class="section-header">Columns Preference:</div>
+                <div class="columns-container">
+                    <div class="columns-panel">
+                        <div class="columns-panel-header">AVAILABLE COLUMNS</div>
+                        <input type="text" class="form-input search-input" placeholder="🔍 Search">
+                        <div class="columns-list" id="availableColumns">
+                            <div class="column-item" draggable="true" data-column="reason">
+                                <span class="drag-handle">⋮⋮</span> Reason
+                            </div>
+                            <div class="column-item" draggable="true" data-column="description">
+                                <span class="drag-handle">⋮⋮</span> Description
+                            </div>
+                            <div class="column-item" draggable="true" data-column="status">
+                                <span class="drag-handle">⋮⋮</span> Status
+                            </div>
+                            <div class="column-item" draggable="true" data-column="reference">
+                                <span class="drag-handle">⋮⋮</span> Reference Number
+                            </div>
+                            <div class="column-item" draggable="true" data-column="createdBy">
+                                <span class="drag-handle">⋮⋮</span> Created By
+                            </div>
+                            <div class="column-item" draggable="true" data-column="createdTime">
+                                <span class="drag-handle">⋮⋮</span> Created Time
+                            </div>
+                            <div class="column-item" draggable="true" data-column="modifiedBy">
+                                <span class="drag-handle">⋮⋮</span> Last Modified By
+                            </div>
+                            <div class="column-item" draggable="true" data-column="modifiedTime">
+                                <span class="drag-handle">⋮⋮</span> Last Modified Time
+                            </div>
+                        </div>
+                    </div>
+                    <div class="columns-panel">
+                        <div class="columns-panel-header">
+                            <span style="color: #4285f4;">✓</span> SELECTED COLUMNS
+                        </div>
+                        <div class="columns-list selected" id="selectedColumns">
+                            <div class="column-item" data-column="date">
+                                <span class="drag-handle">⋮⋮</span> Date <span class="required-mark">*</span>
+                            </div>
+                            <div class="column-item" data-column="type">
+                                <span class="drag-handle">⋮⋮</span> Type <span class="required-mark">*</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visibility Preference Section -->
+                <div class="section-header">Visibility Preference</div>
+                <div class="visibility-section">
+                    <div class="visibility-label">Share With</div>
+                    <div class="radio-group-horizontal">
+                        <label class="radio-label">
+                            <input type="radio" name="visibility" value="only-me" checked>
+                            Only Me 🔒
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="visibility" value="selected">
+                            Only Selected Users & Roles ⓘ
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="visibility" value="everyone">
+                            Everyone 👥
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="justify-content: flex-start;">
+                <button class="btn-draft" onclick="saveCustomView()">Save</button>
+                <button class="btn-cancel" onclick="closeCustomViewModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Layout Script -->
+    <script src="/js/layout.js"></script>
+    <script>
+        // Set today's date as default
+        document.getElementById('adjustmentDate').valueAsDate = new Date();
+
+        // Check if we should auto-open the form (when coming from + button)
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('new') === 'true') {
+            // Auto-open the form
+            setTimeout(() => {
+                openAdjustmentModal();
+            }, 100);
+        }
+
+        // Modal functions
+        function openAdjustmentModal() {
+            document.getElementById('adjustmentModal').classList.add('active');
+        }
+
+        function closeAdjustmentModal() {
+            document.getElementById('adjustmentModal').classList.remove('active');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('adjustmentModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeAdjustmentModal();
+            }
+        });
+
+        // Add new item row
+        function addItemRow() {
+            const tbody = document.getElementById('itemTableBody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>
+                    <div class="item-select-cell">
+                        <span class="item-drag-handle">⋮⋮</span>
+                        <div class="item-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                <circle cx="8.5" cy="8.5" r="1.5"/>
+                                <polyline points="21 15 16 10 5 21"/>
+                            </svg>
+                        </div>
+                        <input type="text" class="item-select-input" placeholder="Type or click to select an item.">
+                    </div>
+                </td>
+                <td></td>
+                <td>
+                    <input type="number" class="quantity-input" value="0.00" step="0.01">
+                </td>
+                <td>
+                    <span class="quantity-placeholder">Eg. +10, -10</span>
+                </td>
+                <td>
+                    <div class="row-actions">
+                        <button class="btn-row-menu">⋮</button>
+                        <button class="btn-row-delete" onclick="removeItemRow(this)">✕</button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(newRow);
+        }
+
+        // Remove item row
+        function removeItemRow(btn) {
+            const row = btn.closest('tr');
+            const tbody = document.getElementById('itemTableBody');
+            if (tbody.children.length > 1) {
+                row.remove();
+            } else {
+                alert('You must have at least one item row');
+            }
+        }
+
+        // Add items in bulk
+        function addItemsInBulk() {
+            alert('Bulk import feature - select multiple items at once');
+        }
+
+        // Save as Draft
+        function saveAsDraft() {
+            const data = gatherFormData();
+            console.log('Saving as draft:', data);
+            alert('Adjustment saved as draft!');
+            closeAdjustmentModal();
+        }
+
+        // Convert to Adjusted
+        function convertToAdjusted() {
+            const data = gatherFormData();
+            if (!data.reason) {
+                alert('Please select a reason for the adjustment');
+                return;
+            }
+            console.log('Converting to adjusted:', data);
+            alert('Adjustment completed successfully!');
+            closeAdjustmentModal();
+        }
+
+        // Gather form data
+        function gatherFormData() {
+            return {
+                mode: document.querySelector('input[name="adjustmentMode"]:checked').value,
+                referenceNumber: document.getElementById('referenceNumber').value,
+                date: document.getElementById('adjustmentDate').value,
+                account: document.getElementById('accountSelect').value,
+                reason: document.getElementById('adjustmentReason').value,
+                description: document.getElementById('adjustmentDescription').value
+            };
+        }
+
+        // ===== Custom Dropdown Functions =====
+
+        // Toggle Type Dropdown
+        function toggleTypeDropdown() {
+            const toggle = document.querySelector('#typeDropdown .dropdown-toggle');
+            const menu = document.getElementById('typeDropdownMenu');
+            toggle.classList.toggle('active');
+            menu.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (e) {
+            const dropdown = document.getElementById('typeDropdown');
+            if (!dropdown.contains(e.target)) {
+                document.querySelector('#typeDropdown .dropdown-toggle').classList.remove('active');
+                document.getElementById('typeDropdownMenu').classList.remove('show');
+            }
+        });
+
+        // Select filter option
+        function selectFilter(value, label) {
+            // Update button text
+            document.querySelector('#typeDropdown .dropdown-toggle').innerHTML =
+                `Type: ${label} <span class="arrow">▼</span>`;
+
+            // Update selected state
+            document.querySelectorAll('#typeDropdownMenu .dropdown-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+
+            // Close dropdown
+            document.querySelector('#typeDropdown .dropdown-toggle').classList.remove('active');
+            document.getElementById('typeDropdownMenu').classList.remove('show');
+
+            // Apply filter (placeholder)
+            console.log('Filter applied:', value);
+        }
+
+        // Toggle favorite star
+        function toggleFavorite(btn) {
+            btn.classList.toggle('favorited');
+            if (btn.classList.contains('favorited')) {
+                btn.textContent = '★';
+            } else {
+                btn.textContent = '☆';
+            }
+        }
+
+        // ===== Period Dropdown Functions =====
+
+        // Toggle Period Dropdown
+        function togglePeriodDropdown() {
+            const toggle = document.querySelector('#periodDropdown .dropdown-toggle');
+            const menu = document.getElementById('periodDropdownMenu');
+            toggle.classList.toggle('active');
+            menu.classList.toggle('show');
+        }
+
+        // Close period dropdown when clicking outside
+        document.addEventListener('click', function (e) {
+            const periodDropdown = document.getElementById('periodDropdown');
+            if (periodDropdown && !periodDropdown.contains(e.target)) {
+                const toggle = document.querySelector('#periodDropdown .dropdown-toggle');
+                const menu = document.getElementById('periodDropdownMenu');
+                if (toggle) toggle.classList.remove('active');
+                if (menu) menu.classList.remove('show');
+            }
+        });
+
+        // Select period option
+        function selectPeriod(value, label) {
+            // Update button text
+            document.querySelector('#periodDropdown .dropdown-toggle').innerHTML =
+                `Period: ${label} <span class="arrow">▼</span>`;
+
+            // Update selected state with blue highlight
+            document.querySelectorAll('#periodDropdownMenu .period-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+
+            // Close dropdown
+            document.querySelector('#periodDropdown .dropdown-toggle').classList.remove('active');
+            document.getElementById('periodDropdownMenu').classList.remove('show');
+
+            // Apply period filter (placeholder - can be connected to actual filtering)
+            console.log('Period filter applied:', value);
+            applyPeriodFilter(value);
+        }
+
+        // Apply period filter function
+        function applyPeriodFilter(period) {
+            const today = new Date();
+            let startDate, endDate;
+
+            switch (period) {
+                case 'today':
+                    startDate = new Date(today);
+                    endDate = new Date(today);
+                    break;
+                case 'week':
+                    startDate = new Date(today);
+                    startDate.setDate(today.getDate() - today.getDay());
+                    endDate = new Date(today);
+                    break;
+                case 'month':
+                    startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                    endDate = new Date(today);
+                    break;
+                case 'quarter':
+                    const quarter = Math.floor(today.getMonth() / 3);
+                    startDate = new Date(today.getFullYear(), quarter * 3, 1);
+                    endDate = new Date(today);
+                    break;
+                case 'year':
+                    startDate = new Date(today.getFullYear(), 0, 1);
+                    endDate = new Date(today);
+                    break;
+                default: // all
+                    console.log('Showing all records');
+                    return;
+            }
+
+            console.log(`Filtering from ${startDate.toDateString()} to ${endDate.toDateString()}`);
+        }
+
+        // ===== Custom View Modal Functions =====
+
+        function openCustomViewModal() {
+            // Close type dropdown first
+            document.querySelector('#typeDropdown .dropdown-toggle').classList.remove('active');
+            document.getElementById('typeDropdownMenu').classList.remove('show');
+
+            // Open custom view modal
+            document.getElementById('customViewModal').classList.add('active');
+        }
+
+        function closeCustomViewModal() {
+            document.getElementById('customViewModal').classList.remove('active');
+        }
+
+        // Close custom view modal when clicking outside
+        document.getElementById('customViewModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeCustomViewModal();
+            }
+        });
+
+        // Save custom view
+        function saveCustomView() {
+            const name = document.getElementById('viewName').value;
+            const isFavorite = document.getElementById('markAsFavorite').checked;
+            const visibility = document.querySelector('input[name="visibility"]:checked').value;
+
+            if (!name.trim()) {
+                alert('Please enter a name for the custom view');
+                return;
+            }
+
+            console.log('Saving custom view:', { name, isFavorite, visibility });
+            alert('Custom view "' + name + '" saved successfully!');
+            closeCustomViewModal();
+        }
+
+        // ===== More Actions Dropdown Functions =====
+
+        function toggleMoreActions() {
+            const menu = document.getElementById('moreActionsMenu');
+            menu.classList.toggle('show');
+        }
+
+        // Close more actions when clicking outside
+        document.addEventListener('click', function (e) {
+            const container = document.querySelector('.more-actions-container');
+            if (container && !container.contains(e.target)) {
+                document.getElementById('moreActionsMenu').classList.remove('show');
+            }
+        });
+
+        // Sort By function
+        function sortBy(field) {
+            console.log('Sorting by:', field);
+            alert('Sorting by ' + field);
+            document.getElementById('moreActionsMenu').classList.remove('show');
+        }
+
+        // Import functions
+        function importQuantityAdjustments() {
+            console.log('Import Quantity Adjustments');
+            alert('Import Quantity Adjustments - Feature coming soon');
+            document.getElementById('moreActionsMenu').classList.remove('show');
+        }
+
+        function importValueAdjustments() {
+            console.log('Import Value Adjustments');
+            alert('Import Value Adjustments - Feature coming soon');
+            document.getElementById('moreActionsMenu').classList.remove('show');
+        }
+
+        // Export function
+        function exportInventoryAdjustments() {
+            console.log('Exporting Inventory Adjustments');
+            alert('Exporting Inventory Adjustments - Feature coming soon');
+            document.getElementById('moreActionsMenu').classList.remove('show');
+        }
+
+        // Refresh List function
+        function refreshList() {
+            console.log('Refreshing list...');
+            location.reload();
+        }
+    </script>
+</body>
+
+</html>
