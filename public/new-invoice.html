@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Invoice - Inventory Management</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', 'Source Sans Pro', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f5f6fa;
+            font-size: 12px;
+        }
+
+        .main-layout {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .content {
+            flex: 1;
+            margin-left: 260px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            flex-shrink: 0;
+        }
+
+        .page-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .page-icon {
+            font-size: 18px;
+        }
+
+        .page-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-icon-btn {
+            background: none;
+            border: none;
+            font-size: 16px;
+            color: #999;
+            cursor: pointer;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #999;
+            cursor: pointer;
+        }
+
+        /* Main Form Area */
+        .form-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding-bottom: 60px;
+        }
+
+        /* Form Section */
+        .form-section {
+            padding: 12px 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .form-section-gray {
+            background: #f9fafb;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .form-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-row-inline {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 10px;
+        }
+
+        .form-label {
+            font-size: 12px;
+            color: #333;
+        }
+
+        .form-label.required {
+            color: #dc2626;
+        }
+
+        .form-input {
+            padding: 8px 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 12px;
+            width: 100%;
+            max-width: 200px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+
+        .form-input.wide {
+            max-width: 350px;
+        }
+
+        .form-select {
+            padding: 8px 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 12px;
+            background: white;
+            cursor: pointer;
+            max-width: 200px;
+        }
+
+        .form-select.blue-border {
+            border-color: #4285f4;
+        }
+
+        .input-with-btn {
+            display: flex;
+            gap: 8px;
+            max-width: 350px;
+        }
+
+        .input-with-btn .form-select {
+            flex: 1;
+            max-width: none;
+        }
+
+        .input-add-btn {
+            padding: 8px 14px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .input-with-icon {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .input-icon {
+            color: #4285f4;
+            font-size: 12px;
+        }
+
+        .inline-label {
+            font-size: 12px;
+            color: #333;
+            margin-left: 20px;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 12px;
+            resize: none;
+            font-family: inherit;
+            height: 40px;
+        }
+
+        /* Item Table */
+        .item-table-section {
+            padding: 12px 20px;
+            background: #f9fafb;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .item-table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .item-table-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 16px;
+        }
+
+        .action-link {
+            color: #4285f4;
+            text-decoration: none;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .item-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            background: white;
+        }
+
+        .item-table th {
+            text-align: left;
+            padding: 8px 10px;
+            font-size: 10px;
+            font-weight: 600;
+            color: #999;
+            text-transform: uppercase;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .item-table th.center {
+            text-align: center;
+        }
+
+        .item-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .item-table td.center {
+            text-align: center;
+        }
+
+        .item-table input,
+        .item-table select {
+            padding: 6px 8px;
+            border: 1px solid #e0e0e0;
+            border-radius: 3px;
+            font-size: 11px;
+            width: 100%;
+        }
+
+        .item-checkbox {
+            width: 14px;
+            height: 14px;
+        }
+
+        .delete-row-btn {
+            background: none;
+            border: none;
+            color: #dc2626;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .add-row-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .add-row-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+
+        .add-row-btn.secondary {
+            background: white;
+            color: #333;
+            border: 1px solid #e0e0e0;
+        }
+
+        /* Totals and Notes Row */
+        .totals-notes-row {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 20px;
+            padding: 12px 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .notes-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .notes-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+        }
+
+        .notes-sublabel {
+            font-size: 10px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        .totals-column {
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .totals-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+            font-size: 11px;
+        }
+
+        .totals-label {
+            color: #666;
+        }
+
+        .totals-value {
+            color: #333;
+        }
+
+        .totals-input {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .totals-input input {
+            padding: 4px 6px;
+            border: 1px solid #e0e0e0;
+            border-radius: 3px;
+            font-size: 11px;
+            width: 50px;
+            text-align: right;
+        }
+
+        .totals-row.total {
+            border-top: 1px solid #e9ecef;
+            margin-top: 6px;
+            padding-top: 8px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        /* Terms Section */
+        .terms-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 12px 20px;
+            background: #f9fafb;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .terms-box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .attach-box {
+            background: white;
+            padding: 12px;
+            border-radius: 4px;
+        }
+
+        .attach-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .upload-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 10px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .upload-help {
+            font-size: 10px;
+            color: #999;
+            margin-top: 6px;
+        }
+
+        /* Payment Gateway Section */
+        .payment-section {
+            padding: 12px 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .payment-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .payment-text {
+            font-size: 11px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .payment-text a {
+            color: #4285f4;
+            text-decoration: none;
+        }
+
+        /* Additional Fields */
+        .additional-link {
+            padding: 10px 20px;
+            font-size: 11px;
+            color: #666;
+        }
+
+        .additional-link a {
+            color: #4285f4;
+            text-decoration: none;
+        }
+
+        /* Footer */
+        .form-footer {
+            position: fixed;
+            bottom: 0;
+            left: 260px;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+            z-index: 100;
+        }
+
+        .footer-left {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-draft {
+            padding: 8px 14px;
+            background: white;
+            color: #333;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-save-group {
+            display: flex;
+        }
+
+        .btn-save {
+            padding: 8px 14px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px 0 0 4px;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-save-dropdown {
+            padding: 8px 10px;
+            background: #3367d6;
+            color: white;
+            border: none;
+            border-left: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            font-size: 10px;
+        }
+
+        .btn-cancel {
+            padding: 8px 14px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .footer-right {
+            text-align: right;
+            font-size: 11px;
+            color: #333;
+        }
+
+        .footer-right .label {
+            color: #666;
+        }
+
+        .footer-right .amount {
+            font-weight: 600;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer"></div>
+
+    <div class="main-layout">
+        <div class="content" id="content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="page-title-wrapper">
+                    <span class="page-icon">📄</span>
+                    <h1 class="page-title">New Invoice</h1>
+                </div>
+                <div class="header-actions">
+                    <button class="header-icon-btn">⚙</button>
+                    <button class="close-btn" onclick="goBack()">×</button>
+                </div>
+            </div>
+
+            <!-- Main Form Area -->
+            <div class="form-main">
+                <!-- Customer Section -->
+                <div class="form-section">
+                    <div class="form-row">
+                        <label class="form-label required">Customer Name*</label>
+                        <div class="input-with-btn">
+                            <select class="form-select blue-border" id="customerName">
+                                <option value="">Select or add a customer</option>
+                            </select>
+                            <button class="input-add-btn">👤</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Invoice Details Section -->
+                <div class="form-section form-section-gray">
+                    <div class="form-row">
+                        <label class="form-label required">Invoice#*</label>
+                        <div class="input-with-icon">
+                            <input type="text" class="form-input" id="invoiceNumber" value="INV-000001">
+                            <span class="input-icon">⚙</span>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">Order Number</label>
+                        <input type="text" class="form-input" id="orderNumber">
+                    </div>
+                    <div class="form-row-inline">
+                        <label class="form-label required">Invoice Date*</label>
+                        <input type="text" class="form-input" id="invoiceDate" value="12 Jan 2026"
+                            style="max-width: 130px;">
+                        <span class="inline-label">Terms</span>
+                        <select class="form-select" id="terms" style="max-width: 130px;">
+                            <option value="due_on_receipt">Due on Receipt</option>
+                            <option value="net_15">Net 15</option>
+                            <option value="net_30">Net 30</option>
+                        </select>
+                        <span class="inline-label">Due Date</span>
+                        <input type="text" class="form-input" id="dueDate" value="12 Jan 2026"
+                            style="max-width: 130px;">
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">Salesperson</label>
+                        <select class="form-select" id="salesperson">
+                            <option value="">Select or Add Salesperson</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">Subject <span style="color: #999;">ⓘ</span></label>
+                        <textarea class="form-textarea" id="subject"
+                            placeholder="Let your customer know what this Invoice is for"></textarea>
+                    </div>
+                </div>
+
+                <!-- Item Table Section -->
+                <div class="item-table-section">
+                    <div class="item-table-header">
+                        <span class="item-table-title">Item Table</span>
+                        <div class="table-actions">
+                            <a href="#" class="action-link">📷 Scan Item</a>
+                            <a href="#" class="action-link">⚡ Bulk Actions</a>
+                        </div>
+                    </div>
+
+                    <table class="item-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 20px;"></th>
+                                <th>ITEM DETAILS</th>
+                                <th class="center" style="width: 100px;">QUANTITY</th>
+                                <th class="center" style="width: 80px;">RATE <span style="font-size: 9px;">₱</span></th>
+                                <th style="width: 120px;">TAX</th>
+                                <th class="center" style="width: 80px;">AMOUNT</th>
+                                <th style="width: 40px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemsBody">
+                            <tr>
+                                <td class="center" style="color: #ccc;">⋮⋮</td>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <span
+                                            style="width: 32px; height: 32px; background: #f5f5f5; border: 1px solid #e0e0e0; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#bbb"
+                                                stroke-width="2">
+                                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                                <polyline points="21 15 16 10 5 21"></polyline>
+                                            </svg>
+                                        </span>
+                                        <input type="text" placeholder="Type or click to select an item."
+                                            style="border: none; background: none; flex: 1; font-size: 12px; color: #999;">
+                                    </div>
+                                </td>
+                                <td class="center"><input type="text" value="1.00"
+                                        style="text-align: center; border: none; background: none;"></td>
+                                <td class="center"><input type="text" value="0.00"
+                                        style="text-align: center; border: none; background: none;"></td>
+                                <td>
+                                    <select style="border: none; background: none; color: #999;">
+                                        <option value="">Select a Tax</option>
+                                    </select>
+                                </td>
+                                <td class="center" style="font-weight: 500;">0.00</td>
+                                <td class="center"><button class="delete-row-btn"
+                                        style="display: flex; align-items: center; gap: 2px;"><span
+                                            style="color: #999;">⋮</span> <span
+                                            style="color: #dc2626;">×</span></button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="add-row-buttons">
+                        <button class="add-row-btn">+ Add New Row ▼</button>
+                        <button class="add-row-btn secondary">+ Add Items in Bulk</button>
+                    </div>
+                </div>
+
+                <!-- Totals and Notes Row -->
+                <div class="totals-notes-row">
+                    <div class="notes-column">
+                        <div class="notes-label">Customer Notes</div>
+                        <textarea class="form-textarea" id="customerNotes"
+                            placeholder="Thanks for your business."></textarea>
+                        <div class="notes-sublabel">Will be displayed on the invoice</div>
+                    </div>
+                    <div class="totals-column">
+                        <div class="totals-row">
+                            <span class="totals-label">Sub Total</span>
+                            <span class="totals-value">0.00</span>
+                        </div>
+                        <div class="totals-row">
+                            <span class="totals-label">Discount</span>
+                            <div class="totals-input">
+                                <input type="text" value="0"> %
+                                <span class="totals-value">0.00</span>
+                            </div>
+                        </div>
+                        <div class="totals-row">
+                            <span class="totals-label">Shipping Charges</span>
+                            <div class="totals-input">
+                                <input type="text" value=""> ⓘ
+                                <span class="totals-value">0.00</span>
+                            </div>
+                        </div>
+                        <div class="totals-row">
+                            <span class="totals-label">Adjustment</span>
+                            <div class="totals-input">
+                                <input type="text" value=""> ⓘ
+                                <span class="totals-value">0.00</span>
+                            </div>
+                        </div>
+                        <div class="totals-row total">
+                            <span class="totals-label">Total ( PHP )</span>
+                            <span class="totals-value">0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Terms Section -->
+                <div class="terms-section">
+                    <div class="terms-box">
+                        <div class="notes-label">Terms & Conditions</div>
+                        <textarea class="form-textarea" id="termsConditions"
+                            placeholder="Enter the terms and conditions of your business to be displayed in your transaction"></textarea>
+                    </div>
+                    <div class="attach-box">
+                        <div class="attach-title">Attach File(s) to Invoice</div>
+                        <button class="upload-btn" type="button">📤 Upload File ▼</button>
+                        <p class="upload-help">You can upload a maximum of 10 files, 10MB each</p>
+                    </div>
+                </div>
+
+                <!-- Payment Gateway Section -->
+                <div class="payment-section">
+                    <div class="payment-title">
+                        Want to get paid faster? 💳 <span style="color: #1a56db;">VISA</span>
+                    </div>
+                    <p class="payment-text">
+                        Configure payment gateways and receive payments online. <a href="#">Set up Payment Gateway</a>
+                    </p>
+                </div>
+
+                <!-- Additional Fields -->
+                <div class="additional-link">
+                    <span style="color: #999;">Additional Fields:</span>
+                    <span style="color: #999;">Start adding custom fields for your invoices by going to <a href="#"
+                            style="color: #999;">Settings</a> >> <a href="#" style="color: #999;">Sales</a> >> <a
+                            href="#" style="color: #999;">Invoices</a>.</span>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="form-footer">
+                <div class="footer-left">
+                    <button class="btn-draft" onclick="saveAsDraft()">Save as Draft</button>
+                    <div class="btn-save-group">
+                        <button class="btn-save" onclick="saveAndSend()">Save and Send</button>
+                        <button class="btn-save-dropdown">▼</button>
+                    </div>
+                    <button class="btn-cancel" onclick="goBack()">Cancel</button>
+                </div>
+                <div class="footer-right">
+                    <div><span class="label">Total Amount:</span> <span class="amount">PHP 0.00</span></div>
+                    <div><span class="label">Total Quantity:</span> 0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Layout Script -->
+    <script src="/js/layout.js"></script>
+    <script>
+        function goBack() {
+            window.location.href = '/invoices.html';
+        }
+
+        function saveAsDraft() {
+            alert('Invoice saved as draft!');
+            goBack();
+        }
+
+        function saveAndSend() {
+            const customerName = document.getElementById('customerName').value;
+            if (!customerName) {
+                alert('Please select a customer');
+                return;
+            }
+            alert('Invoice saved and sent!');
+            goBack();
+        }
+
+        document.querySelector('.add-row-btn').addEventListener('click', function () {
+            const tbody = document.getElementById('itemsBody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td class="center"><input type="checkbox" class="item-checkbox"></td>
+                <td><input type="text" placeholder="Type or click to select an item."></td>
+                <td class="center"><input type="number" value="1.00" style="text-align: center;"></td>
+                <td class="center"><input type="number" value="0.00" style="text-align: right;"></td>
+                <td><select><option value="">Select a Tax</option></select></td>
+                <td class="center">0.00</td>
+                <td class="center"><button class="delete-row-btn">: ×</button></td>
+            `;
+            tbody.appendChild(newRow);
+        });
+    </script>
+</body>
+
+</html>

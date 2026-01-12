@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Customers - Inventory Management</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', 'Source Sans Pro', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f5f6fa;
+            font-size: 13px;
+        }
+
+        /* Main Content */
+        .main-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 0;
+            background: white;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .page-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .page-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .page-title:hover {
+            color: #4285f4;
+        }
+
+        .dropdown-arrow {
+            font-size: 10px;
+            color: #666;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-new {
+            padding: 8px 16px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-new:hover {
+            background: #3367d6;
+        }
+
+        .btn-more {
+            width: 36px;
+            height: 36px;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-more:hover {
+            background: #f5f5f5;
+        }
+
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 120px 24px;
+            text-align: center;
+        }
+
+        .empty-state-icon {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .empty-state-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .person-circle {
+            fill: #c7d2fe;
+        }
+
+        .person-body {
+            fill: #818cf8;
+        }
+
+        .plus-circle {
+            fill: #4285f4;
+        }
+
+        .plus-icon {
+            fill: white;
+        }
+
+        .empty-state-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 12px 0;
+        }
+
+        .empty-state-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin: 0 0 32px 0;
+            max-width: 450px;
+        }
+
+        .empty-state-actions {
+            display: flex;
+            gap: 16px;
+        }
+
+        .btn-create {
+            padding: 10px 20px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-create:hover {
+            background: #3367d6;
+        }
+
+        .btn-import {
+            padding: 10px 20px;
+            background: white;
+            color: #333;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-import:hover {
+            background: #f5f5f5;
+        }
+
+        /* Customers Table */
+        .customers-container {
+            padding: 24px;
+        }
+
+        .customers-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        .customers-table th {
+            text-align: left;
+            padding: 14px 16px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e9ecef;
+            background: #f9fafb;
+        }
+
+        .customers-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer"></div>
+
+    <div class="main-layout">
+        <div class="content" id="content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="page-title-wrapper">
+                    <h1 class="page-title">
+                        All Customers
+                        <span class="dropdown-arrow">▼</span>
+                    </h1>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-new" onclick="createCustomer()">
+                        <span>+</span> New
+                    </button>
+                    <button class="btn-more">⋯</button>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState">
+                <div class="empty-state-icon">
+                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Person icon -->
+                        <circle cx="50" cy="35" r="18" class="person-circle" />
+                        <ellipse cx="50" cy="75" rx="30" ry="20" class="person-body" />
+                        <!-- Plus badge -->
+                        <circle cx="72" cy="65" r="14" class="plus-circle" />
+                        <rect x="67" y="63" width="10" height="4" rx="2" class="plus-icon" />
+                        <rect x="70" y="60" width="4" height="10" rx="2" class="plus-icon" />
+                    </svg>
+                </div>
+                <h2 class="empty-state-title">Every sales starts with a customer</h2>
+                <p class="empty-state-subtitle">Create and manage your customers and their contact persons, all in one
+                    place.</p>
+                <div class="empty-state-actions">
+                    <button class="btn-create" onclick="createCustomer()">
+                        <span>+</span> Create New Customer
+                    </button>
+                    <button class="btn-import">
+                        <span>↓</span> Import File
+                    </button>
+                </div>
+            </div>
+
+            <!-- Customers Container (hidden when empty) -->
+            <div class="customers-container" id="customersContainer" style="display: none;">
+                <table class="customers-table">
+                    <thead>
+                        <tr>
+                            <th>NAME</th>
+                            <th>COMPANY NAME</th>
+                            <th>EMAIL</th>
+                            <th>PHONE</th>
+                            <th>RECEIVABLES</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customersBody">
+                        <!-- Customers will be added here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Layout Script -->
+    <script src="/js/layout.js"></script>
+    <script>
+        // Create new customer
+        function createCustomer() {
+            window.location.href = '/new-customer.html';
+        }
+    </script>
+</body>
+
+</html>

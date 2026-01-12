@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Customer - Inventory Management</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', 'Source Sans Pro', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f5f6fa;
+            font-size: 13px;
+        }
+
+        .main-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 0;
+            background: white;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        /* Form Container */
+        .form-container {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 80px;
+        }
+
+        .form-section {
+            padding: 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            font-size: 13px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .form-label.required {
+            color: #dc2626;
+        }
+
+        .info-icon {
+            color: #999;
+            font-size: 12px;
+            cursor: help;
+        }
+
+        /* Radio Buttons */
+        .radio-group {
+            display: flex;
+            gap: 24px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .radio-option input {
+            margin: 0;
+        }
+
+        /* Form Inputs */
+        .form-input {
+            padding: 10px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            width: 100%;
+            max-width: 200px;
+            box-sizing: border-box;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+
+        .form-input.wide {
+            max-width: 300px;
+        }
+
+        .form-select {
+            padding: 10px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            background: white;
+            cursor: pointer;
+            min-width: 120px;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+
+        /* Input Groups */
+        .input-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .phone-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .phone-group .form-select {
+            min-width: 70px;
+        }
+
+        .phone-group .form-input {
+            max-width: 140px;
+        }
+
+        /* Email Input with Icon */
+        .email-input-wrapper {
+            position: relative;
+            max-width: 200px;
+        }
+
+        .email-input-wrapper .form-input {
+            padding-left: 32px;
+            max-width: 100%;
+        }
+
+        .email-icon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 14px;
+        }
+
+        /* Tabs */
+        .tabs-container {
+            border-bottom: 1px solid #e9ecef;
+            padding: 0 24px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0;
+        }
+
+        .tab {
+            padding: 14px 20px;
+            background: none;
+            border: none;
+            font-size: 13px;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: #333;
+        }
+
+        .tab.active {
+            color: #333;
+            border-bottom-color: #333;
+            font-weight: 500;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            padding: 24px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Help Text */
+        .help-text {
+            font-size: 12px;
+            color: #999;
+            margin-top: 6px;
+        }
+
+        .help-text a {
+            color: #4285f4;
+            text-decoration: none;
+        }
+
+        .help-text a:hover {
+            text-decoration: underline;
+        }
+
+        /* Checkbox */
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-label {
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* Upload Button */
+        .upload-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .upload-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .upload-help {
+            font-size: 12px;
+            color: #999;
+            margin-top: 8px;
+        }
+
+        /* Add More Link */
+        .add-more-link {
+            color: #4285f4;
+            text-decoration: none;
+            font-size: 13px;
+            display: inline-block;
+            margin-top: 16px;
+        }
+
+        .add-more-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .form-footer {
+            position: fixed;
+            bottom: 0;
+            left: 260px;
+            right: 0;
+            display: flex;
+            gap: 12px;
+            padding: 16px 24px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+            z-index: 100;
+        }
+
+        .btn-save {
+            padding: 10px 20px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-save:hover {
+            background: #3367d6;
+        }
+
+        .btn-cancel {
+            padding: 10px 20px;
+            background: #f0f0f0;
+            color: #333;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-cancel:hover {
+            background: #e0e0e0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer"></div>
+
+    <div class="main-layout">
+        <div class="content" id="content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">New Customer</h1>
+                <button class="close-btn" onclick="goBack()">×</button>
+            </div>
+
+            <!-- Form Container -->
+            <div class="form-container">
+                <!-- Basic Info Section -->
+                <div class="form-section">
+                    <!-- Customer Type -->
+                    <div class="form-row">
+                        <label class="form-label">Customer Type <span class="info-icon">ⓘ</span></label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="customerType" value="business" checked>
+                                Business
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="customerType" value="individual">
+                                Individual
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Primary Contact -->
+                    <div class="form-row">
+                        <label class="form-label">Primary Contact <span class="info-icon">ⓘ</span></label>
+                        <div class="input-group">
+                            <select class="form-select" id="salutation">
+                                <option value="">Salutation</option>
+                                <option value="Mr.">Mr.</option>
+                                <option value="Mrs.">Mrs.</option>
+                                <option value="Ms.">Ms.</option>
+                                <option value="Dr.">Dr.</option>
+                            </select>
+                            <input type="text" class="form-input" id="firstName" placeholder="First Name">
+                            <input type="text" class="form-input" id="lastName" placeholder="Last Name">
+                        </div>
+                    </div>
+
+                    <!-- Company Name -->
+                    <div class="form-row">
+                        <label class="form-label">Company Name</label>
+                        <input type="text" class="form-input wide" id="companyName">
+                    </div>
+
+                    <!-- Display Name -->
+                    <div class="form-row">
+                        <label class="form-label required">Display Name* <span class="info-icon">ⓘ</span></label>
+                        <select class="form-select" id="displayName" style="max-width: 300px;">
+                            <option value="">Select or type to add</option>
+                        </select>
+                    </div>
+
+                    <!-- Email Address -->
+                    <div class="form-row">
+                        <label class="form-label">Email Address <span class="info-icon">ⓘ</span></label>
+                        <div class="email-input-wrapper">
+                            <span class="email-icon">✉</span>
+                            <input type="email" class="form-input" id="email">
+                        </div>
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="form-row">
+                        <label class="form-label">Phone <span class="info-icon">ⓘ</span></label>
+                        <div class="input-group">
+                            <div class="phone-group">
+                                <select class="form-select" id="workPhoneCode">
+                                    <option value="+63">+63</option>
+                                </select>
+                                <input type="text" class="form-input" id="workPhone" placeholder="Work Phone">
+                            </div>
+                            <div class="phone-group">
+                                <select class="form-select" id="mobileCode">
+                                    <option value="+63">+63</option>
+                                </select>
+                                <input type="text" class="form-input" id="mobile" placeholder="Mobile">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Customer Language -->
+                    <div class="form-row">
+                        <label class="form-label">Customer Language <span class="info-icon">ⓘ</span></label>
+                        <select class="form-select" id="customerLanguage" style="max-width: 200px;">
+                            <option value="English">English</option>
+                            <option value="Filipino">Filipino</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="tabs-container">
+                    <div class="tabs">
+                        <button class="tab active" data-tab="otherDetails">Other Details</button>
+                        <button class="tab" data-tab="address">Address</button>
+                        <button class="tab" data-tab="contactPersons">Contact Persons</button>
+                        <button class="tab" data-tab="customFields">Custom Fields</button>
+                        <button class="tab" data-tab="reportingTags">Reporting Tags</button>
+                        <button class="tab" data-tab="remarks">Remarks</button>
+                    </div>
+                </div>
+
+                <!-- Tab Contents -->
+                <div class="tab-content active" id="otherDetails">
+                    <!-- Tax Rate -->
+                    <div class="form-row">
+                        <label class="form-label">Tax Rate</label>
+                        <div>
+                            <select class="form-select" id="taxRate" style="max-width: 200px;">
+                                <option value="">Select a Tax</option>
+                            </select>
+                            <p class="help-text">To associate more than one tax, you need to create a tax group in <a
+                                    href="#">Settings</a>.</p>
+                        </div>
+                    </div>
+
+                    <!-- Company ID -->
+                    <div class="form-row">
+                        <label class="form-label">Company ID <span class="info-icon">ⓘ</span></label>
+                        <input type="text" class="form-input wide" id="companyId">
+                    </div>
+
+                    <!-- Currency -->
+                    <div class="form-row">
+                        <label class="form-label">Currency</label>
+                        <select class="form-select" id="currency" style="max-width: 200px;">
+                            <option value="PHP">PHP - Philippine Peso</option>
+                            <option value="USD">USD - US Dollar</option>
+                        </select>
+                    </div>
+
+                    <!-- Payment Terms -->
+                    <div class="form-row">
+                        <label class="form-label">Payment Terms</label>
+                        <select class="form-select" id="paymentTerms" style="max-width: 200px;">
+                            <option value="due_on_receipt">Due on Receipt</option>
+                            <option value="net_15">Net 15</option>
+                            <option value="net_30">Net 30</option>
+                            <option value="net_45">Net 45</option>
+                            <option value="net_60">Net 60</option>
+                        </select>
+                    </div>
+
+                    <!-- Enable Portal -->
+                    <div class="form-row">
+                        <label class="form-label">Enable Portal? <span class="info-icon">ⓘ</span></label>
+                        <div class="checkbox-row">
+                            <input type="checkbox" id="enablePortal">
+                            <label class="checkbox-label" for="enablePortal">Allow portal access for this
+                                customer</label>
+                        </div>
+                    </div>
+
+                    <!-- Documents -->
+                    <div class="form-row">
+                        <label class="form-label">Documents</label>
+                        <div>
+                            <button class="upload-btn" type="button">
+                                <span>📤</span> Upload File
+                                <span>▼</span>
+                            </button>
+                            <p class="upload-help">You can upload a maximum of 10 files, 10MB each</p>
+                        </div>
+                    </div>
+
+                    <!-- Add More Details Link -->
+                    <a href="#" class="add-more-link">Add more details</a>
+                </div>
+
+                <div class="tab-content" id="address">
+                    <p style="color: #999;">Address fields will be shown here</p>
+                </div>
+
+                <div class="tab-content" id="contactPersons">
+                    <p style="color: #999;">Contact persons will be shown here</p>
+                </div>
+
+                <div class="tab-content" id="customFields">
+                    <p style="color: #999;">Custom fields will be shown here</p>
+                </div>
+
+                <div class="tab-content" id="reportingTags">
+                    <p style="color: #999;">Reporting tags will be shown here</p>
+                </div>
+
+                <div class="tab-content" id="remarks">
+                    <p style="color: #999;">Remarks will be shown here</p>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="form-footer">
+                <button class="btn-save" onclick="saveCustomer()">Save</button>
+                <button class="btn-cancel" onclick="goBack()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Layout Script -->
+    <script src="/js/layout.js"></script>
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function () {
+                // Remove active from all tabs
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                // Add active to clicked tab
+                this.classList.add('active');
+                document.getElementById(this.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Go back to customers list
+        function goBack() {
+            window.location.href = '/customers.html';
+        }
+
+        // Save Customer
+        function saveCustomer() {
+            const displayName = document.getElementById('displayName').value;
+
+            if (!displayName) {
+                alert('Please select or enter a Display Name');
+                return;
+            }
+
+            // Here you would save to the database
+            const customerData = {
+                customerType: document.querySelector('input[name="customerType"]:checked').value,
+                salutation: document.getElementById('salutation').value,
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                companyName: document.getElementById('companyName').value,
+                displayName: displayName,
+                email: document.getElementById('email').value,
+                workPhone: document.getElementById('workPhone').value,
+                mobile: document.getElementById('mobile').value,
+                customerLanguage: document.getElementById('customerLanguage').value,
+                taxRate: document.getElementById('taxRate').value,
+                companyId: document.getElementById('companyId').value,
+                currency: document.getElementById('currency').value,
+                paymentTerms: document.getElementById('paymentTerms').value,
+                enablePortal: document.getElementById('enablePortal').checked
+            };
+
+            console.log('Saving customer:', customerData);
+            alert('Customer saved successfully!');
+            goBack();
+        }
+    </script>
+</body>
+
+</html>

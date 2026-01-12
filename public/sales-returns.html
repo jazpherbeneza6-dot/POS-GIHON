@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Returns - Inventory Management</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', 'Source Sans Pro', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f5f6fa;
+            font-size: 13px;
+        }
+
+        .main-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 0;
+            background: white;
+        }
+
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 150px 24px;
+            text-align: center;
+            min-height: calc(100vh - 100px);
+        }
+
+        .empty-state-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 16px 0;
+        }
+
+        .empty-state-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin: 0 0 32px 0;
+            max-width: 500px;
+            line-height: 1.6;
+        }
+
+        .btn-sales-orders {
+            padding: 12px 28px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-sales-orders:hover {
+            background: #3367d6;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer"></div>
+
+    <div class="main-layout">
+        <div class="content" id="content">
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState">
+                <h2 class="empty-state-title">Sales Returns</h2>
+                <p class="empty-state-subtitle">Process your product returns in few simple steps and get your inventory
+                    automatically sorted out.<br>Start creating sales returns from sales orders</p>
+                <button class="btn-sales-orders" onclick="goToSalesOrders()">GO TO SALES ORDERS</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Layout Script -->
+    <script src="/js/layout.js"></script>
+    <script>
+        // Go to sales orders
+        function goToSalesOrders() {
+            window.location.href = '/sales-orders.html';
+        }
+    </script>
+</body>
+
+</html>

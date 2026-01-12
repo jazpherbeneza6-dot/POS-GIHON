@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Record Payment - Inventory Management</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', 'Source Sans Pro', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f5f6fa;
+            font-size: 12px;
+        }
+
+        .main-layout {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .content {
+            flex: 1;
+            margin-left: 260px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            flex-shrink: 0;
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        /* Main Form Area */
+        .form-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding-bottom: 60px;
+        }
+
+        /* Customer Section with Blue Background */
+        .customer-section {
+            padding: 16px 24px;
+            background: #f0f7ff;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        /* Form Section */
+        .form-section {
+            padding: 16px 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            font-size: 13px;
+            color: #333;
+        }
+
+        .form-label.required {
+            color: #dc2626;
+        }
+
+        .form-input {
+            padding: 10px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+
+        .form-select {
+            padding: 10px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            background: white;
+            cursor: pointer;
+            max-width: 350px;
+            width: 100%;
+        }
+
+        .form-select.blue-border {
+            border-color: #4285f4;
+        }
+
+        .input-with-icon {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            max-width: 350px;
+        }
+
+        .input-icon {
+            color: #4285f4;
+            font-size: 14px;
+        }
+
+        /* Tax Deducted Options */
+        .tax-options {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .tax-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .tax-option input[type="radio"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #4285f4;
+        }
+
+        /* Unpaid Invoices Section */
+        .invoices-section {
+            padding: 16px 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .invoices-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .invoices-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .filter-link {
+            color: #666;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .clear-link {
+            color: #4285f4;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .invoices-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            background: white;
+        }
+
+        .invoices-table th {
+            text-align: left;
+            padding: 10px 12px;
+            font-size: 11px;
+            font-weight: 500;
+            color: #999;
+            text-transform: uppercase;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .invoices-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #333;
+        }
+
+        .empty-invoices {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+            font-size: 13px;
+        }
+
+        .list-note {
+            font-size: 11px;
+            color: #999;
+            margin-top: 12px;
+        }
+
+        /* Totals Section */
+        .totals-section {
+            padding: 16px 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .totals-row {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 24px;
+            padding: 6px 0;
+            font-size: 13px;
+        }
+
+        .totals-label {
+            color: #333;
+            min-width: 180px;
+            text-align: right;
+        }
+
+        .totals-value {
+            color: #333;
+            min-width: 60px;
+            text-align: right;
+        }
+
+        .totals-row.excess .totals-label {
+            color: #dc2626;
+        }
+
+        .totals-row.excess .totals-value {
+            color: #dc2626;
+        }
+
+        /* Notes Section */
+        .notes-section {
+            padding: 16px 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .notes-title {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .notes-textarea {
+            width: 100%;
+            max-width: 600px;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 12px;
+            resize: vertical;
+            font-family: inherit;
+            height: 80px;
+        }
+
+        /* Attachments Section */
+        .attachments-section {
+            padding: 16px 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .attachments-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .upload-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .upload-help {
+            font-size: 11px;
+            color: #999;
+            margin-top: 8px;
+        }
+
+        /* Additional Fields */
+        .additional-link {
+            padding: 16px 24px;
+            font-size: 12px;
+            color: #999;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .additional-link a {
+            color: #999;
+        }
+
+        /* Footer */
+        .form-footer {
+            position: fixed;
+            bottom: 0;
+            left: 260px;
+            right: 0;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 12px 24px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .btn-draft {
+            padding: 10px 20px;
+            background: white;
+            color: #333;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-draft:hover {
+            background: #f5f5f5;
+        }
+
+        .btn-save-group {
+            display: flex;
+        }
+
+        .btn-save {
+            padding: 10px 16px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px 0 0 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-save:hover {
+            background: #3367d6;
+        }
+
+        .btn-save-dropdown {
+            padding: 10px 12px;
+            background: #3367d6;
+            color: white;
+            border: none;
+            border-left: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            font-size: 10px;
+        }
+
+        .btn-cancel {
+            padding: 10px 20px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-cancel:hover {
+            background: #444;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer"></div>
+
+    <div class="main-layout">
+        <div class="content" id="content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">Record Payment</h1>
+                <button class="close-btn" onclick="goBack()">×</button>
+            </div>
+
+            <!-- Main Form Area -->
+            <div class="form-main">
+                <!-- Customer Section -->
+                <div class="customer-section">
+                    <div class="form-row">
+                        <label class="form-label required">Customer Name*</label>
+                        <select class="form-select blue-border" id="customerName">
+                            <option value="">Select Customer</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Payment Details Section -->
+                <div class="form-section">
+                    <div class="form-row">
+                        <label class="form-label required">Amount Received*</label>
+                        <input type="text" class="form-input" id="amountReceived" placeholder="">
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">Bank Charges (if any)</label>
+                        <input type="text" class="form-input" id="bankCharges" placeholder="">
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label required">Payment Date*</label>
+                        <input type="text" class="form-input" id="paymentDate" placeholder="dd MMM yyyy"
+                            style="max-width: 200px;">
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label required">Payment #*</label>
+                        <div class="input-with-icon">
+                            <input type="text" class="form-input" id="paymentNumber" placeholder="">
+                            <span class="input-icon">⚙</span>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">Payment Mode</label>
+                        <select class="form-select" id="paymentMode">
+                            <option value="">Choose the payment term or type to add</option>
+                            <option value="cash">Cash</option>
+                            <option value="bank_transfer">Bank Transfer</option>
+                            <option value="credit_card">Credit Card</option>
+                            <option value="check">Check</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label required">Deposit To*</label>
+                        <select class="form-select" id="depositTo">
+                            <option value="">Select an account</option>
+                            <option value="petty_cash">Petty Cash</option>
+                            <option value="bank_account">Bank Account</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">Reference#</label>
+                        <input type="text" class="form-input" id="reference" placeholder="">
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">Tax deducted?</label>
+                        <div class="tax-options">
+                            <label class="tax-option">
+                                <input type="radio" name="taxDeducted" value="no" checked> No Tax deducted
+                            </label>
+                            <label class="tax-option">
+                                <input type="radio" name="taxDeducted" value="yes"> Yes, TDS
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Unpaid Invoices Section -->
+                <div class="invoices-section">
+                    <div class="invoices-header">
+                        <div class="invoices-title">
+                            Unpaid Invoices
+                            <span class="filter-link">📅 Filter by Date Range <span>▼</span></span>
+                        </div>
+                        <a href="#" class="clear-link">Clear Applied Amount</a>
+                    </div>
+
+                    <table class="invoices-table">
+                        <thead>
+                            <tr>
+                                <th>DATE</th>
+                                <th>INVOICE NUMBER</th>
+                                <th>INVOICE AMOUNT</th>
+                                <th>AMOUNT DUE</th>
+                                <th>PAYMENT RECEIVED ON 📅</th>
+                                <th>PAYMENT</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoicesBody">
+                        </tbody>
+                    </table>
+
+                    <div class="empty-invoices">
+                        There are no unpaid Invoices associated with this customer.
+                    </div>
+
+                    <p class="list-note">**List contains only SENT Invoices</p>
+                </div>
+
+                <!-- Totals Section -->
+                <div class="totals-section">
+                    <div class="totals-row">
+                        <span class="totals-label">Total</span>
+                        <span class="totals-value">0</span>
+                    </div>
+                    <div class="totals-row">
+                        <span class="totals-label">Amount Received :</span>
+                        <span class="totals-value">0</span>
+                    </div>
+                    <div class="totals-row">
+                        <span class="totals-label">Amount used for Payments :</span>
+                        <span class="totals-value">0</span>
+                    </div>
+                    <div class="totals-row">
+                        <span class="totals-label">Amount Refunded :</span>
+                        <span class="totals-value">0</span>
+                    </div>
+                    <div class="totals-row excess">
+                        <span class="totals-label">⚠️ Amount in Excess:</span>
+                        <span class="totals-value">0</span>
+                    </div>
+                </div>
+
+                <!-- Notes Section -->
+                <div class="notes-section">
+                    <div class="notes-title">Notes (Internal use. Not visible to customer)</div>
+                    <textarea class="notes-textarea" id="notes" placeholder=""></textarea>
+                </div>
+
+                <!-- Attachments Section -->
+                <div class="attachments-section">
+                    <div class="attachments-title">Attachments</div>
+                    <button class="upload-btn" type="button">📤 Upload File <span>▼</span></button>
+                    <p class="upload-help">You can upload a maximum of 5 files, 5MB each</p>
+                </div>
+
+                <!-- Additional Fields -->
+                <div class="additional-link">
+                    <span style="color: #999;">Additional Fields:</span>
+                    <span style="color: #999;">Start adding custom fields for your payments received by going to <a
+                            href="#">Settings</a> → <a href="#">Sales</a> → <a href="#">Payments Received</a></span>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="form-footer">
+                <button class="btn-draft" onclick="saveAsDraft()">Save as Draft</button>
+                <div class="btn-save-group">
+                    <button class="btn-save" onclick="saveAsPaid()">Save as Paid</button>
+                    <button class="btn-save-dropdown">▼</button>
+                </div>
+                <button class="btn-cancel" onclick="goBack()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Layout Script -->
+    <script src="/js/layout.js"></script>
+    <script>
+        function goBack() {
+            window.location.href = '/payments-received.html';
+        }
+
+        function saveAsDraft() {
+            alert('Payment saved as draft!');
+            goBack();
+        }
+
+        function saveAsPaid() {
+            const customerName = document.getElementById('customerName').value;
+            const amountReceived = document.getElementById('amountReceived').value;
+            if (!customerName) {
+                alert('Please select a customer');
+                return;
+            }
+            if (!amountReceived) {
+                alert('Please enter amount received');
+                return;
+            }
+            alert('Payment saved!');
+            goBack();
+        }
+    </script>
+</body>
+
+</html>

@@ -49,12 +49,19 @@
                 }
             });
 
-            // For submenu items, just expand the parent menu but don't highlight the submenu item
+            // For submenu items, expand the parent menu AND highlight the submenu item
             const submenuItems = document.querySelectorAll('.nav-submenu-item[data-page]');
             submenuItems.forEach(item => {
                 const itemPage = item.getAttribute('data-page');
                 if (itemPage === pageName || (pageName === '' && itemPage === 'index')) {
-                    // Expand the parent submenu only
+                    // Add active class to the submenu item
+                    item.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                    item.classList.add('active');
+
+                    // Update localStorage to match the current page
+                    localStorage.setItem('activeSubmenuItem', itemPage);
+
+                    // Expand the parent submenu
                     const parentSubmenu = item.closest('.nav-submenu');
                     if (parentSubmenu) {
                         const parentButton = parentSubmenu.previousElementSibling;
