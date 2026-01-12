@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Vendor - Inventory Management</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', 'Source Sans Pro', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f5f6fa;
+            font-size: 12px;
+        }
+
+        .main-layout {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .content {
+            flex: 1;
+            margin-left: 260px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            flex-shrink: 0;
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        /* Main Form Area */
+        .form-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding-bottom: 80px;
+        }
+
+        /* Form Section */
+        .form-section {
+            padding: 16px 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            font-size: 13px;
+            color: #333;
+            padding-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .form-label.required {
+            color: #dc2626;
+        }
+
+        .info-icon {
+            color: #999;
+            font-size: 12px;
+            cursor: help;
+        }
+
+        .form-input {
+            padding: 10px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            width: 100%;
+            max-width: 250px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+
+        .form-input.highlight {
+            border-color: #4285f4;
+            background: #f0f7ff;
+        }
+
+        .form-select {
+            padding: 10px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            background: white;
+            cursor: pointer;
+            max-width: 250px;
+            width: 100%;
+        }
+
+        .name-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .name-group .form-select {
+            max-width: 100px;
+        }
+
+        .name-group .form-input {
+            max-width: 150px;
+        }
+
+        .phone-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .phone-group .form-select {
+            max-width: 70px;
+        }
+
+        .phone-group .form-input {
+            max-width: 120px;
+        }
+
+        /* Tabs */
+        .tabs-section {
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .tabs {
+            display: flex;
+            padding: 0 24px;
+            gap: 0;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            font-size: 13px;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: #333;
+        }
+
+        .tab.active {
+            color: #333;
+            font-weight: 500;
+            border-bottom-color: #4285f4;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            padding: 16px 24px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .tab-form-row {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .tab-hint {
+            font-size: 11px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        .tab-hint a {
+            color: #4285f4;
+            text-decoration: none;
+        }
+
+        /* Checkbox */
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-row input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #4285f4;
+        }
+
+        .checkbox-label {
+            font-size: 13px;
+            color: #333;
+        }
+
+        /* Upload Section */
+        .upload-section {
+            margin-top: 8px;
+        }
+
+        .upload-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .upload-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .upload-hint {
+            font-size: 11px;
+            color: #999;
+            margin-top: 8px;
+        }
+
+        /* Add More Details */
+        .add-more-link {
+            padding: 16px 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .add-more-link a {
+            color: #4285f4;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        .add-more-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .form-footer {
+            position: fixed;
+            bottom: 0;
+            left: 260px;
+            right: 0;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 12px 24px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .btn-save {
+            padding: 10px 20px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-save:hover {
+            background: #3367d6;
+        }
+
+        .btn-cancel {
+            padding: 10px 20px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-cancel:hover {
+            background: #444;
+        }
+
+        /* Address Tab */
+        .address-section {
+            margin-bottom: 24px;
+        }
+
+        .address-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        /* Contact Persons Tab */
+        .contact-persons-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .contact-persons-table th {
+            text-align: left;
+            padding: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            background: #f9fafb;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .contact-persons-table td {
+            padding: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .add-contact-btn {
+            background: none;
+            border: none;
+            color: #4285f4;
+            font-size: 13px;
+            cursor: pointer;
+            padding: 8px 0;
+        }
+
+        .add-contact-btn:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer"></div>
+
+    <div class="main-layout">
+        <div class="content" id="content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">New Vendor</h1>
+                <button class="close-btn" onclick="goBack()">×</button>
+            </div>
+
+            <!-- Main Form Area -->
+            <div class="form-main">
+                <!-- Primary Contact Section -->
+                <div class="form-section">
+                    <div class="form-row">
+                        <label class="form-label">Primary Contact <span class="info-icon">ⓘ</span></label>
+                        <div class="name-group">
+                            <select class="form-select" id="salutation">
+                                <option value="">Salutation</option>
+                                <option value="mr">Mr.</option>
+                                <option value="mrs">Mrs.</option>
+                                <option value="ms">Ms.</option>
+                                <option value="dr">Dr.</option>
+                            </select>
+                            <input type="text" class="form-input highlight" id="firstName" placeholder="First Name">
+                            <input type="text" class="form-input" id="lastName" placeholder="Last Name">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">Company Name</label>
+                        <input type="text" class="form-input" id="companyName">
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label required">Display Name* <span class="info-icon">ⓘ</span></label>
+                        <select class="form-select" id="displayName">
+                            <option value="">Select or type to add</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">Email Address <span class="info-icon">ⓘ</span></label>
+                        <input type="email" class="form-input" id="email" placeholder="📧">
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">Phone <span class="info-icon">ⓘ</span></label>
+                        <div class="phone-group">
+                            <select class="form-select" id="workPhoneCode">
+                                <option value="+63">+63</option>
+                                <option value="+1">+1</option>
+                            </select>
+                            <input type="text" class="form-input" id="workPhone" placeholder="Work Phone">
+                            <select class="form-select" id="mobileCode">
+                                <option value="+63">+63</option>
+                                <option value="+1">+1</option>
+                            </select>
+                            <input type="text" class="form-input" id="mobile" placeholder="Mobile">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">Vendor Language <span class="info-icon">ⓘ</span></label>
+                        <select class="form-select" id="vendorLanguage">
+                            <option value="english">English</option>
+                            <option value="filipino">Filipino</option>
+                            <option value="spanish">Spanish</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Tabs Section -->
+                <div class="tabs-section">
+                    <div class="tabs">
+                        <div class="tab active" data-tab="other-details">Other Details</div>
+                        <div class="tab" data-tab="address">Address</div>
+                        <div class="tab" data-tab="contact-persons">Contact Persons</div>
+                        <div class="tab" data-tab="custom-fields">Custom Fields</div>
+                        <div class="tab" data-tab="reporting-tags">Reporting Tags</div>
+                        <div class="tab" data-tab="remarks">Remarks</div>
+                    </div>
+                </div>
+
+                <!-- Other Details Tab -->
+                <div class="tab-content active" id="other-details">
+                    <div class="tab-form-row">
+                        <label class="form-label">Tax Rate</label>
+                        <div>
+                            <select class="form-select" id="taxRate" style="max-width: 350px;">
+                                <option value="">Select a Tax</option>
+                                <option value="12">VAT 12%</option>
+                                <option value="0">Exempt</option>
+                            </select>
+                            <div class="tab-hint">To associate more than one tax, you need to create a tax group in <a
+                                    href="#">Settings</a>.</div>
+                        </div>
+                    </div>
+                    <div class="tab-form-row">
+                        <label class="form-label">Company ID <span class="info-icon">ⓘ</span></label>
+                        <input type="text" class="form-input" id="companyId" style="max-width: 250px;">
+                    </div>
+                    <div class="tab-form-row">
+                        <label class="form-label">Currency</label>
+                        <select class="form-select" id="currency" style="max-width: 350px;">
+                            <option value="php">PHP- Philippine Peso</option>
+                            <option value="usd">USD- US Dollar</option>
+                        </select>
+                    </div>
+                    <div class="tab-form-row">
+                        <label class="form-label">Payment Terms</label>
+                        <select class="form-select" id="paymentTerms" style="max-width: 350px;">
+                            <option value="due-on-receipt">Due on Receipt</option>
+                            <option value="net-15">Net 15</option>
+                            <option value="net-30">Net 30</option>
+                            <option value="net-45">Net 45</option>
+                            <option value="net-60">Net 60</option>
+                        </select>
+                    </div>
+                    <div class="tab-form-row">
+                        <label class="form-label">Enable Portal? <span class="info-icon">ⓘ</span></label>
+                        <div class="checkbox-row">
+                            <input type="checkbox" id="enablePortal">
+                            <label class="checkbox-label" for="enablePortal">Allow portal access for this vendor</label>
+                        </div>
+                    </div>
+                    <div class="tab-form-row">
+                        <label class="form-label">Documents</label>
+                        <div class="upload-section">
+                            <button class="upload-btn" onclick="uploadDocument()">
+                                📤 Upload File <span>▼</span>
+                            </button>
+                            <div class="upload-hint">You can upload a maximum of 10 files, 10MB each</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Address Tab -->
+                <div class="tab-content" id="address">
+                    <div class="address-section">
+                        <div class="address-title">Billing Address</div>
+                        <div class="tab-form-row">
+                            <label class="form-label">Attention</label>
+                            <input type="text" class="form-input" id="billingAttention" style="max-width: 350px;">
+                        </div>
+                        <div class="tab-form-row">
+                            <label class="form-label">Country/Region</label>
+                            <select class="form-select" id="billingCountry" style="max-width: 350px;">
+                                <option value="ph">Philippines</option>
+                                <option value="us">United States</option>
+                            </select>
+                        </div>
+                        <div class="tab-form-row">
+                            <label class="form-label">Address</label>
+                            <textarea class="form-input" id="billingAddress" rows="3"
+                                style="max-width: 350px; resize: vertical;"></textarea>
+                        </div>
+                        <div class="tab-form-row">
+                            <label class="form-label">City</label>
+                            <input type="text" class="form-input" id="billingCity" style="max-width: 350px;">
+                        </div>
+                        <div class="tab-form-row">
+                            <label class="form-label">State</label>
+                            <input type="text" class="form-input" id="billingState" style="max-width: 350px;">
+                        </div>
+                        <div class="tab-form-row">
+                            <label class="form-label">Zip Code</label>
+                            <input type="text" class="form-input" id="billingZip" style="max-width: 200px;">
+                        </div>
+                        <div class="tab-form-row">
+                            <label class="form-label">Phone</label>
+                            <input type="text" class="form-input" id="billingPhone" style="max-width: 250px;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Persons Tab -->
+                <div class="tab-content" id="contact-persons">
+                    <table class="contact-persons-table">
+                        <thead>
+                            <tr>
+                                <th>SALUTATION</th>
+                                <th>FIRST NAME</th>
+                                <th>LAST NAME</th>
+                                <th>EMAIL</th>
+                                <th>PHONE</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="contactPersonsBody">
+                            <tr>
+                                <td>
+                                    <select class="form-select" style="max-width: 100px;">
+                                        <option value="">-</option>
+                                        <option value="mr">Mr.</option>
+                                        <option value="mrs">Mrs.</option>
+                                        <option value="ms">Ms.</option>
+                                    </select>
+                                </td>
+                                <td><input type="text" class="form-input" style="max-width: 150px;"></td>
+                                <td><input type="text" class="form-input" style="max-width: 150px;"></td>
+                                <td><input type="email" class="form-input" style="max-width: 200px;"></td>
+                                <td><input type="text" class="form-input" style="max-width: 150px;"></td>
+                                <td><button class="close-btn" style="font-size: 16px;">×</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button class="add-contact-btn" onclick="addContactPerson()">+ Add Contact Person</button>
+                </div>
+
+                <!-- Custom Fields Tab -->
+                <div class="tab-content" id="custom-fields">
+                    <p style="color: #666;">No custom fields have been created yet. <a href="#"
+                            style="color: #4285f4;">Add Custom Field</a></p>
+                </div>
+
+                <!-- Reporting Tags Tab -->
+                <div class="tab-content" id="reporting-tags">
+                    <p style="color: #666;">No reporting tags have been created yet. <a href="#"
+                            style="color: #4285f4;">Add Reporting Tag</a></p>
+                </div>
+
+                <!-- Remarks Tab -->
+                <div class="tab-content" id="remarks">
+                    <div class="tab-form-row">
+                        <label class="form-label">Remarks</label>
+                        <textarea class="form-input" id="remarks" rows="4" style="max-width: 500px; resize: vertical;"
+                            placeholder="For internal use only"></textarea>
+                    </div>
+                </div>
+
+                <!-- Add More Details -->
+                <div class="add-more-link">
+                    <a href="#">Add more details</a>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="form-footer">
+                <button class="btn-save" onclick="saveVendor()">Save</button>
+                <button class="btn-cancel" onclick="goBack()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Layout Script -->
+    <script src="/js/layout.js"></script>
+    <script>
+        // Tab functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function () {
+                // Remove active from all tabs
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                // Add active to clicked tab
+                this.classList.add('active');
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // Update display name options based on first/last name
+        const firstName = document.getElementById('firstName');
+        const lastName = document.getElementById('lastName');
+        const displayName = document.getElementById('displayName');
+
+        function updateDisplayNameOptions() {
+            const first = firstName.value;
+            const last = lastName.value;
+
+            displayName.innerHTML = '<option value="">Select or type to add</option>';
+
+            if (first || last) {
+                if (first && last) {
+                    displayName.innerHTML += `<option value="${first} ${last}">${first} ${last}</option>`;
+                    displayName.innerHTML += `<option value="${last}, ${first}">${last}, ${first}</option>`;
+                }
+                if (first) displayName.innerHTML += `<option value="${first}">${first}</option>`;
+                if (last) displayName.innerHTML += `<option value="${last}">${last}</option>`;
+            }
+        }
+
+        firstName.addEventListener('input', updateDisplayNameOptions);
+        lastName.addEventListener('input', updateDisplayNameOptions);
+
+        function goBack() {
+            window.location.href = '/vendors.html';
+        }
+
+        function uploadDocument() {
+            // Create file input and trigger click
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.pdf,.doc,.docx,.jpg,.png';
+            input.click();
+        }
+
+        function addContactPerson() {
+            const tbody = document.getElementById('contactPersonsBody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>
+                    <select class="form-select" style="max-width: 100px;">
+                        <option value="">-</option>
+                        <option value="mr">Mr.</option>
+                        <option value="mrs">Mrs.</option>
+                        <option value="ms">Ms.</option>
+                    </select>
+                </td>
+                <td><input type="text" class="form-input" style="max-width: 150px;"></td>
+                <td><input type="text" class="form-input" style="max-width: 150px;"></td>
+                <td><input type="email" class="form-input" style="max-width: 200px;"></td>
+                <td><input type="text" class="form-input" style="max-width: 150px;"></td>
+                <td><button class="close-btn" style="font-size: 16px;" onclick="removeContactPerson(this)">×</button></td>
+            `;
+            tbody.appendChild(newRow);
+        }
+
+        function removeContactPerson(btn) {
+            btn.closest('tr').remove();
+        }
+
+        function saveVendor() {
+            const displayNameValue = document.getElementById('displayName').value;
+
+            if (!displayNameValue) {
+                alert('Please enter a Display Name');
+                return;
+            }
+
+            alert('Vendor saved successfully!');
+            goBack();
+        }
+    </script>
+</body>
+
+</html>
