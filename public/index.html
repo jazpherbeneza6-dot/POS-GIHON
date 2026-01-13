@@ -87,6 +87,9 @@
             font-size: 16px;
             font-weight: 600;
             color: #1a1f3a;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .dashboard-card-dropdown {
@@ -105,14 +108,46 @@
         }
 
         .dashboard-card-body {
-            padding: 20px;
+            padding: 0 20px 20px 20px;
+            max-height: 350px;
+            overflow-y: auto;
+        }
+
+        /* Card body without scroll - for charts */
+        .dashboard-card-body.no-scroll {
+            max-height: none;
+            overflow-y: visible;
+        }
+
+        /* Scrollbar styling for card body */
+        .dashboard-card-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .dashboard-card-body::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .dashboard-card-body::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+
+        .dashboard-card-body::-webkit-scrollbar-thumb:hover {
+            background: #a1a1a1;
         }
 
         /* Toggle Tabs */
         .toggle-tabs {
             display: flex;
             gap: 0;
-            margin-bottom: 20px;
+            margin: 0 0 16px 0;
+            padding: 20px 0 12px 0;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
         }
 
         .toggle-tab {
@@ -211,6 +246,7 @@
         .product-item {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 12px;
             padding: 12px;
             background: #f8f9fa;
@@ -225,16 +261,21 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
         }
 
         .product-info {
             flex: 1;
+            min-width: 0;
         }
 
         .product-name {
             font-size: 14px;
             font-weight: 500;
             color: #1a1f3a;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .product-sku {
@@ -242,10 +283,20 @@
             color: #6c757d;
         }
 
+        .product-qty {
+            font-size: 13px;
+            font-weight: 600;
+            color: #2563eb;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
         .product-value {
             font-size: 14px;
             font-weight: 600;
             color: #1a1f3a;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         /* Channel List */
@@ -266,11 +317,24 @@
             width: 10px;
             height: 10px;
             border-radius: 50%;
+            flex-shrink: 0;
         }
 
         .channel-name {
             font-size: 14px;
             color: #495057;
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .channel-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1f3a;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         /* Two Column Layout */
@@ -358,9 +422,10 @@
 
         /* Line Chart */
         .line-chart-container {
-            height: 200px;
+            height: 320px;
             position: relative;
-            padding: 20px 0;
+            margin-left: 35px;
+            margin-right: 10px;
         }
 
         .line-chart-grid {
@@ -368,34 +433,60 @@
             top: 0;
             left: 0;
             right: 0;
-            bottom: 30px;
+            bottom: 55px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            border-left: 1px solid #e8e8e8;
         }
 
         .line-chart-row {
+            flex: 1;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             border-bottom: 1px solid #f0f0f0;
+            position: relative;
+        }
+
+        .line-chart-row:first-child {
+            border-top: 1px solid #f0f0f0;
         }
 
         .line-chart-label {
-            font-size: 11px;
-            color: #6c757d;
-            width: 30px;
+            font-size: 12px;
+            color: #9ca3af;
+            position: absolute;
+            left: -35px;
+            top: -8px;
+            width: 28px;
+            text-align: right;
         }
 
         .line-chart-dates {
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            right: 0;
             display: flex;
             justify-content: space-between;
-            padding-top: 8px;
+            padding: 0 5px;
         }
 
         .line-chart-date {
             font-size: 10px;
-            color: #6c757d;
+            color: #9ca3af;
             text-align: center;
+            line-height: 1.4;
+        }
+
+        .line-chart-empty {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 14px;
+            color: #9ca3af;
+            text-align: center;
+            white-space: nowrap;
         }
 
         /* Vendor List */
@@ -408,14 +499,17 @@
         .vendor-item {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 12px;
-            padding: 8px 0;
+            padding: 10px 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
         }
 
         .vendor-rank {
             width: 24px;
             height: 24px;
-            background: #f0f0f0;
+            background: #e8e8e8;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -423,17 +517,33 @@
             font-size: 11px;
             font-weight: 600;
             color: #6c757d;
+            flex-shrink: 0;
         }
 
         .vendor-name {
             font-size: 14px;
             color: #495057;
+            flex: 1;
+            min-width: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .vendor-value {
+            font-size: 12px;
+            font-weight: 500;
+            color: #6c757d;
+            white-space: nowrap;
+            flex-shrink: 0;
+            text-align: right;
         }
 
         /* Receive History Table */
         .receive-table {
             width: 100%;
             border-collapse: collapse;
+            table-layout: fixed;
         }
 
         .receive-table th {
@@ -443,6 +553,7 @@
             text-align: left;
             padding: 12px 8px;
             border-bottom: 1px solid #e8e8e8;
+            white-space: nowrap;
         }
 
         .receive-table td {
@@ -450,6 +561,49 @@
             color: #495057;
             padding: 12px 8px;
             border-bottom: 1px solid #f0f0f0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .receive-table td:nth-child(3) {
+            max-width: 100px;
+        }
+
+        .receive-table td:last-child {
+            font-weight: 600;
+            color: #1a1f3a;
+        }
+
+        /* Date Range Select - Simple Native Dropdown */
+        .date-range-select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            padding: 6px 28px 6px 12px;
+            font-size: 13px;
+            font-family: inherit;
+            color: #2563eb;
+            background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%232563eb' d='M6 8L2 4h8z'/%3E%3C/svg%3E") no-repeat right 8px center;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            cursor: pointer;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .date-range-select:hover {
+            border-color: #2563eb;
+        }
+
+        .date-range-select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+        }
+
+        .date-range-select option {
+            color: #495057;
+            padding: 8px;
         }
     </style>
 </head>
@@ -468,8 +622,6 @@
             <!-- Dashboard Header Tabs -->
             <div class="dashboard-header-tabs">
                 <a href="#" class="dashboard-tab active">Dashboard</a>
-                <a href="#" class="dashboard-tab">Getting Started</a>
-                <a href="#" class="dashboard-tab">Recent Updates</a>
             </div>
 
             <!-- Dashboard Layout -->
@@ -481,7 +633,17 @@
                     <div class="dashboard-card">
                         <div class="dashboard-card-header">
                             <h2 class="dashboard-card-title">Top Selling Items</h2>
-                            <button class="dashboard-card-dropdown">This Month ▾</button>
+                            <select class="date-range-select" onchange="handleDateRangeChange(this, 'topSelling')">
+                                <option value="today">Today</option>
+                                <option value="yesterday">Yesterday</option>
+                                <option value="thisWeek">This Week</option>
+                                <option value="thisMonth" selected>This Month</option>
+                                <option value="thisYear">This Year</option>
+                                <option value="previousWeek">Previous Week</option>
+                                <option value="previousMonth">Previous Month</option>
+                                <option value="previousYear">Previous Year</option>
+                                <option value="custom">Custom</option>
+                            </select>
                         </div>
                         <div class="dashboard-card-body">
                             <div class="empty-state" id="topSellingEmpty">
@@ -521,12 +683,24 @@
                         <div class="dashboard-card">
                             <div class="dashboard-card-header">
                                 <h2 class="dashboard-card-title">Top Stocked Items</h2>
-                                <button class="dashboard-card-dropdown">As of: This Month ▾</button>
+                                <select class="date-range-select" onchange="handleDateRangeChange(this, 'topStocked')">
+                                    <option value="today">Today</option>
+                                    <option value="yesterday">Yesterday</option>
+                                    <option value="thisWeek">This Week</option>
+                                    <option value="thisMonth" selected>This Month</option>
+                                    <option value="thisYear">This Year</option>
+                                    <option value="previousWeek">Previous Week</option>
+                                    <option value="previousMonth">Previous Month</option>
+                                    <option value="previousYear">Previous Year</option>
+                                    <option value="custom">Custom</option>
+                                </select>
                             </div>
                             <div class="dashboard-card-body">
-                                <div class="toggle-tabs">
-                                    <button class="toggle-tab active" data-type="quantity">By Quantity</button>
-                                    <button class="toggle-tab" data-type="value">By Value</button>
+                                <div class="toggle-tabs" id="topStockedTabs">
+                                    <button class="toggle-tab active" data-type="quantity"
+                                        onclick="handleToggleTab(this, 'topStocked')">By Quantity</button>
+                                    <button class="toggle-tab" data-type="value"
+                                        onclick="handleToggleTab(this, 'topStocked')">By Value</button>
                                 </div>
                                 <div class="empty-state" id="topStockedEmpty">
                                     <span class="empty-state-icon">i</span>
@@ -542,7 +716,18 @@
                         <div class="dashboard-card">
                             <div class="dashboard-card-header">
                                 <h2 class="dashboard-card-title">Sales By Channel</h2>
-                                <button class="dashboard-card-dropdown">This Month ▾</button>
+                                <select class="date-range-select"
+                                    onchange="handleDateRangeChange(this, 'salesChannel')">
+                                    <option value="today">Today</option>
+                                    <option value="yesterday">Yesterday</option>
+                                    <option value="thisWeek">This Week</option>
+                                    <option value="thisMonth" selected>This Month</option>
+                                    <option value="thisYear">This Year</option>
+                                    <option value="previousWeek">Previous Week</option>
+                                    <option value="previousMonth">Previous Month</option>
+                                    <option value="previousYear">Previous Year</option>
+                                    <option value="custom">Custom</option>
+                                </select>
                             </div>
                             <div class="dashboard-card-body">
                                 <div class="empty-state" id="salesChannelEmpty">
@@ -571,14 +756,26 @@
                     <div class="dashboard-card">
                         <div class="dashboard-card-header">
                             <h2 class="dashboard-card-title">Sales Order Summary</h2>
-                            <button class="dashboard-card-dropdown">This Month ▾</button>
+                            <select class="date-range-select" onchange="handleDateRangeChange(this, 'salesSummary')">
+                                <option value="today">Today</option>
+                                <option value="yesterday">Yesterday</option>
+                                <option value="thisWeek">This Week</option>
+                                <option value="thisMonth" selected>This Month</option>
+                                <option value="thisYear">This Year</option>
+                                <option value="previousWeek">Previous Week</option>
+                                <option value="previousMonth">Previous Month</option>
+                                <option value="previousYear">Previous Year</option>
+                                <option value="custom">Custom</option>
+                            </select>
                         </div>
-                        <div class="dashboard-card-body">
-                            <div class="toggle-tabs">
-                                <button class="toggle-tab active" data-type="quantity">By Quantity</button>
-                                <button class="toggle-tab" data-type="value">By Value</button>
+                        <div class="dashboard-card-body no-scroll">
+                            <div class="toggle-tabs" id="salesSummaryTabs">
+                                <button class="toggle-tab active" data-type="quantity"
+                                    onclick="handleToggleTab(this, 'salesSummary')">By Quantity</button>
+                                <button class="toggle-tab" data-type="value"
+                                    onclick="handleToggleTab(this, 'salesSummary')">By Value</button>
                             </div>
-                            <div class="line-chart-container">
+                            <div class="line-chart-container" id="salesSummaryChart">
                                 <div class="line-chart-grid">
                                     <div class="line-chart-row"><span class="line-chart-label">5K</span></div>
                                     <div class="line-chart-row"><span class="line-chart-label">4K</span></div>
@@ -587,26 +784,25 @@
                                     <div class="line-chart-row"><span class="line-chart-label">1K</span></div>
                                     <div class="line-chart-row"><span class="line-chart-label">0</span></div>
                                 </div>
-                                <div class="empty-state"
-                                    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-                                    <span class="empty-state-icon">i</span>
-                                    <span>No sales orders created during this period.</span>
+                                <div class="line-chart-empty" id="salesSummaryEmpty">
+                                    No sales orders created during this period.
                                 </div>
                                 <div class="line-chart-dates">
                                     <span class="line-chart-date">01<br>Jan</span>
-                                    <span class="line-chart-date">05</span>
-                                    <span class="line-chart-date">07</span>
-                                    <span class="line-chart-date">09</span>
-                                    <span class="line-chart-date">11</span>
-                                    <span class="line-chart-date">13</span>
-                                    <span class="line-chart-date">15</span>
-                                    <span class="line-chart-date">17</span>
-                                    <span class="line-chart-date">19</span>
-                                    <span class="line-chart-date">21</span>
-                                    <span class="line-chart-date">23</span>
-                                    <span class="line-chart-date">25</span>
-                                    <span class="line-chart-date">27</span>
-                                    <span class="line-chart-date">29</span>
+                                    <span class="line-chart-date">03<br>Jan</span>
+                                    <span class="line-chart-date">05<br>Jan</span>
+                                    <span class="line-chart-date">07<br>Jan</span>
+                                    <span class="line-chart-date">09<br>Jan</span>
+                                    <span class="line-chart-date">11<br>Jan</span>
+                                    <span class="line-chart-date">13<br>Jan</span>
+                                    <span class="line-chart-date">15<br>Jan</span>
+                                    <span class="line-chart-date">17<br>Jan</span>
+                                    <span class="line-chart-date">19<br>Jan</span>
+                                    <span class="line-chart-date">21<br>Jan</span>
+                                    <span class="line-chart-date">23<br>Jan</span>
+                                    <span class="line-chart-date">25<br>Jan</span>
+                                    <span class="line-chart-date">27<br>Jan</span>
+                                    <span class="line-chart-date">29<br>Jan</span>
                                     <span class="line-chart-date">31<br>Jan</span>
                                 </div>
                             </div>
@@ -619,12 +815,24 @@
                         <div class="dashboard-card">
                             <div class="dashboard-card-header">
                                 <h2 class="dashboard-card-title">Top Vendors</h2>
-                                <button class="dashboard-card-dropdown">This Month ▾</button>
+                                <select class="date-range-select" onchange="handleDateRangeChange(this, 'topVendors')">
+                                    <option value="today">Today</option>
+                                    <option value="yesterday">Yesterday</option>
+                                    <option value="thisWeek">This Week</option>
+                                    <option value="thisMonth" selected>This Month</option>
+                                    <option value="thisYear">This Year</option>
+                                    <option value="previousWeek">Previous Week</option>
+                                    <option value="previousMonth">Previous Month</option>
+                                    <option value="previousYear">Previous Year</option>
+                                    <option value="custom">Custom</option>
+                                </select>
                             </div>
                             <div class="dashboard-card-body">
-                                <div class="toggle-tabs">
-                                    <button class="toggle-tab active" data-type="quantity">By Quantity</button>
-                                    <button class="toggle-tab" data-type="value">By Value</button>
+                                <div class="toggle-tabs" id="topVendorsTabs">
+                                    <button class="toggle-tab active" data-type="quantity"
+                                        onclick="handleToggleTab(this, 'topVendors')">By Quantity</button>
+                                    <button class="toggle-tab" data-type="value"
+                                        onclick="handleToggleTab(this, 'topVendors')">By Value</button>
                                 </div>
                                 <div class="empty-state" id="topVendorsEmpty">
                                     <span class="empty-state-icon">i</span>
@@ -640,7 +848,18 @@
                         <div class="dashboard-card">
                             <div class="dashboard-card-header">
                                 <h2 class="dashboard-card-title">Receive History</h2>
-                                <button class="dashboard-card-dropdown">This Month ▾</button>
+                                <select class="date-range-select"
+                                    onchange="handleDateRangeChange(this, 'receiveHistory')">
+                                    <option value="today">Today</option>
+                                    <option value="yesterday">Yesterday</option>
+                                    <option value="thisWeek">This Week</option>
+                                    <option value="thisMonth" selected>This Month</option>
+                                    <option value="thisYear">This Year</option>
+                                    <option value="previousWeek">Previous Week</option>
+                                    <option value="previousMonth">Previous Month</option>
+                                    <option value="previousYear">Previous Year</option>
+                                    <option value="custom">Custom</option>
+                                </select>
                             </div>
                             <div class="dashboard-card-body">
                                 <div class="empty-state" id="receiveHistoryEmpty">
@@ -998,6 +1217,480 @@
                     }
                 });
             });
+        }
+
+        // ==================== DATE RANGE DROPDOWN ====================
+
+        // Store current period for each card
+        let currentPeriods = {
+            topSelling: 'thisMonth',
+            topStocked: 'thisMonth',
+            salesChannel: 'thisMonth',
+            salesSummary: 'thisMonth',
+            topVendors: 'thisMonth',
+            receiveHistory: 'thisMonth'
+        };
+
+        // Store current sort type for toggle tabs (quantity or value)
+        let currentSorts = {
+            topStocked: 'quantity',
+            salesSummary: 'quantity',
+            topVendors: 'quantity'
+        };
+
+        // Handle toggle tab click (By Quantity / By Value)
+        function handleToggleTab(button, cardId) {
+            const sortType = button.dataset.type;
+
+            // Update active state
+            const tabsContainer = button.parentElement;
+            tabsContainer.querySelectorAll('.toggle-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            button.classList.add('active');
+
+            // Store the sort type
+            currentSorts[cardId] = sortType;
+
+            console.log(`Toggle changed for ${cardId} to: ${sortType}`);
+
+            // Reload data with new sort
+            switch (cardId) {
+                case 'topStocked':
+                    loadTopStockedItems(currentPeriods.topStocked, sortType);
+                    break;
+                case 'salesSummary':
+                    loadSalesOrderSummary(currentPeriods.salesSummary, sortType);
+                    break;
+                case 'topVendors':
+                    loadTopVendors(currentPeriods.topVendors, sortType);
+                    break;
+            }
+        }
+
+        // Helper function to format numbers - removes trailing decimal zeros
+        function formatNumber(value) {
+            const num = parseFloat(value) || 0;
+            // If it's a whole number, show without decimals
+            if (Number.isInteger(num)) {
+                return num.toLocaleString();
+            }
+            // Otherwise show up to 2 decimal places, removing trailing zeros
+            return num.toLocaleString(undefined, {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2
+            });
+        }
+
+        // Handle date range selection change
+        function handleDateRangeChange(select, cardId) {
+            const period = select.value;
+
+            if (period === 'custom') {
+                // Show custom date range picker
+                showCustomDatePicker(select, cardId);
+                return;
+            }
+
+            // Store the selected period
+            currentPeriods[cardId] = period;
+
+            console.log(`Date range changed for ${cardId} to: ${period}`);
+
+            // Call card-specific load function with the period
+            switch (cardId) {
+                case 'topSelling':
+                    loadTopSellingItems(period);
+                    break;
+                case 'topStocked':
+                    loadTopStockedItems(period);
+                    break;
+                case 'salesChannel':
+                    loadSalesByChannel(period);
+                    break;
+                case 'salesSummary':
+                    loadSalesOrderSummary(period);
+                    break;
+                case 'topVendors':
+                    loadTopVendors(period);
+                    break;
+                case 'receiveHistory':
+                    loadReceiveHistory(period);
+                    break;
+            }
+        }
+
+        // Load Top Selling Items data
+        async function loadTopSellingItems(period = 'thisMonth') {
+            try {
+                console.log('Fetching top selling items for period:', period);
+                const response = await fetch(`/api/dashboard/top-selling?period=${period}`);
+                const data = await response.json();
+
+                const container = document.getElementById('topSellingChart');
+                const emptyState = document.getElementById('topSellingEmpty');
+
+                if (!data || data.length === 0) {
+                    if (emptyState) emptyState.style.display = 'flex';
+                    if (container) container.style.display = 'none';
+                } else {
+                    if (emptyState) emptyState.style.display = 'none';
+                    if (container) {
+                        container.style.display = 'flex';
+                        // Calculate max for bar scaling
+                        const maxQty = Math.max(...data.map(item => parseFloat(item.total_quantity_sold) || 0));
+
+                        container.innerHTML = data.map(item => {
+                            const qty = parseFloat(item.total_quantity_sold) || 0;
+                            const height = maxQty > 0 ? (qty / maxQty * 100) : 0;
+                            return `
+                                <div class="bar-item">
+                                    <div class="bar" style="height: ${Math.max(height, 4)}px;" title="${qty} sold"></div>
+                                    <span class="bar-label">${item.name.substring(0, 10)}</span>
+                                </div>
+                            `;
+                        }).join('');
+                    }
+                }
+                console.log('Top Selling Items loaded:', data.length, 'items for period:', period);
+            } catch (error) {
+                console.error('Error loading top selling items:', error);
+            }
+        }
+
+        // Load Top Stocked Items data (no date filter needed - shows current stock)
+        async function loadTopStockedItems(period = 'thisMonth', sort = 'quantity') {
+            try {
+                const response = await fetch(`/api/dashboard/top-stocked?sort=${sort}`);
+                const data = await response.json();
+
+                const container = document.getElementById('topStockedList');
+                const emptyState = document.getElementById('topStockedEmpty');
+
+                if (!data || data.length === 0) {
+                    if (emptyState) emptyState.style.display = 'flex';
+                    if (container) container.innerHTML = '';
+                } else {
+                    if (emptyState) emptyState.style.display = 'none';
+                    if (container) {
+                        container.innerHTML = data.map(item => {
+                            const displayValue = sort === 'value'
+                                ? `₱${formatNumber(item.total_value)}`
+                                : `${formatNumber(item.stock_quantity)} units`;
+                            return `
+                                <div class="product-item">
+                                    <span class="product-name">${item.name}</span>
+                                    <span class="product-qty">${displayValue}</span>
+                                </div>
+                            `;
+                        }).join('');
+                    }
+                }
+                console.log('Top Stocked Items loaded:', data.length, 'items, sort:', sort);
+            } catch (error) {
+                console.error('Error loading top stocked items:', error);
+            }
+        }
+
+        // Load Sales By Channel data
+        async function loadSalesByChannel(period = 'thisMonth') {
+            try {
+                console.log('Fetching sales by channel for period:', period);
+                const response = await fetch(`/api/dashboard/sales-by-channel?period=${period}`);
+                const data = await response.json();
+
+                const container = document.getElementById('salesChannelList');
+                const emptyState = document.getElementById('salesChannelEmpty');
+
+                const colors = ['#6366f1', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6'];
+
+                if (!data || data.length === 0) {
+                    if (emptyState) emptyState.style.display = 'flex';
+                    if (container) container.style.display = 'none';
+                } else {
+                    if (emptyState) emptyState.style.display = 'none';
+                    if (container) {
+                        container.style.display = 'block';
+                        container.innerHTML = data.map((channel, index) => `
+                            <div class="channel-item">
+                                <span class="channel-dot" style="background: ${colors[index % colors.length]};"></span>
+                                <span class="channel-name">${channel.channel}</span>
+                                <span class="channel-value">₱${formatNumber(channel.total_revenue)}</span>
+                            </div>
+                        `).join('');
+                    }
+                }
+                console.log('Sales By Channel loaded:', data.length, 'channels for period:', period);
+            } catch (error) {
+                console.error('Error loading sales by channel:', error);
+            }
+        }
+
+        // Load Sales Order Summary data
+        async function loadSalesOrderSummary(period = 'thisMonth', sort = 'quantity') {
+            try {
+                console.log('Fetching sales summary for period:', period, 'sort:', sort);
+                const response = await fetch(`/api/dashboard/sales-summary?period=${period}`);
+                const data = await response.json();
+
+                // Update chart empty state
+                const emptyState = document.getElementById('salesSummaryEmpty');
+                const totalSales = parseInt(data.total_sales) || 0;
+
+                if (emptyState) {
+                    if (totalSales === 0) {
+                        emptyState.style.display = 'block';
+                    } else {
+                        emptyState.style.display = 'none';
+                    }
+                }
+
+                console.log('Sales Order Summary loaded for period:', period, 'sort:', sort, data);
+            } catch (error) {
+                console.error('Error loading sales order summary:', error);
+            }
+        }
+
+        // Load Top Vendors data
+        async function loadTopVendors(period = 'thisMonth', sort = 'quantity') {
+            try {
+                console.log('Fetching top vendors for period:', period, 'sort:', sort);
+                const response = await fetch(`/api/dashboard/top-vendors?period=${period}&sort=${sort}`);
+                const data = await response.json();
+
+                const container = document.getElementById('topVendorsList');
+                const emptyState = document.getElementById('topVendorsEmpty');
+
+                if (!data || data.length === 0) {
+                    if (emptyState) emptyState.style.display = 'flex';
+                    if (container) container.style.display = 'none';
+                } else {
+                    if (emptyState) emptyState.style.display = 'none';
+                    if (container) {
+                        container.style.display = 'block';
+                        container.innerHTML = data.map(vendor => {
+                            const displayValue = sort === 'value'
+                                ? `₱${formatNumber(vendor.total_spent)}`
+                                : `${formatNumber(vendor.total_items)} items`;
+                            return `
+                                <div class="vendor-item">
+                                    <span class="vendor-name">${vendor.vendor_name}</span>
+                                    <span class="vendor-value">${displayValue}</span>
+                                </div>
+                            `;
+                        }).join('');
+                    }
+                }
+                console.log('Top Vendors loaded:', data.length, 'vendors, sort:', sort);
+            } catch (error) {
+                console.error('Error loading top vendors:', error);
+            }
+        }
+
+        // Load Receive History data
+        async function loadReceiveHistory(period = 'thisMonth') {
+            try {
+                console.log('Fetching receive history for period:', period);
+                const response = await fetch(`/api/dashboard/receive-history?period=${period}`);
+                const data = await response.json();
+
+                const table = document.getElementById('receiveHistoryTable');
+                const emptyState = document.getElementById('receiveHistoryEmpty');
+                const tbody = table?.querySelector('tbody');
+
+                if (!data || data.length === 0) {
+                    if (emptyState) emptyState.style.display = 'flex';
+                    if (table) table.style.display = 'none';
+                } else {
+                    if (emptyState) emptyState.style.display = 'none';
+                    if (table) table.style.display = 'table';
+                    if (tbody) {
+                        tbody.innerHTML = data.map(receive => `
+                            <tr>
+                                <td>${new Date(receive.date).toLocaleDateString()}</td>
+                                <td>${receive.reference_number || '-'}</td>
+                                <td>${receive.vendor_name || 'Unknown'}</td>
+                                <td>${formatNumber(receive.total_items)}</td>
+                                <td>₱${formatNumber(receive.total_amount)}</td>
+                            </tr>
+                        `).join('');
+                    }
+                }
+                console.log('Receive History loaded:', data.length, 'records for period:', period);
+            } catch (error) {
+                console.error('Error loading receive history:', error);
+            }
+        }
+
+        // Load all dashboard data on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            // Load initial data for all cards with default "This Month"
+            loadTopSellingItems('thisMonth');
+            loadTopStockedItems('thisMonth');
+            loadSalesByChannel('thisMonth');
+            loadSalesOrderSummary('thisMonth');
+            loadTopVendors('thisMonth');
+            loadReceiveHistory('thisMonth');
+        });
+
+        // Show custom date picker modal
+        function showCustomDatePicker(select, cardId) {
+            // Create a simple modal for custom date range
+            const today = new Date().toISOString().split('T')[0];
+
+            // Create modal HTML
+            const modalHtml = `
+                <div id="customDateModal" style="
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0,0,0,0.5);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 10000;
+                ">
+                    <div style="
+                        background: white;
+                        padding: 24px;
+                        border-radius: 8px;
+                        box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+                        min-width: 320px;
+                    ">
+                        <h3 style="margin: 0 0 16px 0; font-size: 16px; color: #1a1f3a;">Select Date Range</h3>
+                        <div style="margin-bottom: 12px;">
+                            <label style="display: block; font-size: 13px; color: #6c757d; margin-bottom: 4px;">Start Date</label>
+                            <input type="date" id="customStartDate" value="${today}" style="
+                                width: 100%;
+                                padding: 10px 12px;
+                                border: 1px solid #e8e8e8;
+                                border-radius: 6px;
+                                font-size: 13px;
+                                box-sizing: border-box;
+                            ">
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; font-size: 13px; color: #6c757d; margin-bottom: 4px;">End Date</label>
+                            <input type="date" id="customEndDate" value="${today}" style="
+                                width: 100%;
+                                padding: 10px 12px;
+                                border: 1px solid #e8e8e8;
+                                border-radius: 6px;
+                                font-size: 13px;
+                                box-sizing: border-box;
+                            ">
+                        </div>
+                        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                            <button onclick="closeCustomDateModal('${cardId}', false)" style="
+                                padding: 8px 20px;
+                                font-size: 13px;
+                                border: 1px solid #e8e8e8;
+                                background: white;
+                                border-radius: 6px;
+                                cursor: pointer;
+                            ">Cancel</button>
+                            <button onclick="applyCustomDateRange('${cardId}')" style="
+                                padding: 8px 20px;
+                                font-size: 13px;
+                                border: none;
+                                background: #2563eb;
+                                color: white;
+                                border-radius: 6px;
+                                cursor: pointer;
+                            ">Apply</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        // Apply custom date range
+        function applyCustomDateRange(cardId) {
+            const startDate = document.getElementById('customStartDate').value;
+            const endDate = document.getElementById('customEndDate').value;
+
+            if (startDate && endDate) {
+                const range = {
+                    start: new Date(startDate),
+                    end: new Date(endDate)
+                };
+
+                console.log(`Custom date range for ${cardId}:`, range);
+
+                // You can add card-specific data loading here
+            }
+
+            closeCustomDateModal(cardId, true);
+        }
+
+        // Close custom date modal
+        function closeCustomDateModal(cardId, applied) {
+            const modal = document.getElementById('customDateModal');
+            if (modal) {
+                modal.remove();
+            }
+
+            // Reset select to "This Month" if cancelled
+            if (!applied) {
+                const selects = document.querySelectorAll('.date-range-select');
+                selects.forEach(select => {
+                    if (select.value === 'custom') {
+                        select.value = 'thisMonth';
+                    }
+                });
+            }
+        }
+
+        // Get date range for a selection
+        function getDateRange(value) {
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            let start, end;
+
+            switch (value) {
+                case 'today':
+                    start = end = today;
+                    break;
+                case 'yesterday':
+                    start = end = new Date(today.getTime() - 86400000);
+                    break;
+                case 'thisWeek':
+                    start = new Date(today);
+                    start.setDate(today.getDate() - today.getDay());
+                    end = new Date(start);
+                    end.setDate(start.getDate() + 6);
+                    break;
+                case 'thisMonth':
+                    start = new Date(today.getFullYear(), today.getMonth(), 1);
+                    end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                    break;
+                case 'thisYear':
+                    start = new Date(today.getFullYear(), 0, 1);
+                    end = new Date(today.getFullYear(), 11, 31);
+                    break;
+                case 'previousWeek':
+                    end = new Date(today);
+                    end.setDate(today.getDate() - today.getDay() - 1);
+                    start = new Date(end);
+                    start.setDate(end.getDate() - 6);
+                    break;
+                case 'previousMonth':
+                    start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                    end = new Date(today.getFullYear(), today.getMonth(), 0);
+                    break;
+                case 'previousYear':
+                    start = new Date(today.getFullYear() - 1, 0, 1);
+                    end = new Date(today.getFullYear() - 1, 11, 31);
+                    break;
+                default:
+                    start = end = today;
+            }
+
+            return { start, end };
         }
     </script>
 </body>

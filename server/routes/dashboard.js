@@ -2,20 +2,44 @@ const express = require('express');
 const router = express.Router();
 const database = require('../database');
 
+// Helper function to build date filter from start/end dates or period
+function buildDateFilter(req, dateColumn = 'date') {
+  const { start, end, period } = req.query;
+
+  // If start and end dates are provided, use them
+  if (start && end) {
+    return `AND ${dateColumn} >= '${start}' AND ${dateColumn} < '${end}'::date + INTERVAL '1 day'`;
+  }
+
+  // Otherwise use period
+  switch (period) {
+    case 'today':
+      return `AND DATE(${dateColumn}) = CURRENT_DATE`;
+    case 'yesterday':
+      return `AND DATE(${dateColumn}) = CURRENT_DATE - INTERVAL '1 day'`;
+    case 'thisWeek':
+      return `AND ${dateColumn} >= DATE_TRUNC('week', CURRENT_DATE)`;
+    case 'thisMonth':
+      return `AND ${dateColumn} >= DATE_TRUNC('month', CURRENT_DATE)`;
+    case 'thisYear':
+      return `AND ${dateColumn} >= DATE_TRUNC('year', CURRENT_DATE)`;
+    case 'previousWeek':
+      return `AND ${dateColumn} >= DATE_TRUNC('week', CURRENT_DATE) - INTERVAL '1 week' AND ${dateColumn} < DATE_TRUNC('week', CURRENT_DATE)`;
+    case 'previousMonth':
+      return `AND ${dateColumn} >= DATE_TRUNC('month', CURRENT_DATE) - INTERVAL '1 month' AND ${dateColumn} < DATE_TRUNC('month', CURRENT_DATE)`;
+    case 'previousYear':
+      return `AND ${dateColumn} >= DATE_TRUNC('year', CURRENT_DATE) - INTERVAL '1 year' AND ${dateColumn} < DATE_TRUNC('year', CURRENT_DATE)`;
+    default:
+      // Default to this month
+      return `AND ${dateColumn} >= DATE_TRUNC('month', CURRENT_DATE)`;
+  }
+}
+
 // Top selling items
 router.get('/top-selling', async (req, res) => {
   try {
-    const { period = 'month' } = req.query;
     const db = database.getDb();
-
-    let dateFilter = '';
-    if (period === 'month') {
-      dateFilter = "AND s.date >= NOW() - INTERVAL '1 month'";
-    } else if (period === 'week') {
-      dateFilter = "AND s.date >= NOW() - INTERVAL '7 days'";
-    } else if (period === 'year') {
-      dateFilter = "AND s.date >= NOW() - INTERVAL '1 year'";
-    }
+    const dateFilter = buildDateFilter(req, 's.date');
 
     const result = await db.query(`
       SELECT 
@@ -29,7 +53,7 @@ router.get('/top-selling', async (req, res) => {
       FROM sales_items si
       JOIN items i ON si.item_id = i.id
       JOIN sales s ON si.sale_id = s.id
-      WHERE 1=1 ${dateFilter}
+      WHERE s.status = 'completed' ${dateFilter}
       GROUP BY i.id, i.name, i.sku, i.barcode
       ORDER BY total_quantity_sold DESC
       LIMIT 10
@@ -45,7 +69,7 @@ router.get('/top-selling', async (req, res) => {
 // Top stocked items
 router.get('/top-stocked', async (req, res) => {
   try {
-    const { sort = 'quantity' } = req.query; // 'quantity' or 'value'
+    const { sort = 'quantity' } = req.query;
     const db = database.getDb();
 
     let orderBy = 'i.stock_quantity DESC';
@@ -75,32 +99,44 @@ router.get('/top-stocked', async (req, res) => {
   }
 });
 
-// Sales summary
+// Sales by channel (for dashboard) - currently all sales are Direct Sales
+router.get('/sales-by-channel', async (req, res) => {
+  try {
+    const db = database.getDb();
+    const dateFilter = buildDateFilter(req, 'date');
+
+    // Since there's no channel column, group all sales as 'Direct Sales'
+    const result = await db.query(`
+      SELECT 
+        'Direct Sales' as channel,
+        COUNT(*) as sale_count,
+        COALESCE(SUM(total_amount), 0) as total_revenue
+      FROM sales
+      WHERE status = 'completed' ${dateFilter}
+    `);
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching sales by channel:', error);
+    res.status(500).json({ error: 'Failed to fetch sales by channel' });
+  }
+});
+
+// Sales summary (order summary)
 router.get('/sales-summary', async (req, res) => {
   try {
-    const { period = 'month' } = req.query;
     const db = database.getDb();
+    const dateFilter = buildDateFilter(req, 'date').replace('AND ', 'WHERE ');
 
-    let dateFilter = '';
-    if (period === 'month') {
-      dateFilter = "date >= NOW() - INTERVAL '1 month'";
-    } else if (period === 'week') {
-      dateFilter = "date >= NOW() - INTERVAL '7 days'";
-    } else if (period === 'year') {
-      dateFilter = "date >= NOW() - INTERVAL '1 year'";
-    } else if (period === 'today') {
-      dateFilter = "DATE(date) = CURRENT_DATE";
-    }
-
-    // Only count COMPLETED sales for revenue (not pending or cancelled)
     const result = await db.query(`
       SELECT 
         COUNT(*) as total_sales,
         COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed_orders,
+        COUNT(CASE WHEN status = 'pending' THEN 1 END) as pending_orders,
         COALESCE(SUM(CASE WHEN status = 'completed' THEN total_amount ELSE 0 END), 0) as total_revenue,
         COALESCE(AVG(CASE WHEN status = 'completed' THEN total_amount END), 0) as average_sale
       FROM sales
-      ${dateFilter ? 'WHERE ' + dateFilter : ''}
+      ${dateFilter.replace('AND ', 'WHERE ')}
     `);
 
     res.json(result.rows[0]);
@@ -110,12 +146,112 @@ router.get('/sales-summary', async (req, res) => {
   }
 });
 
+// Sales trend for chart
+router.get('/sales-trend', async (req, res) => {
+  try {
+    const { period } = req.query;
+    const db = database.getDb();
+    const dateFilter = buildDateFilter(req, 'date').replace('AND ', 'WHERE ');
+
+    // Determine grouping based on period
+    let groupFormat = "TO_CHAR(date, 'Mon DD')";
+    if (period === 'today' || period === 'yesterday') {
+      groupFormat = "TO_CHAR(date, 'HH24:00')";
+    } else if (period === 'thisYear' || period === 'previousYear') {
+      groupFormat = "TO_CHAR(date, 'Mon YYYY')";
+    }
+
+    const result = await db.query(`
+      SELECT 
+        ${groupFormat} as label,
+        DATE(date) as date_key,
+        COUNT(*) as sale_count,
+        COALESCE(SUM(total_amount), 0) as total_revenue
+      FROM sales
+      ${dateFilter.replace('AND ', 'WHERE ')}
+      GROUP BY ${groupFormat}, DATE(date)
+      ORDER BY DATE(date) ASC
+    `);
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching sales trend:', error);
+    res.status(500).json({ error: 'Failed to fetch sales trend' });
+  }
+});
+
+// Top vendors
+router.get('/top-vendors', async (req, res) => {
+  try {
+    const { sort = 'quantity' } = req.query;
+    const db = database.getDb();
+    const dateFilter = buildDateFilter(req, 'p.date');
+
+    let orderBy = 'total_items DESC';
+    if (sort === 'value') {
+      orderBy = 'total_spent DESC';
+    }
+
+    const result = await db.query(`
+      SELECT 
+        s.id,
+        s.name as vendor_name,
+        s.contact_person,
+        COUNT(DISTINCT p.id) as purchase_count,
+        COALESCE(SUM(pi.quantity), 0) as total_items,
+        COALESCE(SUM(p.total_amount), 0) as total_spent
+      FROM suppliers s
+      LEFT JOIN purchases p ON s.id = p.supplier_id ${dateFilter}
+      LEFT JOIN purchase_items pi ON p.id = pi.purchase_id
+      GROUP BY s.id, s.name, s.contact_person
+      HAVING COUNT(p.id) > 0
+      ORDER BY ${orderBy}
+      LIMIT 10
+    `);
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching top vendors:', error);
+    res.status(500).json({ error: 'Failed to fetch top vendors' });
+  }
+});
+
+// Receive history
+router.get('/receive-history', async (req, res) => {
+  try {
+    const db = database.getDb();
+    const dateFilter = buildDateFilter(req, 'p.date');
+
+    const result = await db.query(`
+      SELECT 
+        p.id,
+        p.date,
+        COALESCE(p.invoice_number, p.po_number) as reference_number,
+        COALESCE(s.name, p.supplier_name, 'Unknown') as vendor_name,
+        COALESCE(SUM(pi.quantity), 0) as total_items,
+        p.total_amount,
+        p.status
+      FROM purchases p
+      LEFT JOIN suppliers s ON p.supplier_id = s.id
+      LEFT JOIN purchase_items pi ON p.id = pi.purchase_id
+      WHERE p.status = 'received' ${dateFilter}
+      GROUP BY p.id, p.date, p.invoice_number, p.po_number, s.name, p.supplier_name, p.total_amount, p.status
+      ORDER BY p.date DESC
+      LIMIT 20
+    `);
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching receive history:', error);
+    res.status(500).json({ error: 'Failed to fetch receive history' });
+  }
+});
+
 // Pending actions
 router.get('/pending-actions', async (req, res) => {
   try {
     const db = database.getDb();
 
-    // For offline system, we'll check low stock items and recent activities
     const lowStockResult = await db.query(`
       SELECT id, name, sku, stock_quantity
       FROM items
@@ -124,14 +260,12 @@ router.get('/pending-actions', async (req, res) => {
       LIMIT 10
     `);
 
-    // Recent sales (last 24 hours)
     const recentSalesResult = await db.query(`
       SELECT COUNT(*) as count, COALESCE(SUM(total_amount), 0) as total
       FROM sales
       WHERE date >= NOW() - INTERVAL '1 day'
     `);
 
-    // Recent purchases (last 24 hours)
     const recentPurchasesResult = await db.query(`
       SELECT COUNT(*) as count, COALESCE(SUM(total_amount), 0) as total
       FROM purchases
@@ -149,64 +283,11 @@ router.get('/pending-actions', async (req, res) => {
   }
 });
 
-// Sales trend for chart
-router.get('/sales-trend', async (req, res) => {
-  try {
-    const { period = 'month' } = req.query;
-    const db = database.getDb();
-
-    let dateFilter = '';
-    let groupFormat = '';
-
-    if (period === 'today') {
-      dateFilter = "WHERE DATE(date) = CURRENT_DATE";
-      groupFormat = "TO_CHAR(date, 'HH24:00')"; // Group by hour for today
-    } else if (period === 'week') {
-      dateFilter = "WHERE date >= NOW() - INTERVAL '7 days'";
-      groupFormat = "TO_CHAR(date, 'Mon DD')"; // Group by day for week
-    } else if (period === 'month') {
-      dateFilter = "WHERE date >= NOW() - INTERVAL '1 month'";
-      groupFormat = "TO_CHAR(date, 'Mon DD')"; // Group by day for month
-    } else if (period === 'year') {
-      dateFilter = "WHERE date >= NOW() - INTERVAL '1 year'";
-      groupFormat = "TO_CHAR(date, 'Mon YYYY')"; // Group by month for year
-    }
-
-    const result = await db.query(`
-      SELECT 
-        ${groupFormat} as label,
-        DATE(date) as date_key,
-        COUNT(*) as sale_count,
-        COALESCE(SUM(total_amount), 0) as total_revenue
-      FROM sales
-      ${dateFilter}
-      GROUP BY ${groupFormat}, DATE(date)
-      ORDER BY DATE(date) ASC
-    `);
-
-    res.json(result.rows);
-  } catch (error) {
-    console.error('Error fetching sales trend:', error);
-    res.status(500).json({ error: 'Failed to fetch sales trend' });
-  }
-});
-
 // Purchase summary
 router.get('/purchase-summary', async (req, res) => {
   try {
-    const { period = 'month' } = req.query;
     const db = database.getDb();
-
-    let dateFilter = '';
-    if (period === 'month') {
-      dateFilter = "WHERE date >= NOW() - INTERVAL '1 month'";
-    } else if (period === 'week') {
-      dateFilter = "WHERE date >= NOW() - INTERVAL '7 days'";
-    } else if (period === 'year') {
-      dateFilter = "WHERE date >= NOW() - INTERVAL '1 year'";
-    } else if (period === 'today') {
-      dateFilter = "WHERE DATE(date) = CURRENT_DATE";
-    }
+    const dateFilter = buildDateFilter(req, 'date').replace('AND ', 'WHERE ');
 
     const result = await db.query(`
       SELECT 
@@ -214,7 +295,7 @@ router.get('/purchase-summary', async (req, res) => {
         COALESCE(SUM(total_amount), 0) as total_spent,
         COALESCE(AVG(total_amount), 0) as average_purchase
       FROM purchases
-      ${dateFilter}
+      ${dateFilter.replace('AND ', 'WHERE ')}
     `);
 
     res.json(result.rows[0]);
@@ -227,23 +308,14 @@ router.get('/purchase-summary', async (req, res) => {
 // Purchase trend for chart
 router.get('/purchase-trend', async (req, res) => {
   try {
-    const { period = 'month' } = req.query;
+    const { period } = req.query;
     const db = database.getDb();
+    const dateFilter = buildDateFilter(req, 'date').replace('AND ', 'WHERE ');
 
-    let dateFilter = '';
-    let groupFormat = '';
-
-    if (period === 'today') {
-      dateFilter = "WHERE DATE(date) = CURRENT_DATE";
+    let groupFormat = "TO_CHAR(date, 'Mon DD')";
+    if (period === 'today' || period === 'yesterday') {
       groupFormat = "TO_CHAR(date, 'HH24:00')";
-    } else if (period === 'week') {
-      dateFilter = "WHERE date >= NOW() - INTERVAL '7 days'";
-      groupFormat = "TO_CHAR(date, 'Mon DD')";
-    } else if (period === 'month') {
-      dateFilter = "WHERE date >= NOW() - INTERVAL '1 month'";
-      groupFormat = "TO_CHAR(date, 'Mon DD')";
-    } else if (period === 'year') {
-      dateFilter = "WHERE date >= NOW() - INTERVAL '1 year'";
+    } else if (period === 'thisYear' || period === 'previousYear') {
       groupFormat = "TO_CHAR(date, 'Mon YYYY')";
     }
 
@@ -254,7 +326,7 @@ router.get('/purchase-trend', async (req, res) => {
         COUNT(*) as purchase_count,
         COALESCE(SUM(total_amount), 0) as total_spent
       FROM purchases
-      ${dateFilter}
+      ${dateFilter.replace('AND ', 'WHERE ')}
       GROUP BY ${groupFormat}, DATE(date)
       ORDER BY DATE(date) ASC
     `);

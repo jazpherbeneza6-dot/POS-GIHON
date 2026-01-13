@@ -295,7 +295,7 @@ function renderItemsTable() {
   if (filteredItems.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="8" class="empty-state">
+        <td colspan="7" class="empty-state">
           <div class="empty-state-icon">📦</div>
           <div class="empty-state-title">No items found</div>
           <div class="empty-state-text">Try adjusting your filters or add a new item</div>
@@ -335,19 +335,21 @@ function renderItemsTable() {
     `;
 
     return `
-      <tr class="${isSelected}">
-        <td data-label="Item Name">
-          <div class="item-name">
-            ${item.name}
+      <tr class="${isSelected}" onclick="selectItem(${item.id})">
+        <td class="zoho-td-filter"></td>
+        <td class="zoho-td-checkbox" onclick="event.stopPropagation();">
+          <input type="checkbox" class="item-checkbox" data-item-id="${item.id}">
+        </td>
+        <td class="zoho-td-name">
+          <div class="zoho-item-row">
+            <div class="zoho-item-thumb">🖼️</div>
+            <a href="#" class="zoho-item-link" onclick="event.preventDefault(); selectItem(${item.id});">${item.name}</a>
           </div>
         </td>
-        <td data-label="SKU">${item.sku || '-'}</td>
-        <td data-label="Unit">${item.unit || 'pcs'}</td>
-        <td data-label="Quantity">${Math.floor(item.stock_quantity || 0)}</td>
-        <td data-label="Price">${Math.floor(item.selling_price || 0).toLocaleString()}</td>
-        <td data-label="Cost">${Math.floor(item.purchase_cost || 0).toLocaleString()}</td>
-        <td data-label="Status">${stockBadge}</td>
-        <td>${actionButtons}</td>
+        <td class="zoho-td-sku">${item.sku || '-'}</td>
+        <td class="zoho-td-stock">${parseFloat(item.stock_quantity || 0).toFixed(6)}</td>
+        <td class="zoho-td-reorder">${item.reorder_point ? parseFloat(item.reorder_point).toFixed(6) : ''}</td>
+        <td class="zoho-td-search"></td>
       </tr>
     `;
   }).join('');
@@ -1272,29 +1274,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const itemId = urlParams.get('item_id');
     const edit = urlParams.get('edit');
     const filterParam = urlParams.get('filter');
-    
+
     // Apply filter from URL parameter (e.g., ?filter=low-stock)
     if (filterParam) {
       if (filterParam === 'low-stock') {
         // Switch to table view first
         switchView('table');
-        
+
         // Set the filter
         filters.stock = 'low-stock';
         const stockSelect = document.getElementById('filterStock');
         if (stockSelect) {
           stockSelect.value = 'low-stock';
         }
-        
+
         // Apply filters and render the table with low stock items
         applyFilters();
-        
+
         // Scroll to the table section after a short delay to ensure it's rendered
         setTimeout(() => {
           // Find the table wrapper or table element
           const tableWrapper = document.querySelector('.items-table-wrapper');
           const itemsTableBody = document.getElementById('itemsTableBody');
-          
+
           if (tableWrapper) {
             tableWrapper.scrollIntoView({ behavior: 'smooth', block: 'start' });
           } else if (itemsTableBody) {
@@ -1303,7 +1305,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 500);
       }
     }
-    
+
     if (itemId && edit === 'true') {
       // Wait a bit for the table to render, then open the edit modal
       setTimeout(() => {
