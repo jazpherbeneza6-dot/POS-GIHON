@@ -58,6 +58,13 @@
             font-weight: 600;
             color: #333;
             margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .title-icon {
+            font-size: 20px;
         }
 
         .close-btn {
@@ -78,14 +85,35 @@
             display: flex;
             flex-direction: column;
             overflow-y: auto;
-            padding-bottom: 60px;
+            padding-bottom: 80px;
         }
 
-        /* Customer Section with Blue Background */
-        .customer-section {
+        /* Vendor Section (Blue Background) */
+        .vendor-section {
+            background: #e8f0fe;
             padding: 16px 24px;
-            background: #f0f7ff;
-            border-bottom: 1px solid #e9ecef;
+            border-bottom: 1px solid #c5d9f7;
+        }
+
+        .vendor-row {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .vendor-label {
+            font-size: 13px;
+            color: #dc2626;
+        }
+
+        .vendor-select {
+            padding: 10px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            background: white;
+            max-width: 300px;
         }
 
         /* Form Section */
@@ -96,8 +124,8 @@
 
         .form-row {
             display: grid;
-            grid-template-columns: 140px 1fr;
-            align-items: center;
+            grid-template-columns: 120px 1fr;
+            align-items: flex-start;
             gap: 16px;
             margin-bottom: 16px;
         }
@@ -109,6 +137,7 @@
         .form-label {
             font-size: 13px;
             color: #333;
+            padding-top: 8px;
         }
 
         .form-label.required {
@@ -121,7 +150,7 @@
             border-radius: 4px;
             font-size: 13px;
             width: 100%;
-            max-width: 350px;
+            max-width: 300px;
         }
 
         .form-input:focus {
@@ -136,164 +165,164 @@
             font-size: 13px;
             background: white;
             cursor: pointer;
-            max-width: 350px;
+            max-width: 300px;
             width: 100%;
         }
 
-        .form-select.blue-border {
-            border-color: #4285f4;
+        .input-with-icon {
+            position: relative;
+            display: inline-block;
+            max-width: 300px;
+            width: 100%;
         }
 
-        .input-with-icon {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            max-width: 350px;
+        .input-with-icon input {
+            width: 100%;
+            padding-right: 36px;
         }
 
         .input-icon {
-            color: #4285f4;
-            font-size: 14px;
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            cursor: pointer;
         }
 
-        /* Tax Deducted Options */
-        .tax-options {
-            display: flex;
-            align-items: center;
-            gap: 24px;
-        }
-
-        .tax-option {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            color: #333;
-        }
-
-        .tax-option input[type="radio"] {
-            width: 16px;
-            height: 16px;
-            accent-color: #4285f4;
-        }
-
-        /* Unpaid Invoices Section */
-        .invoices-section {
+        /* TDS Section */
+        .tds-section {
             padding: 16px 24px;
             border-bottom: 1px solid #e9ecef;
         }
 
-        .invoices-header {
-            display: flex;
-            justify-content: space-between;
+        .tds-row {
+            display: grid;
+            grid-template-columns: 120px 1fr;
             align-items: center;
-            margin-bottom: 12px;
+            gap: 16px;
         }
 
-        .invoices-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: #333;
+        .tds-checkbox {
             display: flex;
             align-items: center;
-            gap: 12px;
-        }
-
-        .filter-link {
+            gap: 8px;
+            font-size: 13px;
             color: #666;
-            font-size: 12px;
+        }
+
+        .tds-checkbox input[type="checkbox"] {
+            accent-color: #4285f4;
+        }
+
+        /* Bills Table Section */
+        .bills-table-section {
+            padding: 16px 24px;
+        }
+
+        .section-header {
             display: flex;
-            align-items: center;
-            gap: 4px;
+            justify-content: flex-end;
+            margin-bottom: 12px;
         }
 
         .clear-link {
             color: #4285f4;
             text-decoration: none;
-            font-size: 12px;
-        }
-
-        .invoices-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 12px;
-            background: white;
-        }
-
-        .invoices-table th {
-            text-align: left;
-            padding: 10px 12px;
-            font-size: 11px;
-            font-weight: 500;
-            color: #999;
-            text-transform: uppercase;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .invoices-table td {
-            padding: 10px 12px;
-            border-bottom: 1px solid #f0f0f0;
-            color: #333;
-        }
-
-        .empty-invoices {
-            text-align: center;
-            padding: 30px;
-            color: #999;
             font-size: 13px;
         }
 
-        .list-note {
+        .clear-link:hover {
+            text-decoration: underline;
+        }
+
+        .bills-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+        }
+
+        .bills-table th {
+            text-align: left;
+            padding: 10px 12px;
             font-size: 11px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            background: #f9fafb;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .bills-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 40px;
             color: #999;
-            margin-top: 12px;
+            font-size: 14px;
         }
 
         /* Totals Section */
         .totals-section {
             padding: 16px 24px;
-            border-bottom: 1px solid #e9ecef;
         }
 
-        .totals-row {
+        .totals-box {
+            max-width: 400px;
+            margin-left: auto;
+        }
+
+        .total-row {
             display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 24px;
-            padding: 6px 0;
+            justify-content: space-between;
+            padding: 8px 0;
             font-size: 13px;
         }
 
-        .totals-label {
-            color: #333;
-            min-width: 180px;
-            text-align: right;
+        .total-row.main {
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 12px;
         }
 
-        .totals-value {
-            color: #333;
-            min-width: 60px;
-            text-align: right;
+        .amount-box {
+            background: #fef2f2;
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-top: 12px;
         }
 
-        .totals-row.excess .totals-label {
+        .amount-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .amount-row .value {
             color: #dc2626;
         }
 
-        .totals-row.excess .totals-value {
+        .amount-row.warning {
             color: #dc2626;
+        }
+
+        .amount-row.warning .label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         /* Notes Section */
         .notes-section {
             padding: 16px 24px;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .notes-title {
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 8px;
+            background: #f9fafb;
+            border-top: 1px solid #e9ecef;
         }
 
         .notes-textarea {
@@ -302,22 +331,29 @@
             padding: 10px;
             border: 1px solid #e0e0e0;
             border-radius: 4px;
-            font-size: 12px;
+            font-size: 13px;
             resize: vertical;
+            min-height: 80px;
             font-family: inherit;
-            height: 80px;
+            background: white;
+        }
+
+        .notes-hint {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
         }
 
         /* Attachments Section */
         .attachments-section {
             padding: 16px 24px;
-            border-bottom: 1px solid #e9ecef;
+            border-top: 1px solid #e9ecef;
         }
 
-        .attachments-title {
+        .attachments-label {
             font-size: 13px;
-            font-weight: 600;
-            color: #333;
+            font-weight: 500;
+            color: #666;
             margin-bottom: 8px;
         }
 
@@ -325,31 +361,17 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 8px 12px;
+            padding: 8px 16px;
             background: white;
             border: 1px solid #e0e0e0;
             border-radius: 4px;
-            font-size: 12px;
-            color: #333;
+            font-size: 13px;
+            color: #666;
             cursor: pointer;
         }
 
-        .upload-help {
-            font-size: 11px;
-            color: #999;
-            margin-top: 8px;
-        }
-
-        /* Additional Fields */
-        .additional-link {
-            padding: 16px 24px;
-            font-size: 12px;
-            color: #999;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .additional-link a {
-            color: #999;
+        .upload-btn:hover {
+            background: #f5f5f5;
         }
 
         /* Footer */
@@ -383,39 +405,9 @@
             background: #f5f5f5;
         }
 
-        .btn-save-group {
-            display: flex;
-        }
-
         .btn-save {
-            padding: 10px 16px;
-            background: #4285f4;
-            color: white;
-            border: none;
-            border-radius: 4px 0 0 4px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-        }
-
-        .btn-save:hover {
-            background: #3367d6;
-        }
-
-        .btn-save-dropdown {
-            padding: 10px 12px;
-            background: #3367d6;
-            color: white;
-            border: none;
-            border-left: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 0 4px 4px 0;
-            cursor: pointer;
-            font-size: 10px;
-        }
-
-        .btn-cancel {
             padding: 10px 20px;
-            background: #333;
+            background: #ef4444;
             color: white;
             border: none;
             border-radius: 4px;
@@ -424,8 +416,23 @@
             cursor: pointer;
         }
 
+        .btn-save:hover {
+            background: #dc2626;
+        }
+
+        .btn-cancel {
+            padding: 10px 20px;
+            background: #e5e7eb;
+            color: #333;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
         .btn-cancel:hover {
-            background: #444;
+            background: #d1d5db;
         }
     </style>
 </head>
@@ -438,163 +445,155 @@
         <div class="content" id="content">
             <!-- Page Header -->
             <div class="page-header">
-                <h1 class="page-title">Record Payment</h1>
+                <h1 class="page-title">
+                    <span class="title-icon">🏠</span>
+                    Record Payment
+                </h1>
                 <button class="close-btn" onclick="goBack()">×</button>
             </div>
 
             <!-- Main Form Area -->
             <div class="form-main">
-                <!-- Customer Section -->
-                <div class="customer-section">
-                    <div class="form-row">
-                        <label class="form-label required">Customer Name*</label>
-                        <select class="form-select blue-border" id="customerName">
-                            <option value="">Select Customer</option>
+                <!-- Vendor Section (Blue) -->
+                <div class="vendor-section">
+                    <div class="vendor-row">
+                        <label class="vendor-label">Vendor Name*</label>
+                        <select class="vendor-select" id="vendorName" onchange="loadVendorBills()">
+                            <option value="">Select Vendor</option>
                         </select>
                     </div>
                 </div>
 
-                <!-- Payment Details Section -->
+                <!-- Form Fields Section -->
                 <div class="form-section">
-                    <div class="form-row">
-                        <label class="form-label required">Amount Received*</label>
-                        <input type="text" class="form-input" id="amountReceived" placeholder="">
-                    </div>
-                    <div class="form-row">
-                        <label class="form-label">Bank Charges (if any)</label>
-                        <input type="text" class="form-input" id="bankCharges" placeholder="">
-                    </div>
-                    <div class="form-row">
-                        <label class="form-label required">Payment Date*</label>
-                        <input type="text" class="form-input" id="paymentDate" placeholder="dd MMM yyyy"
-                            style="max-width: 200px;">
-                    </div>
                     <div class="form-row">
                         <label class="form-label required">Payment #*</label>
                         <div class="input-with-icon">
-                            <input type="text" class="form-input" id="paymentNumber" placeholder="">
-                            <span class="input-icon">⚙</span>
+                            <input type="text" class="form-input" id="paymentNumber">
+                            <span class="input-icon">ⓘ</span>
                         </div>
                     </div>
+
+                    <div class="form-row">
+                        <label class="form-label required">Payment Made*</label>
+                        <input type="text" class="form-input" id="paymentMade">
+                    </div>
+
+                    <div class="form-row">
+                        <label class="form-label required">Payment Date*</label>
+                        <input type="text" class="form-input" id="paymentDate" placeholder="dd MMM yyyy">
+                    </div>
+
                     <div class="form-row">
                         <label class="form-label">Payment Mode</label>
                         <select class="form-select" id="paymentMode">
-                            <option value="">Choose the payment term or type to add</option>
+                            <option value="">Choose the payment item or type to add</option>
                             <option value="cash">Cash</option>
-                            <option value="bank_transfer">Bank Transfer</option>
-                            <option value="credit_card">Credit Card</option>
+                            <option value="bank">Bank Transfer</option>
                             <option value="check">Check</option>
+                            <option value="credit-card">Credit Card</option>
                         </select>
                     </div>
+
                     <div class="form-row">
-                        <label class="form-label required">Deposit To*</label>
-                        <select class="form-select" id="depositTo">
+                        <label class="form-label required">Paid Through*</label>
+                        <select class="form-select" id="paidThrough">
                             <option value="">Select an account</option>
-                            <option value="petty_cash">Petty Cash</option>
-                            <option value="bank_account">Bank Account</option>
+                            <option value="petty-cash">Petty Cash</option>
+                            <option value="bank-account">Bank Account</option>
                         </select>
                     </div>
+
                     <div class="form-row">
                         <label class="form-label">Reference#</label>
-                        <input type="text" class="form-input" id="reference" placeholder="">
-                    </div>
-                    <div class="form-row">
-                        <label class="form-label">Tax deducted?</label>
-                        <div class="tax-options">
-                            <label class="tax-option">
-                                <input type="radio" name="taxDeducted" value="no" checked> No Tax deducted
-                            </label>
-                            <label class="tax-option">
-                                <input type="radio" name="taxDeducted" value="yes"> Yes, TDS
-                            </label>
-                        </div>
+                        <input type="text" class="form-input" id="referenceNumber">
                     </div>
                 </div>
 
-                <!-- Unpaid Invoices Section -->
-                <div class="invoices-section">
-                    <div class="invoices-header">
-                        <div class="invoices-title">
-                            Unpaid Invoices
-                            <span class="filter-link">📅 Filter by Date Range <span>▼</span></span>
-                        </div>
-                        <a href="#" class="clear-link">Clear Applied Amount</a>
+                <!-- TDS Section -->
+                <div class="tds-section">
+                    <div class="tds-row">
+                        <label class="form-label">TDS</label>
+                        <label class="tds-checkbox">
+                            <input type="checkbox" id="deductTds">
+                            Deduct TDS Tax
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Bills Table Section -->
+                <div class="bills-table-section">
+                    <div class="section-header">
+                        <a href="#" class="clear-link" onclick="clearAppliedAmount()">Clear Applied Amount</a>
                     </div>
 
-                    <table class="invoices-table">
+                    <table class="bills-table">
                         <thead>
                             <tr>
-                                <th>DATE</th>
-                                <th>INVOICE NUMBER</th>
-                                <th>INVOICE AMOUNT</th>
-                                <th>AMOUNT DUE</th>
-                                <th>PAYMENT RECEIVED ON 📅</th>
-                                <th>PAYMENT</th>
+                                <th>Date</th>
+                                <th>Bill#</th>
+                                <th>Bill Amount</th>
+                                <th>Amount Due</th>
+                                <th>Payment Made on ⓘ</th>
+                                <th>Payment</th>
                             </tr>
                         </thead>
-                        <tbody id="invoicesBody">
+                        <tbody id="billsTableBody">
+                            <tr>
+                                <td colspan="6" class="empty-message">There are no bills for this vendor.</td>
+                            </tr>
                         </tbody>
                     </table>
-
-                    <div class="empty-invoices">
-                        There are no unpaid Invoices associated with this customer.
-                    </div>
-
-                    <p class="list-note">**List contains only SENT Invoices</p>
                 </div>
 
                 <!-- Totals Section -->
                 <div class="totals-section">
-                    <div class="totals-row">
-                        <span class="totals-label">Total</span>
-                        <span class="totals-value">0</span>
-                    </div>
-                    <div class="totals-row">
-                        <span class="totals-label">Amount Received :</span>
-                        <span class="totals-value">0</span>
-                    </div>
-                    <div class="totals-row">
-                        <span class="totals-label">Amount used for Payments :</span>
-                        <span class="totals-value">0</span>
-                    </div>
-                    <div class="totals-row">
-                        <span class="totals-label">Amount Refunded :</span>
-                        <span class="totals-value">0</span>
-                    </div>
-                    <div class="totals-row excess">
-                        <span class="totals-label">⚠️ Amount in Excess:</span>
-                        <span class="totals-value">0</span>
+                    <div class="totals-box">
+                        <div class="total-row main">
+                            <span>Total :</span>
+                            <span id="total">0.00</span>
+                        </div>
+
+                        <div class="amount-box">
+                            <div class="amount-row">
+                                <span>Amount Paid:</span>
+                                <span class="value" id="amountPaid">0</span>
+                            </div>
+                            <div class="amount-row">
+                                <span>Amount used for Payments:</span>
+                                <span class="value" id="amountUsed">0.00</span>
+                            </div>
+                            <div class="amount-row">
+                                <span>Amount Refunded:</span>
+                                <span class="value" id="amountRefunded">0</span>
+                            </div>
+                            <div class="amount-row warning">
+                                <span class="label">⚠️ Amount in Excess:</span>
+                                <span class="value" id="amountExcess">0</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Notes Section -->
                 <div class="notes-section">
-                    <div class="notes-title">Notes (Internal use. Not visible to customer)</div>
+                    <div class="notes-hint">Notes (Internal use. Not visible to vendor)</div>
                     <textarea class="notes-textarea" id="notes" placeholder=""></textarea>
                 </div>
 
                 <!-- Attachments Section -->
                 <div class="attachments-section">
-                    <div class="attachments-title">Attachments</div>
-                    <button class="upload-btn" type="button">📤 Upload File <span>▼</span></button>
-                    <p class="upload-help">You can upload a maximum of 5 files, 5MB each</p>
-                </div>
-
-                <!-- Additional Fields -->
-                <div class="additional-link">
-                    <span style="color: #999;">Additional Fields:</span>
-                    <span style="color: #999;">Start adding custom fields for your payments received by going to <a
-                            href="#">Settings</a> → <a href="#">Sales</a> → <a href="#">Payments Received</a></span>
+                    <div class="attachments-label">Attachments</div>
+                    <button class="upload-btn" onclick="attachFiles()">
+                        📤 Upload File <span>▼</span>
+                    </button>
                 </div>
             </div>
 
             <!-- Footer -->
             <div class="form-footer">
                 <button class="btn-draft" onclick="saveAsDraft()">Save as Draft</button>
-                <div class="btn-save-group">
-                    <button class="btn-save" onclick="saveAsPaid()">Save as Paid</button>
-                    <button class="btn-save-dropdown">▼</button>
-                </div>
+                <button class="btn-save" onclick="saveAsPaid()">Save as Paid</button>
                 <button class="btn-cancel" onclick="goBack()">Cancel</button>
             </div>
         </div>
@@ -603,8 +602,79 @@
     <!-- Layout Script -->
     <script src="/js/layout.js"></script>
     <script>
+        // Set current date
+        document.addEventListener('DOMContentLoaded', function () {
+            const today = new Date();
+            const options = { day: '2-digit', month: 'short', year: 'numeric' };
+            const dateStr = today.toLocaleDateString('en-GB', options);
+            document.getElementById('paymentDate').value = dateStr;
+
+            // Load vendors
+            loadVendors();
+        });
+
+        async function loadVendors() {
+            try {
+                const response = await fetch('/api/vendors');
+                if (response.ok) {
+                    const vendors = await response.json();
+                    const select = document.getElementById('vendorName');
+                    vendors.forEach(vendor => {
+                        const option = document.createElement('option');
+                        option.value = vendor.id;
+                        option.textContent = vendor.company_name || vendor.first_name + ' ' + vendor.last_name;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading vendors:', error);
+            }
+        }
+
+        function loadVendorBills() {
+            const vendorId = document.getElementById('vendorName').value;
+            const tbody = document.getElementById('billsTableBody');
+
+            if (!vendorId) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-message">There are no bills for this vendor.</td></tr>';
+                return;
+            }
+
+            // In real app, fetch bills for vendor
+            // For now, show empty state
+            tbody.innerHTML = '<tr><td colspan="6" class="empty-message">There are no bills for this vendor.</td></tr>';
+        }
+
         function goBack() {
-            window.location.href = '/payments-received.html';
+            window.location.href = '/payments-made.html';
+        }
+
+        function clearAppliedAmount() {
+            // Clear all payment inputs in the table
+            const inputs = document.querySelectorAll('.bills-table input[type="number"]');
+            inputs.forEach(input => input.value = 0);
+            calculateTotals();
+        }
+
+        function calculateTotals() {
+            // Calculate totals
+            let total = 0;
+            const inputs = document.querySelectorAll('.bills-table input[type="number"]');
+            inputs.forEach(input => {
+                total += parseFloat(input.value) || 0;
+            });
+
+            document.getElementById('total').textContent = total.toFixed(2);
+            document.getElementById('amountPaid').textContent = total.toFixed(0);
+            document.getElementById('amountUsed').textContent = total.toFixed(2);
+        }
+
+        function attachFiles() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.pdf,.doc,.docx,.jpg,.png';
+            input.multiple = true;
+            input.click();
         }
 
         function saveAsDraft() {
@@ -613,17 +683,26 @@
         }
 
         function saveAsPaid() {
-            const customerName = document.getElementById('customerName').value;
-            const amountReceived = document.getElementById('amountReceived').value;
-            if (!customerName) {
-                alert('Please select a customer');
+            const vendorName = document.getElementById('vendorName').value;
+            const paymentNumber = document.getElementById('paymentNumber').value;
+            const paymentMade = document.getElementById('paymentMade').value;
+
+            if (!vendorName) {
+                alert('Please select a vendor');
                 return;
             }
-            if (!amountReceived) {
-                alert('Please enter amount received');
+
+            if (!paymentNumber) {
+                alert('Please enter a payment number');
                 return;
             }
-            alert('Payment saved!');
+
+            if (!paymentMade) {
+                alert('Please enter payment made amount');
+                return;
+            }
+
+            alert('Payment saved successfully!');
             goBack();
         }
     </script>

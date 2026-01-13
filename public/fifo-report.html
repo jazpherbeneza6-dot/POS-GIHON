@@ -84,6 +84,18 @@
             border-radius: 0 !important;
             margin: 0 !important;
             width: 100%;
+            cursor: pointer;
+            position: relative;
+            z-index: 10;
+        }
+
+        .sidebar-collapsed .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-collapsed a.nav-item {
+            text-decoration: none;
+            color: inherit;
         }
 
         .sidebar-collapsed .nav-item-icon {
@@ -115,70 +127,148 @@
             position: relative;
         }
 
+        /* Create invisible bridge to connect nav-group to popup */
+        .sidebar-collapsed .nav-group::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 100%;
+            width: 250px;
+            height: 200px;
+            background: transparent;
+            pointer-events: none;
+            z-index: 99998;
+        }
+
+        .sidebar-collapsed .nav-group:hover::after {
+            pointer-events: auto;
+        }
+
         .sidebar-collapsed .nav-submenu {
             display: none;
-            position: absolute;
-            left: 55px;
-            top: 0;
-            min-width: 200px;
+            position: fixed;
+            left: 45px;
+            min-width: 220px;
             background: white;
-            border: 1px solid #e9ecef;
+            border: 1px solid #e0e0e0;
             border-radius: 8px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-            z-index: 1000;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            z-index: 99999;
             padding: 0;
             margin-left: 0;
-            overflow: hidden;
+            overflow: visible;
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
         }
 
-        .sidebar-collapsed .nav-group:hover .nav-submenu {
+        /* Invisible bridge extending backwards from submenu to sidebar */
+        .sidebar-collapsed .nav-submenu::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -50px;
+            width: 50px;
+            height: 100%;
+            background: transparent;
+        }
+
+        /* Keep submenu open when hovering nav-group OR when submenu itself is hovered */
+        .sidebar-collapsed .nav-group:hover .nav-submenu,
+        .sidebar-collapsed .nav-submenu:hover,
+        .sidebar-collapsed .nav-submenu.show-click {
             display: block !important;
+            opacity: 1;
+            transform: translateX(0);
         }
 
-        /* Submenu Header */
+        /* Submenu popup - Match sidebar design exactly */
         .sidebar-collapsed .nav-submenu::before {
             content: attr(data-title);
             display: block;
-            padding: 12px 16px;
+            padding: 14px 20px;
             font-size: 11px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            background: #333;
-            color: white;
+            background: linear-gradient(135deg, #9a2424 0%, #1d1616 100%);
+            color: rgba(238, 238, 238, 0.9);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .sidebar-collapsed .nav-submenu .nav-submenu-item {
             display: flex !important;
             align-items: center;
             justify-content: space-between;
-            padding: 12px 16px;
-            font-size: 13px;
-            color: #333;
+            padding: 14px 20px;
+            margin: 4px 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(99, 97, 97, 0.9);
             text-decoration: none;
-            transition: background 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            background: transparent;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        /* Hover effect with left border like sidebar */
+        .sidebar-collapsed .nav-submenu .nav-submenu-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, #d84040 0%, #8e1616 100%);
+            transform: scaleY(0);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 2px;
+        }
+
+        .sidebar-collapsed .nav-submenu .nav-submenu-item:hover::before {
+            transform: scaleY(1);
         }
 
         .sidebar-collapsed .nav-submenu .nav-submenu-item:hover {
-            background: #f8f9fa;
+            background: rgba(216, 64, 64, 0.15);
+            color: #eeeeee;
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(216, 64, 64, 0.2);
+        }
+
+        .sidebar-collapsed .nav-submenu .nav-submenu-item.active {
+            background: linear-gradient(135deg, rgba(216, 64, 64, 0.25) 0%, rgba(142, 22, 22, 0.25) 100%);
+            color: #eeeeee;
+            box-shadow: 0 4px 16px rgba(216, 64, 64, 0.3);
+            border: 1px solid rgba(216, 64, 64, 0.4);
+            transform: translateX(4px);
+        }
+
+        .sidebar-collapsed .nav-submenu .nav-submenu-item.active::before {
+            transform: scaleY(1);
         }
 
         .sidebar-collapsed .nav-submenu .submenu-add-btn {
             display: flex !important;
             width: 24px;
             height: 24px;
-            background: #333;
-            color: white;
+            background: rgba(216, 64, 64, 0.3);
+            color: #eeeeee;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             align-items: center;
             justify-content: center;
             font-size: 14px;
+            font-weight: 600;
             cursor: pointer;
+            transition: all 0.2s ease;
         }
 
         .sidebar-collapsed .nav-submenu .submenu-add-btn:hover {
-            background: #555;
+            background: rgba(216, 64, 64, 0.5);
+            transform: scale(1.1);
         }
 
         /* Main Content with collapsed sidebar */
@@ -462,6 +552,13 @@
         .main-layout {
             display: flex;
             min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
         }
     </style>
 </head>
@@ -601,14 +698,226 @@
                 if (sidebar) {
                     sidebar.classList.add('sidebar-collapsed');
                 }
-            }, 100);
+
+                // Highlight Reports nav item for this page
+                const reportsItem = document.querySelector('.nav-item[data-page="reports"]');
+                if (reportsItem) {
+                    reportsItem.classList.add('active');
+                }
+
+                // Setup hover submenu positioning - with retry
+                setupSubmenuHover();
+            }, 500); // Increased timeout to ensure sidebar is loaded
         });
+
+        // Retry setup if nav-groups not found
+        function setupSubmenuHover() {
+            const navGroups = document.querySelectorAll('.nav-group');
+
+            // If no nav groups found, retry after a short delay
+            if (navGroups.length === 0) {
+                setTimeout(setupSubmenuHover, 200);
+                return;
+            }
+
+            // Use event delegation on the sidebar for better reliability
+            const sidebar = document.querySelector('.sidebar');
+            if (!sidebar) {
+                setTimeout(setupSubmenuHover, 200);
+                return;
+            }
+
+            // Function to show submenu
+            function showSubmenu(submenu, navGroup) {
+                // Close all other submenus first
+                document.querySelectorAll('.nav-submenu').forEach(sm => {
+                    if (sm !== submenu) {
+                        sm.style.cssText = '';
+                        sm.classList.remove('show-click');
+                    }
+                });
+
+                // Get the nav-group position to align the submenu
+                const rect = navGroup.getBoundingClientRect();
+                const topPosition = rect.top;
+
+                submenu.classList.add('show-click');
+                submenu.style.cssText = `
+                    display: block !important;
+                    position: fixed !important;
+                    left: 45px !important;
+                    top: ${topPosition}px !important;
+                    min-width: 240px !important;
+                    background: linear-gradient(180deg, #9a2424 0%, #1d1616 100%) !important;
+                    border: 1px solid rgba(255,255,255,0.1) !important;
+                    border-radius: 12px !important;
+                    box-shadow: 0 8px 32px rgba(0,0,0,0.4) !important;
+                    z-index: 999999 !important;
+                    opacity: 1 !important;
+                    visibility: visible !important;
+                    overflow: hidden !important;
+                `;
+            }
+
+            // Function to hide submenu
+            function hideSubmenu(submenu) {
+                submenu.style.cssText = '';
+                submenu.classList.remove('show-click');
+            }
+
+            // Add hover functionality to each nav-group
+            navGroups.forEach(group => {
+                const submenu = group.querySelector('.nav-submenu');
+                if (!submenu) return;
+
+                let isOpen = false;
+                let closeTimeout = null;
+
+                // Function to check if point is inside element bounds
+                function isPointInElement(x, y, element) {
+                    const rect = element.getBoundingClientRect();
+                    return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+                }
+
+                // Function to check if cursor is in either nav-group or submenu
+                function isCursorInHitbox(e) {
+                    const mouseX = e.clientX;
+                    const mouseY = e.clientY;
+
+                    // Check if in nav-group
+                    if (isPointInElement(mouseX, mouseY, group)) {
+                        return true;
+                    }
+
+                    // Check if in submenu (only if it's visible)
+                    if (isOpen && submenu.classList.contains('show-click')) {
+                        if (isPointInElement(mouseX, mouseY, submenu)) {
+                            return true;
+                        }
+                        // Also check the gap between sidebar and submenu (bridge area)
+                        const groupRect = group.getBoundingClientRect();
+                        const submenuRect = submenu.getBoundingClientRect();
+                        // Create a bridge area between the nav-group and submenu
+                        if (mouseX >= groupRect.right && mouseX <= submenuRect.left &&
+                            mouseY >= Math.min(groupRect.top, submenuRect.top) &&
+                            mouseY <= Math.max(groupRect.bottom, submenuRect.bottom)) {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }
+
+                // Document-level mousemove to track cursor position
+                function handleMouseMove(e) {
+                    if (!isOpen) return;
+
+                    if (isCursorInHitbox(e)) {
+                        // Cursor is in valid area, clear any close timeout
+                        if (closeTimeout) {
+                            clearTimeout(closeTimeout);
+                            closeTimeout = null;
+                        }
+                    } else {
+                        // Cursor left both areas, start close timer
+                        if (!closeTimeout) {
+                            closeTimeout = setTimeout(() => {
+                                hideSubmenu(submenu);
+                                isOpen = false;
+                                document.removeEventListener('mousemove', handleMouseMove);
+                            }, 50);
+                        }
+                    }
+                }
+
+                // Show submenu on mouseenter
+                group.addEventListener('mouseenter', function () {
+                    if (sidebar.classList.contains('sidebar-collapsed')) {
+                        if (closeTimeout) {
+                            clearTimeout(closeTimeout);
+                            closeTimeout = null;
+                        }
+                        showSubmenu(submenu, group);
+                        isOpen = true;
+                        // Add document-level mouse tracking
+                        document.addEventListener('mousemove', handleMouseMove);
+                    }
+                });
+            });
+
+            sidebar.addEventListener('click', function (e) {
+                const navItem = e.target.closest('.nav-item');
+                if (!navItem) return;
+
+                const navGroup = navItem.closest('.nav-group');
+                if (!navGroup) return;
+
+                // Only handle if sidebar is collapsed
+                if (!sidebar.classList.contains('sidebar-collapsed')) return;
+
+                const submenu = navGroup.querySelector('.nav-submenu');
+                if (!submenu) return;
+
+                e.preventDefault();
+                e.stopPropagation();
+
+
+
+                // Close all other submenus first
+                document.querySelectorAll('.nav-submenu').forEach(sm => {
+                    if (sm !== submenu) {
+                        sm.style.cssText = '';
+                        sm.classList.remove('show-click');
+                    }
+                });
+
+                // Toggle this submenu
+                if (submenu.classList.contains('show-click')) {
+                    submenu.style.cssText = '';
+                    submenu.classList.remove('show-click');
+
+                } else {
+                    // Get the nav-group position to align the submenu
+                    const rect = navGroup.getBoundingClientRect();
+                    const topPosition = rect.top;
+
+                    submenu.classList.add('show-click');
+                    // Force show with inline styles
+                    submenu.style.cssText = `
+                        display: block !important;
+                        position: fixed !important;
+                        left: 45px !important;
+                        top: ${topPosition}px !important;
+                        min-width: 240px !important;
+                        background: linear-gradient(180deg, #9a2424 0%, #1d1616 100%) !important;
+                        border: 1px solid rgba(255,255,255,0.1) !important;
+                        border-radius: 12px !important;
+                        box-shadow: 0 8px 32px rgba(0,0,0,0.4) !important;
+                        z-index: 999999 !important;
+                        opacity: 1 !important;
+                        visibility: visible !important;
+                        overflow: hidden !important;
+                    `;
+
+                }
+            });
+
+            // Close when clicking outside sidebar
+            document.addEventListener('click', function (e) {
+                if (!e.target.closest('.sidebar')) {
+                    document.querySelectorAll('.nav-submenu').forEach(sm => {
+                        sm.style.cssText = '';
+                        sm.classList.remove('show-click');
+                    });
+                }
+            });
+        }
 
         // Run Report function
         function runReport() {
             const dateRange = document.getElementById('dateRange').value;
             const itemName = document.getElementById('itemName').value;
-            console.log('Running report with:', { dateRange, itemName });
+
             alert('Running FIFO Cost Lot Tracking Report...');
         }
     </script>

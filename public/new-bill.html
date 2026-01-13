@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Bill - Inventory Management</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', 'Source Sans Pro', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f5f6fa;
+            font-size: 12px;
+        }
+
+        .main-layout {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .content {
+            flex: 1;
+            margin-left: 260px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            flex-shrink: 0;
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .title-icon {
+            font-size: 20px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        /* Main Form Area */
+        .form-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding-bottom: 80px;
+        }
+
+        /* Vendor Section (Blue Background) */
+        .vendor-section {
+            background: #e8f0fe;
+            padding: 16px 24px;
+            border-bottom: 1px solid #c5d9f7;
+        }
+
+        .vendor-row {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .vendor-label {
+            font-size: 13px;
+            color: #dc2626;
+        }
+
+        .vendor-input-group {
+            display: flex;
+            gap: 8px;
+            max-width: 450px;
+        }
+
+        .vendor-select {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            background: white;
+        }
+
+        .search-btn {
+            padding: 10px 14px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .search-btn:hover {
+            background: #3367d6;
+        }
+
+        /* Form Section */
+        .form-section {
+            padding: 16px 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            font-size: 13px;
+            color: #333;
+            padding-top: 8px;
+        }
+
+        .form-label.required {
+            color: #dc2626;
+        }
+
+        .form-input {
+            padding: 10px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            width: 100%;
+            max-width: 220px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+
+        .form-select {
+            padding: 10px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            background: white;
+            cursor: pointer;
+            max-width: 220px;
+            width: 100%;
+        }
+
+        .form-textarea {
+            padding: 10px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            width: 100%;
+            max-width: 400px;
+            min-height: 60px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .form-row-inline {
+            display: flex;
+            gap: 24px;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .info-icon {
+            color: #999;
+            cursor: help;
+        }
+
+        /* Tax Options */
+        .tax-options {
+            display: flex;
+            gap: 24px;
+            padding: 12px 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .tax-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .tax-option select {
+            padding: 6px 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            background: white;
+        }
+
+        /* Item Table Section */
+        .item-table-section {
+            padding: 16px 24px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .bulk-actions-link {
+            color: #4285f4;
+            text-decoration: none;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .item-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+        }
+
+        .item-table th {
+            text-align: left;
+            padding: 10px 8px;
+            font-size: 10px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            background: #f9fafb;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .item-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+        }
+
+        .item-table .item-image {
+            width: 36px;
+            height: 36px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 16px;
+        }
+
+        .item-table input,
+        .item-table select {
+            padding: 8px 8px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 12px;
+            width: 100%;
+        }
+
+        .item-table input[type="number"] {
+            width: 60px;
+        }
+
+        .delete-row-btn {
+            background: none;
+            border: none;
+            color: #dc2626;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .add-row-actions {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+
+        .add-row-btn {
+            background: none;
+            border: none;
+            color: #4285f4;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .add-row-btn:hover {
+            text-decoration: underline;
+        }
+
+        .filter-tags {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .filter-tag {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .filter-tag:hover {
+            color: #4285f4;
+        }
+
+        /* Totals Section */
+        .totals-section {
+            padding: 16px 24px;
+        }
+
+        .totals-box {
+            max-width: 400px;
+            margin-left: auto;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 13px;
+        }
+
+        .total-row.final {
+            font-weight: 600;
+            font-size: 14px;
+            border-top: 1px solid #e9ecef;
+            padding-top: 12px;
+            margin-top: 8px;
+        }
+
+        .adjustment-input-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .adjustment-input-group input {
+            width: 80px;
+            padding: 6px 8px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 12px;
+            text-align: right;
+        }
+
+        /* Notes Section */
+        .notes-section {
+            display: flex;
+            gap: 48px;
+            padding: 16px 24px;
+            background: #f9fafb;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .notes-box {
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .notes-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .notes-textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+            background: white;
+        }
+
+        .notes-hint {
+            font-size: 11px;
+            color: #999;
+            margin-top: 6px;
+        }
+
+        .attach-section {
+            min-width: 280px;
+        }
+
+        .attach-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .upload-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .upload-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .upload-hint {
+            font-size: 11px;
+            color: #999;
+            margin-top: 8px;
+        }
+
+        /* Footer */
+        .form-footer {
+            position: fixed;
+            bottom: 0;
+            left: 260px;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 24px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+            z-index: 100;
+        }
+
+        .footer-left {
+            display: flex;
+            gap: 12px;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .template-link {
+            color: #666;
+        }
+
+        .template-link a {
+            color: #4285f4;
+            text-decoration: none;
+        }
+
+        .template-link a:hover {
+            text-decoration: underline;
+        }
+
+        .btn-draft {
+            padding: 10px 20px;
+            background: white;
+            color: #333;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-draft:hover {
+            background: #f5f5f5;
+        }
+
+        .btn-save {
+            padding: 10px 20px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-save:hover {
+            background: #3367d6;
+        }
+
+        .btn-cancel {
+            padding: 10px 20px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-cancel:hover {
+            background: #444;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer"></div>
+
+    <div class="main-layout">
+        <div class="content" id="content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">
+                    <span class="title-icon">📋</span>
+                    New Bill
+                </h1>
+                <button class="close-btn" onclick="goBack()">×</button>
+            </div>
+
+            <!-- Main Form Area -->
+            <div class="form-main">
+                <!-- Vendor Section (Blue) -->
+                <div class="vendor-section">
+                    <div class="vendor-row">
+                        <label class="vendor-label">Vendor Name*</label>
+                        <div class="vendor-input-group">
+                            <select class="vendor-select" id="vendorName">
+                                <option value="">Select a Vendor</option>
+                            </select>
+                            <button class="search-btn">🔍</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Fields Section -->
+                <div class="form-section">
+                    <div class="form-row">
+                        <label class="form-label required">Bill#*</label>
+                        <input type="text" class="form-input" id="billNumber">
+                    </div>
+
+                    <div class="form-row">
+                        <label class="form-label">Order Number</label>
+                        <input type="text" class="form-input" id="orderNumber">
+                    </div>
+
+                    <div class="form-row">
+                        <label class="form-label required">Bill Date*</label>
+                        <input type="text" class="form-input" id="billDate" placeholder="dd MMM yyyy">
+                    </div>
+
+                    <div class="form-row-inline">
+                        <div class="form-group">
+                            <label class="form-label">Due Date</label>
+                            <input type="text" class="form-input" id="dueDate" value="12 Jan 2026"
+                                style="width: 150px;">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Payment Terms</label>
+                            <select class="form-select" id="paymentTerms" style="width: 150px;">
+                                <option value="due-on-receipt">Due on Receipt</option>
+                                <option value="net-15">Net 15</option>
+                                <option value="net-30">Net 30</option>
+                                <option value="net-45">Net 45</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label class="form-label">Subject <span class="info-icon">ⓘ</span></label>
+                        <input type="text" class="form-textarea" id="subject"
+                            placeholder="Enter a subject within 250 characters" style="min-height: 40px;">
+                    </div>
+                </div>
+
+                <!-- Tax Options -->
+                <div class="tax-options">
+                    <div class="tax-option">
+                        🏷️ Tax Exclusive
+                        <select id="taxType">
+                            <option value="exclusive">Tax Exclusive</option>
+                            <option value="inclusive">Tax Inclusive</option>
+                        </select>
+                    </div>
+                    <div class="tax-option">
+                        ⏱️ At Line Item Level
+                        <select id="taxLevel">
+                            <option value="item">At Line Item Level</option>
+                            <option value="transaction">At Transaction Level</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Item Table Section -->
+                <div class="item-table-section">
+                    <div class="section-header">
+                        <span class="section-title">Item Table</span>
+                        <a href="#" class="bulk-actions-link">🔄 Bulk Actions</a>
+                    </div>
+
+                    <table class="item-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 40px;"></th>
+                                <th>ITEM DETAILS</th>
+                                <th>ACCOUNT</th>
+                                <th style="width: 80px;">QUANTITY</th>
+                                <th style="width: 80px;">RATE 💲</th>
+                                <th style="width: 80px;">DISCOUNT</th>
+                                <th>TAX</th>
+                                <th>CUSTOMER DETAILS</th>
+                                <th style="width: 80px;">AMOUNT</th>
+                                <th style="width: 40px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemTableBody">
+                            <tr>
+                                <td>
+                                    <div class="item-image">🖼️</div>
+                                </td>
+                                <td>
+                                    <input type="text" placeholder="Type or click to select an item.">
+                                </td>
+                                <td>
+                                    <select>
+                                        <option value="">Select an account</option>
+                                        <option value="inventory">Inventory Asset</option>
+                                        <option value="expense">Expense</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" value="1.00" step="0.01">
+                                </td>
+                                <td>
+                                    <input type="number" value="0.00" step="0.01">
+                                </td>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 2px;">
+                                        <input type="number" value="0" style="width: 40px;">
+                                        <span>%</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <select>
+                                        <option value="">Select a Tax</option>
+                                        <option value="12">VAT 12%</option>
+                                        <option value="0">Exempt</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select>
+                                        <option value="">Select Customer</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <span style="font-weight: 500;">0.00</span>
+                                </td>
+                                <td>
+                                    <button class="delete-row-btn" onclick="deleteRow(this)">⋮ ✕</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="filter-tags">
+                        <span class="filter-tag">📋 Purchase Discounts ▼</span>
+                        <span class="filter-tag">🏷️ Reporting Tags ▼</span>
+                    </div>
+
+                    <div class="add-row-actions">
+                        <button class="add-row-btn" onclick="addNewRow()">
+                            ⊕ Add New Row <span>▼</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Totals Section -->
+                <div class="totals-section">
+                    <div class="totals-box">
+                        <div class="total-row">
+                            <span>Sub Total</span>
+                            <span id="subTotal">0.00</span>
+                        </div>
+                        <div class="total-row">
+                            <span>Adjustment</span>
+                            <div class="adjustment-input-group">
+                                <input type="number" id="adjustmentValue" value="0" style="width: 80px;">
+                                <span style="color: #999;">ⓘ</span>
+                                <span id="adjustmentAmount">0.00</span>
+                            </div>
+                        </div>
+                        <div class="total-row final">
+                            <span>Total</span>
+                            <span id="total">0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notes Section -->
+                <div class="notes-section">
+                    <div class="notes-box">
+                        <div class="notes-label">Notes</div>
+                        <textarea class="notes-textarea" id="notes" placeholder=""></textarea>
+                        <div class="notes-hint">It will not be shown in PDF</div>
+                    </div>
+
+                    <div class="attach-section">
+                        <div class="attach-label">Attach File(s) to Bill</div>
+                        <button class="upload-btn" onclick="attachFiles()">
+                            📤 Upload File <span>▼</span>
+                        </button>
+                        <div class="upload-hint">You can upload a maximum of 5 files, 10MB each</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="form-footer">
+                <div class="footer-left">
+                    <button class="btn-draft" onclick="saveAsDraft()">Save as Draft</button>
+                    <button class="btn-save" onclick="saveAsOpen()">Save as Open</button>
+                    <button class="btn-cancel" onclick="goBack()">Cancel</button>
+                </div>
+                <div class="footer-right">
+                    <span class="template-link">PDF Template: <a href="#">Standard Template</a> <a
+                            href="#">Change</a></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Layout Script -->
+    <script src="/js/layout.js"></script>
+    <script>
+        // Set current date
+        document.addEventListener('DOMContentLoaded', function () {
+            const today = new Date();
+            const options = { day: '2-digit', month: 'short', year: 'numeric' };
+            const dateStr = today.toLocaleDateString('en-GB', options);
+            document.getElementById('dueDate').value = dateStr;
+        });
+
+        function goBack() {
+            window.location.href = '/bills.html';
+        }
+
+        function addNewRow() {
+            const tbody = document.getElementById('itemTableBody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>
+                    <div class="item-image">🖼️</div>
+                </td>
+                <td>
+                    <input type="text" placeholder="Type or click to select an item.">
+                </td>
+                <td>
+                    <select>
+                        <option value="">Select an account</option>
+                        <option value="inventory">Inventory Asset</option>
+                        <option value="expense">Expense</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="number" value="1.00" step="0.01">
+                </td>
+                <td>
+                    <input type="number" value="0.00" step="0.01">
+                </td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 2px;">
+                        <input type="number" value="0" style="width: 40px;">
+                        <span>%</span>
+                    </div>
+                </td>
+                <td>
+                    <select>
+                        <option value="">Select a Tax</option>
+                        <option value="12">VAT 12%</option>
+                        <option value="0">Exempt</option>
+                    </select>
+                </td>
+                <td>
+                    <select>
+                        <option value="">Select Customer</option>
+                    </select>
+                </td>
+                <td>
+                    <span style="font-weight: 500;">0.00</span>
+                </td>
+                <td>
+                    <button class="delete-row-btn" onclick="deleteRow(this)">⋮ ✕</button>
+                </td>
+            `;
+            tbody.appendChild(newRow);
+        }
+
+        function deleteRow(btn) {
+            const tbody = document.getElementById('itemTableBody');
+            if (tbody.rows.length > 1) {
+                btn.closest('tr').remove();
+            }
+        }
+
+        function attachFiles() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.pdf,.doc,.docx,.jpg,.png';
+            input.multiple = true;
+            input.click();
+        }
+
+        function saveAsDraft() {
+            alert('Bill saved as draft!');
+            goBack();
+        }
+
+        function saveAsOpen() {
+            const vendorName = document.getElementById('vendorName').value;
+            const billNumber = document.getElementById('billNumber').value;
+
+            if (!vendorName) {
+                alert('Please select a vendor');
+                return;
+            }
+
+            if (!billNumber) {
+                alert('Please enter a bill number');
+                return;
+            }
+
+            alert('Bill saved as open!');
+            goBack();
+        }
+    </script>
+</body>
+
+</html>

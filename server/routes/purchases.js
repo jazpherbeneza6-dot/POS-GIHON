@@ -115,7 +115,6 @@ router.post('/', async (req, res) => {
         // CASE 2: Existing item that needs stock update (only when status is 'received')
         // Only update if: status is received, we have an item_id, AND item was NOT just created
         if (status === 'received' && itemId && !itemWasCreatedNow) {
-          console.log(`[Purchase ${purchaseId}] Adding ${qty} to item ${itemId} stock`);
           await client.query(`
             UPDATE items 
             SET stock_quantity = stock_quantity + $1, updated_at = CURRENT_TIMESTAMP
@@ -359,7 +358,6 @@ router.put('/:id', async (req, res) => {
         // CASE 2: Existing item that needs stock update
         // Only update if: we have an item_id AND item was NOT just created
         if (itemId && !itemWasCreatedNow) {
-          console.log(`[Purchase Update ${req.params.id}] Adding ${qty} to item ${itemId} stock`);
           await db.query(
             'UPDATE items SET stock_quantity = stock_quantity + $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
             [qty, itemId]

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Import Bill Payments - Inventory Management</title>
+    <title>Import Vendor Credits - Inventory Management</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/sidebar.css">
     <link
@@ -224,7 +224,7 @@
 
         .upload-info {
             font-size: 12px;
-            color: #999;
+            color: #4285f4;
         }
 
         .file-selected {
@@ -299,44 +299,6 @@
             font-size: 13px;
             background: white;
             width: 100%;
-        }
-
-        /* Auto Generate Option */
-        .auto-option {
-            max-width: 600px;
-            margin: 0 auto 24px;
-            padding: 16px;
-            background: #f9fafb;
-            border-radius: 8px;
-            border: 1px solid #e9ecef;
-        }
-
-        .auto-checkbox {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-        }
-
-        .auto-checkbox input[type="checkbox"] {
-            margin-top: 2px;
-            accent-color: #4285f4;
-        }
-
-        .auto-checkbox-content {
-            flex: 1;
-        }
-
-        .auto-checkbox-title {
-            font-size: 13px;
-            font-weight: 500;
-            color: #333;
-            margin-bottom: 4px;
-        }
-
-        .auto-checkbox-desc {
-            font-size: 12px;
-            color: #666;
-            line-height: 1.5;
         }
 
         /* Page Tips */
@@ -500,7 +462,7 @@
         <div class="content" id="content">
             <!-- Page Header -->
             <div class="page-header">
-                <h1 class="page-title">Bill Payments - Select File</h1>
+                <h1 class="page-title">Vendor Credits - Select File</h1>
                 <button class="close-btn" onclick="goBack()">×</button>
             </div>
 
@@ -564,19 +526,6 @@
                         </div>
                     </div>
 
-                    <!-- Auto Generate Payment Numbers -->
-                    <div class="auto-option">
-                        <label class="auto-checkbox">
-                            <input type="checkbox" id="autoGenerate">
-                            <div class="auto-checkbox-content">
-                                <div class="auto-checkbox-title">Auto-Generate Payment Numbers</div>
-                                <div class="auto-checkbox-desc">Payment numbers will be generated automatically
-                                    according to your settings. Any Payment numbers in the import file will be ignored.
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-
                     <!-- Page Tips -->
                     <div class="page-tips">
                         <div class="tips-header">
@@ -593,13 +542,14 @@
                 <!-- Step 2: Map Fields -->
                 <div class="map-fields-section" id="step2Content">
                     <h3>Map Your File Fields</h3>
-                    <p style="color: #666;">Match the columns in your file to the corresponding payment fields.</p>
+                    <p style="color: #666;">Match the columns in your file to the corresponding vendor credit fields.
+                    </p>
 
                     <table class="map-fields-table">
                         <thead>
                             <tr>
                                 <th>FILE COLUMN</th>
-                                <th>PAYMENT FIELD</th>
+                                <th>VENDOR CREDIT FIELD</th>
                             </tr>
                         </thead>
                         <tbody id="mapFieldsBody">
@@ -608,13 +558,12 @@
                                 <td>
                                     <select class="field-select">
                                         <option value="">-- Select Field --</option>
-                                        <option value="payment_number">Payment Number</option>
+                                        <option value="credit_number">Credit Note#</option>
                                         <option value="vendor_name">Vendor Name</option>
-                                        <option value="payment_date">Payment Date</option>
-                                        <option value="payment_mode">Payment Mode</option>
+                                        <option value="credit_date">Credit Date</option>
                                         <option value="amount">Amount</option>
                                         <option value="reference">Reference#</option>
-                                        <option value="bill_number">Bill Number</option>
+                                        <option value="notes">Notes</option>
                                     </select>
                                 </td>
                             </tr>
@@ -623,13 +572,12 @@
                                 <td>
                                     <select class="field-select">
                                         <option value="">-- Select Field --</option>
-                                        <option value="payment_number">Payment Number</option>
+                                        <option value="credit_number">Credit Note#</option>
                                         <option value="vendor_name">Vendor Name</option>
-                                        <option value="payment_date">Payment Date</option>
-                                        <option value="payment_mode">Payment Mode</option>
+                                        <option value="credit_date">Credit Date</option>
                                         <option value="amount">Amount</option>
                                         <option value="reference">Reference#</option>
-                                        <option value="bill_number">Bill Number</option>
+                                        <option value="notes">Notes</option>
                                     </select>
                                 </td>
                             </tr>
@@ -660,10 +608,9 @@
                     <table class="preview-table">
                         <thead>
                             <tr>
-                                <th>PAYMENT#</th>
+                                <th>CREDIT#</th>
                                 <th>VENDOR</th>
                                 <th>DATE</th>
-                                <th>MODE</th>
                                 <th>AMOUNT</th>
                                 <th>STATUS</th>
                             </tr>
@@ -766,11 +713,10 @@
                     const cols = lines[i].split(',');
                     if (cols.length >= 3) {
                         importData.push({
-                            paymentNumber: cols[0] || 'PAY-' + i,
+                            creditNumber: cols[0] || 'VC-' + i,
                             vendorName: cols[1] || 'Vendor ' + i,
                             date: cols[2] || new Date().toLocaleDateString(),
-                            mode: cols[3] || 'Cash',
-                            amount: cols[4] || '0.00',
+                            amount: cols[3] || '0.00',
                             status: 'Valid'
                         });
                     }
@@ -790,10 +736,9 @@
             importData.forEach(row => {
                 previewBody.innerHTML += `
                     <tr>
-                        <td>${row.paymentNumber}</td>
+                        <td>${row.creditNumber}</td>
                         <td>${row.vendorName}</td>
                         <td>${row.date}</td>
-                        <td>${row.mode}</td>
                         <td>PHP ${row.amount}</td>
                         <td style="color: #2e7d32;">✓ ${row.status}</td>
                     </tr>
@@ -823,9 +768,9 @@
 
         function updateTitle() {
             const titles = {
-                1: 'Bill Payments - Select File',
-                2: 'Bill Payments - Map Fields',
-                3: 'Bill Payments - Preview'
+                1: 'Vendor Credits - Select File',
+                2: 'Vendor Credits - Map Fields',
+                3: 'Vendor Credits - Preview'
             };
             document.querySelector('.page-title').textContent = titles[currentStep];
         }
@@ -836,27 +781,27 @@
             btnNext.innerHTML = 'Importing...';
 
             setTimeout(() => {
-                alert('Successfully imported ' + importData.length + ' payments!');
+                alert('Successfully imported ' + importData.length + ' vendor credits!');
                 goBack();
             }, 1500);
         }
 
         function downloadSampleFile() {
-            const csvContent = `Payment Number,Vendor Name,Payment Date,Payment Mode,Amount,Reference
-PAY-001,ABC Supplies,2026-01-12,Cash,5000.00,REF-001
-PAY-002,XYZ Corp,2026-01-11,Bank Transfer,15000.00,REF-002`;
+            const csvContent = `Credit Number,Vendor Name,Credit Date,Amount
+VC-001,ABC Supplies,2026-01-12,5000.00
+VC-002,XYZ Corp,2026-01-11,15000.00`;
 
             const blob = new Blob([csvContent], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'sample_payments.csv';
+            a.download = 'sample_vendor_credits.csv';
             a.click();
             window.URL.revokeObjectURL(url);
         }
 
         function goBack() {
-            window.location.href = '/payments-made.html';
+            window.location.href = '/vendor-credits.html';
         }
     </script>
 </body>

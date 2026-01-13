@@ -233,6 +233,58 @@ async function init() {
       await pool.query(`ALTER TABLE purchase_items ALTER COLUMN selling_price TYPE NUMERIC(38,10);`);
 
       console.log('High-precision NUMERIC migration completed');
+
+      // Create inventory_adjustments table for tracking manual stock adjustments
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS inventory_adjustments (
+          id SERIAL PRIMARY KEY,
+          reference_number VARCHAR(100) UNIQUE,
+          adjustment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          mode VARCHAR(20) NOT NULL CHECK(mode IN ('quantity', 'value')),
+          reason VARCHAR(100),
+          description TEXT,
+          account VARCHAR(100),
+          status VARCHAR(50) DEFAULT 'draft',
+          total_quantity_change NUMERIC(38,10) DEFAULT 0,
+          total_value_change NUMERIC(38,10) DEFAULT 0,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+
+      // Create inventory_adjustment_items table for line items in each adjustment
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS inventory_adjustment_items (
+          id SERIAL PRIMARY KEY,
+          adjustment_id INTEGER NOT NULL,
+          item_id INTEGER NOT NULL,
+          item_name VARCHAR(255),
+          quantity_on_hand NUMERIC(38,10) DEFAULT 0,
+          quantity_adjusted NUMERIC(38,10) DEFAULT 0,
+          new_quantity NUMERIC(38,10) DEFAULT 0,
+          unit_cost NUMERIC(38,10) DEFAULT 0,
+          value_change NUMERIC(38,10) DEFAULT 0,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (adjustment_id) REFERENCES inventory_adjustments(id) ON DELETE CASCADE,
+          FOREIGN KEY (item_id) REFERENCES items(id)
+        );
+      `);
+
+      // Create indexes for inventory adjustments
+      await pool.query(`
+        CREATE INDEX IF NOT EXISTS idx_inventory_adjustments_date ON inventory_adjustments(adjustment_date);
+      `);
+      await pool.query(`
+        CREATE INDEX IF NOT EXISTS idx_inventory_adjustments_status ON inventory_adjustments(status);
+      `);
+      await pool.query(`
+        CREATE INDEX IF NOT EXISTS idx_inventory_adjustment_items_adjustment ON inventory_adjustment_items(adjustment_id);
+      `);
+      await pool.query(`
+        CREATE INDEX IF NOT EXISTS idx_inventory_adjustment_items_item ON inventory_adjustment_items(item_id);
+      `);
+
+      console.log('Inventory adjustments tables created');
       console.log('Database migration completed');
     } catch (migrationError) {
       // Column might already exist, ignore error

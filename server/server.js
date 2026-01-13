@@ -33,6 +33,7 @@ app.use('/api/purchases', require('./routes/purchases'));
 app.use('/api/suppliers', require('./routes/suppliers'));
 app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/barcode', require('./routes/barcode'));
+app.use('/api/documents', require('./routes/documents'));
 
 // Get local network IP address
 function getLocalIP() {

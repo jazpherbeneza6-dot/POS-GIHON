@@ -135,7 +135,6 @@ function viewPurchase(purchaseId) {
 
 // Show purchase items modal
 function showPurchaseItems(purchaseId) {
-  console.log('showPurchaseItems called with ID:', purchaseId);
 
   // Get purchase details
   const purchase = purchases.find(p => p.id === purchaseId);
@@ -1637,7 +1636,6 @@ async function updateStockForPurchase(purchaseId, forceUpdate = false) {
       }
     }
 
-    console.log('Stock levels updated successfully');
   } catch (error) {
     console.error('Error updating stock:', error);
     throw error;

@@ -1108,7 +1108,6 @@ async function updateStockForPurchase(purchaseId) {
       }
     }
 
-    console.log('Stock levels updated successfully');
   } catch (error) {
     console.error('Error updating stock:', error);
     throw error;
@@ -1186,7 +1185,6 @@ document.addEventListener('DOMContentLoaded', () => {
         image_url: document.getElementById('itemImageUrl').value || null
       };
 
-      console.log('Submitting data:', data); // Debug log
 
       try {
         if (itemId) {
@@ -1654,7 +1652,6 @@ function setCartQuantity(itemId, value, inputElement) {
 
   // Check if exceeds available stock
   if (newQty > cartItem.maxStock) {
-    console.log('Stock exceeded!', { newQty, maxStock: cartItem.maxStock, itemName: cartItem.name });
 
     // Show custom styled error dialog
     const mainMessage = `SOBRA SA STOCK!`;

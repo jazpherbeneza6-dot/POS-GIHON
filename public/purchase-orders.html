@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Shipments - Inventory Management</title>
+    <title>Purchase Orders - Inventory Management</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/sidebar.css">
     <link
@@ -25,7 +25,6 @@
             font-size: 13px;
         }
 
-        /* Main Content */
         .main-layout {
             display: flex;
             min-height: 100vh;
@@ -77,38 +76,38 @@
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
         }
 
-        .easypost-link {
-            color: #4285f4;
-            text-decoration: none;
+        .btn-transit {
+            padding: 8px 16px;
+            background: white;
+            color: #333;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
             font-size: 13px;
+            cursor: pointer;
             display: flex;
             align-items: center;
             gap: 6px;
         }
 
-        .easypost-link:hover {
-            text-decoration: underline;
-        }
-
-        .easypost-link .brand {
-            font-weight: 600;
-            color: #333;
+        .btn-transit:hover {
+            background: #f5f5f5;
+            border-color: #4285f4;
+            color: #4285f4;
         }
 
         .btn-new-group {
             display: flex;
-            align-items: stretch;
         }
 
         .btn-new {
             padding: 8px 16px;
-            background: #4ade80;
+            background: #4285f4;
             color: white;
             border: none;
-            border-radius: 6px 0 0 6px;
+            border-radius: 4px 0 0 4px;
             font-size: 13px;
             font-weight: 500;
             cursor: pointer;
@@ -118,21 +117,22 @@
         }
 
         .btn-new:hover {
-            background: #22c55e;
+            background: #3367d6;
         }
 
         .btn-new-dropdown {
             padding: 8px 10px;
-            background: #22c55e;
+            background: #3367d6;
             color: white;
             border: none;
-            border-radius: 0 6px 6px 0;
-            cursor: pointer;
             border-left: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            font-size: 10px;
         }
 
         .btn-new-dropdown:hover {
-            background: #16a34a;
+            background: #2d5bb9;
         }
 
         .btn-more {
@@ -140,7 +140,7 @@
             height: 36px;
             background: white;
             border: 1px solid #e9ecef;
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
             font-size: 18px;
             color: #666;
@@ -153,43 +153,13 @@
             background: #f5f5f5;
         }
 
-        /* Filter Bar */
-        .filter-bar {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 24px;
-            background: #f9fafb;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .filter-label {
-            font-size: 13px;
-            color: #666;
-        }
-
-        .filter-select {
-            padding: 6px 12px;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            font-size: 13px;
-            color: #333;
-            background: white;
-            cursor: pointer;
-        }
-
-        .filter-select:focus {
-            outline: none;
-            border-color: #4285f4;
-        }
-
         /* Empty State */
         .empty-state {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 120px 24px;
+            padding: 150px 24px;
             text-align: center;
         }
 
@@ -203,17 +173,17 @@
         .empty-state-subtitle {
             font-size: 14px;
             color: #666;
-            margin: 0 0 32px 0;
-            max-width: 400px;
+            margin: 0 0 28px 0;
+            max-width: 500px;
         }
 
         .btn-create {
-            padding: 12px 24px;
+            padding: 12px 28px;
             background: #4285f4;
             color: white;
             border: none;
-            border-radius: 6px;
-            font-size: 14px;
+            border-radius: 4px;
+            font-size: 12px;
             font-weight: 500;
             cursor: pointer;
             text-transform: uppercase;
@@ -224,20 +194,18 @@
             background: #3367d6;
         }
 
-        /* Shipments Table (for when there are records) */
-        .shipments-container {
+        /* Purchase Orders Table */
+        .orders-container {
             padding: 24px;
         }
 
-        .shipments-table {
+        .orders-table {
             width: 100%;
             border-collapse: collapse;
             background: white;
-            border-radius: 8px;
-            overflow: hidden;
         }
 
-        .shipments-table th {
+        .orders-table th {
             text-align: left;
             padding: 14px 16px;
             font-size: 11px;
@@ -249,7 +217,7 @@
             background: #f9fafb;
         }
 
-        .shipments-table td {
+        .orders-table td {
             padding: 14px 16px;
             border-bottom: 1px solid #f0f0f0;
             font-size: 13px;
@@ -268,16 +236,16 @@
             <div class="page-header">
                 <div class="page-title-wrapper">
                     <h1 class="page-title">
-                        All Shipments
+                        All Purchase Orders
                         <span class="dropdown-arrow">▼</span>
                     </h1>
                 </div>
                 <div class="header-actions">
-                    <a href="#" class="easypost-link">
-                        View EasyPost Usage <span class="brand">easypost.</span>
-                    </a>
+                    <button class="btn-transit" onclick="goToTransitReceives()">
+                        📦 In Transit Receives
+                    </button>
                     <div class="btn-new-group">
-                        <button class="btn-new" onclick="createShipment()">
+                        <button class="btn-new" onclick="createNewPurchaseOrder()">
                             <span>+</span> New
                         </button>
                         <button class="btn-new-dropdown">▼</button>
@@ -286,39 +254,30 @@
                 </div>
             </div>
 
-            <!-- Filter Bar -->
-            <div class="filter-bar">
-                <span class="filter-label">Filter By :</span>
-                <select class="filter-select" id="typeFilter">
-                    <option value="all">Type: All</option>
-                    <option value="pending">Pending</option>
-                    <option value="shipped">Shipped</option>
-                    <option value="delivered">Delivered</option>
-                </select>
-            </div>
-
             <!-- Empty State -->
             <div class="empty-state" id="emptyState">
-                <h2 class="empty-state-title">Ship with Confidence and Accuracy</h2>
-                <p class="empty-state-subtitle">Create shipment records and track delivery status for your orders.</p>
-                <button class="btn-create" onclick="createShipment()">CREATE SHIPMENT</button>
+                <h2 class="empty-state-title">Start Managing Your Purchase Activities!</h2>
+                <p class="empty-state-subtitle">Create, customize, and send professional Purchase Orders to your
+                    vendors.</p>
+                <button class="btn-create" onclick="createNewPurchaseOrder()">CREATE NEW PURCHASE ORDER</button>
             </div>
 
-            <!-- Shipments Container (hidden when empty) -->
-            <div class="shipments-container" id="shipmentsContainer" style="display: none;">
-                <table class="shipments-table">
+            <!-- Purchase Orders Container (hidden when empty) -->
+            <div class="orders-container" id="ordersContainer" style="display: none;">
+                <table class="orders-table">
                     <thead>
                         <tr>
-                            <th>SHIPMENT#</th>
                             <th>DATE</th>
-                            <th>PACKAGE</th>
-                            <th>CARRIER</th>
-                            <th>TRACKING#</th>
+                            <th>PURCHASE ORDER#</th>
+                            <th>REFERENCE#</th>
+                            <th>VENDOR NAME</th>
                             <th>STATUS</th>
+                            <th>BILLED</th>
+                            <th>AMOUNT</th>
                         </tr>
                     </thead>
-                    <tbody id="shipmentsBody">
-                        <!-- Shipments will be added here -->
+                    <tbody id="ordersBody">
+                        <!-- Orders will be added here -->
                     </tbody>
                 </table>
             </div>
@@ -328,15 +287,15 @@
     <!-- Layout Script -->
     <script src="/js/layout.js"></script>
     <script>
-        // Create new shipment
-        function createShipment() {
-            window.location.href = '/new-shipment.html';
+        // Create new purchase order
+        function createNewPurchaseOrder() {
+            window.location.href = '/new-purchase-order.html';
         }
 
-        // Filter change handler
-        document.getElementById('typeFilter').addEventListener('change', function () {
-            // Filter logic here
-        });
+        // Go to In Transit Receives
+        function goToTransitReceives() {
+            window.location.href = '/purchase-receives.html';
+        }
     </script>
 </body>
 

@@ -115,6 +115,30 @@ CREATE TABLE IF NOT EXISTS barcodes (
     FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE CASCADE
 );
 
+-- Document folders table
+CREATE TABLE IF NOT EXISTS document_folders (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Documents table
+CREATE TABLE IF NOT EXISTS documents (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(500) NOT NULL,
+    file_path VARCHAR(1000),
+    file_size INTEGER,
+    file_type VARCHAR(100),
+    uploaded_by VARCHAR(255) DEFAULT 'Current User',
+    folder_id INTEGER,
+    associated_to VARCHAR(255),
+    trashed BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (folder_id) REFERENCES document_folders(id) ON DELETE SET NULL
+);
+
 -- Indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_items_barcode ON items(barcode);
 CREATE INDEX IF NOT EXISTS idx_items_sku ON items(sku);
@@ -126,3 +150,6 @@ CREATE INDEX IF NOT EXISTS idx_purchases_date ON purchases(date);
 CREATE INDEX IF NOT EXISTS idx_purchase_items_purchase_id ON purchase_items(purchase_id);
 CREATE INDEX IF NOT EXISTS idx_barcodes_barcode ON barcodes(barcode);
 CREATE INDEX IF NOT EXISTS idx_suppliers_name ON suppliers(name);
+CREATE INDEX IF NOT EXISTS idx_documents_folder_id ON documents(folder_id);
+CREATE INDEX IF NOT EXISTS idx_documents_trashed ON documents(trashed);
+

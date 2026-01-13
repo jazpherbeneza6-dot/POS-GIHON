@@ -1815,35 +1815,269 @@
         }
 
         // Save as Draft
-        function saveAsDraft() {
+        async function saveAsDraft() {
             const data = gatherFormData();
-            console.log('Saving as draft:', data);
-            alert('Adjustment saved as draft!');
-            closeAdjustmentModal();
+            const items = gatherItemsData();
+
+            if (items.length === 0) {
+                alert('Please add at least one item to adjust');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/inventory/adjustments', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        reference_number: data.referenceNumber,
+                        mode: data.mode,
+                        reason: data.reason,
+                        description: data.description,
+                        account: data.account,
+                        status: 'draft',
+                        items: items
+                    })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    alert('Adjustment saved as draft!');
+                    closeAdjustmentModal();
+                    loadAdjustments();
+                } else {
+                    alert('Error: ' + (result.error || 'Failed to save draft'));
+                }
+            } catch (error) {
+                console.error('Error saving draft:', error);
+                alert('Failed to save draft. Please try again.');
+            }
         }
 
-        // Convert to Adjusted
-        function convertToAdjusted() {
+        // Convert to Adjusted - Updates stock levels instantly
+        async function convertToAdjusted() {
             const data = gatherFormData();
+            const items = gatherItemsData();
+
             if (!data.reason) {
                 alert('Please select a reason for the adjustment');
                 return;
             }
-            console.log('Converting to adjusted:', data);
-            alert('Adjustment completed successfully!');
-            closeAdjustmentModal();
+
+            if (items.length === 0) {
+                alert('Please add at least one item to adjust');
+                return;
+            }
+
+            // Validate items have quantities
+            const invalidItems = items.filter(item => item.quantity_adjusted === 0);
+            if (invalidItems.length > 0) {
+                alert('Please enter a quantity adjustment for all items (e.g., +10 or -10)');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/inventory/adjustments', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        reference_number: data.referenceNumber,
+                        mode: data.mode,
+                        reason: data.reason,
+                        description: data.description,
+                        account: data.account,
+                        status: 'adjusted',
+                        items: items
+                    })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    alert('✅ Adjustment completed successfully!\n\nStock levels have been updated for ' + items.length + ' item(s).');
+                    closeAdjustmentModal();
+                    loadAdjustments();
+                } else {
+                    alert('Error: ' + (result.error || 'Failed to create adjustment'));
+                }
+            } catch (error) {
+                console.error('Error creating adjustment:', error);
+                alert('Failed to create adjustment. Please try again.');
+            }
         }
 
         // Gather form data
         function gatherFormData() {
             return {
-                mode: document.querySelector('input[name="adjustmentMode"]:checked').value,
+                mode: document.querySelector('input[name="adjustmentMode"]:checked')?.value || 'quantity',
                 referenceNumber: document.getElementById('referenceNumber').value,
                 date: document.getElementById('adjustmentDate').value,
                 account: document.getElementById('accountSelect').value,
                 reason: document.getElementById('adjustmentReason').value,
                 description: document.getElementById('adjustmentDescription').value
             };
+        }
+
+        // Gather items data from the table
+        function gatherItemsData() {
+            const items = [];
+            const rows = document.querySelectorAll('#itemTableBody tr');
+
+            rows.forEach(row => {
+                const itemInput = row.querySelector('.item-select-input');
+                const quantityInput = row.querySelector('.quantity-input');
+
+                if (itemInput && quantityInput) {
+                    const itemId = itemInput.dataset.itemId;
+                    const quantity = parseFloat(quantityInput.value) || 0;
+
+                    if (itemId && quantity !== 0) {
+                        items.push({
+                            item_id: parseInt(itemId),
+                            quantity_adjusted: quantity
+                        });
+                    }
+                }
+            });
+
+            return items;
+        }
+
+        // Load adjustments list
+        async function loadAdjustments() {
+            try {
+                const response = await fetch('/api/inventory/adjustments');
+                if (response.ok) {
+                    const adjustments = await response.json();
+                    displayAdjustments(adjustments);
+                }
+            } catch (error) {
+                console.error('Error loading adjustments:', error);
+            }
+        }
+
+        // Display adjustments in the table
+        function displayAdjustments(adjustments) {
+            const tableBody = document.querySelector('.data-table tbody');
+            if (!tableBody) return;
+
+            if (adjustments.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px; color: #999;">
+                            No inventory adjustments found. Click "+ New" to create one.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tableBody.innerHTML = adjustments.map(adj => `
+                <tr>
+                    <td><input type="checkbox" class="row-checkbox"></td>
+                    <td>${formatDate(adj.adjustment_date)}</td>
+                    <td><a href="#" class="link-primary" onclick="viewAdjustment(${adj.id})">${adj.reference_number}</a></td>
+                    <td>${adj.reason || '-'}</td>
+                    <td><span class="status-badge ${adj.status === 'adjusted' ? 'status-completed' : 'status-draft'}">${adj.status}</span></td>
+                    <td>${adj.mode}</td>
+                    <td>${adj.total_quantity_change > 0 ? '+' : ''}${adj.total_quantity_change}</td>
+                </tr>
+            `).join('');
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+        }
+
+        async function viewAdjustment(id) {
+            try {
+                const response = await fetch('/api/inventory/adjustments/' + id);
+                if (response.ok) {
+                    const adjustment = await response.json();
+                    alert(`Reference: ${adjustment.reference_number}\nReason: ${adjustment.reason}\nStatus: ${adjustment.status}\nTotal Change: ${adjustment.total_quantity_change}`);
+                }
+            } catch (error) {
+                console.error('Error viewing adjustment:', error);
+            }
+        }
+
+        // Initialize: Load items for selection and existing adjustments
+        document.addEventListener('DOMContentLoaded', function () {
+            loadItemsForSelection();
+            loadAdjustments();
+        });
+
+        // Load items for the dropdown/autocomplete
+        async function loadItemsForSelection() {
+            try {
+                const response = await fetch('/api/items');
+                if (response.ok) {
+                    window.availableItems = await response.json();
+                    setupItemAutocomplete();
+                }
+            } catch (error) {
+                console.error('Error loading items:', error);
+            }
+        }
+
+        // Setup autocomplete for item inputs
+        function setupItemAutocomplete() {
+            document.addEventListener('input', function (e) {
+                if (e.target.classList.contains('item-select-input')) {
+                    const input = e.target;
+                    const value = input.value.toLowerCase();
+
+                    // Remove existing dropdown
+                    const existingDropdown = document.querySelector('.item-autocomplete');
+                    if (existingDropdown) existingDropdown.remove();
+
+                    if (value.length < 2) return;
+
+                    const matches = (window.availableItems || []).filter(item =>
+                        item.name.toLowerCase().includes(value) ||
+                        (item.sku && item.sku.toLowerCase().includes(value))
+                    ).slice(0, 5);
+
+                    if (matches.length === 0) return;
+
+                    const dropdown = document.createElement('div');
+                    dropdown.className = 'item-autocomplete';
+                    dropdown.style.cssText = 'position:absolute;background:white;border:1px solid #e0e0e0;border-radius:4px;z-index:1000;max-height:200px;overflow-y:auto;box-shadow:0 4px 8px rgba(0,0,0,0.1);';
+
+                    matches.forEach(item => {
+                        const option = document.createElement('div');
+                        option.style.cssText = 'padding:10px 12px;cursor:pointer;font-size:13px;';
+                        option.textContent = `${item.name} (Stock: ${item.stock_quantity})`;
+                        option.onmouseover = () => option.style.background = '#f5f5f5';
+                        option.onmouseout = () => option.style.background = 'white';
+                        option.onclick = () => {
+                            input.value = item.name;
+                            input.dataset.itemId = item.id;
+                            // Update quantity on hand display
+                            const row = input.closest('tr');
+                            if (row) {
+                                const qtyOnHandCell = row.cells[1];
+                                if (qtyOnHandCell) qtyOnHandCell.textContent = item.stock_quantity;
+                            }
+                            dropdown.remove();
+                        };
+                        dropdown.appendChild(option);
+                    });
+
+                    const rect = input.getBoundingClientRect();
+                    dropdown.style.top = (rect.bottom + window.scrollY) + 'px';
+                    dropdown.style.left = rect.left + 'px';
+                    dropdown.style.width = rect.width + 'px';
+                    document.body.appendChild(dropdown);
+                }
+            });
+
+            // Close dropdown on click outside
+            document.addEventListener('click', function (e) {
+                if (!e.target.classList.contains('item-select-input')) {
+                    const dropdown = document.querySelector('.item-autocomplete');
+                    if (dropdown) dropdown.remove();
+                }
+            });
         }
 
         // ===== Custom Dropdown Functions =====
@@ -1882,7 +2116,6 @@
             document.getElementById('typeDropdownMenu').classList.remove('show');
 
             // Apply filter (placeholder)
-            console.log('Filter applied:', value);
         }
 
         // Toggle favorite star
@@ -1933,7 +2166,6 @@
             document.getElementById('periodDropdownMenu').classList.remove('show');
 
             // Apply period filter (placeholder - can be connected to actual filtering)
-            console.log('Period filter applied:', value);
             applyPeriodFilter(value);
         }
 
@@ -1966,11 +2198,9 @@
                     endDate = new Date(today);
                     break;
                 default: // all
-                    console.log('Showing all records');
                     return;
             }
 
-            console.log(`Filtering from ${startDate.toDateString()} to ${endDate.toDateString()}`);
         }
 
         // ===== Custom View Modal Functions =====
@@ -2006,7 +2236,6 @@
                 return;
             }
 
-            console.log('Saving custom view:', { name, isFavorite, visibility });
             alert('Custom view "' + name + '" saved successfully!');
             closeCustomViewModal();
         }
@@ -2028,34 +2257,29 @@
 
         // Sort By function
         function sortBy(field) {
-            console.log('Sorting by:', field);
             alert('Sorting by ' + field);
             document.getElementById('moreActionsMenu').classList.remove('show');
         }
 
         // Import functions
         function importQuantityAdjustments() {
-            console.log('Import Quantity Adjustments');
             alert('Import Quantity Adjustments - Feature coming soon');
             document.getElementById('moreActionsMenu').classList.remove('show');
         }
 
         function importValueAdjustments() {
-            console.log('Import Value Adjustments');
             alert('Import Value Adjustments - Feature coming soon');
             document.getElementById('moreActionsMenu').classList.remove('show');
         }
 
         // Export function
         function exportInventoryAdjustments() {
-            console.log('Exporting Inventory Adjustments');
             alert('Exporting Inventory Adjustments - Feature coming soon');
             document.getElementById('moreActionsMenu').classList.remove('show');
         }
 
         // Refresh List function
         function refreshList() {
-            console.log('Refreshing list...');
             location.reload();
         }
     </script>

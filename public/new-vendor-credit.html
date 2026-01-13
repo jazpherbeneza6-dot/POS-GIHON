@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Vendor Credits - Inventory Management</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', 'Source Sans Pro', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f5f6fa;
+            font-size: 12px;
+        }
+
+        .main-layout {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .content {
+            flex: 1;
+            margin-left: 260px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            flex-shrink: 0;
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .title-icon {
+            font-size: 20px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        /* Main Form Area */
+        .form-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding-bottom: 80px;
+        }
+
+        /* Vendor Section (Blue Background) */
+        .vendor-section {
+            background: #e8f0fe;
+            padding: 16px 24px;
+            border-bottom: 1px solid #c5d9f7;
+        }
+
+        .vendor-row {
+            display: grid;
+            grid-template-columns: 120px 1fr auto;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .vendor-label {
+            font-size: 13px;
+            color: #dc2626;
+        }
+
+        .vendor-select {
+            padding: 10px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            background: white;
+            max-width: 350px;
+            width: 100%;
+        }
+
+        .search-btn {
+            width: 36px;
+            height: 36px;
+            background: #4285f4;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-btn:hover {
+            background: #3367d6;
+        }
+
+        /* Form Section */
+        .form-section {
+            padding: 16px 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            font-size: 13px;
+            color: #333;
+            padding-top: 8px;
+        }
+
+        .form-label.required {
+            color: #dc2626;
+        }
+
+        .form-input {
+            padding: 10px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+
+        .form-textarea {
+            padding: 10px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            width: 100%;
+            max-width: 350px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .input-with-icon {
+            position: relative;
+            display: inline-block;
+            max-width: 300px;
+            width: 100%;
+        }
+
+        .input-with-icon input {
+            width: 100%;
+            padding-right: 36px;
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            cursor: pointer;
+        }
+
+        /* Tax Options */
+        .tax-options {
+            display: flex;
+            gap: 24px;
+            padding: 16px 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .tax-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .tax-select {
+            padding: 6px 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 12px;
+            background: white;
+            cursor: pointer;
+        }
+
+        /* Item Table Section */
+        .item-table-section {
+            padding: 16px 24px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .bulk-actions-link {
+            color: #4285f4;
+            text-decoration: none;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .bulk-actions-link:hover {
+            text-decoration: underline;
+        }
+
+        .item-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+        }
+
+        .item-table th {
+            text-align: left;
+            padding: 10px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            background: #f9fafb;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .item-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px;
+        }
+
+        .item-image {
+            width: 32px;
+            height: 32px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 16px;
+        }
+
+        .item-input {
+            padding: 8px 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            width: 100%;
+        }
+
+        .item-select {
+            padding: 8px 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            background: white;
+            width: 100%;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #dc2626;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+        }
+
+        .delete-btn:hover {
+            background: #fef2f2;
+            border-radius: 4px;
+        }
+
+        .more-btn {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+        }
+
+        /* Add Row Section */
+        .add-row-section {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .add-row-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #4285f4;
+            cursor: pointer;
+        }
+
+        .add-row-btn:hover {
+            background: #f5f5f5;
+        }
+
+        /* Totals Section */
+        .totals-section {
+            display: flex;
+            justify-content: flex-end;
+            padding: 16px 24px;
+        }
+
+        .totals-box {
+            width: 350px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            font-size: 13px;
+        }
+
+        .total-row.main {
+            font-weight: 600;
+            font-size: 14px;
+            border-top: 1px solid #e9ecef;
+            padding-top: 16px;
+            margin-top: 8px;
+        }
+
+        .discount-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .discount-input {
+            width: 80px;
+            padding: 6px 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 12px;
+            text-align: right;
+        }
+
+        .percent-symbol {
+            padding: 6px 10px;
+            background: #f5f5f5;
+            border: 1px solid #e0e0e0;
+            border-left: none;
+            border-radius: 0 4px 4px 0;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .adjustment-input {
+            width: 100px;
+            padding: 6px 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 12px;
+            text-align: right;
+        }
+
+        /* Notes & Attachments Section */
+        .notes-attach-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            padding: 24px;
+            background: #f9fafb;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .notes-box {
+            max-width: 400px;
+        }
+
+        .notes-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .notes-textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        .attach-box {
+            max-width: 400px;
+        }
+
+        .attach-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .upload-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #666;
+            cursor: pointer;
+            margin-bottom: 8px;
+        }
+
+        .upload-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .upload-hint {
+            font-size: 12px;
+            color: #999;
+        }
+
+        /* Footer */
+        .form-footer {
+            position: fixed;
+            bottom: 0;
+            left: 260px;
+            right: 0;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 12px 24px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .btn-draft {
+            padding: 10px 20px;
+            background: white;
+            color: #333;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-draft:hover {
+            background: #f5f5f5;
+        }
+
+        .btn-save {
+            padding: 10px 20px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-save:hover {
+            background: #3367d6;
+        }
+
+        .btn-cancel {
+            padding: 10px 20px;
+            background: #e5e7eb;
+            color: #333;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-cancel:hover {
+            background: #d1d5db;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer"></div>
+
+    <div class="main-layout">
+        <div class="content" id="content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">
+                    <span class="title-icon">📋</span>
+                    New Vendor Credits
+                </h1>
+                <button class="close-btn" onclick="goBack()">×</button>
+            </div>
+
+            <!-- Main Form Area -->
+            <div class="form-main">
+                <!-- Vendor Section (Blue) -->
+                <div class="vendor-section">
+                    <div class="vendor-row">
+                        <label class="vendor-label">Vendor Name*</label>
+                        <select class="vendor-select" id="vendorName">
+                            <option value="">Select a Vendor</option>
+                        </select>
+                        <button class="search-btn">🔍</button>
+                    </div>
+                </div>
+
+                <!-- Form Fields Section -->
+                <div class="form-section">
+                    <div class="form-row">
+                        <label class="form-label required">Credit Notes#*</label>
+                        <div class="input-with-icon">
+                            <input type="text" class="form-input" id="creditNotes">
+                            <span class="input-icon">ⓘ</span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label class="form-label">Order Number</label>
+                        <input type="text" class="form-input" id="orderNumber">
+                    </div>
+
+                    <div class="form-row">
+                        <label class="form-label">Vendor Credit Date</label>
+                        <input type="text" class="form-input" id="vendorCreditDate">
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-row">
+                        <label class="form-label">Subject <span style="color: #999;">ⓘ</span></label>
+                        <textarea class="form-textarea" id="subject"
+                            placeholder="Enter a subject within 250 characters"></textarea>
+                    </div>
+                </div>
+
+                <!-- Tax Options -->
+                <div class="tax-options">
+                    <div class="tax-option">
+                        <span>🏷️</span>
+                        <span>Tax Exclusive</span>
+                        <select class="tax-select" id="taxType">
+                            <option value="exclusive">Tax Exclusive</option>
+                            <option value="inclusive">Tax Inclusive</option>
+                        </select>
+                    </div>
+                    <div class="tax-option">
+                        <span>⏱️</span>
+                        <span>At Transaction Level</span>
+                        <select class="tax-select" id="taxLevel">
+                            <option value="transaction">At Transaction Level</option>
+                            <option value="line">At Line Item Level</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Item Table Section -->
+                <div class="item-table-section">
+                    <div class="section-header">
+                        <span class="section-title">Item Table</span>
+                        <a href="#" class="bulk-actions-link">🔄 Bulk Actions</a>
+                    </div>
+
+                    <table class="item-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 40px;"></th>
+                                <th>ITEM DETAILS</th>
+                                <th>ACCOUNT</th>
+                                <th style="width: 80px;">QUANTITY</th>
+                                <th style="width: 80px;">RATE <span style="font-size: 10px;">💲</span></th>
+                                <th style="width: 120px;">TAX</th>
+                                <th style="width: 100px;">AMOUNT</th>
+                                <th style="width: 50px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemTableBody">
+                            <tr>
+                                <td>
+                                    <div class="item-image">🖼️</div>
+                                </td>
+                                <td>
+                                    <input type="text" class="item-input"
+                                        placeholder="Type or click to select an item.">
+                                </td>
+                                <td>
+                                    <select class="item-select">
+                                        <option value="">Select an account</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" class="item-input" value="1.00" step="0.01">
+                                </td>
+                                <td>
+                                    <input type="number" class="item-input" value="0.00" step="0.01">
+                                </td>
+                                <td>
+                                    <select class="item-select">
+                                        <option value="">Select a Tax</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <span>0.00</span>
+                                </td>
+                                <td>
+                                    <button class="more-btn">⋮</button>
+                                    <button class="delete-btn">×</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Add Row Section -->
+                    <div class="add-row-section">
+                        <button class="add-row-btn" onclick="addNewRow()">
+                            <span>⊕</span> Add New Row
+                        </button>
+                        <button class="add-row-btn" onclick="addItemsInBulk()">
+                            <span>⊕</span> Add Items in Bulk
+                        </button>
+                    </div>
+
+                    <!-- Totals Section -->
+                    <div class="totals-section">
+                        <div class="totals-box">
+                            <div class="total-row">
+                                <span>Sub Total</span>
+                                <span id="subTotal">0.00</span>
+                            </div>
+                            <div class="total-row">
+                                <span>Discount</span>
+                                <div class="discount-row">
+                                    <input type="number" class="discount-input" value="0" id="discount">
+                                    <span class="percent-symbol">%</span>
+                                </div>
+                                <span id="discountAmount">0.00</span>
+                            </div>
+                            <div class="total-row">
+                                <span>Adjustment</span>
+                                <input type="number" class="adjustment-input" value="" id="adjustment" placeholder="">
+                                <span style="color: #999;">ⓘ</span>
+                                <span id="adjustmentAmount">0.00</span>
+                            </div>
+                            <div class="total-row main">
+                                <span>Total</span>
+                                <span id="total">0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notes & Attachments Section -->
+                <div class="notes-attach-section">
+                    <div class="notes-box">
+                        <div class="notes-label">Notes</div>
+                        <textarea class="notes-textarea" id="notes" placeholder=""></textarea>
+                    </div>
+                    <div class="attach-box">
+                        <div class="attach-label">Attach File(s) to Vendor Credits</div>
+                        <button class="upload-btn" onclick="attachFiles()">
+                            📤 Upload File <span>▼</span>
+                        </button>
+                        <div class="upload-hint">You can upload a maximum of 5 files, 10MB each</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="form-footer">
+                <button class="btn-draft" onclick="saveAsDraft()">Save as Draft</button>
+                <button class="btn-save" onclick="saveAsOpen()">Save as Open</button>
+                <button class="btn-cancel" onclick="goBack()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Layout Script -->
+    <script src="/js/layout.js"></script>
+    <script>
+        // Set current date
+        document.addEventListener('DOMContentLoaded', function () {
+            const today = new Date();
+            const options = { day: '2-digit', month: 'short', year: 'numeric' };
+            const dateStr = today.toLocaleDateString('en-GB', options);
+            document.getElementById('vendorCreditDate').value = dateStr;
+
+            // Load vendors
+            loadVendors();
+        });
+
+        async function loadVendors() {
+            try {
+                const response = await fetch('/api/vendors');
+                if (response.ok) {
+                    const vendors = await response.json();
+                    const select = document.getElementById('vendorName');
+                    vendors.forEach(vendor => {
+                        const option = document.createElement('option');
+                        option.value = vendor.id;
+                        option.textContent = vendor.company_name || vendor.first_name + ' ' + vendor.last_name;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading vendors:', error);
+            }
+        }
+
+        function goBack() {
+            window.location.href = '/vendor-credits.html';
+        }
+
+        function addNewRow() {
+            const tbody = document.getElementById('itemTableBody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>
+                    <div class="item-image">🖼️</div>
+                </td>
+                <td>
+                    <input type="text" class="item-input" placeholder="Type or click to select an item.">
+                </td>
+                <td>
+                    <select class="item-select">
+                        <option value="">Select an account</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="number" class="item-input" value="1.00" step="0.01">
+                </td>
+                <td>
+                    <input type="number" class="item-input" value="0.00" step="0.01">
+                </td>
+                <td>
+                    <select class="item-select">
+                        <option value="">Select a Tax</option>
+                    </select>
+                </td>
+                <td>
+                    <span>0.00</span>
+                </td>
+                <td>
+                    <button class="more-btn">⋮</button>
+                    <button class="delete-btn" onclick="deleteRow(this)">×</button>
+                </td>
+            `;
+            tbody.appendChild(newRow);
+        }
+
+        function deleteRow(btn) {
+            btn.closest('tr').remove();
+            calculateTotals();
+        }
+
+        function addItemsInBulk() {
+            alert('Bulk item selection modal would open here');
+        }
+
+        function calculateTotals() {
+            let subTotal = 0;
+            const rows = document.querySelectorAll('#itemTableBody tr');
+            rows.forEach(row => {
+                const qty = parseFloat(row.querySelector('input[type="number"]:nth-of-type(1)')?.value) || 0;
+                const rate = parseFloat(row.querySelector('input[type="number"]:nth-of-type(2)')?.value) || 0;
+                subTotal += qty * rate;
+            });
+
+            const discount = parseFloat(document.getElementById('discount').value) || 0;
+            const discountAmount = (subTotal * discount / 100);
+            const adjustment = parseFloat(document.getElementById('adjustment').value) || 0;
+            const total = subTotal - discountAmount + adjustment;
+
+            document.getElementById('subTotal').textContent = subTotal.toFixed(2);
+            document.getElementById('discountAmount').textContent = discountAmount.toFixed(2);
+            document.getElementById('adjustmentAmount').textContent = adjustment.toFixed(2);
+            document.getElementById('total').textContent = total.toFixed(2);
+        }
+
+        function attachFiles() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.pdf,.doc,.docx,.jpg,.png';
+            input.multiple = true;
+            input.click();
+        }
+
+        function saveAsDraft() {
+            alert('Vendor Credit saved as draft!');
+            goBack();
+        }
+
+        function saveAsOpen() {
+            const vendorName = document.getElementById('vendorName').value;
+            const creditNotes = document.getElementById('creditNotes').value;
+
+            if (!vendorName) {
+                alert('Please select a vendor');
+                return;
+            }
+
+            if (!creditNotes) {
+                alert('Please enter credit notes number');
+                return;
+            }
+
+            alert('Vendor Credit saved successfully!');
+            goBack();
+        }
+    </script>
+</body>
+
+</html>

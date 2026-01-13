@@ -48,7 +48,6 @@ function addNotification(title, message, type = 'info', link = null) {
     );
 
     if (recentDuplicate) {
-        console.log('Duplicate notification ignored:', title);
         return;
     }
 

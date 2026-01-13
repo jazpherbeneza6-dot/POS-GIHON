@@ -118,6 +118,98 @@
                     if (purchasesArrow) purchasesArrow.textContent = '⌄';
                 }
             }
+
+            // Special handling for bills-related pages
+            if (pageName === 'bills' || pageName === 'new-bill' || pageName === 'import-bills' || pageName === 'unpaid-bills') {
+                const purchasesMenuToggle = document.getElementById('purchasesMenuToggle');
+                const purchasesSubmenu = document.getElementById('purchasesSubmenu');
+                const purchasesArrow = document.getElementById('purchasesArrow');
+
+                if (purchasesMenuToggle && purchasesSubmenu) {
+                    purchasesMenuToggle.classList.add('expanded');
+                    purchasesSubmenu.style.maxHeight = '500px';
+                    purchasesSubmenu.style.opacity = '1';
+                    if (purchasesArrow) purchasesArrow.textContent = '⌄';
+                }
+
+                // Highlight Bills submenu item
+                const billsItem = document.querySelector('.nav-submenu-item[data-page="bills"]');
+                if (billsItem) {
+                    billsItem.classList.add('active');
+                    localStorage.setItem('activeSubmenuItem', 'bills');
+                }
+            }
+
+            // Special handling for payments-related pages
+            if (pageName === 'payments-made' || pageName === 'record-payment' || pageName === 'import-payments') {
+                const purchasesMenuToggle = document.getElementById('purchasesMenuToggle');
+                const purchasesSubmenu = document.getElementById('purchasesSubmenu');
+                const purchasesArrow = document.getElementById('purchasesArrow');
+
+                if (purchasesMenuToggle && purchasesSubmenu) {
+                    purchasesMenuToggle.classList.add('expanded');
+                    purchasesSubmenu.style.maxHeight = '500px';
+                    purchasesSubmenu.style.opacity = '1';
+                    if (purchasesArrow) purchasesArrow.textContent = '⌄';
+                }
+
+                // Highlight Payments Made submenu item
+                const paymentsItem = document.querySelector('.nav-submenu-item[data-page="payments-made"]');
+                if (paymentsItem) {
+                    paymentsItem.classList.add('active');
+                    localStorage.setItem('activeSubmenuItem', 'payments-made');
+                }
+            }
+
+            // Special handling for vendor-credits-related pages
+            if (pageName === 'vendor-credits' || pageName === 'new-vendor-credit' || pageName === 'import-vendor-credits') {
+                const purchasesMenuToggle = document.getElementById('purchasesMenuToggle');
+                const purchasesSubmenu = document.getElementById('purchasesSubmenu');
+                const purchasesArrow = document.getElementById('purchasesArrow');
+
+                if (purchasesMenuToggle && purchasesSubmenu) {
+                    purchasesMenuToggle.classList.add('expanded');
+                    purchasesSubmenu.style.maxHeight = '500px';
+                    purchasesSubmenu.style.opacity = '1';
+                    if (purchasesArrow) purchasesArrow.textContent = '⌄';
+                }
+
+                // Highlight Vendor Credits submenu item
+                const vendorCreditsItem = document.querySelector('.nav-submenu-item[data-page="vendor-credits"]');
+                if (vendorCreditsItem) {
+                    vendorCreditsItem.classList.add('active');
+                    localStorage.setItem('activeSubmenuItem', 'vendor-credits');
+                }
+            }
+
+            // Special handling for FIFO Report - show under Inventory > Inventory Adjustments
+            if (pageName === 'fifo-report') {
+                const inventoryMenuToggle = document.getElementById('inventoryMenuToggle');
+                const inventorySubmenu = document.getElementById('inventorySubmenu');
+                const inventoryArrow = document.getElementById('inventoryArrow');
+
+                if (inventoryMenuToggle && inventorySubmenu) {
+                    inventoryMenuToggle.classList.add('expanded');
+                    inventorySubmenu.style.maxHeight = '500px';
+                    inventorySubmenu.style.opacity = '1';
+                    if (inventoryArrow) inventoryArrow.textContent = '⌄';
+                }
+
+                // Highlight Inventory Adjustments submenu item
+                const invAdjItem = document.querySelector('.nav-submenu-item[data-page="inventory-adjustments"]');
+                if (invAdjItem) {
+                    invAdjItem.classList.add('active');
+                    localStorage.setItem('activeSubmenuItem', 'inventory-adjustments');
+                }
+            }
+
+            // Special handling for reports page - highlight Reports
+            if (pageName === 'reports' || pageName === 'stock-summary' || pageName === 'inventory-valuation') {
+                const reportsItem = document.querySelector('.nav-item[data-page="reports"]');
+                if (reportsItem) {
+                    reportsItem.classList.add('active');
+                }
+            }
         }, 50);
     }
 
@@ -314,6 +406,33 @@
         });
     }
 
+    // Setup nav-group hover to keep submenu open while cursor is inside
+    function setupNavGroupHover() {
+        const navGroups = document.querySelectorAll('.nav-group');
+
+        navGroups.forEach((group, index) => {
+            const navItem = group.querySelector('.nav-item');
+            const submenu = group.querySelector('.nav-submenu');
+            const arrow = group.querySelector('.nav-item-arrow');
+
+            if (!navItem || !submenu) return;
+
+            // Expand submenu on mouseenter
+            group.addEventListener('mouseenter', function () {
+                submenu.style.cssText = 'max-height: 500px !important; opacity: 1 !important; margin: 0 12px 8px 12px !important; padding: 8px 0 !important; overflow: visible !important;';
+                if (arrow) arrow.style.cssText = 'transform: rotate(90deg) !important;';
+            });
+
+            // Collapse submenu on mouseleave (only if not clicked to expand)
+            group.addEventListener('mouseleave', function () {
+                if (!navItem.classList.contains('expanded')) {
+                    submenu.style.cssText = 'max-height: 0 !important; opacity: 0 !important; margin: 0 12px !important; padding: 0 !important; overflow: hidden !important;';
+                    if (arrow) arrow.style.cssText = 'transform: rotate(0deg) !important;';
+                }
+            });
+        });
+    }
+
     // Initialize layout
     async function initLayout() {
         // Load sidebar
@@ -329,6 +448,7 @@
         setTimeout(() => {
             addSidebarClickAnimations();
             addSubmenuItemClickHandlers();
+            setupNavGroupHover();
         }, 100);
 
         // Configure header for current page

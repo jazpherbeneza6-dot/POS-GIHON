@@ -679,7 +679,6 @@ function closeNewSaleModal() {
 
 // View sale details
 function viewSaleDetails(saleId) {
-  console.log('View sale details:', saleId);
   // Could open a detail modal or navigate to detail page
   viewReceipt(saleId);
 }

@@ -69,7 +69,6 @@ router.post('/', async (req, res) => {
   try {
     const { name, sku, unit, quantity, reorder_point, price, cost, can_be_wholesale, image_url, group_id } = req.body;
 
-    console.log('Received data:', { name, sku, unit, quantity, reorder_point, price, cost, can_be_wholesale, group_id }); // Debug log
 
     if (!name || name.trim() === '') {
       return res.status(400).json({ error: 'Item name is required' });
@@ -143,7 +142,6 @@ router.post('/', async (req, res) => {
     const itemId = result.rows[0].id;
     const itemResult = await db.query('SELECT * FROM items WHERE id = $1', [itemId]);
 
-    console.log('Created item:', itemResult.rows[0]); // Debug log
 
     res.status(201).json(itemResult.rows[0]);
   } catch (error) {
@@ -158,7 +156,6 @@ router.put('/:id', async (req, res) => {
     const { name, sku, unit, quantity, reorder_point, price, cost, can_be_wholesale, image_url } = req.body;
     const db = database.getDb();
 
-    console.log('Updating item:', req.params.id, { name, sku, unit, quantity, reorder_point, price, cost, can_be_wholesale }); // Debug log
 
     if (!name || name.trim() === '') {
       return res.status(400).json({ error: 'Item name is required' });
@@ -195,7 +192,6 @@ router.put('/:id', async (req, res) => {
 
     const result = await db.query('SELECT * FROM items WHERE id = $1', [req.params.id]);
 
-    console.log('Updated item:', result.rows[0]); // Debug log
 
     res.json(result.rows[0]);
   } catch (error) {

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Import Bill Payments - Inventory Management</title>
+    <title>Import Bills - Inventory Management</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/sidebar.css">
     <link
@@ -301,8 +301,8 @@
             width: 100%;
         }
 
-        /* Auto Generate Option */
-        .auto-option {
+        /* Link Bills Option */
+        .link-option {
             max-width: 600px;
             margin: 0 auto 24px;
             padding: 16px;
@@ -311,29 +311,29 @@
             border: 1px solid #e9ecef;
         }
 
-        .auto-checkbox {
+        .link-checkbox {
             display: flex;
             align-items: flex-start;
             gap: 10px;
         }
 
-        .auto-checkbox input[type="checkbox"] {
+        .link-checkbox input[type="checkbox"] {
             margin-top: 2px;
             accent-color: #4285f4;
         }
 
-        .auto-checkbox-content {
+        .link-checkbox-content {
             flex: 1;
         }
 
-        .auto-checkbox-title {
+        .link-checkbox-title {
             font-size: 13px;
             font-weight: 500;
             color: #333;
             margin-bottom: 4px;
         }
 
-        .auto-checkbox-desc {
+        .link-checkbox-desc {
             font-size: 12px;
             color: #666;
             line-height: 1.5;
@@ -370,6 +370,15 @@
             color: #666;
             margin-bottom: 8px;
             line-height: 1.5;
+        }
+
+        .tips-list a {
+            color: #4285f4;
+            text-decoration: none;
+        }
+
+        .tips-list a:hover {
+            text-decoration: underline;
         }
 
         /* Footer */
@@ -425,27 +434,75 @@
             background: #f5f5f5;
         }
 
+        .btn-back {
+            padding: 10px 24px;
+            background: white;
+            color: #333;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
         .footer-left {
             display: flex;
             gap: 12px;
         }
 
-        /* Step 2 & 3 styles */
-        .map-fields-section,
-        .preview-section {
+        /* Step 2: Map Fields */
+        .map-fields-section {
             display: none;
             max-width: 800px;
             margin: 0 auto;
         }
 
-        .map-fields-table,
+        .map-fields-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        .map-fields-table th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            background: #f9fafb;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .map-fields-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .field-select {
+            padding: 8px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            width: 200px;
+        }
+
+        /* Step 3: Preview */
+        .preview-section {
+            display: none;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
         .preview-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 16px;
         }
 
-        .map-fields-table th,
         .preview-table th {
             text-align: left;
             padding: 12px 16px;
@@ -457,19 +514,10 @@
             border-bottom: 1px solid #e9ecef;
         }
 
-        .map-fields-table td,
         .preview-table td {
             padding: 12px 16px;
             border-bottom: 1px solid #f0f0f0;
             font-size: 13px;
-        }
-
-        .field-select {
-            padding: 8px 12px;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            font-size: 13px;
-            width: 200px;
         }
 
         .import-summary {
@@ -486,6 +534,7 @@
             font-size: 13px;
         }
 
+        /* Hidden file input */
         #fileInput {
             display: none;
         }
@@ -500,7 +549,7 @@
         <div class="content" id="content">
             <!-- Page Header -->
             <div class="page-header">
-                <h1 class="page-title">Bill Payments - Select File</h1>
+                <h1 class="page-title">Bills - Select File</h1>
                 <button class="close-btn" onclick="goBack()">×</button>
             </div>
 
@@ -560,19 +609,20 @@
                                 <option value="utf-8">UTF-8 (Unicode)</option>
                                 <option value="iso-8859-1">ISO-8859-1 (Latin-1)</option>
                                 <option value="windows-1252">Windows-1252</option>
+                                <option value="ascii">ASCII</option>
                             </select>
                         </div>
                     </div>
 
-                    <!-- Auto Generate Payment Numbers -->
-                    <div class="auto-option">
-                        <label class="auto-checkbox">
-                            <input type="checkbox" id="autoGenerate">
-                            <div class="auto-checkbox-content">
-                                <div class="auto-checkbox-title">Auto-Generate Payment Numbers</div>
-                                <div class="auto-checkbox-desc">Payment numbers will be generated automatically
-                                    according to your settings. Any Payment numbers in the import file will be ignored.
-                                </div>
+                    <!-- Link Bills to Purchase Orders -->
+                    <div class="link-option">
+                        <label class="link-checkbox">
+                            <input type="checkbox" id="linkBills">
+                            <div class="link-checkbox-content">
+                                <div class="link-checkbox-title">Link Bills to its corresponding Purchase Orders.</div>
+                                <div class="link-checkbox-desc">If you enable this option, you must map the Purchase
+                                    Order field with the appropriate column containing the Purchase Order Number in the
+                                    next page.</div>
                             </div>
                         </label>
                     </div>
@@ -593,13 +643,13 @@
                 <!-- Step 2: Map Fields -->
                 <div class="map-fields-section" id="step2Content">
                     <h3>Map Your File Fields</h3>
-                    <p style="color: #666;">Match the columns in your file to the corresponding payment fields.</p>
+                    <p style="color: #666;">Match the columns in your file to the corresponding bill fields.</p>
 
                     <table class="map-fields-table">
                         <thead>
                             <tr>
                                 <th>FILE COLUMN</th>
-                                <th>PAYMENT FIELD</th>
+                                <th>BILL FIELD</th>
                             </tr>
                         </thead>
                         <tbody id="mapFieldsBody">
@@ -608,13 +658,14 @@
                                 <td>
                                     <select class="field-select">
                                         <option value="">-- Select Field --</option>
-                                        <option value="payment_number">Payment Number</option>
-                                        <option value="vendor_name">Vendor Name</option>
-                                        <option value="payment_date">Payment Date</option>
-                                        <option value="payment_mode">Payment Mode</option>
-                                        <option value="amount">Amount</option>
-                                        <option value="reference">Reference#</option>
                                         <option value="bill_number">Bill Number</option>
+                                        <option value="order_number">Order Number</option>
+                                        <option value="vendor_name">Vendor Name</option>
+                                        <option value="bill_date">Bill Date</option>
+                                        <option value="due_date">Due Date</option>
+                                        <option value="amount">Amount</option>
+                                        <option value="purchase_order">Purchase Order Number</option>
+                                        <option value="notes">Notes</option>
                                     </select>
                                 </td>
                             </tr>
@@ -623,13 +674,30 @@
                                 <td>
                                     <select class="field-select">
                                         <option value="">-- Select Field --</option>
-                                        <option value="payment_number">Payment Number</option>
-                                        <option value="vendor_name">Vendor Name</option>
-                                        <option value="payment_date">Payment Date</option>
-                                        <option value="payment_mode">Payment Mode</option>
-                                        <option value="amount">Amount</option>
-                                        <option value="reference">Reference#</option>
                                         <option value="bill_number">Bill Number</option>
+                                        <option value="order_number">Order Number</option>
+                                        <option value="vendor_name">Vendor Name</option>
+                                        <option value="bill_date">Bill Date</option>
+                                        <option value="due_date">Due Date</option>
+                                        <option value="amount">Amount</option>
+                                        <option value="purchase_order">Purchase Order Number</option>
+                                        <option value="notes">Notes</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Column C</td>
+                                <td>
+                                    <select class="field-select">
+                                        <option value="">-- Select Field --</option>
+                                        <option value="bill_number">Bill Number</option>
+                                        <option value="order_number">Order Number</option>
+                                        <option value="vendor_name">Vendor Name</option>
+                                        <option value="bill_date">Bill Date</option>
+                                        <option value="due_date">Due Date</option>
+                                        <option value="amount">Amount</option>
+                                        <option value="purchase_order">Purchase Order Number</option>
+                                        <option value="notes">Notes</option>
                                     </select>
                                 </td>
                             </tr>
@@ -640,7 +708,7 @@
                 <!-- Step 3: Preview -->
                 <div class="preview-section" id="step3Content">
                     <h3>Preview Import Data</h3>
-                    <p style="color: #666;">Review the data before importing.</p>
+                    <p style="color: #666;">Review the data before importing. Make sure everything looks correct.</p>
 
                     <div class="import-summary">
                         <div class="summary-item">
@@ -660,15 +728,17 @@
                     <table class="preview-table">
                         <thead>
                             <tr>
-                                <th>PAYMENT#</th>
-                                <th>VENDOR</th>
-                                <th>DATE</th>
-                                <th>MODE</th>
+                                <th>BILL#</th>
+                                <th>VENDOR NAME</th>
+                                <th>BILL DATE</th>
+                                <th>DUE DATE</th>
                                 <th>AMOUNT</th>
                                 <th>STATUS</th>
                             </tr>
                         </thead>
-                        <tbody id="previewBody"></tbody>
+                        <tbody id="previewBody">
+                            <!-- Preview data will be populated here -->
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -677,6 +747,8 @@
             <div class="form-footer">
                 <div class="footer-left">
                     <button class="btn-next" id="btnNext" onclick="nextStep()" disabled>Next <span>→</span></button>
+                    <button class="btn-back" id="btnBack" onclick="prevStep()" style="display: none;"><span>←</span>
+                        Back</button>
                 </div>
                 <button class="btn-cancel" onclick="goBack()">Cancel</button>
             </div>
@@ -697,6 +769,7 @@
         const fileName = document.getElementById('fileName');
         const btnNext = document.getElementById('btnNext');
 
+        // Drag and drop handlers
         uploadBox.addEventListener('dragover', function (e) {
             e.preventDefault();
             this.classList.add('dragover');
@@ -722,10 +795,13 @@
 
         function handleFileSelect(event) {
             const file = event.target.files[0];
-            if (file) handleFile(file);
+            if (file) {
+                handleFile(file);
+            }
         }
 
         function handleFile(file) {
+            // Validate file type
             const validExtensions = ['.csv', '.xls', '.xlsx', '.tsv'];
             const extension = '.' + file.name.split('.').pop().toLowerCase();
 
@@ -734,6 +810,7 @@
                 return;
             }
 
+            // Validate file size (25MB max)
             if (file.size > 25 * 1024 * 1024) {
                 alert('File size exceeds 25 MB limit.');
                 return;
@@ -744,6 +821,7 @@
             fileSelected.classList.add('show');
             btnNext.disabled = false;
 
+            // Parse file for preview
             parseFile(file);
         }
 
@@ -762,19 +840,22 @@
                 const lines = text.split('\n');
                 importData = [];
 
+                // Skip header row, parse data
                 for (let i = 1; i < Math.min(lines.length, 10); i++) {
                     const cols = lines[i].split(',');
                     if (cols.length >= 3) {
                         importData.push({
-                            paymentNumber: cols[0] || 'PAY-' + i,
+                            billNumber: cols[0] || 'BILL-' + i,
                             vendorName: cols[1] || 'Vendor ' + i,
-                            date: cols[2] || new Date().toLocaleDateString(),
-                            mode: cols[3] || 'Cash',
+                            billDate: cols[2] || new Date().toLocaleDateString(),
+                            dueDate: cols[3] || new Date().toLocaleDateString(),
                             amount: cols[4] || '0.00',
                             status: 'Valid'
                         });
                     }
                 }
+
+                // Update preview
                 updatePreview();
             };
             reader.readAsText(file);
@@ -782,81 +863,123 @@
 
         function updatePreview() {
             const previewBody = document.getElementById('previewBody');
-            document.getElementById('totalRecords').textContent = importData.length;
-            document.getElementById('validRecords').textContent = importData.length;
-            document.getElementById('errorRecords').textContent = '0';
+            const totalRecords = document.getElementById('totalRecords');
+            const validRecords = document.getElementById('validRecords');
+            const errorRecords = document.getElementById('errorRecords');
 
             previewBody.innerHTML = '';
             importData.forEach(row => {
                 previewBody.innerHTML += `
                     <tr>
-                        <td>${row.paymentNumber}</td>
+                        <td>${row.billNumber}</td>
                         <td>${row.vendorName}</td>
-                        <td>${row.date}</td>
-                        <td>${row.mode}</td>
+                        <td>${row.billDate}</td>
+                        <td>${row.dueDate}</td>
                         <td>PHP ${row.amount}</td>
                         <td style="color: #2e7d32;">✓ ${row.status}</td>
                     </tr>
                 `;
             });
+
+            totalRecords.textContent = importData.length;
+            validRecords.textContent = importData.length;
+            errorRecords.textContent = '0';
         }
 
         function nextStep() {
             if (currentStep < 3) {
+                // Hide current step
                 document.getElementById('step' + currentStep + 'Content').style.display = 'none';
                 document.getElementById('step' + currentStep + 'Indicator').classList.remove('active');
                 document.getElementById('step' + currentStep + 'Indicator').classList.add('completed');
-                document.getElementById('connector' + currentStep).classList.add('completed');
+                if (currentStep < 3) {
+                    document.getElementById('connector' + currentStep).classList.add('completed');
+                }
 
+                // Show next step
                 currentStep++;
                 document.getElementById('step' + currentStep + 'Content').style.display = 'block';
                 document.getElementById('step' + currentStep + 'Indicator').classList.add('active');
 
+                // Update buttons
+                document.getElementById('btnBack').style.display = 'flex';
+
                 if (currentStep === 3) {
                     document.getElementById('btnNext').innerHTML = 'Import <span>✓</span>';
                 }
+
+                // Update title
                 updateTitle();
             } else {
+                // Execute import
                 executeImport();
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                // Hide current step
+                document.getElementById('step' + currentStep + 'Content').style.display = 'none';
+                document.getElementById('step' + currentStep + 'Indicator').classList.remove('active');
+
+                // Show previous step
+                currentStep--;
+                document.getElementById('step' + currentStep + 'Content').style.display = 'block';
+                document.getElementById('step' + currentStep + 'Indicator').classList.remove('completed');
+                document.getElementById('step' + currentStep + 'Indicator').classList.add('active');
+                document.getElementById('connector' + currentStep).classList.remove('completed');
+
+                // Update buttons
+                if (currentStep === 1) {
+                    document.getElementById('btnBack').style.display = 'none';
+                }
+                document.getElementById('btnNext').innerHTML = 'Next <span>→</span>';
+
+                // Update title
+                updateTitle();
             }
         }
 
         function updateTitle() {
             const titles = {
-                1: 'Bill Payments - Select File',
-                2: 'Bill Payments - Map Fields',
-                3: 'Bill Payments - Preview'
+                1: 'Bills - Select File',
+                2: 'Bills - Map Fields',
+                3: 'Bills - Preview'
             };
             document.querySelector('.page-title').textContent = titles[currentStep];
         }
 
         function executeImport() {
+            // Show loading state
             const btnNext = document.getElementById('btnNext');
             btnNext.disabled = true;
             btnNext.innerHTML = 'Importing...';
 
+            // Simulate import process
             setTimeout(() => {
-                alert('Successfully imported ' + importData.length + ' payments!');
+                alert('Successfully imported ' + importData.length + ' bills!');
                 goBack();
             }, 1500);
         }
 
         function downloadSampleFile() {
-            const csvContent = `Payment Number,Vendor Name,Payment Date,Payment Mode,Amount,Reference
-PAY-001,ABC Supplies,2026-01-12,Cash,5000.00,REF-001
-PAY-002,XYZ Corp,2026-01-11,Bank Transfer,15000.00,REF-002`;
+            // Create sample CSV content
+            const csvContent = `Bill Number,Vendor Name,Bill Date,Due Date,Amount,Notes
+BILL-001,ABC Supplies,2026-01-12,2026-01-27,5000.00,Office supplies
+BILL-002,XYZ Corp,2026-01-11,2026-01-26,15000.00,Equipment
+BILL-003,123 Services,2026-01-10,2026-01-25,2500.00,Maintenance`;
 
             const blob = new Blob([csvContent], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'sample_payments.csv';
+            a.download = 'sample_bills.csv';
             a.click();
             window.URL.revokeObjectURL(url);
         }
 
         function goBack() {
-            window.location.href = '/payments-made.html';
+            window.location.href = '/bills.html';
         }
     </script>
 </body>

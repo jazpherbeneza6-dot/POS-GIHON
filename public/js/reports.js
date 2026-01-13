@@ -77,7 +77,6 @@ async function loadAllData() {
 async function loadSales() {
     try {
         sales = await salesAPI.getAll({ limit: 1000 });
-        console.log('Loaded sales:', sales.length, 'records', sales);
     } catch (error) {
         console.error('Error loading sales:', error);
         sales = [];
@@ -133,11 +132,9 @@ async function loadReport(reportType) {
 
     try {
         // Load fresh data from API
-        console.log('Loading data for report:', reportType);
 
         if (reportType === 'sales') {
             sales = await salesAPI.getAll({ limit: 1000 });
-            console.log('Sales loaded:', sales.length, sales);
         } else if (reportType === 'purchases') {
             purchases = await purchasesAPI.getAll({ limit: 1000 });
         } else if (reportType === 'inventory') {
@@ -302,68 +299,50 @@ function getFilteredData(data, dateField = 'date') {
 
     // If no date filters, return all data
     if (!fromDateEl || !toDateEl || !fromDateEl.value || !toDateEl.value) {
-        console.log('No date filter applied, returning all data');
         return data || [];
     }
 
     // Parse filter dates (input type="date" returns YYYY-MM-DD format)
     const fromDateStr = fromDateEl.value; // YYYY-MM-DD
     const toDateStr = toDateEl.value; // YYYY-MM-DD
-    
+
     // Create date objects at start and end of day
     const fromDate = new Date(fromDateStr + 'T00:00:00');
     const toDate = new Date(toDateStr + 'T23:59:59.999');
 
-    console.log('Filtering from', fromDateStr, 'to', toDateStr);
-    console.log('Date range:', fromDate, 'to', toDate);
-
     const filtered = (data || []).filter(item => {
         // Try multiple date field names
         const itemDateStr = item[dateField] || item.created_at || item.date || item.sale_date;
-        
+
         if (!itemDateStr) {
-            console.log('Item missing date field:', item);
             return false;
         }
-        
+
         // Parse the item date - handle both ISO strings and other formats
         let itemDate = new Date(itemDateStr);
-        
+
         // Check if date is valid
         if (isNaN(itemDate.getTime())) {
-            console.log('Invalid date for item:', item, 'date string:', itemDateStr);
             return false;
         }
-        
+
         // Normalize to date only (ignore time for comparison)
         const itemDateOnly = new Date(itemDate.getFullYear(), itemDate.getMonth(), itemDate.getDate());
         const fromDateOnly = new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate());
         const toDateOnly = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate());
-        
+
         // Check if item date is within range
         const isInRange = itemDateOnly >= fromDateOnly && itemDateOnly <= toDateOnly;
-        
-        if (!isInRange) {
-            console.log('Item date out of range:', {
-                itemDate: itemDateOnly.toISOString().split('T')[0],
-                fromDate: fromDateOnly.toISOString().split('T')[0],
-                toDate: toDateOnly.toISOString().split('T')[0],
-                item: item
-            });
-        }
-        
+
         return isInRange;
     });
 
-    console.log(`Filtered ${filtered.length} items from ${data.length} total items`);
     return filtered;
 }
 
 // ========== SALES REPORT ==========
 async function generateSalesReport() {
     document.getElementById('reportTitle').textContent = '💰 Sales Report';
-
-    console.log('All sales before filter:', sales.length, sales);
 
     // Check if we have any sales data
     if (!sales || sales.length === 0) {
@@ -380,7 +359,6 @@ async function generateSalesReport() {
     }
 
     filteredData = getFilteredData(sales);
-    console.log('Filtered sales:', filteredData.length, filteredData);
 
     // Calculate summaries - only count completed sales for revenue
     const totalSales = filteredData.length;
@@ -564,7 +542,7 @@ function generateSalesChart() {
                     titleFont: { size: 14, weight: 'bold' },
                     bodyFont: { size: 13 },
                     callbacks: {
-                        label: function(context) {
+                        label: function (context) {
                             return `Revenue: ${formatCurrency(context.parsed.y)}`;
                         }
                     }
@@ -654,7 +632,7 @@ function generateSalesChart() {
                     titleFont: { size: 14, weight: 'bold' },
                     bodyFont: { size: 13 },
                     callbacks: {
-                        label: function(context) {
+                        label: function (context) {
                             return `Orders: ${context.parsed.y}`;
                         }
                     }
@@ -718,16 +696,16 @@ function generateSalesTable() {
       </thead>
       <tbody>
         ${sortedData.map(sale => {
-            const status = sale.status || 'completed';
-            const statusColor = status === 'completed' ? '#51cf66' : 
-                               status === 'pending' ? '#fab005' : 
-                               status === 'cancelled' ? '#ff6b6b' : '#868e96';
-            const subtotal = parseFloat(sale.subtotal) || parseFloat(sale.total_amount) || 0;
-            const discount = parseFloat(sale.discount_amount) || 0;
-            const tax = parseFloat(sale.tax_amount) || 0;
-            const total = parseFloat(sale.total_amount) || 0;
-            
-            return `
+        const status = sale.status || 'completed';
+        const statusColor = status === 'completed' ? '#51cf66' :
+            status === 'pending' ? '#fab005' :
+                status === 'cancelled' ? '#ff6b6b' : '#868e96';
+        const subtotal = parseFloat(sale.subtotal) || parseFloat(sale.total_amount) || 0;
+        const discount = parseFloat(sale.discount_amount) || 0;
+        const tax = parseFloat(sale.tax_amount) || 0;
+        const total = parseFloat(sale.total_amount) || 0;
+
+        return `
           <tr>
             <td><strong>${sale.receipt_number || sale.order_number || `ORD-${sale.id}`}</strong></td>
             <td>${formatDate(sale.date || sale.created_at)}</td>
@@ -741,7 +719,7 @@ function generateSalesTable() {
             <td><span style="color: ${statusColor}; font-weight: 600; text-transform: capitalize;">${status}</span></td>
           </tr>
         `;
-        }).join('')}
+    }).join('')}
       </tbody>
     </table>
   `;
@@ -791,10 +769,10 @@ function generateTopCustomersSection(topCustomers) {
 async function loadTopSellingItems() {
     try {
         const completedSales = filteredData.filter(s => (s.status || 'completed') === 'completed');
-        
+
         // Fetch items for each completed sale
         const itemSales = {};
-        
+
         for (const sale of completedSales) {
             try {
                 const saleDetails = await salesAPI.getById(sale.id);
@@ -804,7 +782,7 @@ async function loadTopSellingItems() {
                         const itemName = item.item_name || 'Unknown Item';
                         const quantity = parseInt(item.quantity) || 0;
                         const revenue = parseFloat(item.total_price) || (parseFloat(item.unit_price) || 0) * quantity;
-                        
+
                         if (!itemSales[itemId]) {
                             itemSales[itemId] = {
                                 name: itemName,
@@ -822,12 +800,12 @@ async function loadTopSellingItems() {
                 console.error(`Error loading sale ${sale.id}:`, error);
             }
         }
-        
+
         // Convert to array and sort by revenue
         const topItems = Object.values(itemSales)
             .sort((a, b) => b.revenue - a.revenue)
             .slice(0, 10);
-        
+
         if (topItems.length > 0) {
             generateTopSellingItemsSection(topItems);
         }
@@ -1348,7 +1326,7 @@ function exportToPDF() {
                     const discount = parseFloat(sale.discount_amount) || 0;
                     const tax = parseFloat(sale.tax_amount) || 0;
                     const total = parseFloat(sale.total_amount) || 0;
-                    
+
                     return [
                         sale.receipt_number || sale.order_number || `ORD-${sale.id}`,
                         formatDate(sale.date || sale.created_at),
@@ -1477,7 +1455,7 @@ function exportToCSV() {
                 const discount = parseFloat(sale.discount_amount) || 0;
                 const tax = parseFloat(sale.tax_amount) || 0;
                 const total = parseFloat(sale.total_amount) || 0;
-                
+
                 return [
                     sale.receipt_number || sale.order_number || `ORD-${sale.id}`,
                     formatDate(sale.date || sale.created_at),

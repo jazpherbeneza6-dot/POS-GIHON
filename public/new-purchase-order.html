@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Purchase Order - Inventory Management</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', 'Source Sans Pro', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f5f6fa;
+            font-size: 12px;
+        }
+
+        .main-layout {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .content {
+            flex: 1;
+            margin-left: 260px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            flex-shrink: 0;
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .title-icon {
+            font-size: 20px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        /* Main Form Area */
+        .form-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding-bottom: 80px;
+        }
+
+        /* Vendor Section (Blue Background) */
+        .vendor-section {
+            background: #e8f0fe;
+            padding: 16px 24px;
+            border-bottom: 1px solid #c5d9f7;
+        }
+
+        .vendor-row {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .vendor-label {
+            font-size: 13px;
+            color: #dc2626;
+        }
+
+        .vendor-input-group {
+            display: flex;
+            gap: 8px;
+            max-width: 450px;
+        }
+
+        .vendor-select {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            background: white;
+        }
+
+        .search-btn {
+            padding: 10px 14px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .search-btn:hover {
+            background: #3367d6;
+        }
+
+        /* Form Section */
+        .form-section {
+            padding: 16px 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            font-size: 13px;
+            color: #333;
+            padding-top: 8px;
+        }
+
+        .form-label.required {
+            color: #dc2626;
+        }
+
+        .form-input {
+            padding: 10px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            width: 100%;
+            max-width: 250px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+
+        .form-select {
+            padding: 10px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            background: white;
+            cursor: pointer;
+            max-width: 250px;
+            width: 100%;
+        }
+
+        .form-row-inline {
+            display: flex;
+            gap: 24px;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Radio Options */
+        .radio-group {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            padding-top: 8px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+        }
+
+        .radio-option input[type="radio"] {
+            accent-color: #4285f4;
+        }
+
+        /* Address Display */
+        .address-display {
+            font-size: 13px;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .address-display .name {
+            font-weight: 500;
+        }
+
+        .address-display .edit-icon {
+            color: #4285f4;
+            cursor: pointer;
+            margin-left: 6px;
+        }
+
+        .change-link {
+            color: #4285f4;
+            text-decoration: none;
+            font-size: 12px;
+            display: inline-block;
+            margin-top: 4px;
+        }
+
+        .change-link:hover {
+            text-decoration: underline;
+        }
+
+        .settings-icon {
+            color: #4285f4;
+            cursor: pointer;
+            margin-left: 6px;
+        }
+
+        /* Tax Options */
+        .tax-options {
+            display: flex;
+            gap: 24px;
+            padding: 12px 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .tax-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .tax-option select {
+            padding: 6px 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            background: white;
+        }
+
+        /* Item Table Section */
+        .item-table-section {
+            padding: 16px 24px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .bulk-actions-link {
+            color: #4285f4;
+            text-decoration: none;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .item-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+        }
+
+        .item-table th {
+            text-align: left;
+            padding: 10px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            background: #f9fafb;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .item-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+        }
+
+        .item-table .item-image {
+            width: 40px;
+            height: 40px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 18px;
+        }
+
+        .item-table input,
+        .item-table select {
+            padding: 8px 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 12px;
+            width: 100%;
+        }
+
+        .item-table input[type="number"] {
+            width: 80px;
+        }
+
+        .delete-row-btn {
+            background: none;
+            border: none;
+            color: #dc2626;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .add-row-actions {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .add-row-btn {
+            background: none;
+            border: none;
+            color: #4285f4;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .add-row-btn:hover {
+            text-decoration: underline;
+        }
+
+        /* Totals Section */
+        .totals-section {
+            display: flex;
+            gap: 48px;
+            padding: 16px 24px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .notes-section {
+            flex: 1;
+            max-width: 350px;
+        }
+
+        .notes-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .notes-textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        .totals-box {
+            min-width: 300px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 13px;
+        }
+
+        .total-row.final {
+            font-weight: 600;
+            font-size: 14px;
+            border-top: 1px solid #e9ecef;
+            padding-top: 12px;
+            margin-top: 8px;
+        }
+
+        .discount-input-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .discount-input-group input {
+            width: 60px;
+            padding: 6px 8px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 12px;
+            text-align: right;
+        }
+
+        /* Terms Section */
+        .terms-section {
+            display: flex;
+            gap: 48px;
+            padding: 16px 24px;
+            border-top: 1px solid #e9ecef;
+            background: #f9fafb;
+        }
+
+        .terms-box {
+            flex: 1;
+        }
+
+        .terms-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .terms-textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+            background: white;
+        }
+
+        .attach-section {
+            min-width: 300px;
+        }
+
+        .attach-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .upload-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .upload-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .upload-hint {
+            font-size: 11px;
+            color: #999;
+            margin-top: 8px;
+        }
+
+        /* Footer */
+        .form-footer {
+            position: fixed;
+            bottom: 0;
+            left: 260px;
+            right: 0;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 12px 24px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .btn-draft {
+            padding: 10px 20px;
+            background: white;
+            color: #333;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-draft:hover {
+            background: #f5f5f5;
+        }
+
+        .btn-save {
+            padding: 10px 20px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-save:hover {
+            background: #3367d6;
+        }
+
+        .btn-cancel {
+            padding: 10px 20px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-cancel:hover {
+            background: #444;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer"></div>
+
+    <div class="main-layout">
+        <div class="content" id="content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">
+                    <span class="title-icon">🔒</span>
+                    New Purchase Order
+                </h1>
+                <button class="close-btn" onclick="goBack()">×</button>
+            </div>
+
+            <!-- Main Form Area -->
+            <div class="form-main">
+                <!-- Vendor Section (Blue) -->
+                <div class="vendor-section">
+                    <div class="vendor-row">
+                        <label class="vendor-label">Vendor Name*</label>
+                        <div class="vendor-input-group">
+                            <select class="vendor-select" id="vendorName">
+                                <option value="">Select a Vendor</option>
+                            </select>
+                            <button class="search-btn">🔍</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Delivery Address Section -->
+                <div class="form-section">
+                    <div class="form-row">
+                        <label class="form-label required">Delivery Address*</label>
+                        <div>
+                            <div class="radio-group" style="margin-bottom: 8px;">
+                                <label class="radio-option">
+                                    <input type="radio" name="addressType" value="organization" checked> Organization
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="addressType" value="customer"> Customer
+                                </label>
+                            </div>
+                            <div class="address-display">
+                                <span class="name">Ben Tambling</span> <span class="edit-icon">✏️</span><br>
+                                Philippines ,<br>
+                                <a href="#" class="change-link">Change destination to deliver</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label class="form-label required">Purchase Order#*</label>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <input type="text" class="form-input" id="purchaseOrderNumber" value="PO-00001">
+                            <span class="settings-icon">⚙️</span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label class="form-label">Reference#</label>
+                        <input type="text" class="form-input" id="referenceNumber">
+                    </div>
+
+                    <div class="form-row">
+                        <label class="form-label">Date</label>
+                        <input type="text" class="form-input" id="orderDate" value="12 Jan 2026">
+                    </div>
+
+                    <div class="form-row-inline">
+                        <div class="form-group">
+                            <label class="form-label">Delivery Date</label>
+                            <input type="text" class="form-input" id="deliveryDate" placeholder="dd MMM yyyy"
+                                style="width: 150px;">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Payment Terms</label>
+                            <select class="form-select" id="paymentTerms" style="width: 180px;">
+                                <option value="due-on-receipt">Due on Receipt</option>
+                                <option value="net-15">Net 15</option>
+                                <option value="net-30">Net 30</option>
+                                <option value="net-45">Net 45</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label class="form-label">Shipment Preference</label>
+                        <select class="form-select" id="shipmentPreference" style="max-width: 350px;">
+                            <option value="">Choose the shipment preference or type to add</option>
+                            <option value="air">Air Freight</option>
+                            <option value="sea">Sea Freight</option>
+                            <option value="land">Land Transport</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Tax Options -->
+                <div class="tax-options">
+                    <div class="tax-option">
+                        🏷️ Tax Exclusive
+                        <select id="taxType">
+                            <option value="exclusive">Tax Exclusive</option>
+                            <option value="inclusive">Tax Inclusive</option>
+                        </select>
+                    </div>
+                    <div class="tax-option">
+                        ⏱️ At Transaction Level
+                        <select id="taxLevel">
+                            <option value="transaction">At Transaction Level</option>
+                            <option value="item">At Item Level</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Item Table Section -->
+                <div class="item-table-section">
+                    <div class="section-header">
+                        <span class="section-title">Item Table</span>
+                        <a href="#" class="bulk-actions-link">🔄 Bulk Actions</a>
+                    </div>
+
+                    <table class="item-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;"></th>
+                                <th>ITEM DETAILS</th>
+                                <th>ACCOUNT</th>
+                                <th style="width: 100px;">QUANTITY</th>
+                                <th style="width: 100px;">RATE 💲</th>
+                                <th>TAX</th>
+                                <th style="width: 100px;">AMOUNT</th>
+                                <th style="width: 50px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemTableBody">
+                            <tr>
+                                <td>
+                                    <div class="item-image">🖼️</div>
+                                </td>
+                                <td>
+                                    <input type="text" placeholder="Type or click to select an item.">
+                                </td>
+                                <td>
+                                    <select>
+                                        <option value="">Select an account</option>
+                                        <option value="inventory">Inventory Asset</option>
+                                        <option value="expense">Expense</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" value="1.00" step="0.01">
+                                </td>
+                                <td>
+                                    <input type="number" value="0.00" step="0.01">
+                                </td>
+                                <td>
+                                    <select>
+                                        <option value="">Select a Tax</option>
+                                        <option value="12">VAT 12%</option>
+                                        <option value="0">Exempt</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <span style="font-weight: 500;">0.00</span>
+                                </td>
+                                <td>
+                                    <button class="delete-row-btn" onclick="deleteRow(this)">⋮ ✕</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="add-row-actions">
+                        <button class="add-row-btn" onclick="addNewRow()">
+                            ⊕ Add New Row <span>▼</span>
+                        </button>
+                        <button class="add-row-btn" onclick="addBulkItems()">
+                            ⊕ Add Items in Bulk
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Notes and Totals Section -->
+                <div class="totals-section">
+                    <div class="notes-section">
+                        <div class="notes-label">Notes</div>
+                        <textarea class="notes-textarea" id="notes"
+                            placeholder="Will be displayed on purchase order"></textarea>
+                    </div>
+
+                    <div class="totals-box">
+                        <div class="total-row">
+                            <span>Sub Total</span>
+                            <span id="subTotal">0.00</span>
+                        </div>
+                        <div class="total-row">
+                            <span>Discount</span>
+                            <div class="discount-input-group">
+                                <input type="number" id="discountValue" value="0">
+                                <span>%</span>
+                                <span id="discountAmount">0.00</span>
+                            </div>
+                        </div>
+                        <div class="total-row">
+                            <span>Adjustment</span>
+                            <div class="discount-input-group">
+                                <input type="number" id="adjustmentValue" value="0" style="width: 80px;">
+                                <span style="color: #999;">ⓘ</span>
+                                <span id="adjustmentAmount">0.00</span>
+                            </div>
+                        </div>
+                        <div class="total-row final">
+                            <span>Total</span>
+                            <span id="total">0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Terms and Attach Section -->
+                <div class="terms-section">
+                    <div class="terms-box">
+                        <div class="terms-label">Terms & Conditions</div>
+                        <textarea class="terms-textarea" id="termsConditions"
+                            placeholder="Enter the terms and conditions of your business to be displayed in your transaction"></textarea>
+                    </div>
+
+                    <div class="attach-section">
+                        <div class="attach-label">Attach File(s) to Purchase Order</div>
+                        <button class="upload-btn" onclick="attachFiles()">
+                            📤 Upload File <span>▼</span>
+                        </button>
+                        <div class="upload-hint">You can upload a maximum of 10 files, 10MB each</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="form-footer">
+                <button class="btn-draft" onclick="saveAsDraft()">Save as Draft</button>
+                <button class="btn-save" onclick="saveAndSend()">Save and Send</button>
+                <button class="btn-cancel" onclick="goBack()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Layout Script -->
+    <script src="/js/layout.js"></script>
+    <script>
+        // Set current date
+        document.addEventListener('DOMContentLoaded', function () {
+            const today = new Date();
+            const options = { day: '2-digit', month: 'short', year: 'numeric' };
+            const dateStr = today.toLocaleDateString('en-GB', options);
+            document.getElementById('orderDate').value = dateStr;
+        });
+
+        function goBack() {
+            window.location.href = '/purchase-orders.html';
+        }
+
+        function addNewRow() {
+            const tbody = document.getElementById('itemTableBody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>
+                    <div class="item-image">🖼️</div>
+                </td>
+                <td>
+                    <input type="text" placeholder="Type or click to select an item.">
+                </td>
+                <td>
+                    <select>
+                        <option value="">Select an account</option>
+                        <option value="inventory">Inventory Asset</option>
+                        <option value="expense">Expense</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="number" value="1.00" step="0.01">
+                </td>
+                <td>
+                    <input type="number" value="0.00" step="0.01">
+                </td>
+                <td>
+                    <select>
+                        <option value="">Select a Tax</option>
+                        <option value="12">VAT 12%</option>
+                        <option value="0">Exempt</option>
+                    </select>
+                </td>
+                <td>
+                    <span style="font-weight: 500;">0.00</span>
+                </td>
+                <td>
+                    <button class="delete-row-btn" onclick="deleteRow(this)">⋮ ✕</button>
+                </td>
+            `;
+            tbody.appendChild(newRow);
+        }
+
+        function deleteRow(btn) {
+            const tbody = document.getElementById('itemTableBody');
+            if (tbody.rows.length > 1) {
+                btn.closest('tr').remove();
+            }
+        }
+
+        function addBulkItems() {
+            alert('Bulk add items modal would open here');
+        }
+
+        function attachFiles() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.pdf,.doc,.docx,.jpg,.png';
+            input.multiple = true;
+            input.click();
+        }
+
+        function saveAsDraft() {
+            alert('Purchase order saved as draft!');
+            goBack();
+        }
+
+        function saveAndSend() {
+            const vendorName = document.getElementById('vendorName').value;
+
+            if (!vendorName) {
+                alert('Please select a vendor');
+                return;
+            }
+
+            alert('Purchase order saved and sent!');
+            goBack();
+        }
+    </script>
+</body>
+
+</html>

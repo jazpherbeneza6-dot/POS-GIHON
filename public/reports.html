@@ -4,12 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reports & Analytics - GIHON</title>
+  <title>Reports Center - GIHON</title>
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/sidebar.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="/css/mobile.css">
   <link rel="stylesheet" href="/css/utilities.css">
   <!-- Chart.js for visualizations -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -18,370 +17,507 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
   <style>
-    /* Premium Reports Module Styles */
     * {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
-    /* Report Cards Grid */
-    .reports-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 24px;
-      margin-bottom: 32px;
+    /* Reports Center Layout */
+    .reports-center {
+      display: flex;
+      gap: 0;
+      min-height: calc(100vh - 80px);
     }
 
-    .report-card {
-      background: white;
-      border-radius: 16px;
-      padding: 28px;
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    /* Reports Left Sidebar */
+    .reports-sidebar {
+      width: 220px;
+      background: #fafbfc;
+      border-right: 1px solid #e8e8e8;
+      padding: 20px 0;
+      flex-shrink: 0;
+    }
+
+    .reports-sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 20px;
+      color: #495057;
+      font-size: 14px;
+      font-weight: 500;
       cursor: pointer;
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
+      transition: all 0.2s ease;
+      text-decoration: none;
     }
 
-    .report-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: linear-gradient(135deg, #8e1616 0%, #d84040 100%);
+    .reports-sidebar-item:hover {
+      background: #e9f0ff;
+      color: #2563eb;
     }
 
-    .report-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 12px 40px rgba(102, 126, 234, 0.2);
-    }
-
-    .report-icon {
-      width: 64px;
-      height: 64px;
-      border-radius: 16px;
-      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 32px;
-      margin-bottom: 20px;
-    }
-
-    .report-title {
-      font-size: 18px;
-      font-weight: 700;
-      color: #1a1f3a;
-      margin-bottom: 8px;
-    }
-
-    .report-description {
-      font-size: 14px;
-      color: #868e96;
-      line-height: 1.6;
-      margin-bottom: 16px;
-    }
-
-    .report-action {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      color: #667eea;
+    .reports-sidebar-item.active {
+      background: #e9f0ff;
+      color: #2563eb;
       font-weight: 600;
-      font-size: 14px;
+      border-left: 3px solid #2563eb;
     }
 
-    /* Filter Section */
-    .filter-section {
-      background: white;
-      border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 24px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    .reports-sidebar-item i {
+      font-size: 16px;
+      width: 20px;
     }
 
-    .filter-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .filter-title {
-      font-size: 18px;
+    .reports-sidebar-section {
+      padding: 16px 20px 8px;
+      font-size: 11px;
       font-weight: 700;
-      color: #1a1f3a;
-    }
-
-    .filter-controls {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-bottom: 16px;
-    }
-
-    .filter-group label {
-      display: block;
-      font-size: 12px;
-      color: #868e96;
-      font-weight: 600;
-      margin-bottom: 6px;
+      color: #6c757d;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
 
-    .filter-input {
-      width: 100%;
-      padding: 10px 14px;
-      border: 1px solid #dee2e6;
-      border-radius: 10px;
-      font-size: 14px;
-      transition: all 0.3s ease;
+    .reports-sidebar-divider {
+      height: 1px;
+      background: #e8e8e8;
+      margin: 12px 0;
     }
 
-    .filter-input:focus {
-      outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-
-    .filter-actions {
+    /* Reports Header */
+    .reports-header {
       display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      background: #f8f9fa;
+      border-bottom: 1px solid #e8e8e8;
     }
 
-    .export-btn {
-      padding: 10px 20px;
+    .reports-header-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1a1f3a;
+    }
+
+    .reports-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .reports-search {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      padding: 8px 16px;
+      width: 280px;
+    }
+
+    .reports-search input {
       border: none;
-      border-radius: 10px;
+      outline: none;
+      flex: 1;
+      font-size: 14px;
+      color: #495057;
+    }
+
+    .reports-search input::placeholder {
+      color: #9ca3af;
+    }
+
+    .btn-create-report {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s ease;
-      display: inline-flex;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-create-report:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-menu {
+      background: transparent;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 18px;
+      color: #6c757d;
+    }
+
+    /* Reports Main Content */
+    .reports-main {
+      flex: 1;
+      background: white;
+      overflow-y: auto;
+    }
+
+    .reports-content-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 24px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .reports-content-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .reports-content-title h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1a1f3a;
+      margin: 0;
+    }
+
+    .reports-count {
+      background: #e9f0ff;
+      color: #2563eb;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 12px;
+    }
+
+    /* Reports Table */
+    .reports-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .reports-table thead {
+      background: #f8f9fa;
+    }
+
+    .reports-table thead th {
+      padding: 14px 24px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      color: #6c757d;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid #e8e8e8;
+    }
+
+    .reports-table tbody tr {
+      border-bottom: 1px solid #f0f0f0;
+      transition: background 0.2s ease;
+    }
+
+    .reports-table tbody tr:hover {
+      background: #f8faff;
+    }
+
+    .reports-table tbody td {
+      padding: 16px 24px;
+      font-size: 14px;
+      color: #495057;
+    }
+
+    .report-name-link {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    .export-btn-pdf {
-      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-      color: white;
+    .report-name-link:hover {
+      text-decoration: underline;
     }
 
-    .export-btn-pdf:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
-    }
-
-    .export-btn-csv {
-      background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%);
-      color: white;
-    }
-
-    .export-btn-csv:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(81, 207, 102, 0.4);
-    }
-
-    /* Report Content Area */
-    .report-content {
-      background: white;
-      border-radius: 16px;
-      padding: 28px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-      display: none;
-    }
-
-    .report-content.active {
-      display: block;
-      animation: fadeIn 0.3s ease;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .report-content-header {
+    .report-icon {
+      width: 18px;
+      height: 18px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-bottom: 24px;
-      padding-bottom: 16px;
-      border-bottom: 2px solid #f0f0f0;
+      justify-content: center;
+      color: #9ca3af;
     }
 
-    .report-content-title {
-      font-size: 24px;
-      font-weight: 800;
-      color: #1a1f3a;
-    }
-
-    .back-btn {
-      padding: 8px 16px;
-      background: #f8f9fa;
-      border: none;
-      border-radius: 8px;
-      color: #495057;
+    .report-badge {
+      display: inline-block;
+      background: #fef3c7;
+      color: #d97706;
+      font-size: 10px;
       font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-left: 8px;
     }
 
-    .back-btn:hover {
-      background: #e9ecef;
-    }
-
-    /* Summary Cards */
-    .summary-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    .summary-card {
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-      padding: 20px;
-      border-radius: 12px;
-      border-left: 4px solid #667eea;
-    }
-
-    .summary-label {
-      font-size: 12px;
-      color: #868e96;
-      text-transform: uppercase;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      margin-bottom: 8px;
-    }
-
-    .summary-value {
-      font-size: 28px;
-      font-weight: 900;
-      color: #1a1f3a;
-    }
-
-    /* Data Table */
-    .data-table-wrapper {
-      overflow-x: auto;
-      border-radius: 12px;
-      margin-bottom: 24px;
-    }
-
-    .data-table {
-      width: 100%;
-      border-collapse: collapse;
-      background: white;
-    }
-
-    .data-table thead {
-      background: linear-gradient(135deg, #1a1f3a 0%, #2d3561 100%);
-    }
-
-    .data-table thead th {
-      padding: 16px;
-      text-align: left;
-      color: white;
-      font-weight: 600;
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .data-table tbody tr {
-      border-bottom: 1px solid #f0f0f0;
-    }
-
-    .data-table tbody tr:hover {
-      background: rgba(102, 126, 234, 0.03);
-    }
-
-    .data-table tbody td {
-      padding: 14px 16px;
-      color: #495057;
-      font-size: 14px;
-    }
-
-    /* Chart Container */
-    .chart-container {
-      position: relative;
-      height: 400px;
-      margin-bottom: 24px;
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-    }
-
-    /* Empty State */
-    .empty-report {
-      text-align: center;
-      padding: 60px 20px;
-    }
-
-    .empty-report-icon {
-      font-size: 64px;
-      margin-bottom: 16px;
-      opacity: 0.3;
-    }
-
-    .empty-report-title {
-      font-size: 20px;
-      font-weight: 700;
-      color: #495057;
-      margin-bottom: 8px;
-    }
-
-    .empty-report-text {
-      font-size: 14px;
-      color: #868e96;
-    }
-
-    /* Loading State */
-    .loading-report {
-      text-align: center;
-      padding: 60px 20px;
+    .report-badge-renamed {
+      background: #fee2e2;
+      color: #dc2626;
     }
 
     /* Responsive */
     @media (max-width: 768px) {
-      .reports-grid {
-        grid-template-columns: 1fr;
+      .reports-sidebar {
+        display: none;
       }
 
-      .filter-controls {
-        grid-template-columns: 1fr;
+      .reports-header-actions {
+        flex-wrap: wrap;
       }
 
-      .filter-actions {
-        flex-direction: column;
-      }
-
-      .export-btn {
+      .reports-search {
         width: 100%;
-        justify-content: center;
-      }
-
-      .summary-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .chart-container {
-        height: 300px;
       }
     }
+
+    /* New Custom Report Modal */
+    .new-report-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 100000;
+    }
+
+    .new-report-modal.active {
+      display: flex;
+    }
+
+    .new-report-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .new-report-container {
+      position: relative;
+      width: 100%;
+      max-width: 100%;
+      height: 100%;
+      background: white;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .new-report-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      border-bottom: 1px solid #e8e8e8;
+      background: white;
+    }
+
+    .new-report-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1a1f3a;
+    }
+
+    .new-report-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: #dc2626;
+      cursor: pointer;
+      padding: 4px 8px;
+      line-height: 1;
+    }
+
+    .new-report-close:hover {
+      color: #b91c1c;
+    }
+
+    .new-report-body {
+      flex: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 60px 24px;
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      background-image:
+        radial-gradient(circle at 20px 20px, #e2e8f0 1px, transparent 1px),
+        radial-gradient(circle at 60px 60px, #e2e8f0 1px, transparent 1px);
+      background-size: 80px 80px;
+    }
+
+    .new-report-form {
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .new-report-form-group {
+      margin-bottom: 24px;
+    }
+
+    .new-report-form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+
+    .new-report-select-wrapper {
+      position: relative;
+    }
+
+    .new-report-select-trigger {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      background: white;
+      font-size: 14px;
+      color: #6b7280;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s ease;
+    }
+
+    .new-report-select-trigger:hover {
+      border-color: #2563eb;
+    }
+
+    .new-report-select-trigger.open {
+      border-color: #2563eb;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    .new-report-select-arrow {
+      font-size: 12px;
+      color: #9ca3af;
+      transition: transform 0.2s ease;
+    }
+
+    .new-report-select-trigger.open .new-report-select-arrow {
+      transform: rotate(180deg);
+    }
+
+    .new-report-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 1px solid #2563eb;
+      border-top: none;
+      border-bottom-left-radius: 8px;
+      border-bottom-right-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      z-index: 10;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .new-report-dropdown.open {
+      display: block;
+    }
+
+    .new-report-search {
+      padding: 8px 12px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .new-report-search input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .new-report-search input:focus {
+      border-color: #2563eb;
+    }
+
+    .new-report-option {
+      padding: 12px 16px;
+      font-size: 14px;
+      color: #374151;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .new-report-option:hover {
+      background: #e0e7ff;
+    }
+
+    .new-report-option.selected {
+      background: #2563eb;
+      color: white;
+    }
+
+    .new-report-footer {
+      display: flex;
+      gap: 12px;
+      padding: 16px 24px;
+      border-top: 1px solid #e8e8e8;
+      background: white;
+    }
+
+    .btn-next {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-next:hover {
+      background: #1d4ed8;
+    }
+
+    .btn-next:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    .btn-cancel-report {
+      background: white;
+      color: #374151;
+      border: 1px solid #d1d5db;
+      padding: 10px 24px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-cancel-report:hover {
+      background: #f3f4f6;
+    }
   </style>
-  <!-- All styles moved to reports.css - this entire style block should be removed -->
 </head>
 
 <body>
@@ -401,130 +537,407 @@
   <!-- Main Content -->
   <div class="main-layout">
     <div class="content" id="content">
-      <!-- Report Selection View -->
-      <div id="reportSelectionView">
-        <div class="page-title">Reports & Analytics</div>
-
-        <!-- Report Cards -->
-        <div class="reports-grid">
-          <div class="report-card" onclick="loadReport('sales')">
-            <div class="report-icon">💰</div>
-            <div class="report-title">Sales Reports</div>
-            <div class="report-description">
-              Comprehensive sales analytics, revenue trends, top-selling items, and customer insights.
+      <!-- Reports Center View -->
+      <div id="reportsCenterView">
+        <!-- Reports Header -->
+        <div class="reports-header">
+          <div class="reports-header-title">Reports Center</div>
+          <div class="reports-header-actions">
+            <div class="reports-search">
+              <span>🔍</span>
+              <input type="text" id="reportsSearchInput" placeholder="Search reports" oninput="searchReports()">
             </div>
-            <div class="report-action">
-              View Report →
-            </div>
-          </div>
-
-          <div class="report-card" onclick="loadReport('purchases')">
-            <div class="report-icon">📦</div>
-            <div class="report-title">Purchase Reports</div>
-            <div class="report-description">
-              Track purchase orders, supplier performance, spending analysis, and procurement trends.
-            </div>
-            <div class="report-action">
-              View Report →
-            </div>
-          </div>
-
-          <div class="report-card" onclick="loadReport('inventory')">
-            <div class="report-icon">📊</div>
-            <div class="report-title">Inventory Valuation</div>
-            <div class="report-description">
-              Current stock values, inventory worth, cost analysis, and stock aging reports.
-            </div>
-            <div class="report-action">
-              View Report →
-            </div>
-          </div>
-
-          <div class="report-card" onclick="loadReport('movements')">
-            <div class="report-icon">🔄</div>
-            <div class="report-title">Stock Movement Logs</div>
-            <div class="report-description">
-              Complete history of stock transactions, transfers, adjustments, and inventory changes.
-            </div>
-            <div class="report-action">
-              View Report →
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Report Detail View -->
-      <div id="reportDetailView" class="report-detail-view" style="display: none;">
-        <!-- Filters -->
-        <div class="filter-section">
-          <div class="filter-header">
-            <div class="filter-title">📅 Filter & Export</div>
-          </div>
-          <div class="filter-controls">
-            <div class="filter-group">
-              <label>From Date</label>
-              <input type="date" class="filter-input" id="filterFromDate" title="From Date" aria-label="From Date"
-                onchange="handleDateChange()" oninput="handleDateChange()">
-            </div>
-            <div class="filter-group">
-              <label>To Date</label>
-              <input type="date" class="filter-input" id="filterToDate" title="To Date" aria-label="To Date"
-                onchange="handleDateChange()" oninput="handleDateChange()">
-            </div>
-            <div class="filter-group">
-              <label>Quick Select</label>
-              <select class="filter-input" id="filterQuick" onchange="applyQuickFilter()" title="Quick Select"
-                aria-label="Quick Select">
-                <option value="custom">Custom Range</option>
-                <option value="today">Today</option>
-                <option value="yesterday">Yesterday</option>
-                <option value="thisWeek">This Week</option>
-                <option value="lastWeek">Last Week</option>
-                <option value="thisMonth">This Month</option>
-                <option value="lastMonth">Last Month</option>
-                <option value="thisYear">This Year</option>
-              </select>
-            </div>
-          </div>
-          <div class="filter-actions">
-            <button class="export-btn export-btn-pdf" onclick="exportToPDF()">
-              📄 Export PDF
+            <button class="btn-create-report" onclick="createNewReport()">
+              <span>+</span> Create New Report
             </button>
-            <button class="export-btn export-btn-csv" onclick="exportToCSV()">
-              📊 Export CSV
-            </button>
-            <button class="btn btn-primary" onclick="applyFilters()">
-              🔍 Apply Filters
-            </button>
-            <button class="back-btn" onclick="backToReports()">
-              ← Back to Reports
-            </button>
+            <button class="btn-menu">⋮</button>
           </div>
         </div>
 
-        <!-- Report Content -->
-        <div id="reportContentArea" class="report-content active">
-          <div class="report-content-header">
-            <h2 class="report-content-title" id="reportTitle">Report</h2>
+        <div class="reports-center">
+          <!-- Reports Left Sidebar -->
+          <div class="reports-sidebar">
+            <a class="reports-sidebar-item active" onclick="filterReports('all')">
+              <span>🏠</span> Home
+            </a>
+            <a class="reports-sidebar-item" onclick="filterReports('favorites')">
+              <span>⭐</span> Favorites
+            </a>
+            <a class="reports-sidebar-item" onclick="filterReports('shared')">
+              <span>👥</span> Shared Reports
+            </a>
+            <a class="reports-sidebar-item" onclick="filterReports('my')">
+              <span>📁</span> My Reports
+            </a>
+            <a class="reports-sidebar-item" onclick="filterReports('scheduled')">
+              <span>📅</span> Scheduled Reports
+            </a>
+
+            <div class="reports-sidebar-divider"></div>
+
+            <div class="reports-sidebar-section">Report Category</div>
+
+            <a class="reports-sidebar-item" onclick="filterReports('sales')">
+              <span>📂</span> Sales
+            </a>
+            <a class="reports-sidebar-item" onclick="filterReports('inventory')">
+              <span>📂</span> Inventory
+            </a>
+            <a class="reports-sidebar-item" onclick="filterReports('inventory-valuation')">
+              <span>📂</span> Inventory Valuation
+            </a>
+            <a class="reports-sidebar-item" onclick="filterReports('receivables')">
+              <span>📂</span> Receivables
+            </a>
+            <a class="reports-sidebar-item" onclick="filterReports('payments')">
+              <span>📂</span> Payments Received
+            </a>
+            <a class="reports-sidebar-item" onclick="filterReports('payables')">
+              <span>📂</span> Payables
+            </a>
+            <a class="reports-sidebar-item" onclick="filterReports('purchases')">
+              <span>📂</span> Purchases and Expenses
+            </a>
+            <a class="reports-sidebar-item" onclick="filterReports('activity')">
+              <span>📂</span> Activity
+            </a>
           </div>
 
-          <!-- Summary Cards -->
-          <div class="summary-grid" id="summaryCards"></div>
+          <!-- Reports Main Content -->
+          <div class="reports-main">
+            <div class="reports-content-header">
+              <div class="reports-content-title">
+                <h2>All Reports</h2>
+                <span class="reports-count" id="reportsCount">18</span>
+              </div>
+            </div>
 
-          <!-- Charts -->
-          <div class="chart-container" id="chartContainer" style="display: none;">
-            <canvas id="reportChart"></canvas>
+            <table class="reports-table" id="reportsTable">
+              <thead>
+                <tr>
+                  <th>Report Name</th>
+                  <th>Report Category</th>
+                  <th>Created By</th>
+                  <th>Last Visited</th>
+                </tr>
+              </thead>
+              <tbody id="reportsTableBody">
+                <!-- Sales Reports -->
+                <tr data-category="sales">
+                  <td><a class="report-name-link" onclick="openReport('sales-customer')"><span
+                        class="report-icon">📋</span> Sales by Customer</a></td>
+                  <td>Sales</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <tr data-category="sales">
+                  <td><a class="report-name-link" onclick="openReport('sales-item')"><span class="report-icon">📋</span>
+                      Sales by Item</a></td>
+                  <td>Sales</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <tr data-category="sales">
+                  <td><a class="report-name-link" onclick="openReport('order-fulfillment')"><span
+                        class="report-icon">📋</span> Order Fulfillment By Item</a></td>
+                  <td>Sales</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <tr data-category="sales">
+                  <td><a class="report-name-link" onclick="openReport('sales-return')"><span
+                        class="report-icon">📋</span> Sales Return History</a></td>
+                  <td>Sales</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <tr data-category="sales">
+                  <td><a class="report-name-link" onclick="openReport('sales-person')"><span
+                        class="report-icon">📋</span> Sales by Sales Person</a></td>
+                  <td>Sales</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <tr data-category="sales">
+                  <td><a class="report-name-link" onclick="openReport('sales')"><span class="report-icon">📋</span>
+                      Sales Summary</a></td>
+                  <td>Sales</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <tr data-category="sales">
+                  <td><a class="report-name-link" onclick="openReport('profit-item')"><span
+                        class="report-icon">📋</span> Profit By Item <span
+                        class="report-badge report-badge-renamed">Renamed</span></a></td>
+                  <td>Sales</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <!-- Inventory Reports -->
+                <tr data-category="inventory">
+                  <td><a class="report-name-link" onclick="openReport('inventory')"><span class="report-icon">📋</span>
+                      Inventory Summary</a></td>
+                  <td>Inventory</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <tr data-category="inventory">
+                  <td><a class="report-name-link" onclick="openReport('committed-stock')"><span
+                        class="report-icon">📋</span> Committed Stock Details</a></td>
+                  <td>Inventory</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <tr data-category="inventory">
+                  <td><a class="report-name-link" onclick="openReport('aging-summary')"><span
+                        class="report-icon">📋</span> Inventory Aging Summary</a></td>
+                  <td>Inventory</td>
+                  <td>System Generated</td>
+                  <td>11 Jan 2026 02:17 AM</td>
+                </tr>
+                <tr data-category="inventory">
+                  <td><a class="report-name-link" onclick="openReport('stock-summary')"><span
+                        class="report-icon">📋</span> Stock Summary</a></td>
+                  <td>Inventory</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <tr data-category="inventory">
+                  <td><a class="report-name-link" onclick="openReport('adjustment-summary')"><span
+                        class="report-icon">📋</span> Inventory Adjustment Summary</a></td>
+                  <td>Inventory</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <tr data-category="inventory">
+                  <td><a class="report-name-link" onclick="openReport('adjustment-details')"><span
+                        class="report-icon">📋</span> Inventory Adjustment Details</a></td>
+                  <td>Inventory</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <tr data-category="inventory">
+                  <td><a class="report-name-link" onclick="openReport('packing-history')"><span
+                        class="report-icon">📋</span> Packing History</a></td>
+                  <td>Inventory</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <!-- Stock Movements -->
+                <tr data-category="inventory">
+                  <td><a class="report-name-link" onclick="openReport('movements')"><span class="report-icon">📋</span>
+                      Stock Movement Logs</a></td>
+                  <td>Inventory</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <!-- Purchases Reports -->
+                <tr data-category="purchases">
+                  <td><a class="report-name-link" onclick="openReport('purchases')"><span class="report-icon">📋</span>
+                      Purchase Summary</a></td>
+                  <td>Purchases and Expenses</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <tr data-category="purchases">
+                  <td><a class="report-name-link" onclick="openReport('purchases-vendor')"><span
+                        class="report-icon">📋</span> Purchases by Vendor</a></td>
+                  <td>Purchases and Expenses</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <tr data-category="purchases">
+                  <td><a class="report-name-link" onclick="openReport('purchases-item')"><span
+                        class="report-icon">📋</span> Purchases by Item</a></td>
+                  <td>Purchases and Expenses</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-          <div class="chart-container" id="chartContainer2" style="display: none;">
-            <canvas id="reportChart2"></canvas>
-          </div>
-
-          <!-- Data Table -->
-          <div class="data-table-wrapper" id="tableContainer"></div>
         </div>
       </div>
     </div>
   </div>
+  </div>
+
+  <!-- New Custom Report Modal -->
+  <div id="newReportModal" class="new-report-modal">
+    <div class="new-report-overlay" onclick="closeNewReportModal()"></div>
+    <div class="new-report-container">
+      <div class="new-report-header">
+        <h2 class="new-report-title">New Custom Report</h2>
+        <button class="new-report-close" onclick="closeNewReportModal()">×</button>
+      </div>
+      <div class="new-report-body">
+        <div class="new-report-form">
+          <div class="new-report-form-group">
+            <label class="new-report-form-label">Parent Module</label>
+            <div class="new-report-select-wrapper">
+              <div id="moduleSelectTrigger" class="new-report-select-trigger" onclick="toggleModuleDropdown()">
+                <span>Select a parent module</span>
+                <span class="new-report-select-arrow">▼</span>
+              </div>
+              <div id="moduleDropdown" class="new-report-dropdown">
+                <div class="new-report-search">
+                  <input type="text" id="moduleSearchInput" placeholder="Search" oninput="searchModules()">
+                </div>
+                <div class="new-report-option" data-module="sales-order"
+                  onclick="selectModule('sales-order', 'Sales Order')">Sales Order</div>
+                <div class="new-report-option" data-module="invoice" onclick="selectModule('invoice', 'Invoice')">
+                  Invoice</div>
+                <div class="new-report-option" data-module="credit-note"
+                  onclick="selectModule('credit-note', 'Credit Note')">Credit Note</div>
+                <div class="new-report-option" data-module="customer-payment"
+                  onclick="selectModule('customer-payment', 'Customer Payment')">Customer Payment</div>
+                <div class="new-report-option" data-module="purchase-order"
+                  onclick="selectModule('purchase-order', 'Purchase Order')">Purchase Order</div>
+                <div class="new-report-option" data-module="bill" onclick="selectModule('bill', 'Bill')">Bill</div>
+                <div class="new-report-option" data-module="vendor-credits"
+                  onclick="selectModule('vendor-credits', 'Vendor Credits')">Vendor Credits</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="new-report-footer">
+        <button id="btnNext" class="btn-next" onclick="goToNextStep()" disabled>Next</button>
+        <button class="btn-cancel-report" onclick="closeNewReportModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Reports Center Functions
+    let currentCategory = 'all';
+
+    function filterReports(category) {
+      currentCategory = category;
+
+      // Update active state
+      document.querySelectorAll('.reports-sidebar-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      event.target.closest('.reports-sidebar-item').classList.add('active');
+
+      // Filter table rows
+      const rows = document.querySelectorAll('#reportsTableBody tr');
+      let visibleCount = 0;
+
+      rows.forEach(row => {
+        const rowCategory = row.getAttribute('data-category');
+
+        if (category === 'all' || category === 'favorites' || category === 'shared' || category === 'my' || category === 'scheduled') {
+          row.style.display = '';
+          visibleCount++;
+        } else if (rowCategory === category || (category === 'inventory-valuation' && rowCategory === 'inventory')) {
+          row.style.display = '';
+          visibleCount++;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      // Update count
+      document.getElementById('reportsCount').textContent = visibleCount;
+    }
+
+    function searchReports() {
+      const searchTerm = document.getElementById('reportsSearchInput').value.toLowerCase();
+      const rows = document.querySelectorAll('#reportsTableBody tr');
+      let visibleCount = 0;
+
+      rows.forEach(row => {
+        const reportName = row.querySelector('.report-name-link').textContent.toLowerCase();
+        const category = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+
+        if (reportName.includes(searchTerm) || category.includes(searchTerm)) {
+          row.style.display = '';
+          visibleCount++;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      document.getElementById('reportsCount').textContent = visibleCount;
+    }
+
+    function createNewReport() {
+      document.getElementById('newReportModal').classList.add('active');
+    }
+
+    function closeNewReportModal() {
+      document.getElementById('newReportModal').classList.remove('active');
+      // Reset the form
+      selectedModule = null;
+      document.getElementById('moduleSelectTrigger').innerHTML = '<span>Select a parent module</span><span class="new-report-select-arrow">▼</span>';
+      document.getElementById('moduleSelectTrigger').classList.remove('open');
+      document.getElementById('moduleDropdown').classList.remove('open');
+      document.querySelectorAll('.new-report-option').forEach(opt => opt.classList.remove('selected'));
+      document.getElementById('btnNext').disabled = true;
+    }
+
+    let selectedModule = null;
+
+    function toggleModuleDropdown() {
+      const trigger = document.getElementById('moduleSelectTrigger');
+      const dropdown = document.getElementById('moduleDropdown');
+      trigger.classList.toggle('open');
+      dropdown.classList.toggle('open');
+
+      if (dropdown.classList.contains('open')) {
+        document.getElementById('moduleSearchInput').focus();
+      }
+    }
+
+    function selectModule(module, displayName) {
+      selectedModule = module;
+      document.getElementById('moduleSelectTrigger').innerHTML = '<span>' + displayName + '</span><span class="new-report-select-arrow">▼</span>';
+
+      // Update selected state
+      document.querySelectorAll('.new-report-option').forEach(opt => {
+        opt.classList.remove('selected');
+        if (opt.getAttribute('data-module') === module) {
+          opt.classList.add('selected');
+        }
+      });
+
+      // Enable Next button
+      document.getElementById('btnNext').disabled = false;
+
+      // Close dropdown
+      document.getElementById('moduleSelectTrigger').classList.remove('open');
+      document.getElementById('moduleDropdown').classList.remove('open');
+    }
+
+    function searchModules() {
+      const searchTerm = document.getElementById('moduleSearchInput').value.toLowerCase();
+      document.querySelectorAll('.new-report-option').forEach(opt => {
+        const text = opt.textContent.toLowerCase();
+        if (text.includes(searchTerm)) {
+          opt.style.display = '';
+        } else {
+          opt.style.display = 'none';
+        }
+      });
+    }
+
+    function goToNextStep() {
+      if (selectedModule) {
+        alert('Creating custom report for: ' + selectedModule + '\n\nThis feature will be implemented in the next update!');
+        closeNewReportModal();
+      }
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.new-report-select-wrapper')) {
+        document.getElementById('moduleSelectTrigger')?.classList.remove('open');
+        document.getElementById('moduleDropdown')?.classList.remove('open');
+      }
+    });
+  </script>
 
   <script src="/js/utils.js"></script>
   <script src="/js/layout.js"></script>

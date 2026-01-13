@@ -288,19 +288,34 @@
   background: rgba(29, 22, 22, 0.3);
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-    opacity 0.3s ease,
-    margin 0.3s ease;
   opacity: 0;
   margin: 0 12px;
   border-radius: 8px;
+  padding: 0;
+  /* Instant transition for more reliable hover */
+  transition: max-height 0.2s ease, opacity 0.2s ease, padding 0.2s ease;
 }
 
 .nav-item.expanded+.nav-submenu {
   max-height: 500px;
   opacity: 1;
-  margin: 8px 12px;
+  margin: 0 12px 8px 12px;
   padding: 8px 0;
+  overflow: visible;
+}
+
+/* Hover to expand submenu - stays open while cursor is anywhere in nav-group */
+.nav-group:hover>.nav-submenu,
+.nav-group:focus-within>.nav-submenu {
+  max-height: 500px !important;
+  opacity: 1 !important;
+  margin: 0 12px 8px 12px !important;
+  padding: 8px 0 !important;
+  overflow: visible !important;
+}
+
+.nav-group:hover>.nav-item .nav-item-arrow {
+  transform: rotate(90deg);
 }
 
 .nav-submenu-item {

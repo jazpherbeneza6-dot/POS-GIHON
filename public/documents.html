@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documents - GIHON</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: #f8f9fa;
+        }
+
+        /* Documents Layout - Full Page */
+        .documents-page {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        /* Documents Left Sidebar */
+        .documents-sidebar {
+            width: 180px;
+            background: linear-gradient(180deg, #9a2424 0%, #1d1616 100%);
+            color: white;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .documents-sidebar-logo {
+            padding: 16px 20px;
+            text-align: center;
+        }
+
+        .documents-sidebar-logo img {
+            width: 100%;
+            max-width: 120px;
+            height: auto;
+        }
+
+        .documents-sidebar-header {
+            padding: 8px 20px 16px;
+        }
+
+        .documents-back-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            text-decoration: none;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+
+        .documents-back-btn:hover {
+            color: white;
+        }
+
+        .documents-sidebar-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .documents-sidebar-nav {
+            flex: 1;
+            padding: 8px 0;
+        }
+
+        .documents-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .documents-nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .documents-nav-item.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .documents-nav-item svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .documents-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px 8px;
+        }
+
+        .documents-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .documents-add-folder-btn {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .documents-add-folder-btn:hover {
+            color: white;
+        }
+
+        .documents-no-folders {
+            padding: 8px 20px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.5);
+            font-style: italic;
+        }
+
+        .documents-create-folder-link {
+            display: block;
+            padding: 8px 20px;
+            color: #ffb4b4;
+            font-size: 13px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .documents-create-folder-link:hover {
+            color: #ffd4d4;
+            text-decoration: underline;
+        }
+
+        .documents-sidebar-footer {
+            padding: 16px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .documents-trash-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .documents-trash-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        /* Documents Main Content */
+        .documents-main {
+            flex: 1;
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .documents-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background: white;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .documents-header-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1f3a;
+        }
+
+        .documents-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-upload {
+            background: #8e1616;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-upload:hover {
+            background: #6b1111;
+        }
+
+        .btn-upload-arrow {
+            margin-left: 4px;
+            font-size: 12px;
+        }
+
+        .btn-menu {
+            background: transparent;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 18px;
+            color: #6c757d;
+        }
+
+        .btn-menu:hover {
+            background: #f3f4f6;
+        }
+
+        /* Filter Row */
+        .documents-filter-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 24px;
+            background: white;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            color: #6c757d;
+        }
+
+        .filter-select {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 13px;
+            color: #8e1616;
+            cursor: pointer;
+        }
+
+        .filter-select:hover {
+            text-decoration: underline;
+        }
+
+        /* Documents Table */
+        .documents-content {
+            flex: 1;
+            padding: 0;
+            background: white;
+            margin: 0;
+        }
+
+        .documents-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .documents-table thead {
+            background: #f8f9fa;
+        }
+
+        .documents-table thead th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 700;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .documents-table thead th:first-child {
+            padding-left: 24px;
+        }
+
+        .documents-table thead th:last-child {
+            text-align: right;
+            padding-right: 24px;
+        }
+
+        .documents-table tbody tr {
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .documents-table tbody tr:hover {
+            background: #f8faff;
+        }
+
+        .documents-table tbody td {
+            padding: 14px 16px;
+            font-size: 14px;
+            color: #495057;
+        }
+
+        .documents-table tbody td:first-child {
+            padding-left: 24px;
+        }
+
+        .checkbox-cell {
+            width: 30px;
+        }
+
+        .checkbox-cell input {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        /* Empty State */
+        .documents-empty {
+            text-align: center;
+            padding: 80px 20px;
+            color: #6c757d;
+            font-size: 15px;
+        }
+
+        /* Inbox Upload View */
+        .inbox-upload-view {
+            flex: 1;
+            padding: 40px;
+            background: white;
+        }
+
+        .inbox-dropzone-container {
+            max-width: 800px;
+            margin: 0 auto 30px;
+        }
+
+        .inbox-dropzone {
+            border: 2px dashed #e0e0e0;
+            border-radius: 12px;
+            padding: 60px 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .inbox-dropzone:hover {
+            border-color: #8e1616;
+            background: #fefafa;
+        }
+
+        .inbox-cloud-icon {
+            margin-bottom: 20px;
+        }
+
+        .inbox-dropzone-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a1f3a;
+            margin-bottom: 12px;
+        }
+
+        .inbox-dropzone-subtitle {
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 24px;
+        }
+
+        .inbox-choose-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .inbox-choose-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .inbox-email-section {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px 24px;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
+        .inbox-email-icon {
+            flex-shrink: 0;
+        }
+
+        .inbox-email-text {
+            flex: 1;
+        }
+
+        .inbox-email-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1f3a;
+            margin-bottom: 4px;
+        }
+
+        .inbox-email-desc {
+            font-size: 13px;
+            color: #6c757d;
+        }
+
+        .inbox-email-link {
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .inbox-email-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Upload Modal */
+        .upload-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100000;
+        }
+
+        .upload-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .upload-modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .upload-modal-content {
+            position: relative;
+            background: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .upload-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .upload-modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1f3a;
+        }
+
+        .upload-modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #6c757d;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .upload-modal-close:hover {
+            color: #dc2626;
+        }
+
+        .upload-modal-body {
+            padding: 24px;
+        }
+
+        .upload-dropzone {
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .upload-dropzone:hover {
+            border-color: #8e1616;
+            background: #fff5f5;
+        }
+
+        .upload-dropzone-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .upload-dropzone-text {
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .upload-dropzone-text strong {
+            color: #8e1616;
+        }
+
+        .upload-modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 16px 24px;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .btn-cancel {
+            background: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-cancel:hover {
+            background: #f3f4f6;
+        }
+
+        /* Create Folder Modal */
+        .folder-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100000;
+        }
+
+        .folder-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .folder-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .folder-input:focus {
+            outline: none;
+            border-color: #8e1616;
+        }
+
+        .btn-create-folder {
+            background: #8e1616;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-create-folder:hover {
+            background: #6b1111;
+        }
+
+        /* Folder List */
+        .folder-list {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+
+        .folder-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 20px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .folder-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .folder-item-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .folder-settings {
+            position: relative;
+            padding: 4px;
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+        }
+
+        .folder-settings:hover {
+            opacity: 1;
+        }
+
+        .folder-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background: #2d2d2d;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            min-width: 100px;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .folder-menu.active {
+            display: block;
+        }
+
+        .folder-menu-item {
+            padding: 10px 16px;
+            font-size: 13px;
+            color: white;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .folder-menu-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .folder-menu-delete:hover {
+            background: #dc2626;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Documents Page - Full Screen -->
+    <div class="documents-page">
+        <!-- Documents Left Sidebar -->
+        <div class="documents-sidebar">
+            <div class="documents-sidebar-logo">
+                <img src="/images/gihon-logo-new.png" alt="GIHON Logo">
+            </div>
+            <div class="documents-sidebar-header">
+                <a class="documents-back-btn" href="/index.html">
+                    <span>‹</span> Back
+                </a>
+                <div class="documents-sidebar-title">Documents</div>
+            </div>
+
+            <nav class="documents-sidebar-nav">
+                <a class="documents-nav-item active" data-view="all" onclick="switchView('all')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                    </svg>
+                    All Documents
+                </a>
+                <a class="documents-nav-item" data-view="inbox" onclick="switchView('inbox')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" />
+                        <path d="M3 12h18" />
+                    </svg>
+                    Inbox
+                </a>
+
+                <div class="documents-section-header">
+                    <span class="documents-section-title">Folders</span>
+                    <button class="documents-add-folder-btn" onclick="openFolderModal()">+</button>
+                </div>
+
+                <div id="foldersContainer">
+                    <div class="documents-no-folders" id="noFoldersText">There are no folders.</div>
+                </div>
+                <a class="documents-create-folder-link" onclick="openFolderModal()">Create New Folder</a>
+            </nav>
+
+            <div class="documents-sidebar-footer">
+                <a class="documents-trash-item" onclick="switchView('trash')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+                    </svg>
+                    Trash
+                </a>
+            </div>
+        </div>
+
+        <!-- Documents Main Content -->
+        <div class="documents-main">
+            <div class="documents-header">
+                <h1 class="documents-header-title" id="viewTitle">All Documents</h1>
+                <div class="documents-header-actions">
+                    <button class="btn-upload" onclick="openUploadModal()">
+                        Upload File <span class="btn-upload-arrow">▾</span>
+                    </button>
+                    <button class="btn-menu">⋮</button>
+                </div>
+            </div>
+
+            <div class="documents-filter-row">
+                <span class="filter-label">Filter By :</span>
+                <span class="filter-select" onclick="toggleFileTypeFilter()">
+                    File Type: <span id="selectedFileType">All</span> <span>▾</span>
+                </span>
+            </div>
+
+            <div class="documents-content" id="documentsListView">
+                <table class="documents-table">
+                    <thead>
+                        <tr>
+                            <th class="checkbox-cell"><input type="checkbox" id="selectAll" onclick="toggleSelectAll()">
+                            </th>
+                            <th>File Name</th>
+                            <th>Uploaded By</th>
+                            <th>Uploaded On ↓</th>
+                            <th>Associated To</th>
+                            <th>Folder</th>
+                            <th>🔍</th>
+                        </tr>
+                    </thead>
+                    <tbody id="documentsTableBody">
+                    </tbody>
+                </table>
+
+                <div class="documents-empty" id="emptyState">
+                    No documents have been added
+                </div>
+            </div>
+
+            <!-- Inbox Upload View -->
+            <div class="inbox-upload-view" id="inboxUploadView" style="display: none;">
+                <div class="inbox-dropzone-container">
+                    <div class="inbox-dropzone" onclick="document.getElementById('inboxFileInput').click()">
+                        <div class="inbox-cloud-icon">
+                            <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                                <path
+                                    d="M65 35C65 25 57 17 47 17C40 17 34 21 31 27C22 28 15 35 15 44C15 54 23 62 33 62H63C71 62 78 55 78 47C78 40 72 34 65 35Z"
+                                    fill="#FFD4A8" />
+                                <path d="M50 30L50 55M50 30L60 40M50 30L40 40" stroke="#FF8C42" stroke-width="4"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                        <h2 class="inbox-dropzone-title">Drag & Drop Files Here</h2>
+                        <p class="inbox-dropzone-subtitle">Upload your documents (Images, PDF, Docs or Sheets) here</p>
+                        <button class="inbox-choose-btn"
+                            onclick="event.stopPropagation(); document.getElementById('inboxFileInput').click()">Choose
+                            files to upload</button>
+                    </div>
+                    <input type="file" id="inboxFileInput" style="display: none;" multiple
+                        onchange="handleInboxFileSelect(event)">
+                </div>
+
+                <div class="inbox-email-section">
+                    <div class="inbox-email-icon">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                            <rect x="4" y="8" width="32" height="24" rx="3" fill="#FFE4CC" stroke="#FF8C42"
+                                stroke-width="2" />
+                            <path d="M4 11L20 23L36 11" stroke="#FF8C42" stroke-width="2" stroke-linecap="round" />
+                        </svg>
+                    </div>
+                    <div class="inbox-email-text">
+                        <div class="inbox-email-title">Upload Files via Email</div>
+                        <div class="inbox-email-desc"><a href="#" class="inbox-email-link">Configure email address</a>
+                            to escape the process of uploading documents manually.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Modal -->
+    <div id="uploadModal" class="upload-modal">
+        <div class="upload-modal-overlay" onclick="closeUploadModal()"></div>
+        <div class="upload-modal-content">
+            <div class="upload-modal-header">
+                <h2 class="upload-modal-title">Upload File</h2>
+                <button class="upload-modal-close" onclick="closeUploadModal()">×</button>
+            </div>
+            <div class="upload-modal-body">
+                <div class="upload-dropzone" onclick="document.getElementById('fileInput').click()">
+                    <div class="upload-dropzone-icon">📁</div>
+                    <p class="upload-dropzone-text">
+                        Drag and drop files here or <strong>browse</strong>
+                    </p>
+                </div>
+                <input type="file" id="fileInput" style="display: none;" multiple onchange="handleFileSelect(event)">
+            </div>
+            <div class="upload-modal-footer">
+                <button class="btn-cancel" onclick="closeUploadModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Folder Modal -->
+    <div id="folderModal" class="folder-modal">
+        <div class="upload-modal-overlay" onclick="closeFolderModal()"></div>
+        <div class="upload-modal-content">
+            <div class="upload-modal-header">
+                <h2 class="upload-modal-title">Create New Folder</h2>
+                <button class="upload-modal-close" onclick="closeFolderModal()">×</button>
+            </div>
+            <div class="upload-modal-body">
+                <input type="text" id="folderNameInput" class="folder-input" placeholder="Enter folder name">
+            </div>
+            <div class="upload-modal-footer">
+                <button class="btn-cancel" onclick="closeFolderModal()">Cancel</button>
+                <button class="btn-create-folder" onclick="createFolder()">Create Folder</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Documents and folders data from API
+        let documents = [];
+        let folders = [];
+        let currentView = 'all';
+        let currentFolderId = null;
+
+        const API_BASE = '/api/documents';
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', async function () {
+            await loadFolders();
+            await loadDocuments();
+        });
+
+        // Load folders from API
+        async function loadFolders() {
+            try {
+                const response = await fetch(`${API_BASE}/folders`);
+                if (response.ok) {
+                    folders = await response.json();
+                    renderFolders();
+                }
+            } catch (error) {
+                console.error('Error loading folders:', error);
+            }
+        }
+
+        // Load documents from API
+        async function loadDocuments() {
+            try {
+                let url = API_BASE;
+                const params = new URLSearchParams();
+
+                if (currentView === 'trash') {
+                    params.append('trashed', 'true');
+                } else {
+                    params.append('trashed', 'false');
+                    if (currentView === 'inbox') {
+                        params.append('filter', 'inbox');
+                    } else if (currentFolderId) {
+                        params.append('folder_id', currentFolderId);
+                    }
+                }
+
+                url += '?' + params.toString();
+                const response = await fetch(url);
+                if (response.ok) {
+                    documents = await response.json();
+                    renderDocuments();
+                }
+            } catch (error) {
+                console.error('Error loading documents:', error);
+            }
+        }
+
+        // Switch view (All Documents, Inbox, Trash, or Folder)
+        function switchView(view, folderId = null) {
+            currentView = view;
+            currentFolderId = folderId;
+
+            // Update active nav item
+            document.querySelectorAll('.documents-nav-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('data-view') === view) {
+                    item.classList.add('active');
+                }
+            });
+
+            // Update title
+            let title = 'All Documents';
+            if (view === 'inbox') title = 'Files';
+            else if (view === 'trash') title = 'Trash';
+            else if (view === 'folder' && folderId) {
+                const folder = folders.find(f => f.id === folderId);
+                title = folder ? folder.name : 'Folder';
+            }
+            document.getElementById('viewTitle').textContent = title;
+
+            // Toggle between list view and inbox view
+            const listView = document.getElementById('documentsListView');
+            const inboxView = document.getElementById('inboxUploadView');
+            const filterRow = document.querySelector('.documents-filter-row');
+
+            if (view === 'inbox') {
+                listView.style.display = 'none';
+                inboxView.style.display = 'block';
+                filterRow.style.display = 'none';
+            } else {
+                listView.style.display = 'block';
+                inboxView.style.display = 'none';
+                filterRow.style.display = 'flex';
+                loadDocuments();
+            }
+        }
+
+        // Render documents table
+        function renderDocuments() {
+            const tbody = document.getElementById('documentsTableBody');
+            const emptyState = document.getElementById('emptyState');
+
+            if (documents.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.style.display = 'block';
+            } else {
+                emptyState.style.display = 'none';
+                tbody.innerHTML = documents.map(doc => {
+                    const uploadedOn = new Date(doc.created_at).toLocaleDateString('en-US', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    return `
+                    <tr data-id="${doc.id}">
+                        <td class="checkbox-cell"><input type="checkbox" class="doc-checkbox"></td>
+                        <td>${doc.name}</td>
+                        <td>${doc.uploaded_by || 'Current User'}</td>
+                        <td>${uploadedOn}</td>
+                        <td>${doc.associated_to || '-'}</td>
+                        <td>${doc.folder_name || '-'}</td>
+                        <td></td>
+                    </tr>
+                    `;
+                }).join('');
+            }
+        }
+
+        // Render folders
+        function renderFolders() {
+            const container = document.getElementById('foldersContainer');
+
+            if (folders.length === 0) {
+                container.innerHTML = '<div class="documents-no-folders">There are no folders.</div>';
+            } else {
+                container.innerHTML = '<ul class="folder-list">' +
+                    folders.map((folder, index) => `
+                    <li class="folder-item">
+                        <div class="folder-item-content" onclick="switchView('folder', ${folder.id})">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2v11z"/>
+                            </svg>
+                            <span>${folder.name}</span>
+                        </div>
+                        <div class="folder-settings" onclick="event.stopPropagation(); toggleFolderMenu(${index})">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                            </svg>
+                            <div class="folder-menu" id="folder-menu-${index}">
+                                <div class="folder-menu-item" onclick="editFolder(${folder.id}, '${folder.name}')">Edit</div>
+                                <div class="folder-menu-item folder-menu-delete" onclick="deleteFolder(${folder.id}, '${folder.name}')">Delete</div>
+                            </div>
+                        </div>
+                    </li>
+                    `).join('') +
+                    '</ul>';
+            }
+        }
+
+        // Toggle folder settings menu
+        function toggleFolderMenu(index) {
+            document.querySelectorAll('.folder-menu').forEach((menu, i) => {
+                if (i !== index) {
+                    menu.classList.remove('active');
+                }
+            });
+            const menu = document.getElementById(`folder-menu-${index}`);
+            menu.classList.toggle('active');
+        }
+
+        // Close folder menus when clicking outside
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.folder-settings')) {
+                document.querySelectorAll('.folder-menu').forEach(menu => {
+                    menu.classList.remove('active');
+                });
+            }
+        });
+
+        // Edit folder - API
+        async function editFolder(folderId, oldName) {
+            const newName = prompt('Enter new folder name:', oldName);
+            if (newName && newName.trim() && newName.trim() !== oldName) {
+                try {
+                    const response = await fetch(`${API_BASE}/folders/${folderId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name: newName.trim() })
+                    });
+
+                    if (response.ok) {
+                        await loadFolders();
+                    } else {
+                        const error = await response.json();
+                        alert(error.error || 'Failed to update folder');
+                    }
+                } catch (error) {
+                    console.error('Error updating folder:', error);
+                    alert('Failed to update folder');
+                }
+            }
+        }
+
+        // Delete folder - API
+        async function deleteFolder(folderId, name) {
+            if (confirm(`Are you sure you want to delete the folder "${name}"?`)) {
+                try {
+                    const response = await fetch(`${API_BASE}/folders/${folderId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        await loadFolders();
+                        if (currentView === 'folder' && currentFolderId === folderId) {
+                            switchView('all');
+                        }
+                    } else {
+                        const error = await response.json();
+                        alert(error.error || 'Failed to delete folder');
+                    }
+                } catch (error) {
+                    console.error('Error deleting folder:', error);
+                    alert('Failed to delete folder');
+                }
+            }
+        }
+
+        // Open upload modal
+        function openUploadModal() {
+            document.getElementById('uploadModal').classList.add('active');
+        }
+
+        // Close upload modal
+        function closeUploadModal() {
+            document.getElementById('uploadModal').classList.remove('active');
+            document.getElementById('fileInput').value = '';
+        }
+
+        // Handle file selection - API
+        async function handleFileSelect(event) {
+            const files = event.target.files;
+            let uploadCount = 0;
+
+            for (let file of files) {
+                try {
+                    const response = await fetch(API_BASE, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: file.name,
+                            file_size: file.size,
+                            file_type: file.type,
+                            uploaded_by: 'Current User',
+                            folder_id: currentFolderId
+                        })
+                    });
+
+                    if (response.ok) {
+                        uploadCount++;
+                    }
+                } catch (error) {
+                    console.error('Error uploading file:', error);
+                }
+            }
+
+            await loadDocuments();
+            closeUploadModal();
+            alert(`${uploadCount} file(s) uploaded successfully!`);
+        }
+
+        // Handle file selection from Inbox view - API
+        async function handleInboxFileSelect(event) {
+            const files = event.target.files;
+            let uploadCount = 0;
+
+            for (let file of files) {
+                try {
+                    const response = await fetch(API_BASE, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: file.name,
+                            file_size: file.size,
+                            file_type: file.type,
+                            uploaded_by: 'Current User'
+                        })
+                    });
+
+                    if (response.ok) {
+                        uploadCount++;
+                    }
+                } catch (error) {
+                    console.error('Error uploading file:', error);
+                }
+            }
+
+            document.getElementById('inboxFileInput').value = '';
+            alert(`${uploadCount} file(s) uploaded successfully!`);
+            switchView('all');
+        }
+
+        // Open folder modal
+        function openFolderModal() {
+            document.getElementById('folderModal').classList.add('active');
+            document.getElementById('folderNameInput').focus();
+        }
+
+        // Close folder modal
+        function closeFolderModal() {
+            document.getElementById('folderModal').classList.remove('active');
+            document.getElementById('folderNameInput').value = '';
+        }
+
+        // Create folder - API
+        async function createFolder() {
+            const name = document.getElementById('folderNameInput').value.trim();
+            if (!name) {
+                alert('Please enter a folder name');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/folders`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name })
+                });
+
+                if (response.ok) {
+                    await loadFolders();
+                    closeFolderModal();
+                } else {
+                    const error = await response.json();
+                    alert(error.error || 'Failed to create folder');
+                }
+            } catch (error) {
+                console.error('Error creating folder:', error);
+                alert('Failed to create folder');
+            }
+        }
+
+        // Toggle select all
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            document.querySelectorAll('.doc-checkbox').forEach(cb => {
+                cb.checked = selectAll.checked;
+            });
+        }
+
+        // Toggle file type filter (placeholder)
+        function toggleFileTypeFilter() {
+            alert('File type filter coming soon!');
+        }
+    </script>
+</body>
+
+</html>
