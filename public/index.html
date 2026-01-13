@@ -2,164 +2,1004 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard - Inventory Management</title>
-  <link rel="stylesheet" href="/css/main.css">
-  <link rel="stylesheet" href="/css/sidebar.css">
-  <link rel="stylesheet" href="/css/dashboard.css">
-  <link rel="stylesheet" href="/css/global-features.css">
-  <link rel="stylesheet" href="/css/mobile.css">
-  <link rel="stylesheet" href="/css/utilities.css">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
-    rel="stylesheet">
-  <style>
-    /* Screen reader only class for accessibility */
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border-width: 0;
-    }
-  </style>
-  <!-- Chart.js for visualizations -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - GIHON Inventory</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: #f5f7fa;
+        }
+
+        /* Dashboard Header Tabs */
+        .dashboard-header-tabs {
+            display: flex;
+            gap: 32px;
+            padding: 16px 24px;
+            background: white;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .dashboard-tab {
+            font-size: 14px;
+            font-weight: 500;
+            color: #6c757d;
+            text-decoration: none;
+            padding: 8px 0;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .dashboard-tab.active {
+            color: #1a1f3a;
+            border-bottom-color: #1a1f3a;
+        }
+
+        .dashboard-tab:hover {
+            color: #1a1f3a;
+        }
+
+        /* Dashboard Layout */
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 24px;
+            padding: 24px;
+        }
+
+        .dashboard-main {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .dashboard-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        /* Dashboard Cards */
+        .dashboard-card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e8e8e8;
+            overflow: hidden;
+        }
+
+        .dashboard-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .dashboard-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1f3a;
+        }
+
+        .dashboard-card-dropdown {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #2563eb;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .dashboard-card-dropdown:hover {
+            text-decoration: underline;
+        }
+
+        .dashboard-card-body {
+            padding: 20px;
+        }
+
+        /* Toggle Tabs */
+        .toggle-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 20px;
+        }
+
+        .toggle-tab {
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #6c757d;
+            background: white;
+            border: 1px solid #e8e8e8;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .toggle-tab:first-child {
+            border-radius: 6px 0 0 6px;
+        }
+
+        .toggle-tab:last-child {
+            border-radius: 0 6px 6px 0;
+            border-left: none;
+        }
+
+        .toggle-tab.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        /* Bar Chart */
+        .bar-chart-container {
+            position: relative;
+            height: 200px;
+            margin-bottom: 16px;
+        }
+
+        .bar-chart {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            height: 180px;
+            padding: 0 20px;
+        }
+
+        .bar-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+
+        .bar {
+            width: 40px;
+            background: #e8e8e8;
+            border-radius: 4px 4px 0 0;
+            min-height: 4px;
+        }
+
+        .bar-label {
+            font-size: 11px;
+            color: #6c757d;
+            margin-top: 8px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            background: #e3f2fd;
+            padding: 16px 24px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: #1565c0;
+            margin-bottom: 20px;
+        }
+
+        .empty-state-icon {
+            width: 24px;
+            height: 24px;
+            background: #1565c0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        /* Product List */
+        .product-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .product-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .product-icon {
+            width: 36px;
+            height: 36px;
+            background: #e8e8e8;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .product-info {
+            flex: 1;
+        }
+
+        .product-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1a1f3a;
+        }
+
+        .product-sku {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .product-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1f3a;
+        }
+
+        /* Channel List */
+        .channel-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .channel-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+        }
+
+        .channel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .channel-name {
+            font-size: 14px;
+            color: #495057;
+        }
+
+        /* Two Column Layout */
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        /* Right Sidebar */
+        .sidebar-tabs {
+            display: flex;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .sidebar-tab {
+            flex: 1;
+            padding: 14px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #6c757d;
+            background: #f8f9fa;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-tab.active {
+            background: white;
+            color: #1a1f3a;
+            border-bottom: 2px solid #1a1f3a;
+        }
+
+        .sidebar-section {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .sidebar-section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .sidebar-section-icon {
+            font-size: 18px;
+        }
+
+        .sidebar-section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1a1f3a;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            padding-left: 28px;
+        }
+
+        .sidebar-item-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #495057;
+        }
+
+        .sidebar-item-arrow {
+            color: #6c757d;
+            font-size: 12px;
+        }
+
+        .sidebar-item-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1f3a;
+        }
+
+        /* Line Chart */
+        .line-chart-container {
+            height: 200px;
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .line-chart-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .line-chart-row {
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .line-chart-label {
+            font-size: 11px;
+            color: #6c757d;
+            width: 30px;
+        }
+
+        .line-chart-dates {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 8px;
+        }
+
+        .line-chart-date {
+            font-size: 10px;
+            color: #6c757d;
+            text-align: center;
+        }
+
+        /* Vendor List */
+        .vendor-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .vendor-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+        }
+
+        .vendor-rank {
+            width: 24px;
+            height: 24px;
+            background: #f0f0f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 600;
+            color: #6c757d;
+        }
+
+        .vendor-name {
+            font-size: 14px;
+            color: #495057;
+        }
+
+        /* Receive History Table */
+        .receive-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .receive-table th {
+            font-size: 11px;
+            font-weight: 600;
+            color: #6c757d;
+            text-align: left;
+            padding: 12px 8px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .receive-table td {
+            font-size: 13px;
+            color: #495057;
+            padding: 12px 8px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+    </style>
 </head>
 
 <body>
-  <!-- Sidebar Container -->
-  <div id="sidebarContainer"></div>
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer"></div>
 
-  <!-- Header Container -->
-  <div id="headerContainer"></div>
+    <!-- Header Container -->
+    <div id="headerContainer"></div>
 
-  <!-- Page Configuration -->
-  <script>
-    window.pageConfig = {
-      searchPlaceholder: 'Search in Items (/)',
-      searchId: 'dashboardSearch'
-    };
-  </script>
+    <!-- Main Content -->
+    <div class="main-layout">
+        <div class="content" id="content">
 
-  <!-- Main Content -->
-  <div class="main-layout">
-    <div class="content" id="content">
-      <!-- Removed greeting/title and redundant tab bar -->
-
-      <!-- Dashboard Widgets -->
-      <div class="dashboard-grid">
-        <!-- Sales Summary -->
-        <div class="dashboard-widget span-full">
-          <div class="widget-header">
-            <div class="widget-title" id="salesSummaryTitle"><span>📊</span> Sales Summary</div>
-            <label for="salesSummaryFilter" class="sr-only">Filter Sales Summary</label>
-            <select class="widget-filter" id="salesSummaryFilter" aria-labelledby="salesSummaryTitle"
-              title="Filter Sales Summary">
-              <option value="today">Today</option>
-              <option value="week">This Week</option>
-              <option value="month" selected>This Month</option>
-              <option value="year">This Year</option>
-            </select>
-          </div>
-          <div class="widget-content" id="salesSummaryContent">
-            <div class="loading">
-              <div class="spinner"></div>
-              Loading...
+            <!-- Dashboard Header Tabs -->
+            <div class="dashboard-header-tabs">
+                <a href="#" class="dashboard-tab active">Dashboard</a>
+                <a href="#" class="dashboard-tab">Getting Started</a>
+                <a href="#" class="dashboard-tab">Recent Updates</a>
             </div>
-          </div>
-        </div>
 
-        <!-- Purchase Summary -->
-        <div class="dashboard-widget span-full">
-          <div class="widget-header">
-            <div class="widget-title" id="purchaseSummaryTitle"><span>📦</span> Purchase Summary</div>
-            <label for="purchaseSummaryFilter" class="sr-only">Filter Purchase Summary</label>
-            <select class="widget-filter" id="purchaseSummaryFilter" aria-labelledby="purchaseSummaryTitle"
-              title="Filter Purchase Summary">
-              <option value="today">Today</option>
-              <option value="week">This Week</option>
-              <option value="month" selected>This Month</option>
-              <option value="year">This Year</option>
-            </select>
-          </div>
-          <div class="widget-content" id="purchaseSummaryContent">
-            <div class="loading">
-              <div class="spinner"></div>
-              Loading...
-            </div>
-          </div>
-        </div>
+            <!-- Dashboard Layout -->
+            <div class="dashboard-layout">
+                <!-- Main Content Area -->
+                <div class="dashboard-main">
 
-        <!-- Top Selling Items -->
-        <div class="dashboard-widget span-full">
-          <div class="widget-header">
-            <div class="widget-title" id="topSellingTitle"><span>🔥</span> Top Selling Items</div>
-            <label for="topSellingFilter" class="sr-only">Filter Top Selling Items</label>
-            <select class="widget-filter" id="topSellingFilter" aria-labelledby="topSellingTitle"
-              title="Filter Top Selling Items">
-              <option value="month">This Month</option>
-              <option value="week">This Week</option>
-              <option value="year">This Year</option>
-            </select>
-          </div>
-          <div class="widget-content" id="topSellingContent">
-            <div class="loading">
-              <div class="spinner"></div>
-              Loading...
-            </div>
-          </div>
-        </div>
+                    <!-- Top Selling Items -->
+                    <div class="dashboard-card">
+                        <div class="dashboard-card-header">
+                            <h2 class="dashboard-card-title">Top Selling Items</h2>
+                            <button class="dashboard-card-dropdown">This Month ▾</button>
+                        </div>
+                        <div class="dashboard-card-body">
+                            <div class="empty-state" id="topSellingEmpty">
+                                <span class="empty-state-icon">i</span>
+                                <span>You do not have any top selling items yet.</span>
+                            </div>
+                            <div class="bar-chart-container">
+                                <div class="bar-chart" id="topSellingChart">
+                                    <div class="bar-item">
+                                        <div class="bar" style="height: 4px;"></div><span class="bar-label">Item
+                                            1</span>
+                                    </div>
+                                    <div class="bar-item">
+                                        <div class="bar" style="height: 4px;"></div><span class="bar-label">Item
+                                            2</span>
+                                    </div>
+                                    <div class="bar-item">
+                                        <div class="bar" style="height: 4px;"></div><span class="bar-label">Item
+                                            3</span>
+                                    </div>
+                                    <div class="bar-item">
+                                        <div class="bar" style="height: 4px;"></div><span class="bar-label">Item
+                                            4</span>
+                                    </div>
+                                    <div class="bar-item">
+                                        <div class="bar" style="height: 4px;"></div><span class="bar-label">Item
+                                            5</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-        <!-- Top Stocked Items -->
-        <div class="dashboard-widget span-full">
-          <div class="widget-header">
-            <div class="widget-title" id="topStockedTitle"><span>📦</span> Top Stocked Items</div>
-            <label for="topStockedFilter" class="sr-only">Filter Top Stocked Items</label>
-            <select class="widget-filter" id="topStockedFilter" aria-labelledby="topStockedTitle"
-              title="Filter Top Stocked Items">
-              <option value="month">As of: This Month</option>
-            </select>
-          </div>
-          <div class="stocked-tabs">
-            <button class="stocked-tab active" onclick="switchStockedTab('quantity')">By Quantity</button>
-            <button class="stocked-tab" onclick="switchStockedTab('value')">By Value</button>
-          </div>
-          <div class="widget-content" id="topStockedContent">
-            <div class="loading">
-              <div class="spinner"></div>
-              Loading...
-            </div>
-          </div>
-        </div>
+                    <!-- Two Column Section -->
+                    <div class="two-column">
+                        <!-- Top Stocked Items -->
+                        <div class="dashboard-card">
+                            <div class="dashboard-card-header">
+                                <h2 class="dashboard-card-title">Top Stocked Items</h2>
+                                <button class="dashboard-card-dropdown">As of: This Month ▾</button>
+                            </div>
+                            <div class="dashboard-card-body">
+                                <div class="toggle-tabs">
+                                    <button class="toggle-tab active" data-type="quantity">By Quantity</button>
+                                    <button class="toggle-tab" data-type="value">By Value</button>
+                                </div>
+                                <div class="empty-state" id="topStockedEmpty">
+                                    <span class="empty-state-icon">i</span>
+                                    <span>No sales recorded during this period.</span>
+                                </div>
+                                <div class="product-list" id="topStockedList">
+                                    <!-- Products will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
 
-        <!-- Pending Actions -->
-        <div class="dashboard-widget span-full pending-actions">
-          <div class="widget-header">
-            <div class="widget-title"><span>⚡</span> Pending Actions</div>
-          </div>
-          <div class="widget-content" id="pendingActionsContent">
-            <div class="loading">
-              <div class="spinner"></div>
-              Loading...
+                        <!-- Sales By Channel -->
+                        <div class="dashboard-card">
+                            <div class="dashboard-card-header">
+                                <h2 class="dashboard-card-title">Sales By Channel</h2>
+                                <button class="dashboard-card-dropdown">This Month ▾</button>
+                            </div>
+                            <div class="dashboard-card-body">
+                                <div class="empty-state" id="salesChannelEmpty">
+                                    <span class="empty-state-icon">i</span>
+                                    <span>No sales data found during this period.</span>
+                                </div>
+                                <div class="channel-list" id="salesChannelList">
+                                    <div class="channel-item"><span class="channel-dot"
+                                            style="background: #6366f1;"></span><span class="channel-name">Direct
+                                            Sales</span></div>
+                                    <div class="channel-item"><span class="channel-dot"
+                                            style="background: #22c55e;"></span><span
+                                            class="channel-name">Shopify</span></div>
+                                    <div class="channel-item"><span class="channel-dot"
+                                            style="background: #f59e0b;"></span><span class="channel-name">Amazon</span>
+                                    </div>
+                                    <div class="channel-item"><span class="channel-dot"
+                                            style="background: #ef4444;"></span><span class="channel-name">Etsy</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sales Order Summary -->
+                    <div class="dashboard-card">
+                        <div class="dashboard-card-header">
+                            <h2 class="dashboard-card-title">Sales Order Summary</h2>
+                            <button class="dashboard-card-dropdown">This Month ▾</button>
+                        </div>
+                        <div class="dashboard-card-body">
+                            <div class="toggle-tabs">
+                                <button class="toggle-tab active" data-type="quantity">By Quantity</button>
+                                <button class="toggle-tab" data-type="value">By Value</button>
+                            </div>
+                            <div class="line-chart-container">
+                                <div class="line-chart-grid">
+                                    <div class="line-chart-row"><span class="line-chart-label">5K</span></div>
+                                    <div class="line-chart-row"><span class="line-chart-label">4K</span></div>
+                                    <div class="line-chart-row"><span class="line-chart-label">3K</span></div>
+                                    <div class="line-chart-row"><span class="line-chart-label">2K</span></div>
+                                    <div class="line-chart-row"><span class="line-chart-label">1K</span></div>
+                                    <div class="line-chart-row"><span class="line-chart-label">0</span></div>
+                                </div>
+                                <div class="empty-state"
+                                    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                                    <span class="empty-state-icon">i</span>
+                                    <span>No sales orders created during this period.</span>
+                                </div>
+                                <div class="line-chart-dates">
+                                    <span class="line-chart-date">01<br>Jan</span>
+                                    <span class="line-chart-date">05</span>
+                                    <span class="line-chart-date">07</span>
+                                    <span class="line-chart-date">09</span>
+                                    <span class="line-chart-date">11</span>
+                                    <span class="line-chart-date">13</span>
+                                    <span class="line-chart-date">15</span>
+                                    <span class="line-chart-date">17</span>
+                                    <span class="line-chart-date">19</span>
+                                    <span class="line-chart-date">21</span>
+                                    <span class="line-chart-date">23</span>
+                                    <span class="line-chart-date">25</span>
+                                    <span class="line-chart-date">27</span>
+                                    <span class="line-chart-date">29</span>
+                                    <span class="line-chart-date">31<br>Jan</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Two Column Section -->
+                    <div class="two-column">
+                        <!-- Top Vendors -->
+                        <div class="dashboard-card">
+                            <div class="dashboard-card-header">
+                                <h2 class="dashboard-card-title">Top Vendors</h2>
+                                <button class="dashboard-card-dropdown">This Month ▾</button>
+                            </div>
+                            <div class="dashboard-card-body">
+                                <div class="toggle-tabs">
+                                    <button class="toggle-tab active" data-type="quantity">By Quantity</button>
+                                    <button class="toggle-tab" data-type="value">By Value</button>
+                                </div>
+                                <div class="empty-state" id="topVendorsEmpty">
+                                    <span class="empty-state-icon">i</span>
+                                    <span>No vendor activity found for this period.</span>
+                                </div>
+                                <div class="vendor-list" id="topVendorsList">
+                                    <!-- Vendors will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Receive History -->
+                        <div class="dashboard-card">
+                            <div class="dashboard-card-header">
+                                <h2 class="dashboard-card-title">Receive History</h2>
+                                <button class="dashboard-card-dropdown">This Month ▾</button>
+                            </div>
+                            <div class="dashboard-card-body">
+                                <div class="empty-state" id="receiveHistoryEmpty">
+                                    <span class="empty-state-icon">i</span>
+                                    <span>No purchase receives found for this period.</span>
+                                </div>
+                                <table class="receive-table" id="receiveHistoryTable" style="display: none;">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>PO Number</th>
+                                            <th>Vendor</th>
+                                            <th>Quantity</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="receiveHistoryBody">
+                                        <!-- Receive history will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Right Sidebar -->
+                <div class="dashboard-sidebar">
+                    <div class="dashboard-card">
+                        <!-- Sidebar Tabs -->
+                        <div class="sidebar-tabs">
+                            <button class="sidebar-tab active" data-tab="pending">Pending Actions</button>
+                            <button class="sidebar-tab" data-tab="recent">Recent Activities</button>
+                        </div>
+
+                        <!-- Pending Actions Content -->
+                        <div id="pendingActionsContent">
+                            <!-- Sales Section -->
+                            <div class="sidebar-section">
+                                <div class="sidebar-section-header">
+                                    <span class="sidebar-section-icon">🛒</span>
+                                    <span class="sidebar-section-title">Sales</span>
+                                </div>
+                                <div class="sidebar-item">
+                                    <span class="sidebar-item-label"><span class="sidebar-item-arrow">›</span> To Be
+                                        Packed</span>
+                                    <span class="sidebar-item-value" id="toBePacked">0.00</span>
+                                </div>
+                                <div class="sidebar-item">
+                                    <span class="sidebar-item-label"><span class="sidebar-item-arrow">›</span> To Be
+                                        Shipped</span>
+                                    <span class="sidebar-item-value" id="toBeShipped">0.00</span>
+                                </div>
+                                <div class="sidebar-item">
+                                    <span class="sidebar-item-label"><span class="sidebar-item-arrow">›</span> To Be
+                                        Delivered</span>
+                                    <span class="sidebar-item-value" id="toBeDelivered">0.00</span>
+                                </div>
+                                <div class="sidebar-item">
+                                    <span class="sidebar-item-label"><span class="sidebar-item-arrow">›</span> To Be
+                                        Invoiced</span>
+                                    <span class="sidebar-item-value" id="toBeInvoiced">0.00</span>
+                                </div>
+                            </div>
+
+                            <!-- Purchases Section -->
+                            <div class="sidebar-section">
+                                <div class="sidebar-section-header">
+                                    <span class="sidebar-section-icon">📦</span>
+                                    <span class="sidebar-section-title">Purchases</span>
+                                </div>
+                                <div class="sidebar-item">
+                                    <span class="sidebar-item-label"><span class="sidebar-item-arrow">›</span> To Be
+                                        Received</span>
+                                    <span class="sidebar-item-value" id="toBeReceived">0.00</span>
+                                </div>
+                                <div class="sidebar-item">
+                                    <span class="sidebar-item-label"><span class="sidebar-item-arrow">›</span> Receive
+                                        In Progress</span>
+                                    <span class="sidebar-item-value" id="receiveInProgress">0.00</span>
+                                </div>
+                            </div>
+
+                            <!-- Inventory Section -->
+                            <div class="sidebar-section">
+                                <div class="sidebar-section-header">
+                                    <span class="sidebar-section-icon">📊</span>
+                                    <span class="sidebar-section-title">Inventory</span>
+                                </div>
+                                <div class="sidebar-item">
+                                    <span class="sidebar-item-label"><span class="sidebar-item-arrow">›</span> Below
+                                        Reorder Level</span>
+                                    <span class="sidebar-item-value" id="belowReorderLevel">0.00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Activities Content (hidden by default) -->
+                        <div id="recentActivitiesContent" style="display: none;">
+                            <div class="sidebar-section">
+                                <p style="color: #6c757d; font-size: 14px; text-align: center; padding: 40px 0;">No
+                                    recent activities</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
+
         </div>
-      </div>
     </div>
-  </div>
 
-  <script src="/js/utils.js"></script>
-  <script src="/js/layout.js"></script>
-  <script src="/js/app.js"></script>
-  <script src="/js/api.js"></script>
-  <script src="/js/global-features.js"></script>
-  <script src="/js/dashboard.js"></script>
+    <!-- Scripts -->
+    <script src="/js/layout.js"></script>
+    <script src="/js/api.js"></script>
+
+    <script>
+        // Load components
+        document.addEventListener('DOMContentLoaded', async function () {
+            // Load sidebar and header
+            await loadComponent('/components/sidebar.html', 'sidebarContainer');
+            await loadComponent('/components/header.html', 'headerContainer');
+
+            // Load dashboard data
+            await loadDashboardData();
+
+            // Setup toggle tabs
+            setupToggleTabs();
+
+            // Setup sidebar tabs
+            setupSidebarTabs();
+        });
+
+        // Load component helper
+        async function loadComponent(url, containerId) {
+            try {
+                const response = await fetch(url);
+                if (response.ok) {
+                    const html = await response.text();
+                    document.getElementById(containerId).innerHTML = html;
+                }
+            } catch (error) {
+                console.error('Error loading component:', error);
+            }
+        }
+
+        // Load dashboard data
+        async function loadDashboardData() {
+            try {
+                // Load items for top stocked
+                const itemsResponse = await fetch('/api/items');
+                if (itemsResponse.ok) {
+                    const items = await itemsResponse.json();
+                    renderTopStockedItems(items);
+                    updateBelowReorderLevel(items);
+                }
+
+                // Load sales data
+                const salesResponse = await fetch('/api/sales');
+                if (salesResponse.ok) {
+                    const sales = await salesResponse.json();
+                    renderTopSellingItems(sales);
+                    updateSalesPendingActions(sales);
+                }
+
+                // Load purchases data
+                const purchasesResponse = await fetch('/api/purchases');
+                if (purchasesResponse.ok) {
+                    const purchases = await purchasesResponse.json();
+                    renderTopVendors(purchases);
+                    renderReceiveHistory(purchases);
+                    updatePurchasesPendingActions(purchases);
+                }
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+            }
+        }
+
+        // Render top stocked items
+        function renderTopStockedItems(items) {
+            const list = document.getElementById('topStockedList');
+            const empty = document.getElementById('topStockedEmpty');
+
+            if (!items || items.length === 0) {
+                empty.style.display = 'flex';
+                list.innerHTML = '';
+                return;
+            }
+
+            empty.style.display = 'none';
+
+            // Sort by stock quantity and take top 5
+            const topItems = [...items]
+                .sort((a, b) => (b.stock_quantity || 0) - (a.stock_quantity || 0))
+                .slice(0, 5);
+
+            list.innerHTML = topItems.map(item => `
+        <div class="product-item">
+          <div class="product-icon">📦</div>
+          <div class="product-info">
+            <div class="product-name">${item.name}</div>
+            <div class="product-sku">${item.sku || 'N/A'}</div>
+          </div>
+          <div class="product-value">${Number(item.stock_quantity || 0).toLocaleString()}</div>
+        </div>
+      `).join('');
+        }
+
+        // Render top selling items
+        function renderTopSellingItems(sales) {
+            const empty = document.getElementById('topSellingEmpty');
+            const chart = document.getElementById('topSellingChart');
+
+            if (!sales || sales.length === 0) {
+                empty.style.display = 'flex';
+                return;
+            }
+
+            // This month's sales
+            const now = new Date();
+            const thisMonthSales = sales.filter(sale => {
+                const saleDate = new Date(sale.date || sale.created_at);
+                return saleDate.getMonth() === now.getMonth() && saleDate.getFullYear() === now.getFullYear();
+            });
+
+            if (thisMonthSales.length === 0) {
+                empty.style.display = 'flex';
+            } else {
+                empty.style.display = 'none';
+                // Calculate top selling items from sales
+                // This would require sales items detail, for now show empty
+            }
+        }
+
+        // Render top vendors
+        function renderTopVendors(purchases) {
+            const list = document.getElementById('topVendorsList');
+            const empty = document.getElementById('topVendorsEmpty');
+
+            if (!purchases || purchases.length === 0) {
+                empty.style.display = 'flex';
+                list.innerHTML = '';
+                return;
+            }
+
+            // Group by vendor
+            const vendorTotals = {};
+            purchases.forEach(p => {
+                const vendor = p.supplier_name || 'Unknown Vendor';
+                vendorTotals[vendor] = (vendorTotals[vendor] || 0) + 1;
+            });
+
+            const topVendors = Object.entries(vendorTotals)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5);
+
+            if (topVendors.length === 0) {
+                empty.style.display = 'flex';
+                return;
+            }
+
+            empty.style.display = 'none';
+            list.innerHTML = topVendors.map((v, i) => `
+        <div class="vendor-item">
+          <span class="vendor-rank">${i + 1}</span>
+          <span class="vendor-name">${v[0]}</span>
+        </div>
+      `).join('');
+        }
+
+        // Render receive history
+        function renderReceiveHistory(purchases) {
+            const table = document.getElementById('receiveHistoryTable');
+            const body = document.getElementById('receiveHistoryBody');
+            const empty = document.getElementById('receiveHistoryEmpty');
+
+            const receivedPurchases = purchases.filter(p => p.status === 'received');
+
+            if (!receivedPurchases || receivedPurchases.length === 0) {
+                empty.style.display = 'flex';
+                table.style.display = 'none';
+                return;
+            }
+
+            empty.style.display = 'none';
+            table.style.display = 'table';
+
+            body.innerHTML = receivedPurchases.slice(0, 5).map(p => {
+                const date = new Date(p.received_date || p.date || p.created_at).toLocaleDateString();
+                return `
+        <tr>
+          <td>${date}</td>
+          <td>${p.po_number || p.invoice_number || '-'}</td>
+          <td>${p.supplier_name || '-'}</td>
+          <td>${p.total_quantity || '-'}</td>
+          <td>${p.status}</td>
+        </tr>
+      `;
+            }).join('');
+        }
+
+        // Update below reorder level count
+        function updateBelowReorderLevel(items) {
+            const count = items.filter(item =>
+                (item.stock_quantity || 0) <= (item.reorder_point || 10)
+            ).length;
+            document.getElementById('belowReorderLevel').textContent = count.toFixed(2);
+        }
+
+        // Update sales pending actions
+        function updateSalesPendingActions(sales) {
+            const pending = sales.filter(s => s.status === 'pending').length;
+            const completed = sales.filter(s => s.status === 'completed').length;
+
+            document.getElementById('toBePacked').textContent = '0.00';
+            document.getElementById('toBeShipped').textContent = '0.00';
+            document.getElementById('toBeDelivered').textContent = '0.00';
+            document.getElementById('toBeInvoiced').textContent = pending.toFixed(2);
+        }
+
+        // Update purchases pending actions
+        function updatePurchasesPendingActions(purchases) {
+            const ordered = purchases.filter(p => p.status === 'ordered').length;
+            const inProgress = purchases.filter(p => p.status === 'partial').length;
+
+            document.getElementById('toBeReceived').textContent = ordered.toFixed(2);
+            document.getElementById('receiveInProgress').textContent = inProgress.toFixed(2);
+        }
+
+        // Setup toggle tabs
+        function setupToggleTabs() {
+            document.querySelectorAll('.toggle-tabs').forEach(container => {
+                container.querySelectorAll('.toggle-tab').forEach(tab => {
+                    tab.addEventListener('click', function () {
+                        container.querySelectorAll('.toggle-tab').forEach(t => t.classList.remove('active'));
+                        this.classList.add('active');
+                    });
+                });
+            });
+        }
+
+        // Setup sidebar tabs
+        function setupSidebarTabs() {
+            document.querySelectorAll('.sidebar-tab').forEach(tab => {
+                tab.addEventListener('click', function () {
+                    document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const tabType = this.dataset.tab;
+                    if (tabType === 'pending') {
+                        document.getElementById('pendingActionsContent').style.display = 'block';
+                        document.getElementById('recentActivitiesContent').style.display = 'none';
+                    } else {
+                        document.getElementById('pendingActionsContent').style.display = 'none';
+                        document.getElementById('recentActivitiesContent').style.display = 'block';
+                    }
+                });
+            });
+        }
+    </script>
 </body>
 
 </html>
