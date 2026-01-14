@@ -18,6 +18,9 @@
     /* Items Page Premium Styles */
     * {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
     }
 
     /* ========== ZOHO-STYLE HEADER ========== */
@@ -34,7 +37,42 @@
     .zoho-header-left {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 20px;
+    }
+
+    .zoho-search-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .zoho-search-input {
+      width: 280px;
+      padding: 8px 14px 8px 36px;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      font-size: 13px;
+      outline: none;
+      background: #f9fafb;
+      transition: all 0.2s ease;
+    }
+
+    .zoho-search-input::placeholder {
+      color: #9ca3af;
+    }
+
+    .zoho-search-input:focus {
+      border-color: #3b82f6;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .zoho-search-icon {
+      position: absolute;
+      left: 12px;
+      font-size: 14px;
+      color: #9ca3af;
+      pointer-events: none;
     }
 
     .zoho-dropdown {
@@ -87,6 +125,104 @@
       color: #1a1f3a;
     }
 
+    /* ========== GRID VIEW STYLES ========== */
+    .items-grid-wrapper {
+      padding: 20px;
+      background: #f9fafb;
+    }
+
+    .items-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .grid-item-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+
+    .grid-item-card:hover {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      transform: translateY(-2px);
+      border-color: #3b82f6;
+    }
+
+    .grid-item-card.selected {
+      border-color: #3b82f6;
+      box-shadow: 0 4px 16px rgba(59, 130, 246, 0.25);
+    }
+
+    .grid-item-image {
+      width: 100%;
+      height: 160px;
+      background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      color: #9ca3af;
+    }
+
+    .grid-item-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .grid-item-body {
+      padding: 16px;
+    }
+
+    .grid-item-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .grid-item-sku {
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 12px;
+    }
+
+    .grid-item-stats {
+      display: flex;
+      justify-content: space-between;
+      padding-top: 12px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .grid-item-stat {
+      text-align: center;
+    }
+
+    .grid-item-stat-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1f2937;
+    }
+
+    .grid-item-stat-label {
+      font-size: 10px;
+      color: #9ca3af;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .grid-item-price {
+      color: #059669 !important;
+    }
+
     .zoho-new-btn {
       padding: 8px 16px;
       background: #2563eb;
@@ -128,15 +264,16 @@
     .items-table-wrapper {
       background: white;
       border-radius: 16px;
-      overflow: hidden;
       box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
       overflow-x: auto;
+      max-width: 100%;
     }
 
     .items-table {
       width: 100%;
       border-collapse: collapse;
-      table-layout: fixed;
+      table-layout: auto;
+      min-width: 800px;
     }
 
     .items-table thead {
@@ -153,47 +290,176 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
       border-bottom: 1px solid #e8e8e8;
+      white-space: nowrap;
     }
 
-    /* Zoho-style column widths for 7 columns */
+    /* Dynamic column widths */
     .zoho-th-filter {
-      width: 32px;
+      width: 40px;
+      min-width: 40px;
       text-align: center !important;
       padding: 14px 8px !important;
+      position: relative;
+    }
+
+    .filter-dropdown-container {
+      position: relative;
+      display: inline-block;
     }
 
     .zoho-filter-icon {
-      color: #6b7280;
-      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
+      transition: all 0.2s ease;
+      padding: 6px;
+      border-radius: 4px;
+      background: #f0f5ff;
+      border: 1px solid #bfdbfe;
+    }
+
+    .zoho-filter-icon:hover {
+      background: #dbeafe;
+      border-color: #93c5fd;
+    }
+
+    .zoho-filter-icon svg {
+      transition: all 0.2s ease;
+    }
+
+    .zoho-filter-icon:hover svg {
+      fill: #2563eb;
+    }
+
+    .icon.fill-linkblue {
+      fill: #3b82f6;
+    }
+
+    .filter-dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+      min-width: 170px;
+      z-index: 1000;
+      padding: 6px 0;
+      margin-top: 6px;
+    }
+
+    .filter-dropdown-menu.active {
+      display: block;
+      animation: dropdownFadeIn 0.15s ease-out;
+    }
+
+    @keyframes dropdownFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .filter-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      color: #374151;
+      transition: all 0.2s ease;
+      letter-spacing: -0.01em;
+    }
+
+    .filter-dropdown-item:first-child {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white;
+      margin: 6px 8px 4px 8px;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-weight: 600;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+    }
+
+    .filter-dropdown-item:first-child .filter-dropdown-icon {
+      filter: brightness(0) invert(1);
+    }
+
+    .filter-dropdown-item:hover {
+      background: #f0f4ff;
+      color: #2563eb;
+    }
+
+    .filter-dropdown-item:first-child:hover {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      box-shadow: 0 3px 8px rgba(37, 99, 235, 0.35);
+    }
+
+    .filter-dropdown-icon {
+      font-size: 16px;
+      width: 22px;
+      text-align: center;
     }
 
     .zoho-th-checkbox {
       width: 40px;
+      min-width: 40px;
       text-align: center !important;
     }
 
     .zoho-th-name {
-      width: 32%;
+      min-width: 140px;
     }
 
     .zoho-th-sku {
-      width: 18%;
+      min-width: 90px;
       cursor: pointer;
     }
 
-    .zoho-th-stock {
-      width: 18%;
+    .zoho-th-stock_on_hand {
+      min-width: 70px;
       text-align: right !important;
     }
 
-    .zoho-th-reorder {
-      width: 15%;
+    .zoho-th-reorder_level {
+      min-width: 70px;
+      text-align: right !important;
+    }
+
+    .zoho-th-account_name,
+    .zoho-th-brand,
+    .zoho-th-description,
+    .zoho-th-dimensions,
+    .zoho-th-ean,
+    .zoho-th-isbn,
+    .zoho-th-manufacturer,
+    .zoho-th-purchase_account,
+    .zoho-th-purchase_description,
+    .zoho-th-type,
+    .zoho-th-upc,
+    .zoho-th-usage_unit,
+    .zoho-th-weight {
+      min-width: 70px;
+    }
+
+    .zoho-th-purchase_rate,
+    .zoho-th-rate {
+      min-width: 70px;
       text-align: right !important;
     }
 
     .zoho-th-search {
       width: 40px;
+      min-width: 40px;
       text-align: center !important;
       cursor: pointer;
     }
@@ -217,11 +483,26 @@
       color: #374151;
       font-size: 14px;
       vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    /* Clip text mode - truncates long text with ellipsis */
+    .items-table.clip-text-mode tbody td {
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Wrap text mode - allows text to wrap */
+    .items-table.wrap-text-mode tbody td {
+      white-space: normal;
+      word-wrap: break-word;
     }
 
     /* Zoho-style table data cells */
     .zoho-td-checkbox {
       width: 40px;
+      min-width: 40px;
       text-align: center;
     }
 
@@ -232,12 +513,27 @@
     }
 
     .zoho-td-filter {
-      width: 32px;
+      width: 40px;
+      min-width: 40px;
       text-align: center;
     }
 
     .zoho-td-name {
       font-weight: 400;
+      min-width: 140px;
+    }
+
+    /* Right-align numeric columns */
+    .zoho-td-stock_on_hand,
+    .zoho-td-reorder_level,
+    .zoho-td-purchase_rate,
+    .zoho-td-rate {
+      text-align: right;
+    }
+
+    .zoho-td-search {
+      width: 40px;
+      min-width: 40px;
     }
 
     .zoho-item-row {
@@ -286,6 +582,1008 @@
     .zoho-td-search {
       width: 40px;
       text-align: center;
+    }
+
+    /* ========== CUSTOMIZE COLUMNS MODAL ========== */
+    .customize-columns-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 80px;
+    }
+
+    .customize-columns-modal.active {
+      display: flex;
+    }
+
+    .customize-columns-panel {
+      background: white;
+      width: 480px;
+      max-height: 85vh;
+      border-radius: 4px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .customize-columns-header {
+      display: flex;
+      align-items: center;
+      padding: 20px 24px;
+      border-bottom: 1px solid #e8e8e8;
+    }
+
+    .customize-columns-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 20px;
+      font-weight: 500;
+      color: #333;
+      flex: 1;
+    }
+
+    .customize-icon {
+      color: #666;
+      font-size: 18px;
+    }
+
+    .customize-columns-count {
+      font-size: 14px;
+      color: #666;
+      margin-right: 16px;
+    }
+
+    .customize-close-btn {
+      background: none;
+      border: none;
+      font-size: 28px;
+      color: #ef4444;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+      font-weight: 300;
+    }
+
+    .customize-close-btn:hover {
+      color: #dc2626;
+      transform: scale(1.1);
+    }
+
+    .customize-columns-search {
+      padding: 20px 24px;
+    }
+
+    .customize-columns-search input {
+      width: 100%;
+      padding: 14px 16px 14px 44px;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 400;
+      outline: none;
+      background: #f9fafb url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 14px center;
+      transition: all 0.2s ease;
+    }
+
+    .customize-columns-search input::placeholder {
+      color: #9ca3af;
+      font-weight: 400;
+    }
+
+    .customize-columns-search input:focus {
+      border-color: #3b82f6;
+      background-color: white;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .customize-columns-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 16px 16px 16px;
+      max-height: 400px;
+    }
+
+    .column-item {
+      display: flex;
+      align-items: center;
+      padding: 14px 16px;
+      margin: 6px 0;
+      background: #f8fafc;
+      border-radius: 10px;
+      gap: 14px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+
+    .column-item:hover {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+      transform: translateX(2px);
+    }
+
+    .column-item.checked {
+      background: #e6f4ff;
+      border-color: #91caff;
+    }
+
+    .column-item.locked {
+      cursor: default;
+      background: #f5f5f5;
+    }
+
+    .column-drag-handle {
+      color: #bbb;
+      font-size: 14px;
+      cursor: grab;
+      user-select: none;
+      letter-spacing: 2px;
+    }
+
+    .column-checkbox {
+      width: 20px;
+      height: 20px;
+      accent-color: #4096ff;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .column-checkbox:disabled {
+      cursor: not-allowed;
+    }
+
+    .column-lock-icon {
+      color: #bbb;
+      font-size: 16px;
+      width: 20px;
+      text-align: center;
+    }
+
+    .column-name {
+      font-size: 16px;
+      color: #333;
+      flex: 1;
+      font-weight: 400;
+    }
+
+    .customize-columns-footer {
+      display: flex;
+      gap: 12px;
+      padding: 20px 24px;
+      border-top: 1px solid #e8e8e8;
+      background: white;
+    }
+
+    .customize-save-btn {
+      padding: 10px 24px;
+      background: #4096ff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .customize-save-btn:hover {
+      background: #1677ff;
+    }
+
+    .customize-cancel-btn {
+      padding: 10px 24px;
+      background: #f0f0f0;
+      color: #333;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .customize-cancel-btn:hover {
+      background: #e0e0e0;
+    }
+
+    /* ========== NEW ITEM MODAL STYLES ========== */
+    .new-item-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 250px;
+      right: 0;
+      bottom: 0;
+      background: white;
+      z-index: 1000;
+      overflow-y: auto;
+      padding: 0;
+    }
+
+    .new-item-modal.active {
+      display: block;
+    }
+
+    .new-item-content {
+      background: white;
+      width: 100%;
+      max-width: 100%;
+      border-radius: 0;
+      box-shadow: none;
+      margin: 0;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .new-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 24px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .new-item-header h2 {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1f2937;
+      margin: 0;
+    }
+
+    .new-item-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: #9ca3af;
+      cursor: pointer;
+      padding: 4px;
+      line-height: 1;
+    }
+
+    .new-item-close:hover {
+      color: #ef4444;
+    }
+
+    .new-item-body {
+      padding: 32px 40px;
+      flex: 1;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .new-item-footer {
+      display: flex;
+      gap: 12px;
+      padding: 16px 24px;
+      border-top: 1px solid #e5e7eb;
+      background: #f9fafb;
+    }
+
+    .btn-save {
+      padding: 10px 24px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .btn-save:hover {
+      background: #2563eb;
+    }
+
+    .btn-cancel {
+      padding: 10px 24px;
+      background: #f3f4f6;
+      color: #374151;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-cancel:hover {
+      background: #e5e7eb;
+    }
+
+    /* Form Rows */
+    .form-row {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 16px;
+      gap: 16px;
+    }
+
+    .form-label-col {
+      width: 120px;
+      flex-shrink: 0;
+      padding-top: 8px;
+    }
+
+    .form-input-col {
+      flex: 1;
+      max-width: 350px;
+    }
+
+    .form-label-col-right {
+      width: 100px;
+      flex-shrink: 0;
+      padding-top: 8px;
+      text-align: right;
+    }
+
+    .form-input-col-right {
+      flex: 1;
+    }
+
+    .form-input-col-full {
+      flex: 1;
+    }
+
+    .form-label {
+      font-size: 13px;
+      color: #374151;
+      font-weight: 400;
+    }
+
+    .form-label.required {
+      color: #dc2626;
+    }
+
+    .form-sublabel {
+      display: block;
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 2px;
+    }
+
+    .help-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 1px solid #d1d5db;
+      font-size: 10px;
+      color: #9ca3af;
+      cursor: help;
+      margin-left: 4px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      font-size: 13px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .form-input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    }
+
+    .form-select {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      font-size: 13px;
+      outline: none;
+      background: white;
+      cursor: pointer;
+    }
+
+    .form-select:focus {
+      border-color: #3b82f6;
+    }
+
+    .form-textarea {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      font-size: 13px;
+      outline: none;
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    .form-divider {
+      height: 1px;
+      background: #e5e7eb;
+      margin: 24px 0;
+    }
+
+    /* Radio Groups */
+    .radio-group {
+      display: flex;
+      gap: 24px;
+    }
+
+    .radio-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      color: #374151;
+    }
+
+    .radio-label input[type="radio"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #3b82f6;
+    }
+
+    /* Checkbox Labels */
+    .checkbox-label-inline {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #374151;
+      cursor: pointer;
+    }
+
+    .checkbox-label-inline input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #3b82f6;
+    }
+
+    /* Image Upload Area */
+    .image-upload-area {
+      width: 200px;
+      flex-shrink: 0;
+      position: absolute;
+      right: 60px;
+      top: 60px;
+    }
+
+    .image-dropzone {
+      border: 2px dashed #d1d5db;
+      border-radius: 8px;
+      padding: 24px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .image-dropzone:hover {
+      border-color: #3b82f6;
+      background: #f0f9ff;
+    }
+
+    .image-dropzone-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .image-dropzone-text {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .image-dropzone-link {
+      font-size: 12px;
+      color: #3b82f6;
+      margin-top: 4px;
+    }
+
+    .image-dropzone-hint {
+      font-size: 10px;
+      color: #9ca3af;
+      margin-top: 8px;
+    }
+
+    /* Dimensions Row */
+    .dimensions-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dimension-input {
+      width: 60px !important;
+    }
+
+    .dimension-x {
+      color: #9ca3af;
+      font-size: 14px;
+    }
+
+    .dimension-unit {
+      width: 60px !important;
+    }
+
+    .weight-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .weight-input {
+      flex: 1;
+    }
+
+    .weight-unit {
+      width: 60px !important;
+    }
+
+    /* Form Sections (Sales/Purchase) */
+    .form-row-dual {
+      display: flex;
+      gap: 32px;
+    }
+
+    .form-section {
+      flex: 1;
+      background: #f9fafb;
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .section-header h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1f2937;
+      margin: 0;
+    }
+
+    .section-row {
+      margin-bottom: 12px;
+    }
+
+    .section-label {
+      display: block;
+      font-size: 12px;
+      color: #374151;
+      margin-bottom: 6px;
+    }
+
+    .section-label.required {
+      color: #dc2626;
+    }
+
+    .price-input {
+      display: flex;
+      align-items: center;
+    }
+
+    .currency-label {
+      padding: 8px 12px;
+      background: #f3f4f6;
+      border: 1px solid #d1d5db;
+      border-right: none;
+      border-radius: 4px 0 0 4px;
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .price-input .form-input {
+      border-radius: 0 4px 4px 0;
+    }
+
+    /* Track Inventory */
+    .track-inventory {
+      font-weight: 500;
+    }
+
+    .track-hint {
+      font-size: 11px;
+      color: #9ca3af;
+      margin: 8px 0 0 24px;
+    }
+
+    /* Form Note */
+    .form-note {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      background: #eff6ff;
+      border-radius: 6px;
+      margin-top: 24px;
+    }
+
+    .note-icon {
+      font-size: 16px;
+    }
+
+    .form-note span {
+      font-size: 13px;
+      color: #374151;
+    }
+
+    /* ========== MANAGE MODAL STYLES ========== */
+    .manage-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .manage-modal.active {
+      display: flex;
+    }
+
+    .manage-modal-content {
+      background: white;
+      width: 100%;
+      max-width: 500px;
+      border-radius: 8px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .manage-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 24px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .manage-modal-header h2 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1f2937;
+      margin: 0;
+    }
+
+    .manage-modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: #ef4444;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .manage-modal-body {
+      padding: 24px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .btn-new-manufacturer {
+      padding: 12px 24px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      margin-bottom: 24px;
+    }
+
+    .btn-new-manufacturer:hover {
+      background: #2563eb;
+    }
+
+    .manage-form {
+      background: #f9fafb;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .manage-form-group {
+      margin-bottom: 16px;
+    }
+
+    .manage-form-label {
+      display: block;
+      font-size: 13px;
+      color: #dc2626;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .manage-form-input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 2px solid #3b82f6;
+      border-radius: 6px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .manage-form-input:focus {
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    .manage-form-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn-save-select {
+      padding: 10px 20px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .btn-save-select:hover {
+      background: #2563eb;
+    }
+
+    .btn-cancel-form {
+      padding: 10px 20px;
+      background: #6b7280;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .btn-cancel-form:hover {
+      background: #4b5563;
+    }
+
+    .manage-list-header {
+      font-size: 12px;
+      font-weight: 600;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .manage-list {
+      max-height: 250px;
+      overflow-y: auto;
+    }
+
+    .manage-list-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #f3f4f6;
+      cursor: pointer;
+    }
+
+    .manage-list-item:hover {
+      background: #f9fafb;
+    }
+
+    .manage-list-item-name {
+      font-size: 14px;
+      color: #1f2937;
+    }
+
+    .manage-list-item-actions {
+      display: none;
+      gap: 8px;
+    }
+
+    .manage-list-item:hover .manage-list-item-actions {
+      display: flex;
+    }
+
+    .manage-list-action-btn {
+      padding: 4px 10px;
+      font-size: 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-edit {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .btn-edit:hover {
+      background: #e5e7eb;
+    }
+
+    .btn-delete {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .btn-delete:hover {
+      background: #fecaca;
+    }
+
+    .manage-list-empty {
+      text-align: center;
+      color: #9ca3af;
+      padding: 24px;
+      font-size: 14px;
+    }
+
+    /* ========== CUSTOM DROPDOWN STYLES ========== */
+    .custom-dropdown {
+      position: relative;
+      width: 100%;
+    }
+
+    .custom-dropdown-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      background: white;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .custom-dropdown-header:hover {
+      border-color: #3b82f6;
+    }
+
+    .custom-dropdown.open .custom-dropdown-header {
+      border-color: #3b82f6;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    .custom-dropdown-text {
+      font-size: 14px;
+      color: #374151;
+    }
+
+    .custom-dropdown-text.has-value {
+      color: #1f2937;
+      font-weight: 500;
+    }
+
+    .custom-dropdown-arrow {
+      color: #3b82f6;
+      font-size: 10px;
+      transition: transform 0.2s ease;
+    }
+
+    .custom-dropdown.open .custom-dropdown-arrow {
+      transform: rotate(180deg);
+    }
+
+    .custom-dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 1px solid #3b82f6;
+      border-top: none;
+      border-radius: 0 0 6px 6px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      z-index: 100;
+      max-height: 280px;
+      overflow: hidden;
+    }
+
+    .custom-dropdown.open .custom-dropdown-menu {
+      display: block;
+    }
+
+    .custom-dropdown-search {
+      padding: 12px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+    }
+
+    .custom-dropdown-search .search-icon {
+      color: #9ca3af;
+      font-size: 14px;
+    }
+
+    .custom-dropdown-search-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 14px;
+      color: #374151;
+    }
+
+    .custom-dropdown-search-input::placeholder {
+      color: #9ca3af;
+    }
+
+    .custom-dropdown-list {
+      max-height: 180px;
+      overflow-y: auto;
+    }
+
+    .custom-dropdown-item {
+      padding: 10px 14px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #374151;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .custom-dropdown-item:hover {
+      background: #f3f4f6;
+    }
+
+    .custom-dropdown-item.selected {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .custom-dropdown-item .check-icon {
+      color: white;
+      font-weight: bold;
+    }
+
+    .custom-dropdown-manage {
+      padding: 12px 14px;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      color: #3b82f6;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .custom-dropdown-manage:hover {
+      background: #eff6ff;
+    }
+
+    .custom-dropdown-manage .manage-icon {
+      font-size: 14px;
     }
 
     .item-badge {
@@ -1934,6 +3232,61 @@
   <!-- Toast Container -->
   <div class="toast-container" id="toastContainer"></div>
 
+  <!-- Manage Manufacturers Modal -->
+  <div id="manageManufacturersModal" class="manage-modal">
+    <div class="manage-modal-content">
+      <div class="manage-modal-header">
+        <h2>Manage Manufacturers</h2>
+        <button class="manage-modal-close" onclick="closeManageManufacturersModal()">×</button>
+      </div>
+      <div class="manage-modal-body">
+        <div id="newManufacturerForm" class="manage-form" style="display: none;">
+          <div class="manage-form-group">
+            <label class="manage-form-label required">Manufacturer Name*</label>
+            <input type="text" class="manage-form-input" id="newManufacturerName" required>
+          </div>
+          <div class="manage-form-actions">
+            <button class="btn-save-select" onclick="saveNewManufacturer()">Save and Select</button>
+            <button class="btn-cancel-form" onclick="cancelNewManufacturer()">Cancel</button>
+          </div>
+        </div>
+        <button class="btn-new-manufacturer" id="btnNewManufacturer" onclick="showNewManufacturerForm()">+ New
+          Manufacturer</button>
+        <div class="manage-list-header">MANUFACTURERS</div>
+        <div class="manage-list" id="manufacturersList">
+          <!-- Manufacturers will be listed here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Manage Brands Modal -->
+  <div id="manageBrandsModal" class="manage-modal">
+    <div class="manage-modal-content">
+      <div class="manage-modal-header">
+        <h2>Manage Brands</h2>
+        <button class="manage-modal-close" onclick="closeManageBrandsModal()">×</button>
+      </div>
+      <div class="manage-modal-body">
+        <div id="newBrandForm" class="manage-form" style="display: none;">
+          <div class="manage-form-group">
+            <label class="manage-form-label required">Brand Name*</label>
+            <input type="text" class="manage-form-input" id="newBrandName" required>
+          </div>
+          <div class="manage-form-actions">
+            <button class="btn-save-select" onclick="saveNewBrand()">Save and Select</button>
+            <button class="btn-cancel-form" onclick="cancelNewBrand()">Cancel</button>
+          </div>
+        </div>
+        <button class="btn-new-manufacturer" id="btnNewBrand" onclick="showNewBrandForm()">+ New Brand</button>
+        <div class="manage-list-header">BRANDS</div>
+        <div class="manage-list" id="brandsList">
+          <!-- Brands will be listed here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Sidebar Container -->
   <div id="sidebarContainer"></div>
 
@@ -1960,11 +3313,17 @@
             <span class="zoho-dropdown-title">All Items</span>
             <span class="zoho-dropdown-arrow">▼</span>
           </div>
+          <div class="zoho-search-container">
+            <input type="text" id="itemSearchInput" class="zoho-search-input"
+              placeholder="Search by Name or Description..." oninput="searchItemsByNameDesc()">
+            <span class="zoho-search-icon">🔍</span>
+          </div>
         </div>
         <div class="zoho-header-right">
           <div class="zoho-view-toggle">
-            <button class="zoho-view-btn active" title="List View">☰</button>
-            <button class="zoho-view-btn" title="Grid View">▦</button>
+            <button class="zoho-view-btn active" id="listViewBtn" title="List View"
+              onclick="switchToListView()">☰</button>
+            <button class="zoho-view-btn" id="gridViewBtn" title="Grid View" onclick="switchToGridView()">▦</button>
           </div>
           <button class="zoho-new-btn" onclick="showAddItemModal()">+ New</button>
           <button class="zoho-more-btn">⋯</button>
@@ -1979,7 +3338,21 @@
           <table class="items-table">
             <thead>
               <tr>
-                <th class="zoho-th-filter"><span class="zoho-filter-icon">☰</span></th>
+                <th class="zoho-th-filter">
+                  <div class="filter-dropdown-container">
+                    <span class="zoho-filter-icon" onclick="toggleFilterDropdown(event)">☰</span>
+                    <div class="filter-dropdown-menu" id="filterDropdownMenu">
+                      <div class="filter-dropdown-item" onclick="openCustomizeColumns(); closeFilterDropdown();">
+                        <span class="filter-dropdown-icon">⚙️</span>
+                        <span>Customize Columns</span>
+                      </div>
+                      <div class="filter-dropdown-item" onclick="toggleClipText(); closeFilterDropdown();">
+                        <span class="filter-dropdown-icon">📋</span>
+                        <span>Clip Text</span>
+                      </div>
+                    </div>
+                  </div>
+                </th>
                 <th class="zoho-th-checkbox"><input type="checkbox" id="selectAllItems" onclick="toggleSelectAll()">
                 </th>
                 <th class="zoho-th-name">NAME</th>
@@ -2000,6 +3373,13 @@
           </table>
         </div>
 
+        <!-- Grid View (Initially Hidden) -->
+        <div class="items-grid-wrapper" id="itemsGridWrapper" style="display: none;">
+          <div class="items-grid" id="itemsGrid">
+            <!-- Grid items will be rendered dynamically -->
+          </div>
+        </div>
+
         <!-- Item Detail Panel (Initially Hidden) -->
         <div class="item-detail-panel" id="itemDetailPanel" style="display: none;">
           <!-- Populated dynamically -->
@@ -2008,83 +3388,415 @@
     </div>
   </div>
 
-  <!-- Item Modal -->
-  <div id="itemModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 id="modalTitle">Add Item</h2>
-        <button onclick="closeItemModal()">×</button>
+  <!-- Customize Columns Modal -->
+  <div id="customizeColumnsModal" class="customize-columns-modal">
+    <div class="customize-columns-panel">
+      <div class="customize-columns-header">
+        <div class="customize-columns-title">
+          <span class="customize-icon">☰</span>
+          <span>Customize Columns</span>
+        </div>
+        <div class="customize-columns-count">
+          <span id="selectedColumnCount">4</span> of <span id="totalColumnCount">19</span> Selected
+        </div>
+        <button class="customize-close-btn" onclick="closeCustomizeColumns()">×</button>
       </div>
-      <div class="modal-body">
+      <div class="customize-columns-search">
+        <input type="text" id="columnSearchInput" placeholder="Search" oninput="filterColumns()">
+      </div>
+      <div class="customize-columns-list" id="columnsList">
+        <!-- Columns will be populated dynamically -->
+      </div>
+      <div class="customize-columns-footer">
+        <button class="customize-save-btn" onclick="saveColumnSettings()">Save</button>
+        <button class="customize-cancel-btn" onclick="closeCustomizeColumns()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Item Modal - Zoho Style -->
+  <div id="itemModal" class="new-item-modal">
+    <div class="new-item-content">
+      <div class="new-item-header">
+        <h2>New Item</h2>
+        <button class="new-item-close" onclick="closeItemModal()">×</button>
+      </div>
+      <div class="new-item-body">
         <form id="itemForm">
           <input type="hidden" id="itemId">
           <input type="hidden" id="itemImageUrl">
 
-          <!-- Image Upload Section -->
-          <div class="form-group mb-20">
-            <label class="form-label">Item Image</label>
-            <div id="imageUploadBox" class="image-upload-box"
-              onclick="document.getElementById('imageFileInput').click()">
-              <div id="imagePreview" class="image-preview">
-                <img id="previewImg" src="" alt="Preview">
-              </div>
-              <div id="imagePlaceholder" class="image-placeholder">
-                <div class="image-placeholder-icon">📷</div>
-                <div class="image-placeholder-text">Click to upload</div>
+          <!-- Type Section -->
+          <div class="form-row">
+            <div class="form-label-col">
+              <label class="form-label">Type <span class="help-icon">?</span></label>
+            </div>
+            <div class="form-input-col">
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="itemType" value="goods" checked>
+                  <span class="radio-custom"></span>
+                  <span>Goods</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="itemType" value="service">
+                  <span class="radio-custom"></span>
+                  <span>Service</span>
+                </label>
               </div>
             </div>
-            <input type="file" id="imageFileInput" accept="image/*" class="d-none" onchange="handleImageUpload(event)">
-            <small class="image-upload-hint">Click the box to upload an image</small>
           </div>
 
-          <div class="form-group">
-            <label class="form-label">Item Name *</label>
-            <input type="text" class="form-input" id="itemName" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label">SKU</label>
-            <input type="text" class="form-input" id="itemSku" placeholder="e.g., ITEM-001">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Unit Type</label>
-            <select class="form-select" id="itemUnit">
-              <option value="pcs">Pcs (Pieces)</option>
-              <option value="box">Box</option>
-            </select>
-          </div>
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label class="form-label">Quantity *</label>
-              <input type="number" step="1" min="0" class="form-input" id="itemQuantity" required>
+          <!-- Name with Image Upload -->
+          <div class="form-row">
+            <div class="form-label-col">
+              <label class="form-label required">Name*</label>
             </div>
-            <div class="form-group">
+            <div class="form-input-col">
+              <input type="text" class="form-input" id="itemName" required>
+            </div>
+            <!-- Image Upload Area -->
+            <div class="image-upload-area">
+              <div class="image-dropzone" id="imageDropzone" onclick="document.getElementById('imageFileInput').click()"
+                ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+                <div id="imagePreviewContainer" style="display: none;">
+                  <img id="imagePreview" src="" alt="Preview"
+                    style="max-width: 100%; max-height: 140px; border-radius: 6px;">
+                </div>
+                <div id="imageDropzoneContent">
+                  <div class="image-dropzone-icon">🖼️</div>
+                  <div class="image-dropzone-text">Drag image(s) here or</div>
+                  <div class="image-dropzone-link">Browse Images</div>
+                  <div class="image-dropzone-hint">You can add up to 15 images, each not exceeding 5 MB in size</div>
+                </div>
+              </div>
+              <input type="file" id="imageFileInput" accept="image/*" class="d-none"
+                onchange="handleImageUpload(event)">
+            </div>
+          </div>
+
+          <!-- SKU -->
+          <div class="form-row">
+            <div class="form-label-col">
+              <label class="form-label">SKU <span class="help-icon">?</span></label>
+            </div>
+            <div class="form-input-col">
+              <input type="text" class="form-input" id="itemSku" placeholder="">
+            </div>
+          </div>
+
+          <!-- Unit -->
+          <div class="form-row">
+            <div class="form-label-col">
+              <label class="form-label required">Unit*</label>
+            </div>
+            <div class="form-input-col">
+              <div class="combo-input-wrapper">
+                <input type="text" class="form-input combo-input" id="itemUnit" list="unitOptions"
+                  placeholder="Type or select unit">
+                <datalist id="unitOptions">
+                  <option value="pcs">pcs</option>
+                  <option value="box">box</option>
+                  <option value="kg">kg</option>
+                  <option value="g">g</option>
+                  <option value="m">m</option>
+                  <option value="cm">cm</option>
+                  <option value="liter">liter</option>
+                  <option value="ml">ml</option>
+                  <option value="dozen">dozen</option>
+                  <option value="pack">pack</option>
+                  <option value="set">set</option>
+                  <option value="unit">unit</option>
+                </datalist>
+              </div>
+            </div>
+          </div>
+
+          <!-- Returnable Item -->
+          <div class="form-row">
+            <div class="form-label-col"></div>
+            <div class="form-input-col">
+              <label class="checkbox-label-inline">
+                <input type="checkbox" id="itemReturnable" checked>
+                <span>Returnable Item</span>
+                <span class="help-icon">?</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-divider"></div>
+
+          <!-- Dimensions -->
+          <div class="form-row">
+            <div class="form-label-col">
+              <label class="form-label">Dimensions</label>
+              <span class="form-sublabel">(Length X Width X Height)</span>
+            </div>
+            <div class="form-input-col">
+              <div class="dimensions-row">
+                <input type="number" class="form-input dimension-input" id="itemLength" placeholder="">
+                <span class="dimension-x">×</span>
+                <input type="number" class="form-input dimension-input" id="itemWidth" placeholder="">
+                <span class="dimension-x">×</span>
+                <input type="number" class="form-input dimension-input" id="itemHeight" placeholder="">
+                <select class="form-select dimension-unit" id="dimensionUnit">
+                  <option value="cm">cm</option>
+                  <option value="m">m</option>
+                  <option value="in">in</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-label-col-right">
+              <label class="form-label">Weight</label>
+            </div>
+            <div class="form-input-col-right">
+              <div class="weight-row">
+                <input type="number" class="form-input weight-input" id="itemWeight" placeholder="">
+                <select class="form-select weight-unit" id="weightUnit">
+                  <option value="kg">kg</option>
+                  <option value="g">g</option>
+                  <option value="lb">lb</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Manufacturer & Brand -->
+          <div class="form-row">
+            <div class="form-label-col">
+              <label class="form-label">Manufacturer</label>
+            </div>
+            <div class="form-input-col">
+              <input type="hidden" id="itemManufacturer" value="">
+              <div class="custom-dropdown" id="manufacturerDropdown">
+                <div class="custom-dropdown-header" onclick="toggleManufacturerDropdown()">
+                  <span class="custom-dropdown-text" id="manufacturerDropdownText">Select or Add Manufacturer</span>
+                  <span class="custom-dropdown-arrow">▼</span>
+                </div>
+                <div class="custom-dropdown-menu" id="manufacturerDropdownMenu">
+                  <div class="custom-dropdown-search">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="custom-dropdown-search-input" id="manufacturerSearchInput"
+                      placeholder="Search" oninput="filterManufacturers()">
+                  </div>
+                  <div class="custom-dropdown-list" id="manufacturerDropdownList">
+                    <!-- Manufacturers will be listed here -->
+                  </div>
+                  <div class="custom-dropdown-manage"
+                    onclick="openManageManufacturersModal(); closeManufacturerDropdown();">
+                    <span class="manage-icon">⚙️</span>
+                    <span>Manage Manufacturers</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-label-col-right">
+              <label class="form-label">Brand</label>
+            </div>
+            <div class="form-input-col-right">
+              <input type="hidden" id="itemBrand" value="">
+              <div class="custom-dropdown" id="brandDropdown">
+                <div class="custom-dropdown-header" onclick="toggleBrandDropdown()">
+                  <span class="custom-dropdown-text" id="brandDropdownText">Select or Add Brand</span>
+                  <span class="custom-dropdown-arrow">▼</span>
+                </div>
+                <div class="custom-dropdown-menu" id="brandDropdownMenu">
+                  <div class="custom-dropdown-search">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="custom-dropdown-search-input" id="brandSearchInput" placeholder="Search"
+                      oninput="filterBrands()">
+                  </div>
+                  <div class="custom-dropdown-list" id="brandDropdownList">
+                    <!-- Brands will be listed here -->
+                  </div>
+                  <div class="custom-dropdown-manage" onclick="openManageBrandsModal(); closeBrandDropdown();">
+                    <span class="manage-icon">⚙️</span>
+                    <span>Manage Brands</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- UPC & MPN -->
+          <div class="form-row">
+            <div class="form-label-col">
+              <label class="form-label">UPC <span class="help-icon">?</span></label>
+            </div>
+            <div class="form-input-col">
+              <input type="text" class="form-input" id="itemUpc">
+            </div>
+            <div class="form-label-col-right">
+              <label class="form-label">MPN <span class="help-icon">?</span></label>
+            </div>
+            <div class="form-input-col-right">
+              <input type="text" class="form-input" id="itemMpn">
+            </div>
+          </div>
+
+          <!-- EAN & ISBN -->
+          <div class="form-row">
+            <div class="form-label-col">
+              <label class="form-label">EAN <span class="help-icon">?</span></label>
+            </div>
+            <div class="form-input-col">
+              <input type="text" class="form-input" id="itemEan">
+            </div>
+            <div class="form-label-col-right">
+              <label class="form-label">ISBN <span class="help-icon">?</span></label>
+            </div>
+            <div class="form-input-col-right">
+              <input type="text" class="form-input" id="itemIsbn">
+            </div>
+          </div>
+
+          <div class="form-divider"></div>
+
+          <!-- Sales Information & Purchase Information -->
+          <div class="form-row-dual">
+            <!-- Sales Information -->
+            <div class="form-section">
+              <div class="section-header">
+                <h3>Sales Information</h3>
+                <label class="checkbox-label-inline">
+                  <input type="checkbox" id="itemSellable" checked>
+                  <span>Sellable</span>
+                </label>
+              </div>
+
+              <div class="section-row">
+                <label class="section-label required">Selling Price*</label>
+                <div class="price-input">
+                  <span class="currency-label">PHP</span>
+                  <input type="number" class="form-input" id="itemPrice" step="0.01">
+                </div>
+              </div>
+
+              <div class="section-row">
+                <label class="section-label required">Account*</label>
+                <select class="form-select" id="salesAccount">
+                  <option value="sales">Sales</option>
+                </select>
+              </div>
+
+              <div class="section-row">
+                <label class="section-label">Description</label>
+                <textarea class="form-textarea" id="salesDescription" rows="2"></textarea>
+              </div>
+
+              <div class="section-row">
+                <label class="section-label">Tax <span class="help-icon">?</span></label>
+                <select class="form-select" id="salesTax">
+                  <option value="">Select a Tax</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Purchase Information -->
+            <div class="form-section">
+              <div class="section-header">
+                <h3>Purchase Information</h3>
+                <label class="checkbox-label-inline">
+                  <input type="checkbox" id="itemPurchasable" checked>
+                  <span>Purchasable</span>
+                </label>
+              </div>
+
+              <div class="section-row">
+                <label class="section-label required">Cost Price*</label>
+                <div class="price-input">
+                  <span class="currency-label">PHP</span>
+                  <input type="number" class="form-input" id="itemCost" step="0.01">
+                </div>
+              </div>
+
+              <div class="section-row">
+                <label class="section-label required">Account*</label>
+                <select class="form-select" id="purchaseAccount">
+                  <option value="cost_of_goods">Cost of Goods Sold</option>
+                </select>
+              </div>
+
+              <div class="section-row">
+                <label class="section-label">Description</label>
+                <textarea class="form-textarea" id="purchaseDescription" rows="2"></textarea>
+              </div>
+
+              <div class="section-row">
+                <label class="section-label">Tax <span class="help-icon">?</span></label>
+                <select class="form-select" id="purchaseTax">
+                  <option value="">Select a Tax</option>
+                </select>
+              </div>
+
+              <div class="section-row">
+                <label class="section-label">Preferred Vendor</label>
+                <select class="form-select" id="preferredVendor">
+                  <option value=""></option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-divider"></div>
+
+          <!-- Track Inventory -->
+          <div class="form-row">
+            <div class="form-input-col-full">
+              <label class="checkbox-label-inline track-inventory">
+                <input type="checkbox" id="trackInventory" checked>
+                <span><strong>Track Inventory for this item</strong></span>
+                <span class="help-icon">?</span>
+              </label>
+              <p class="track-hint">You cannot enable/disable inventory tracking once you've created transactions for
+                this item</p>
+            </div>
+          </div>
+
+          <!-- Inventory Account & Valuation Method -->
+          <div class="form-row">
+            <div class="form-label-col">
+              <label class="form-label required">Inventory Account*</label>
+            </div>
+            <div class="form-input-col">
+              <select class="form-select" id="inventoryAccount">
+                <option value="">Select an account</option>
+                <option value="inventory">Inventory Asset</option>
+              </select>
+            </div>
+            <div class="form-label-col-right">
+              <label class="form-label required">Inventory<br>Valuation Method*</label>
+            </div>
+            <div class="form-input-col-right">
+              <select class="form-select" id="valuationMethod">
+                <option value="">Select the valuation method</option>
+                <option value="fifo">FIFO</option>
+                <option value="average">Weighted Average</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Reorder Point -->
+          <div class="form-row">
+            <div class="form-label-col">
               <label class="form-label">Reorder Point</label>
-              <input type="number" step="1" min="0" class="form-input" id="itemReorderPoint" placeholder="10"
-                value="10">
+            </div>
+            <div class="form-input-col">
+              <input type="number" class="form-input" id="itemReorderPoint" placeholder="">
             </div>
           </div>
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label class="form-label">Selling Price *</label>
-              <input type="number" step="1" min="0" class="form-input" id="itemPrice" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Cost</label>
-              <input type="number" step="1" min="0" class="form-input" id="itemCost" placeholder="0">
-            </div>
+
+          <!-- Note -->
+          <div class="form-note">
+            <span class="note-icon">📝</span>
+            <span><strong>NOTE:</strong> You can add opening stock on the Item Details page.</span>
           </div>
-          <div class="form-group mt-16">
-            <label class="form-label checkbox-label">
-              <input type="checkbox" id="itemWholesale">
-              <span>Can be Wholesale</span>
-            </label>
-            <small class="checkbox-hint">Enable this if the item can be sold at wholesale prices</small>
-          </div>
-          <div class="d-flex gap-12 mt-24">
-            <button type="submit" class="btn btn-primary flex-1">Save</button>
-            <button type="button" class="btn btn-secondary flex-1" onclick="closeItemModal()">Cancel</button>
-          </div>
+
         </form>
+      </div>
+      <div class="new-item-footer">
+        <button type="submit" class="btn-save" onclick="saveItem(event)">Save</button>
+        <button type="button" class="btn-cancel" onclick="closeItemModal()">Cancel</button>
       </div>
     </div>
   </div>

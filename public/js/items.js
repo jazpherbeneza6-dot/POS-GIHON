@@ -14,7 +14,802 @@ let poSelectedItemId = null;
 
 // POS Cart State
 let cart = [];
-let currentView = 'cards'; // 'cards' or 'table'
+let currentView = 'list'; // 'list' or 'grid'
+
+// Switch to List View
+function switchToListView() {
+  currentView = 'list';
+
+  // Update button states
+  document.getElementById('listViewBtn').classList.add('active');
+  document.getElementById('gridViewBtn').classList.remove('active');
+
+  // Show table, hide grid
+  document.querySelector('.items-table-wrapper').style.display = 'block';
+  document.getElementById('itemsGridWrapper').style.display = 'none';
+
+  // Re-render table
+  renderItemsTable();
+}
+
+// Switch to Grid View
+function switchToGridView() {
+  currentView = 'grid';
+
+  // Update button states
+  document.getElementById('listViewBtn').classList.remove('active');
+  document.getElementById('gridViewBtn').classList.add('active');
+
+  // Hide table, show grid
+  document.querySelector('.items-table-wrapper').style.display = 'none';
+  document.getElementById('itemsGridWrapper').style.display = 'block';
+
+  // Render grid view
+  renderGridView();
+}
+
+// Render Grid View
+function renderGridView() {
+  const grid = document.getElementById('itemsGrid');
+  if (!grid) return;
+
+  // Apply same filters as table view
+  let filteredItems = [...items];
+
+  // Filter by category
+  if (filters.category) {
+    filteredItems = filteredItems.filter(item => item.item_group === filters.category);
+  }
+
+  // Filter by search term
+  if (filters.search) {
+    const searchTerm = filters.search.toLowerCase();
+    filteredItems = filteredItems.filter(item =>
+      (item.name && item.name.toLowerCase().includes(searchTerm)) ||
+      (item.description && item.description.toLowerCase().includes(searchTerm)) ||
+      (item.sku && item.sku.toLowerCase().includes(searchTerm))
+    );
+  }
+
+  if (filteredItems.length === 0) {
+    grid.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #6b7280;">
+        <div style="font-size: 48px; margin-bottom: 16px;">📦</div>
+        <div style="font-size: 16px;">No items found</div>
+      </div>
+    `;
+    return;
+  }
+
+  grid.innerHTML = filteredItems.map(item => {
+    const stock = parseInt(item.stock_quantity) || 0;
+    const price = parseFloat(item.selling_price) || 0;
+    const isSelected = selectedItemId === item.id ? 'selected' : '';
+    const imageHtml = item.image_url
+      ? `<img src="${item.image_url}" alt="${item.name}">`
+      : '📦';
+
+    return `
+      <div class="grid-item-card ${isSelected}" onclick="selectItem(${item.id})">
+        <div class="grid-item-image">${imageHtml}</div>
+        <div class="grid-item-body">
+          <div class="grid-item-name">${item.name || 'Unnamed Item'}</div>
+          <div class="grid-item-sku">${item.sku || 'No SKU'}</div>
+          <div class="grid-item-stats">
+            <div class="grid-item-stat">
+              <div class="grid-item-stat-value">${stock}</div>
+              <div class="grid-item-stat-label">Stock</div>
+            </div>
+            <div class="grid-item-stat">
+              <div class="grid-item-stat-value grid-item-price">₱${price.toLocaleString()}</div>
+              <div class="grid-item-stat-label">Price</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Manufacturers list (stored locally, can be expanded to backend)
+let manufacturers = [];
+let editingManufacturerIndex = -1;
+let selectedManufacturer = '';
+
+// Toggle Manufacturer Custom Dropdown
+function toggleManufacturerDropdown() {
+  const dropdown = document.getElementById('manufacturerDropdown');
+  dropdown.classList.toggle('open');
+  if (dropdown.classList.contains('open')) {
+    document.getElementById('manufacturerSearchInput').value = '';
+    document.getElementById('manufacturerSearchInput').focus();
+    renderManufacturerDropdownList();
+  }
+}
+
+// Close Manufacturer Dropdown
+function closeManufacturerDropdown() {
+  const dropdown = document.getElementById('manufacturerDropdown');
+  dropdown.classList.remove('open');
+}
+
+// Filter Manufacturers in dropdown
+function filterManufacturers() {
+  renderManufacturerDropdownList();
+}
+
+// Select Manufacturer from custom dropdown
+function selectManufacturerFromDropdown(name) {
+  selectedManufacturer = name;
+  document.getElementById('itemManufacturer').value = name;
+  document.getElementById('manufacturerDropdownText').textContent = name;
+  document.getElementById('manufacturerDropdownText').classList.add('has-value');
+  closeManufacturerDropdown();
+}
+
+// Render Manufacturer Dropdown List
+function renderManufacturerDropdownList() {
+  const listContainer = document.getElementById('manufacturerDropdownList');
+  const searchInput = document.getElementById('manufacturerSearchInput');
+  const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+
+  // Filter manufacturers
+  const filtered = manufacturers.filter(m =>
+    m.toLowerCase().includes(searchTerm)
+  );
+
+  if (filtered.length === 0 && manufacturers.length === 0) {
+    listContainer.innerHTML = '<div style="padding: 12px 14px; color: #9ca3af; font-size: 13px;">No manufacturers yet</div>';
+    return;
+  }
+
+  if (filtered.length === 0) {
+    listContainer.innerHTML = '<div style="padding: 12px 14px; color: #9ca3af; font-size: 13px;">No matches found</div>';
+    return;
+  }
+
+  listContainer.innerHTML = filtered.map(name => {
+    const isSelected = selectedManufacturer === name;
+    return `
+      <div class="custom-dropdown-item ${isSelected ? 'selected' : ''}" onclick="selectManufacturerFromDropdown('${name}')">
+        ${isSelected ? '<span class="check-icon">✓</span>' : ''}
+        <span>${name}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+// Update manufacturer dropdown when list changes
+function updateManufacturerDropdown() {
+  renderManufacturerDropdownList();
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function (e) {
+  const manufacturerDropdown = document.getElementById('manufacturerDropdown');
+  if (manufacturerDropdown && !manufacturerDropdown.contains(e.target)) {
+    manufacturerDropdown.classList.remove('open');
+  }
+});
+
+// Open Manage Manufacturers Modal
+function openManageManufacturersModal() {
+  const modal = document.getElementById('manageManufacturersModal');
+  if (modal) {
+    modal.classList.add('active');
+    renderManufacturersList();
+    cancelNewManufacturer(); // Reset form state
+  }
+}
+
+// Close Manage Manufacturers Modal
+function closeManageManufacturersModal() {
+  const modal = document.getElementById('manageManufacturersModal');
+  if (modal) {
+    modal.classList.remove('active');
+    cancelNewManufacturer();
+  }
+}
+
+// Show New Manufacturer Form
+function showNewManufacturerForm() {
+  document.getElementById('newManufacturerForm').style.display = 'block';
+  document.getElementById('btnNewManufacturer').style.display = 'none';
+  document.getElementById('newManufacturerName').value = '';
+  document.getElementById('newManufacturerName').focus();
+  editingManufacturerIndex = -1;
+}
+
+// Cancel New Manufacturer Form
+function cancelNewManufacturer() {
+  document.getElementById('newManufacturerForm').style.display = 'none';
+  document.getElementById('btnNewManufacturer').style.display = 'block';
+  document.getElementById('newManufacturerName').value = '';
+  editingManufacturerIndex = -1;
+}
+
+// Save New Manufacturer
+function saveNewManufacturer() {
+  const nameInput = document.getElementById('newManufacturerName');
+  const name = nameInput.value.trim();
+
+  if (!name) {
+    showToast('Please enter a manufacturer name', 'error');
+    return;
+  }
+
+  if (editingManufacturerIndex >= 0) {
+    // Editing existing
+    manufacturers[editingManufacturerIndex] = name;
+    showToast(`Manufacturer "${name}" updated`, 'success');
+  } else {
+    // Adding new
+    if (manufacturers.includes(name)) {
+      showToast('Manufacturer already exists', 'error');
+      return;
+    }
+    manufacturers.push(name);
+    showToast(`Manufacturer "${name}" added`, 'success');
+  }
+
+  updateManufacturerDropdown();
+  document.getElementById('itemManufacturer').value = name;
+  renderManufacturersList();
+  cancelNewManufacturer();
+}
+
+// Edit Manufacturer
+function editManufacturer(index) {
+  const name = manufacturers[index];
+  document.getElementById('newManufacturerForm').style.display = 'block';
+  document.getElementById('btnNewManufacturer').style.display = 'none';
+  document.getElementById('newManufacturerName').value = name;
+  document.getElementById('newManufacturerName').focus();
+  editingManufacturerIndex = index;
+}
+
+// Delete Manufacturer
+function deleteManufacturer(index) {
+  const name = manufacturers[index];
+  if (confirm(`Delete manufacturer "${name}"?`)) {
+    manufacturers.splice(index, 1);
+    updateManufacturerDropdown();
+    renderManufacturersList();
+    showToast(`Manufacturer "${name}" deleted`, 'success');
+  }
+}
+
+// Select Manufacturer from list
+function selectManufacturer(name) {
+  document.getElementById('itemManufacturer').value = name;
+  closeManageManufacturersModal();
+}
+
+// Render Manufacturers List
+function renderManufacturersList() {
+  const listContainer = document.getElementById('manufacturersList');
+  if (!listContainer) return;
+
+  if (manufacturers.length === 0) {
+    listContainer.innerHTML = '<div class="manage-list-empty">No manufacturers added yet</div>';
+    return;
+  }
+
+  listContainer.innerHTML = manufacturers.map((name, index) => `
+    <div class="manage-list-item" onclick="selectManufacturer('${name}')">
+      <span class="manage-list-item-name">${name}</span>
+      <div class="manage-list-item-actions">
+        <button class="manage-list-action-btn btn-edit" onclick="event.stopPropagation(); editManufacturer(${index})">Edit</button>
+        <button class="manage-list-action-btn btn-delete" onclick="event.stopPropagation(); deleteManufacturer(${index})">Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Update manufacturer dropdown with current list
+function updateManufacturerDropdown() {
+  const select = document.getElementById('itemManufacturer');
+  if (!select) return;
+
+  // Clear and rebuild options
+  select.innerHTML = `
+    <option value="">Select or Add Manufacturer</option>
+    ${manufacturers.map(m => `<option value="${m}">${m}</option>`).join('')}
+    <option value="__manage__">⚙️ Manage Manufacturers</option>
+  `;
+}
+
+// Brands list (stored locally, can be expanded to backend)
+let brands = [];
+let editingBrandIndex = -1;
+
+// Handle Brand dropdown change
+function handleBrandChange(select) {
+  if (select.value === '__manage__') {
+    select.value = ''; // Reset selection
+    openManageBrandsModal();
+  }
+}
+
+// Open Manage Brands Modal
+function openManageBrandsModal() {
+  const modal = document.getElementById('manageBrandsModal');
+  if (modal) {
+    modal.classList.add('active');
+    renderBrandsList();
+    cancelNewBrand(); // Reset form state
+  }
+}
+
+// Close Manage Brands Modal
+function closeManageBrandsModal() {
+  const modal = document.getElementById('manageBrandsModal');
+  if (modal) {
+    modal.classList.remove('active');
+    cancelNewBrand();
+  }
+}
+
+// Show New Brand Form
+function showNewBrandForm() {
+  document.getElementById('newBrandForm').style.display = 'block';
+  document.getElementById('btnNewBrand').style.display = 'none';
+  document.getElementById('newBrandName').value = '';
+  document.getElementById('newBrandName').focus();
+  editingBrandIndex = -1;
+}
+
+// Cancel New Brand Form
+function cancelNewBrand() {
+  document.getElementById('newBrandForm').style.display = 'none';
+  document.getElementById('btnNewBrand').style.display = 'block';
+  document.getElementById('newBrandName').value = '';
+  editingBrandIndex = -1;
+}
+
+// Save New Brand
+function saveNewBrand() {
+  const nameInput = document.getElementById('newBrandName');
+  const name = nameInput.value.trim();
+
+  if (!name) {
+    showToast('Please enter a brand name', 'error');
+    return;
+  }
+
+  if (editingBrandIndex >= 0) {
+    // Editing existing
+    brands[editingBrandIndex] = name;
+    showToast(`Brand "${name}" updated`, 'success');
+  } else {
+    // Adding new
+    if (brands.includes(name)) {
+      showToast('Brand already exists', 'error');
+      return;
+    }
+    brands.push(name);
+    showToast(`Brand "${name}" added`, 'success');
+  }
+
+  updateBrandDropdown();
+  document.getElementById('itemBrand').value = name;
+  renderBrandsList();
+  cancelNewBrand();
+}
+
+// Edit Brand
+function editBrand(index) {
+  const name = brands[index];
+  document.getElementById('newBrandForm').style.display = 'block';
+  document.getElementById('btnNewBrand').style.display = 'none';
+  document.getElementById('newBrandName').value = name;
+  document.getElementById('newBrandName').focus();
+  editingBrandIndex = index;
+}
+
+// Delete Brand
+function deleteBrand(index) {
+  const name = brands[index];
+  if (confirm(`Delete brand "${name}"?`)) {
+    brands.splice(index, 1);
+    updateBrandDropdown();
+    renderBrandsList();
+    showToast(`Brand "${name}" deleted`, 'success');
+  }
+}
+
+// Select Brand from list
+function selectBrand(name) {
+  document.getElementById('itemBrand').value = name;
+  closeManageBrandsModal();
+}
+
+// Render Brands List
+function renderBrandsList() {
+  const listContainer = document.getElementById('brandsList');
+  if (!listContainer) return;
+
+  if (brands.length === 0) {
+    listContainer.innerHTML = '<div class="manage-list-empty">No brands added yet</div>';
+    return;
+  }
+
+  listContainer.innerHTML = brands.map((name, index) => `
+    <div class="manage-list-item" onclick="selectBrand('${name}')">
+      <span class="manage-list-item-name">${name}</span>
+      <div class="manage-list-item-actions">
+        <button class="manage-list-action-btn btn-edit" onclick="event.stopPropagation(); editBrand(${index})">Edit</button>
+        <button class="manage-list-action-btn btn-delete" onclick="event.stopPropagation(); deleteBrand(${index})">Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Update brand dropdown with current list
+function updateBrandDropdown() {
+  const select = document.getElementById('itemBrand');
+  if (!select) return;
+
+  // Clear and rebuild options
+  select.innerHTML = `
+    <option value="">Select or Add Brand</option>
+    ${brands.map(b => `<option value="${b}">${b}</option>`).join('')}
+    <option value="__manage__">⚙️ Manage Brands</option>
+  `;
+}
+
+// Search items by Name and Description
+function searchItemsByNameDesc() {
+  const searchInput = document.getElementById('itemSearchInput');
+  const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+  // Update the filters object
+  filters.search = searchTerm;
+
+  // Re-render the table with the search filter applied
+  renderItemsTable();
+}
+
+// Toggle select all checkboxes
+function toggleSelectAll() {
+  const selectAllCheckbox = document.getElementById('selectAllItems');
+  const itemCheckboxes = document.querySelectorAll('.item-checkbox');
+
+  if (selectAllCheckbox) {
+    const isChecked = selectAllCheckbox.checked;
+
+    itemCheckboxes.forEach(checkbox => {
+      checkbox.checked = isChecked;
+    });
+  }
+}
+
+// Update header checkbox based on individual selections
+function updateSelectAllCheckbox() {
+  const selectAllCheckbox = document.getElementById('selectAllItems');
+  const itemCheckboxes = document.querySelectorAll('.item-checkbox');
+
+  if (selectAllCheckbox && itemCheckboxes.length > 0) {
+    const checkedCount = document.querySelectorAll('.item-checkbox:checked').length;
+
+    if (checkedCount === 0) {
+      selectAllCheckbox.checked = false;
+      selectAllCheckbox.indeterminate = false;
+    } else if (checkedCount === itemCheckboxes.length) {
+      selectAllCheckbox.checked = true;
+      selectAllCheckbox.indeterminate = false;
+    } else {
+      selectAllCheckbox.checked = false;
+      selectAllCheckbox.indeterminate = true;
+    }
+  }
+}
+
+// Column Configuration for Customize Columns feature
+const allColumns = [
+  { id: 'name', label: 'Name', visible: true, locked: true },
+  { id: 'sku', label: 'SKU', visible: true, locked: false },
+  { id: 'stock_on_hand', label: 'Stock On Hand', visible: true, locked: false },
+  { id: 'reorder_level', label: 'Reorder Level', visible: true, locked: false },
+  { id: 'account_name', label: 'Account Name', visible: false, locked: false },
+  { id: 'brand', label: 'Brand', visible: false, locked: false },
+  { id: 'description', label: 'Description', visible: false, locked: false },
+  { id: 'dimensions', label: 'Dimensions', visible: false, locked: false },
+  { id: 'ean', label: 'EAN', visible: false, locked: false },
+  { id: 'isbn', label: 'ISBN', visible: false, locked: false },
+  { id: 'manufacturer', label: 'Manufacturer', visible: false, locked: false },
+  { id: 'purchase_account', label: 'Purchase Account Name', visible: false, locked: false },
+  { id: 'purchase_description', label: 'Purchase Description', visible: false, locked: false },
+  { id: 'purchase_rate', label: 'Purchase Rate', visible: false, locked: false },
+  { id: 'rate', label: 'Rate', visible: false, locked: false },
+  { id: 'type', label: 'Type', visible: false, locked: false },
+  { id: 'upc', label: 'UPC', visible: false, locked: false },
+  { id: 'usage_unit', label: 'Usage Unit', visible: false, locked: false },
+  { id: 'weight', label: 'Weight', visible: false, locked: false }
+];
+
+let columnSettings = JSON.parse(JSON.stringify(allColumns)); // Working copy
+
+// Toggle filter dropdown menu
+function toggleFilterDropdown(event) {
+  event.stopPropagation();
+  const menu = document.getElementById('filterDropdownMenu');
+  if (menu) {
+    menu.classList.toggle('active');
+  }
+}
+
+// Close filter dropdown menu
+function closeFilterDropdown() {
+  const menu = document.getElementById('filterDropdownMenu');
+  if (menu) {
+    menu.classList.remove('active');
+  }
+}
+
+// Toggle clip text mode - switches between Clip Text and Wrap Text
+let clipTextEnabled = false;
+function toggleClipText() {
+  clipTextEnabled = !clipTextEnabled;
+  const table = document.querySelector('.items-table');
+  if (table) {
+    if (clipTextEnabled) {
+      // Clip Text mode ON - text will be truncated
+      table.classList.add('clip-text-mode');
+      table.classList.remove('wrap-text-mode');
+      updateClipTextMenuItem('Wrap Text', '↩️');
+      if (typeof showToast === 'function') {
+        showToast('Clip Text enabled - Click Wrap Text to expand', 'success');
+      }
+    } else {
+      // Wrap Text mode ON - text will wrap
+      table.classList.remove('clip-text-mode');
+      table.classList.add('wrap-text-mode');
+      updateClipTextMenuItem('Clip Text', '📋');
+      if (typeof showToast === 'function') {
+        showToast('Wrap Text enabled - Text will wrap', 'success');
+      }
+    }
+  }
+}
+
+// Update the clip/wrap text menu item
+function updateClipTextMenuItem(text, icon) {
+  // Update in the dynamically rendered header
+  renderTableHeader();
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function (e) {
+  const dropdown = document.getElementById('filterDropdownMenu');
+  const filterIcon = document.querySelector('.zoho-filter-icon');
+  if (dropdown && !dropdown.contains(e.target) && e.target !== filterIcon) {
+    dropdown.classList.remove('active');
+  }
+});
+
+// Open Customize Columns modal
+function openCustomizeColumns() {
+  const modal = document.getElementById('customizeColumnsModal');
+  if (modal) {
+    modal.classList.add('active');
+    columnSettings = JSON.parse(JSON.stringify(allColumns)); // Reset to saved state
+    renderColumnsList();
+    updateColumnCount();
+  }
+}
+
+// Close Customize Columns modal
+function closeCustomizeColumns() {
+  const modal = document.getElementById('customizeColumnsModal');
+  if (modal) {
+    modal.classList.remove('active');
+  }
+}
+
+// Render the columns list in the modal
+function renderColumnsList(filter = '') {
+  const list = document.getElementById('columnsList');
+  if (!list) return;
+
+  const filteredColumns = columnSettings.filter(col =>
+    col.label.toLowerCase().includes(filter.toLowerCase())
+  );
+
+  list.innerHTML = filteredColumns.map(col => `
+    <div class="column-item ${col.locked ? 'locked' : ''} ${col.visible ? 'checked' : ''}" 
+         data-column-id="${col.id}"
+         onclick="${col.locked ? '' : `toggleColumnVisibility('${col.id}')`}">
+      <span class="column-drag-handle">⋮⋮</span>
+      ${col.locked
+      ? `<span class="column-lock-icon">🔒</span>`
+      : `<input type="checkbox" class="column-checkbox" 
+            ${col.visible ? 'checked' : ''} 
+            onclick="event.stopPropagation();"
+            onchange="toggleColumnVisibility('${col.id}')">`
+    }
+      <span class="column-name">${col.label}</span>
+    </div>
+  `).join('');
+}
+
+// Filter columns by search term
+function filterColumns() {
+  const searchInput = document.getElementById('columnSearchInput');
+  const filter = searchInput ? searchInput.value : '';
+  renderColumnsList(filter);
+}
+
+// Toggle column visibility
+function toggleColumnVisibility(columnId) {
+  const col = columnSettings.find(c => c.id === columnId);
+  if (col && !col.locked) {
+    col.visible = !col.visible;
+    updateColumnCount();
+    renderColumnsList(document.getElementById('columnSearchInput')?.value || '');
+  }
+}
+
+// Update the selected count display
+function updateColumnCount() {
+  const selectedCount = document.getElementById('selectedColumnCount');
+  const totalCount = document.getElementById('totalColumnCount');
+
+  if (selectedCount) {
+    selectedCount.textContent = columnSettings.filter(c => c.visible).length;
+  }
+  if (totalCount) {
+    totalCount.textContent = columnSettings.length;
+  }
+}
+
+// Save column settings
+function saveColumnSettings() {
+  // Copy settings to the main array
+  allColumns.length = 0;
+  columnSettings.forEach(col => allColumns.push(JSON.parse(JSON.stringify(col))));
+
+  // Save to localStorage for persistence
+  try {
+    localStorage.setItem('itemsColumnSettings', JSON.stringify(allColumns));
+  } catch (e) {
+    console.log('Could not save column settings to localStorage');
+  }
+
+  // Close modal
+  closeCustomizeColumns();
+
+  // Refresh the table with new column visibility
+  renderItemsTable();
+
+  if (typeof showToast === 'function') {
+    showToast('Column settings saved', 'success');
+  }
+}
+
+// Load column settings from localStorage on page load
+function loadColumnSettings() {
+  try {
+    const saved = localStorage.getItem('itemsColumnSettings');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      allColumns.length = 0;
+      parsed.forEach(col => allColumns.push(col));
+    }
+  } catch (e) {
+    console.log('Could not load column settings from localStorage');
+  }
+}
+
+// Render the table header dynamically based on visible columns
+function renderTableHeader() {
+  const thead = document.querySelector('.items-table thead');
+  if (!thead) return;
+
+  const visibleColumns = allColumns.filter(col => col.visible);
+  const colCount = visibleColumns.length + 3; // +3 for filter, checkbox, and search columns
+
+  // Determine clip/wrap text button label
+  const clipWrapText = clipTextEnabled ? 'Wrap Text' : 'Clip Text';
+  const clipWrapIcon = clipTextEnabled ? '↩️' : '📋';
+
+  let headerHTML = `
+    <tr>
+      <th class="zoho-th-filter">
+        <div class="filter-dropdown-container">
+          <span class="zoho-filter-icon" onclick="toggleFilterDropdown(event)">
+            <svg class="icon fill-linkblue" width="16" height="16" viewBox="0 0 24 24" fill="#3b82f6">
+              <path d="M3 5h2v2H3V5zm4 0h14v2H7V5zm-4 6h2v2H3v-2zm4 0h14v2H7v-2zm-4 6h2v2H3v-2zm4 0h14v2H7v-2z"/>
+            </svg>
+          </span>
+          <div class="filter-dropdown-menu" id="filterDropdownMenu">
+            <div class="filter-dropdown-item" onclick="openCustomizeColumns(); closeFilterDropdown();">
+              <span class="filter-dropdown-icon">⚙️</span>
+              <span>Customize Columns</span>
+            </div>
+            <div class="filter-dropdown-item" onclick="toggleClipText(); closeFilterDropdown();">
+              <span class="filter-dropdown-icon">${clipWrapIcon}</span>
+              <span>${clipWrapText}</span>
+            </div>
+          </div>
+        </div>
+      </th>
+      <th class="zoho-th-checkbox"><input type="checkbox" id="selectAllItems" onclick="toggleSelectAll()"></th>
+  `;
+
+  visibleColumns.forEach(col => {
+    const sortIcon = col.id === 'sku' ? ' ⇅' : '';
+    const alignClass = ['stock_on_hand', 'reorder_level', 'rate', 'purchase_rate'].includes(col.id)
+      ? 'style="text-align: right;"'
+      : '';
+    headerHTML += `<th class="zoho-th-${col.id}" ${alignClass}>${col.label.toUpperCase()}${sortIcon}</th>`;
+  });
+
+  headerHTML += `
+      <th class="zoho-th-search">🔍</th>
+    </tr>
+  `;
+
+  thead.innerHTML = headerHTML;
+}
+
+// Get the value for a column from an item
+function getColumnValue(item, columnId) {
+  switch (columnId) {
+    case 'name':
+      return `
+        <div class="zoho-item-row">
+          <div class="zoho-item-thumb">🖼️</div>
+          <a href="#" class="zoho-item-link" onclick="event.preventDefault(); selectItem(${item.id});">${item.name}</a>
+        </div>
+      `;
+    case 'sku':
+      return item.sku || '-';
+    case 'stock_on_hand':
+      const stock = parseFloat(item.stock_quantity || 0);
+      return Number.isInteger(stock) ? stock.toString() : stock.toFixed(2);
+    case 'reorder_level':
+      if (!item.reorder_point) return '';
+      const reorder = parseFloat(item.reorder_point);
+      return Number.isInteger(reorder) ? reorder.toString() : reorder.toFixed(2);
+    case 'account_name':
+      return item.account_name || '';
+    case 'brand':
+      return item.brand || '';
+    case 'description':
+      return item.description || '';
+    case 'dimensions':
+      return item.dimensions || '';
+    case 'ean':
+      return item.ean || '';
+    case 'isbn':
+      return item.isbn || '';
+    case 'manufacturer':
+      return item.manufacturer || '';
+    case 'purchase_account':
+      return item.purchase_account || '';
+    case 'purchase_description':
+      return item.purchase_description || '';
+    case 'purchase_rate':
+      if (!item.purchase_cost) return '';
+      const purchaseRate = parseFloat(item.purchase_cost);
+      return Number.isInteger(purchaseRate) ? purchaseRate.toString() : purchaseRate.toFixed(2);
+    case 'rate':
+      if (!item.selling_price) return '';
+      const rate = parseFloat(item.selling_price);
+      return Number.isInteger(rate) ? rate.toString() : rate.toFixed(2);
+    case 'type':
+      return item.type || '';
+    case 'upc':
+      return item.upc || '';
+    case 'usage_unit':
+      return item.unit || 'pcs';
+    case 'weight':
+      return item.weight || '';
+    default:
+      return '';
+  }
+}
 
 function generateSku() {
   // 8-character alphanumeric SKU
@@ -30,13 +825,27 @@ function generateSku() {
 function handleImageUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
+  processImageFile(file);
+}
 
-  // Check file size (max 10MB)
-  if (file.size > 10 * 1024 * 1024) {
+// Process image file (used by both click upload and drag/drop)
+function processImageFile(file) {
+  // Check file size (max 5MB)
+  if (file.size > 5 * 1024 * 1024) {
     if (typeof showToast === 'function') {
-      showToast('Image size must be less than 10MB', 'error');
+      showToast('Image size must be less than 5MB', 'error');
     } else {
-      alert('Image size must be less than 10MB');
+      alert('Image size must be less than 5MB');
+    }
+    return;
+  }
+
+  // Check if it's an image
+  if (!file.type.startsWith('image/')) {
+    if (typeof showToast === 'function') {
+      showToast('Please upload an image file', 'error');
+    } else {
+      alert('Please upload an image file');
     }
     return;
   }
@@ -45,21 +854,72 @@ function handleImageUpload(event) {
   reader.onload = function (e) {
     const base64 = e.target.result;
     const imageUrlInput = document.getElementById('itemImageUrl');
-    const previewImg = document.getElementById('previewImg');
-    const imagePreview = document.getElementById('imagePreview');
-    const imagePlaceholder = document.getElementById('imagePlaceholder');
-    const imageUploadBox = document.getElementById('imageUploadBox');
+    const previewContainer = document.getElementById('imagePreviewContainer');
+    const previewImg = document.getElementById('imagePreview');
+    const dropzoneContent = document.getElementById('imageDropzoneContent');
 
     if (imageUrlInput) imageUrlInput.value = base64;
     if (previewImg) previewImg.src = base64;
-    if (imagePreview) imagePreview.style.display = 'block';
-    if (imagePlaceholder) imagePlaceholder.style.display = 'none';
-    if (imageUploadBox) {
-      imageUploadBox.style.border = '2px solid #d84040';
-      imageUploadBox.classList.add('has-image');
+    if (previewContainer) previewContainer.style.display = 'block';
+    if (dropzoneContent) dropzoneContent.style.display = 'none';
+
+    if (typeof showToast === 'function') {
+      showToast('Image uploaded successfully', 'success');
     }
   };
   reader.readAsDataURL(file);
+}
+
+// Handle drag over
+function handleDragOver(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  const dropzone = document.getElementById('imageDropzone');
+  if (dropzone) {
+    dropzone.style.borderColor = '#3b82f6';
+    dropzone.style.background = '#eff6ff';
+  }
+}
+
+// Handle drag leave
+function handleDragLeave(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  const dropzone = document.getElementById('imageDropzone');
+  if (dropzone) {
+    dropzone.style.borderColor = '#d1d5db';
+    dropzone.style.background = 'white';
+  }
+}
+
+// Handle drop
+function handleDrop(event) {
+  event.preventDefault();
+  event.stopPropagation();
+
+  const dropzone = document.getElementById('imageDropzone');
+  if (dropzone) {
+    dropzone.style.borderColor = '#d1d5db';
+    dropzone.style.background = 'white';
+  }
+
+  const files = event.dataTransfer.files;
+  if (files.length > 0) {
+    processImageFile(files[0]);
+  }
+}
+
+// Reset image upload section
+function resetImageUploadNew() {
+  const imageUrlInput = document.getElementById('itemImageUrl');
+  const previewContainer = document.getElementById('imagePreviewContainer');
+  const previewImg = document.getElementById('imagePreview');
+  const dropzoneContent = document.getElementById('imageDropzoneContent');
+
+  if (imageUrlInput) imageUrlInput.value = '';
+  if (previewImg) previewImg.src = '';
+  if (previewContainer) previewContainer.style.display = 'none';
+  if (dropzoneContent) dropzoneContent.style.display = 'block';
 }
 
 // Reset image upload section
@@ -244,11 +1104,12 @@ function renderItemsTable() {
     );
   }
 
-  // Filter by search term
+  // Filter by search term (Name, Description, SKU)
   if (filters.search) {
     const searchTerm = filters.search.toLowerCase();
     filteredItems = filteredItems.filter(item =>
       (item.name && item.name.toLowerCase().includes(searchTerm)) ||
+      (item.description && item.description.toLowerCase().includes(searchTerm)) ||
       (item.sku && item.sku.toLowerCase().includes(searchTerm))
     );
   }
@@ -292,10 +1153,17 @@ function renderItemsTable() {
     }
   });
 
+  // Get visible columns for counting
+  const visibleCols = allColumns.filter(col => col.visible);
+  const totalColCount = visibleCols.length + 3; // +3 for filter, checkbox, and search columns
+
+  // Render header even for empty state
+  renderTableHeader();
+
   if (filteredItems.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="7" class="empty-state">
+        <td colspan="${totalColCount}" class="empty-state">
           <div class="empty-state-icon">📦</div>
           <div class="empty-state-title">No items found</div>
           <div class="empty-state-text">Try adjusting your filters or add a new item</div>
@@ -308,31 +1176,17 @@ function renderItemsTable() {
 
   tbody.innerHTML = filteredItems.map(item => {
     const stock = parseInt(item.stock_quantity) || 0;
-    // Use fixed threshold of 20 for Low Stock status
-    const lowStockThreshold = 20;
-    let stockBadge = '';
-
-    if (stock <= 0) {
-      stockBadge = '<span class="item-badge badge-out-of-stock">Out of Stock</span>';
-    } else if (stock <= lowStockThreshold) {
-      stockBadge = '<span class="item-badge badge-stock-low">Low Stock</span>';
-    } else {
-      stockBadge = '<span class="item-badge badge-stock-ok">High Stock</span>';
-    }
-
     const isSelected = selectedItemId === item.id ? 'selected' : '';
 
-    // Show action buttons for low stock items or all items
-    const actionButtons = `
-      <div class="table-actions" onclick="event.stopPropagation();">
-        <button class="btn-table-action btn-edit" onclick="event.stopPropagation(); editItem(${item.id})" title="Edit Item">
-          Edit
-        </button>
-        <button class="btn-table-action btn-delete" onclick="event.stopPropagation(); deleteItem(${item.id})" title="Delete Item">
-          Delete
-        </button>
-      </div>
-    `;
+    // Build dynamic columns based on visibility settings
+    let columnCells = '';
+    visibleCols.forEach(col => {
+      const value = getColumnValue(item, col.id);
+      const alignClass = ['stock_on_hand', 'reorder_level', 'rate', 'purchase_rate'].includes(col.id)
+        ? 'style="text-align: right;"'
+        : '';
+      columnCells += `<td class="zoho-td-${col.id}" ${alignClass}>${value}</td>`;
+    });
 
     return `
       <tr class="${isSelected}" onclick="selectItem(${item.id})">
@@ -340,15 +1194,7 @@ function renderItemsTable() {
         <td class="zoho-td-checkbox" onclick="event.stopPropagation();">
           <input type="checkbox" class="item-checkbox" data-item-id="${item.id}">
         </td>
-        <td class="zoho-td-name">
-          <div class="zoho-item-row">
-            <div class="zoho-item-thumb">🖼️</div>
-            <a href="#" class="zoho-item-link" onclick="event.preventDefault(); selectItem(${item.id});">${item.name}</a>
-          </div>
-        </td>
-        <td class="zoho-td-sku">${item.sku || '-'}</td>
-        <td class="zoho-td-stock">${parseFloat(item.stock_quantity || 0).toFixed(6)}</td>
-        <td class="zoho-td-reorder">${item.reorder_point ? parseFloat(item.reorder_point).toFixed(6) : ''}</td>
+        ${columnCells}
         <td class="zoho-td-search"></td>
       </tr>
     `;
@@ -674,48 +1520,41 @@ function searchItemsFilter() {
 function openItemModal(itemId = null) {
   const modal = document.getElementById('itemModal');
   const form = document.getElementById('itemForm');
-  const title = document.getElementById('modalTitle');
 
   if (itemId) {
-    title.textContent = 'Edit Item';
+    // Edit mode
+    document.querySelector('.new-item-header h2').textContent = 'Edit Item';
     const item = items.find(i => i.id === itemId);
     if (item) {
       document.getElementById('itemId').value = item.id;
       document.getElementById('itemName').value = item.name || '';
-      // Auto-generate a fresh SKU when editing
-      document.getElementById('itemSku').value = generateSku();
+      document.getElementById('itemSku').value = item.sku || '';
       document.getElementById('itemUnit').value = item.unit || 'pcs';
-      document.getElementById('itemQuantity').value = Math.floor(item.stock_quantity || 0);
-      document.getElementById('itemReorderPoint').value = Math.floor(item.reorder_point || 20);
-      document.getElementById('itemPrice').value = Math.floor(item.selling_price || 0);
-      document.getElementById('itemCost').value = Math.floor(item.purchase_cost || 0);
-      document.getElementById('itemWholesale').checked = item.can_be_wholesale || false;
-      // Load image if exists
-      setImagePreview(item.image_url);
+      document.getElementById('itemReorderPoint').value = item.reorder_point || '';
+      document.getElementById('itemPrice').value = item.selling_price || '';
+      document.getElementById('itemCost').value = item.purchase_cost || '';
     }
   } else {
-    title.textContent = 'Add Item';
+    // Add mode
+    document.querySelector('.new-item-header h2').textContent = 'New Item';
     form.reset();
     document.getElementById('itemId').value = '';
-    document.getElementById('itemName').value = '';
-    // Auto-generate unique SKU: SKU-YYYYMMDD-XXXX
-    const now = new Date();
-    const datePart = now.getFullYear().toString() +
-      String(now.getMonth() + 1).padStart(2, '0') +
-      String(now.getDate()).padStart(2, '0');
-    const randomPart = Math.floor(1000 + Math.random() * 9000); // 4-digit random number
-    document.getElementById('itemSku').value = `SKU-${datePart}-${randomPart}`;
+    // SKU is optional - leave blank for user to fill
+    document.getElementById('itemSku').value = '';
+    // Set defaults
     document.getElementById('itemUnit').value = 'pcs';
-    document.getElementById('itemQuantity').value = '';
-    document.getElementById('itemReorderPoint').value = '10';
-    document.getElementById('itemPrice').value = '';
-    document.getElementById('itemCost').value = '';
-    document.getElementById('itemWholesale').checked = false;
-    // Reset image
-    resetImageUpload();
+    document.getElementById('itemReturnable').checked = true;
+    document.getElementById('itemSellable').checked = true;
+    document.getElementById('itemPurchasable').checked = true;
+    document.getElementById('trackInventory').checked = true;
   }
 
   modal.classList.add('active');
+}
+
+// Show Add Item Modal (called from + New button)
+function showAddItemModal() {
+  openItemModal(null);
 }
 
 // Close item modal
@@ -1118,6 +1957,9 @@ async function updateStockForPurchase(purchaseId) {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
+  // Load saved column settings
+  loadColumnSettings();
+
   // Search functionality for product cards
   const globalSearch = document.getElementById('globalSearch');
   if (globalSearch) {
