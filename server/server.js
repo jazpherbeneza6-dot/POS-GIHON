@@ -34,6 +34,8 @@ app.use('/api/suppliers', require('./routes/suppliers'));
 app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/barcode', require('./routes/barcode'));
 app.use('/api/documents', require('./routes/documents'));
+app.use('/api/manufacturers', require('./routes/manufacturers'));
+app.use('/api/brands', require('./routes/brands'));
 
 // Get local network IP address
 function getLocalIP() {

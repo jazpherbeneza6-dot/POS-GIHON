@@ -139,6 +139,20 @@ CREATE TABLE IF NOT EXISTS documents (
     FOREIGN KEY (folder_id) REFERENCES document_folders(id) ON DELETE SET NULL
 );
 
+-- Manufacturers table
+CREATE TABLE IF NOT EXISTS manufacturers (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Brands table
+CREATE TABLE IF NOT EXISTS brands (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_items_barcode ON items(barcode);
 CREATE INDEX IF NOT EXISTS idx_items_sku ON items(sku);
@@ -152,4 +166,3 @@ CREATE INDEX IF NOT EXISTS idx_barcodes_barcode ON barcodes(barcode);
 CREATE INDEX IF NOT EXISTS idx_suppliers_name ON suppliers(name);
 CREATE INDEX IF NOT EXISTS idx_documents_folder_id ON documents(folder_id);
 CREATE INDEX IF NOT EXISTS idx_documents_trashed ON documents(trashed);
-

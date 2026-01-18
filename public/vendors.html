@@ -71,6 +71,80 @@
         .dropdown-arrow {
             font-size: 10px;
             color: #666;
+            transition: transform 0.2s ease;
+        }
+
+        .views-dropdown-container {
+            position: relative;
+        }
+
+        .views-dropdown-container.open .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .views-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            min-width: 280px;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            z-index: 1000;
+            margin-top: 8px;
+        }
+
+        .views-dropdown-container.open .views-dropdown-menu {
+            display: block;
+        }
+
+        .views-dropdown-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .views-dropdown-item:first-child {
+            border-radius: 8px 8px 0 0;
+        }
+
+        .views-dropdown-item:hover {
+            background: #f8f9fa;
+        }
+
+        .views-dropdown-item.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .views-dropdown-item.active .star-icon {
+            color: white;
+        }
+
+        .star-icon {
+            font-size: 18px;
+            color: #d1d5db;
+        }
+
+        .views-dropdown-divider {
+            height: 1px;
+            background: #e9ecef;
+        }
+
+        .views-dropdown-item.new-custom {
+            color: #333;
+            gap: 8px;
+            justify-content: flex-start;
+        }
+
+        .plus-icon {
+            font-size: 14px;
         }
 
         .header-actions {
@@ -286,6 +360,577 @@
             font-size: 13px;
             color: #333;
         }
+
+        .vendors-table tr:hover {
+            background: #f9fafb;
+        }
+
+        .vendors-table tr.selected {
+            background: #eff6ff;
+        }
+
+        /* Checkbox styling */
+        .vendor-checkbox {
+            width: 18px;
+            height: 18px;
+            accent-color: #3b82f6;
+            cursor: pointer;
+        }
+
+        /* Bulk Actions Toolbar */
+        .bulk-actions-bar {
+            display: none;
+            align-items: center;
+            padding: 12px 24px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            gap: 8px;
+        }
+
+        .bulk-actions-bar.active {
+            display: flex;
+        }
+
+        .bulk-btn {
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .bulk-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .bulk-btn.delete {
+            color: #333;
+        }
+
+        .bulk-divider {
+            width: 1px;
+            height: 24px;
+            background: #e9ecef;
+            margin: 0 8px;
+        }
+
+        .selected-count {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+        }
+
+        .count-badge {
+            background: #3b82f6;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .count-text {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .close-selection {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-left: 16px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #999;
+        }
+
+        .close-selection:hover {
+            color: #333;
+        }
+
+        .close-x {
+            color: #ef4444;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        /* New Custom View Modal */
+        .custom-view-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 2000;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 40px;
+        }
+
+        .custom-view-modal.active {
+            display: flex;
+        }
+
+        .custom-view-modal-content {
+            background: white;
+            width: 95%;
+            max-width: 1000px;
+            max-height: 90vh;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .custom-view-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .custom-view-modal-header h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .modal-close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+        }
+
+        .modal-close-btn:hover {
+            color: #333;
+        }
+
+        .custom-view-modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .cv-form-row {
+            margin-bottom: 24px;
+        }
+
+        .cv-label {
+            display: block;
+            font-size: 13px;
+            color: #dc2626;
+            margin-bottom: 8px;
+        }
+
+        .cv-name-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .cv-input {
+            flex: 0 0 300px;
+            padding: 10px 14px;
+            border: 1px solid #3b82f6;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .cv-favorite-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .star-icon-empty {
+            font-size: 18px;
+            color: #d1d5db;
+        }
+
+        .cv-section {
+            margin-bottom: 24px;
+        }
+
+        .cv-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 16px 0;
+        }
+
+        .criteria-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .criteria-number {
+            width: 24px;
+            height: 24px;
+            background: #f3f4f6;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .criteria-and-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #f3f4f6;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+            margin: 8px 0;
+        }
+
+        .and-arrow {
+            font-size: 8px;
+            color: #666;
+        }
+
+        .delete-btn {
+            color: #888;
+        }
+
+        .delete-btn:hover {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .criteria-select {
+            padding: 8px 12px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #666;
+            min-width: 140px;
+        }
+
+        .criteria-value {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .criteria-action-btn {
+            width: 32px;
+            height: 32px;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .criteria-action-btn:hover {
+            background: #f9fafb;
+        }
+
+        /* Criteria Field Searchable Dropdown */
+        .criteria-field-dropdown {
+            position: relative;
+            min-width: 180px;
+        }
+
+        .criteria-field-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .criteria-field-dropdown.open .criteria-field-header {
+            border-color: #3b82f6;
+        }
+
+        .criteria-dropdown-arrow {
+            font-size: 10px;
+            transition: transform 0.2s;
+        }
+
+        .criteria-field-dropdown.open .criteria-dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .criteria-field-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            min-width: 220px;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            z-index: 1000;
+            margin-top: 4px;
+        }
+
+        .criteria-field-dropdown.open .criteria-field-menu {
+            display: block;
+        }
+
+        .criteria-field-search {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .criteria-field-search input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .criteria-field-list {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .criteria-field-item {
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .criteria-field-item:hover {
+            background: #f8f9fa;
+        }
+
+        .criteria-field-item.selected {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .add-criterion-btn {
+            background: none;
+            border: none;
+            color: #3b82f6;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 0;
+        }
+
+        .add-criterion-btn:hover {
+            text-decoration: underline;
+        }
+
+        .columns-preference {
+            display: flex;
+            gap: 24px;
+        }
+
+        .columns-available,
+        .columns-selected {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .columns-header {
+            font-size: 11px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .columns-header .check-icon {
+            color: #22c55e;
+        }
+
+        .columns-search {
+            margin-bottom: 12px;
+        }
+
+        .columns-search-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .columns-list {
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            min-height: 200px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .column-item {
+            padding: 10px 12px;
+            font-size: 13px;
+            color: #333;
+            cursor: move;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .col-add-btn,
+        .col-remove-btn {
+            margin-left: auto;
+            width: 24px;
+            height: 24px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .col-add-btn:hover {
+            background: #2563eb;
+        }
+
+        .col-remove-btn {
+            background: #ef4444;
+        }
+
+        .col-remove-btn:hover {
+            background: #dc2626;
+        }
+
+        .column-item:last-child {
+            border-bottom: none;
+        }
+
+        .column-item:hover {
+            background: #f9fafb;
+        }
+
+        .drag-icon {
+            color: #d1d5db;
+            font-size: 12px;
+        }
+
+        .required-star {
+            color: #dc2626;
+        }
+
+        .visibility-section {
+            margin-top: 24px;
+        }
+
+        .visibility-box {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .visibility-label {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
+        .visibility-options {
+            display: flex;
+            gap: 24px;
+        }
+
+        .visibility-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .visibility-option input {
+            accent-color: #3b82f6;
+        }
+
+        .custom-view-modal-footer {
+            display: flex;
+            gap: 12px;
+            padding: 16px 24px;
+            border-top: 1px solid #e9ecef;
+            background: #f9fafb;
+        }
+
+        .cv-btn-save {
+            padding: 10px 20px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .cv-btn-save:hover {
+            background: #2563eb;
+        }
+
+        .cv-btn-cancel {
+            padding: 10px 20px;
+            background: #6b7280;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .cv-btn-cancel:hover {
+            background: #4b5563;
+        }
     </style>
 </head>
 
@@ -298,10 +943,39 @@
             <!-- Page Header -->
             <div class="page-header">
                 <div class="page-title-wrapper">
-                    <h1 class="page-title">
-                        All Vendors
-                        <span class="dropdown-arrow">▼</span>
-                    </h1>
+                    <div class="views-dropdown-container">
+                        <h1 class="page-title" onclick="toggleViewsDropdown()">
+                            <span id="currentViewName">Active Vendors</span>
+                            <span class="dropdown-arrow" id="viewsDropdownArrow">▼</span>
+                        </h1>
+                        <div class="views-dropdown-menu" id="viewsDropdownMenu">
+                            <div class="views-dropdown-item" onclick="selectView('all')">
+                                <span>All Vendors</span>
+                                <span class="star-icon">☆</span>
+                            </div>
+                            <div class="views-dropdown-item active" onclick="selectView('active')">
+                                <span>Active Vendors</span>
+                                <span class="star-icon">☆</span>
+                            </div>
+                            <div class="views-dropdown-item" onclick="selectView('crm')">
+                                <span>CRM Vendors</span>
+                                <span class="star-icon">☆</span>
+                            </div>
+                            <div class="views-dropdown-item" onclick="selectView('duplicate')">
+                                <span>Duplicate Vendors</span>
+                                <span class="star-icon">☆</span>
+                            </div>
+                            <div class="views-dropdown-item" onclick="selectView('inactive')">
+                                <span>Inactive Vendors</span>
+                                <span class="star-icon">☆</span>
+                            </div>
+                            <div class="views-dropdown-divider"></div>
+                            <div class="views-dropdown-item new-custom" onclick="openNewCustomViewModal()">
+                                <span class="plus-icon">➕</span>
+                                <span>New Custom View</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="header-actions">
                     <div class="btn-new-group">
@@ -311,6 +985,25 @@
                         <button class="btn-new-dropdown">▼</button>
                     </div>
                     <button class="btn-more">⋯</button>
+                </div>
+            </div>
+
+            <!-- Bulk Actions Bar -->
+            <div class="bulk-actions-bar" id="bulkActionsBar">
+                <button class="bulk-btn" onclick="bulkUpdate()">Bulk Update</button>
+                <button class="bulk-btn" onclick="printSelected()">🖨️</button>
+                <div class="bulk-divider"></div>
+                <button class="bulk-btn" onclick="markAsInactive()">Mark as Inactive</button>
+                <button class="bulk-btn" onclick="mergeVendors()">Merge</button>
+                <button class="bulk-btn" onclick="associateTemplates()">Associate Templates</button>
+                <button class="bulk-btn delete" onclick="deleteSelected()">Delete</button>
+                <div class="selected-count">
+                    <span class="count-badge" id="selectedCount">0</span>
+                    <span class="count-text">Selected</span>
+                    <div class="close-selection" onclick="clearSelection()">
+                        <span>Esc</span>
+                        <span class="close-x">×</span>
+                    </div>
                 </div>
             </div>
 
@@ -347,6 +1040,8 @@
                 <table class="vendors-table">
                     <thead>
                         <tr>
+                            <th style="width: 40px;"><input type="checkbox" class="vendor-checkbox"
+                                    id="selectAllCheckbox" onchange="toggleSelectAll()"></th>
                             <th>NAME</th>
                             <th>COMPANY NAME</th>
                             <th>EMAIL</th>
@@ -362,9 +1057,208 @@
         </div>
     </div>
 
+    <!-- New Custom View Modal -->
+    <div class="custom-view-modal" id="customViewModal">
+        <div class="custom-view-modal-content">
+            <div class="custom-view-modal-header">
+                <h2>New Custom View</h2>
+                <button class="modal-close-btn" onclick="closeNewCustomViewModal()">×</button>
+            </div>
+            <div class="custom-view-modal-body">
+                <!-- Name Section -->
+                <div class="cv-form-row">
+                    <label class="cv-label required">Name*</label>
+                    <div class="cv-name-row">
+                        <input type="text" class="cv-input" id="customViewName" placeholder="">
+                        <label class="cv-favorite-label">
+                            <span class="star-icon-empty">☆</span>
+                            Mark as Favorite
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Define Criteria Section -->
+                <div class="cv-section">
+                    <h3 class="cv-section-title">Define the criteria ( if any )</h3>
+                    <div id="criteriaContainer">
+                        <div class="criteria-row" id="criteriaRow1">
+                            <span class="criteria-number">1</span>
+                            <div class="criteria-field-dropdown" id="criteriaFieldDropdown1">
+                                <div class="criteria-field-header" onclick="toggleCriteriaFieldDropdown(1)">
+                                    <span class="criteria-field-text" id="criteriaFieldText1">Select a field</span>
+                                    <span class="criteria-dropdown-arrow">▼</span>
+                                </div>
+                                <input type="hidden" id="criteriaFieldValue1" value="">
+                                <div class="criteria-field-menu" id="criteriaFieldMenu1">
+                                    <div class="criteria-field-search">
+                                        <span>🔍</span>
+                                        <input type="text" placeholder="Search" oninput="filterCriteriaFields(1)">
+                                    </div>
+                                    <div class="criteria-field-list" id="criteriaFieldList1">
+                                        <div class="criteria-field-item"
+                                            onclick="selectCriteriaField(1, 'display_name', 'Display Name')">Display
+                                            Name</div>
+                                        <div class="criteria-field-item"
+                                            onclick="selectCriteriaField(1, 'company_name', 'Company Name')">Company
+                                            Name</div>
+                                        <div class="criteria-field-item"
+                                            onclick="selectCriteriaField(1, 'first_name', 'First Name')">First Name
+                                        </div>
+                                        <div class="criteria-field-item"
+                                            onclick="selectCriteriaField(1, 'last_name', 'Last Name')">Last Name</div>
+                                        <div class="criteria-field-item"
+                                            onclick="selectCriteriaField(1, 'address', 'Address')">Address</div>
+                                        <div class="criteria-field-item"
+                                            onclick="selectCriteriaField(1, 'postal_code', 'Postal Code')">Postal Code
+                                        </div>
+                                        <div class="criteria-field-item"
+                                            onclick="selectCriteriaField(1, 'billing_country', 'Billing Country')">
+                                            Billing Country</div>
+                                        <div class="criteria-field-item"
+                                            onclick="selectCriteriaField(1, 'shipping_country', 'Shipping Country')">
+                                            Shipping Country</div>
+                                        <div class="criteria-field-item"
+                                            onclick="selectCriteriaField(1, 'status', 'Status')">Status</div>
+                                        <div class="criteria-field-item"
+                                            onclick="selectCriteriaField(1, 'portal_status', 'Portal Status')">Portal
+                                            Status</div>
+                                        <div class="criteria-field-item"
+                                            onclick="selectCriteriaField(1, 'email', 'Email')">Email</div>
+                                        <div class="criteria-field-item"
+                                            onclick="selectCriteriaField(1, 'phone', 'Phone')">Phone</div>
+                                        <div class="criteria-field-item"
+                                            onclick="selectCriteriaField(1, 'notes', 'Notes')">Notes</div>
+                                        <div class="criteria-field-item"
+                                            onclick="selectCriteriaField(1, 'website', 'Website')">Website</div>
+                                        <div class="criteria-field-item"
+                                            onclick="selectCriteriaField(1, 'payables_bcy', 'Payables (BCY)')">Payables
+                                            (BCY)</div>
+                                        <div class="criteria-field-item"
+                                            onclick="selectCriteriaField(1, 'unused_credits_bcy', 'Unused Credits (BCY)')">
+                                            Unused Credits (BCY)</div>
+                                        <div class="criteria-field-item" onclick="selectCriteriaField(1, 'tax', 'Tax')">
+                                            Tax</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <select class="criteria-select" id="criteriaComparator1">
+                                <option value="">Select a comparator</option>
+                                <option value="equals">equals</option>
+                                <option value="not_equals">not equals</option>
+                                <option value="contains">contains</option>
+                                <option value="starts_with">starts with</option>
+                                <option value="ends_with">ends with</option>
+                            </select>
+                            <input type="text" class="criteria-value" placeholder="">
+                            <button class="criteria-action-btn" onclick="addCriterion()">+</button>
+                            <button class="criteria-action-btn delete-btn" onclick="removeCriterion(1)">🗑️</button>
+                        </div>
+                    </div>
+                    <button class="add-criterion-btn" onclick="addCriterion()">
+                        <span class="plus-icon">➕</span> Add Criterion
+                    </button>
+                </div>
+
+                <!-- Columns Preference Section -->
+                <div class="cv-section">
+                    <h3 class="cv-section-title">Columns Preference:</h3>
+                    <div class="columns-preference">
+                        <div class="columns-available">
+                            <div class="columns-header">AVAILABLE COLUMNS</div>
+                            <div class="columns-search">
+                                <input type="text" class="columns-search-input" placeholder="🔍 Search"
+                                    id="columnsSearch">
+                            </div>
+                            <div class="columns-list" id="availableColumnsList">
+                                <div class="column-item" data-column="company"><span class="drag-icon">⋮⋮</span> Company
+                                    Name <button class="col-add-btn"
+                                        onclick="addColumn('company', 'Company Name')">+</button></div>
+                                <div class="column-item" data-column="email"><span class="drag-icon">⋮⋮</span> Email
+                                    <button class="col-add-btn" onclick="addColumn('email', 'Email')">+</button>
+                                </div>
+                                <div class="column-item" data-column="phone"><span class="drag-icon">⋮⋮</span> Phone
+                                    <button class="col-add-btn" onclick="addColumn('phone', 'Phone')">+</button>
+                                </div>
+                                <div class="column-item" data-column="payables"><span class="drag-icon">⋮⋮</span>
+                                    Payables <button class="col-add-btn"
+                                        onclick="addColumn('payables', 'Payables')">+</button></div>
+                                <div class="column-item" data-column="payables_bcy"><span class="drag-icon">⋮⋮</span>
+                                    Payables (BCY) <button class="col-add-btn"
+                                        onclick="addColumn('payables_bcy', 'Payables (BCY)')">+</button></div>
+                                <div class="column-item" data-column="unused_credits"><span class="drag-icon">⋮⋮</span>
+                                    Unused Credits <button class="col-add-btn"
+                                        onclick="addColumn('unused_credits', 'Unused Credits')">+</button></div>
+                                <div class="column-item" data-column="unused_credits_bcy"><span
+                                        class="drag-icon">⋮⋮</span> Unused Credits (BCY) <button class="col-add-btn"
+                                        onclick="addColumn('unused_credits_bcy', 'Unused Credits (BCY)')">+</button>
+                                </div>
+                                <div class="column-item" data-column="source"><span class="drag-icon">⋮⋮</span> Source
+                                    <button class="col-add-btn" onclick="addColumn('source', 'Source')">+</button>
+                                </div>
+                                <div class="column-item" data-column="first_name"><span class="drag-icon">⋮⋮</span>
+                                    First Name <button class="col-add-btn"
+                                        onclick="addColumn('first_name', 'First Name')">+</button></div>
+                                <div class="column-item" data-column="last_name"><span class="drag-icon">⋮⋮</span> Last
+                                    Name <button class="col-add-btn"
+                                        onclick="addColumn('last_name', 'Last Name')">+</button></div>
+                                <div class="column-item" data-column="mobile_phone"><span class="drag-icon">⋮⋮</span>
+                                    Mobile Phone <button class="col-add-btn"
+                                        onclick="addColumn('mobile_phone', 'Mobile Phone')">+</button></div>
+                                <div class="column-item" data-column="payment_terms"><span class="drag-icon">⋮⋮</span>
+                                    Payment Terms <button class="col-add-btn"
+                                        onclick="addColumn('payment_terms', 'Payment Terms')">+</button></div>
+                                <div class="column-item" data-column="status"><span class="drag-icon">⋮⋮</span> Status
+                                    <button class="col-add-btn" onclick="addColumn('status', 'Status')">+</button>
+                                </div>
+                                <div class="column-item" data-column="website"><span class="drag-icon">⋮⋮</span> Website
+                                    <button class="col-add-btn" onclick="addColumn('website', 'Website')">+</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="columns-selected">
+                            <div class="columns-header"><span class="check-icon">✓</span> SELECTED COLUMNS</div>
+                            <div class="columns-list" id="selectedColumnsList">
+                                <div class="column-item selected" data-column="name"><span class="drag-icon">⋮⋮</span>
+                                    Name <span class="required-star">*</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visibility Preference Section -->
+                <div class="cv-section visibility-section">
+                    <h3 class="cv-section-title">Visibility Preference</h3>
+                    <div class="visibility-box">
+                        <div class="visibility-label">Share With</div>
+                        <div class="visibility-options">
+                            <label class="visibility-option">
+                                <input type="radio" name="visibility" value="only_me" checked>
+                                <span>Only Me 🔒</span>
+                            </label>
+                            <label class="visibility-option">
+                                <input type="radio" name="visibility" value="selected_users">
+                                <span>Only Selected Users & Roles ⓘ</span>
+                            </label>
+                            <label class="visibility-option">
+                                <input type="radio" name="visibility" value="everyone">
+                                <span>Everyone 📋</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="custom-view-modal-footer">
+                <button class="cv-btn-save" onclick="saveCustomView()">Save</button>
+                <button class="cv-btn-cancel" onclick="closeNewCustomViewModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
     <!-- Layout Script -->
     <script src="/js/layout.js"></script>
     <script>
+        let allVendors = [];
+        let selectedVendorIds = new Set();
+
         // Create new vendor
         function createNewVendor() {
             window.location.href = '/new-vendor.html';
@@ -374,6 +1268,441 @@
         function importVendors() {
             window.location.href = '/import-vendors.html';
         }
+
+        // Fetch and display vendors
+        async function loadVendors() {
+            try {
+                const response = await fetch('/api/suppliers');
+                const vendors = await response.json();
+                allVendors = vendors;
+                renderVendors();
+            } catch (error) {
+                console.error('Error loading vendors:', error);
+            }
+        }
+
+        // Render vendors table
+        function renderVendors() {
+            const emptyState = document.getElementById('emptyState');
+            const vendorsContainer = document.getElementById('vendorsContainer');
+            const vendorsBody = document.getElementById('vendorsBody');
+
+            if (allVendors.length === 0) {
+                emptyState.style.display = 'flex';
+                vendorsContainer.style.display = 'none';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            vendorsContainer.style.display = 'block';
+
+            vendorsBody.innerHTML = allVendors.map(vendor => `
+                <tr id="vendor-row-${vendor.id}" class="${selectedVendorIds.has(vendor.id) ? 'selected' : ''}">
+                    <td onclick="event.stopPropagation();">
+                        <input type="checkbox" class="vendor-checkbox" 
+                            ${selectedVendorIds.has(vendor.id) ? 'checked' : ''}
+                            onchange="toggleVendorSelection(${vendor.id})">
+                    </td>
+                    <td style="color: #4285f4; font-weight: 500; cursor: pointer;" onclick="viewVendor(${vendor.id})">${vendor.name || ''}</td>
+                    <td>${vendor.contact_person || ''}</td>
+                    <td>${vendor.email || ''}</td>
+                    <td>${vendor.phone || ''}</td>
+                    <td>PHP${parseFloat(vendor.total_spent || 0).toFixed(2)}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Toggle individual vendor selection
+        function toggleVendorSelection(id) {
+            if (selectedVendorIds.has(id)) {
+                selectedVendorIds.delete(id);
+            } else {
+                selectedVendorIds.add(id);
+            }
+            updateSelectionUI();
+        }
+
+        // Toggle select all
+        function toggleSelectAll() {
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+            if (selectAllCheckbox.checked) {
+                allVendors.forEach(v => selectedVendorIds.add(v.id));
+            } else {
+                selectedVendorIds.clear();
+            }
+            updateSelectionUI();
+        }
+
+        // Update selection UI
+        function updateSelectionUI() {
+            const bulkActionsBar = document.getElementById('bulkActionsBar');
+            const selectedCount = document.getElementById('selectedCount');
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+
+            if (selectedVendorIds.size > 0) {
+                bulkActionsBar.classList.add('active');
+                selectedCount.textContent = selectedVendorIds.size;
+            } else {
+                bulkActionsBar.classList.remove('active');
+            }
+
+            // Update select all checkbox state
+            if (selectAllCheckbox) {
+                selectAllCheckbox.checked = selectedVendorIds.size === allVendors.length && allVendors.length > 0;
+            }
+
+            // Re-render to update row highlighting
+            renderVendors();
+        }
+
+        // Clear selection
+        function clearSelection() {
+            selectedVendorIds.clear();
+            updateSelectionUI();
+        }
+
+        // Bulk action functions
+        function bulkUpdate() {
+            alert('Bulk Update: ' + selectedVendorIds.size + ' vendors selected');
+        }
+
+        function printSelected() {
+            alert('Print: ' + selectedVendorIds.size + ' vendors selected');
+        }
+
+        function markAsInactive() {
+            alert('Mark as Inactive: ' + selectedVendorIds.size + ' vendors selected');
+        }
+
+        function mergeVendors() {
+            if (selectedVendorIds.size < 2) {
+                alert('Please select at least 2 vendors to merge');
+                return;
+            }
+            alert('Merge: ' + selectedVendorIds.size + ' vendors selected');
+        }
+
+        function associateTemplates() {
+            alert('Associate Templates: ' + selectedVendorIds.size + ' vendors selected');
+        }
+
+        async function deleteSelected() {
+            if (!confirm(`Delete ${selectedVendorIds.size} selected vendor(s)?`)) return;
+
+            try {
+                for (const id of selectedVendorIds) {
+                    await fetch(`/api/suppliers/${id}`, { method: 'DELETE' });
+                }
+                selectedVendorIds.clear();
+                await loadVendors();
+                updateSelectionUI();
+                alert('Vendors deleted successfully');
+            } catch (error) {
+                console.error('Error deleting vendors:', error);
+                alert('Error deleting vendors');
+            }
+        }
+
+        // View vendor
+        function viewVendor(id) {
+            console.log('View vendor:', id);
+        }
+
+        // Keyboard shortcut (Esc to clear selection)
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                clearSelection();
+            }
+        });
+
+        // ========== VIEWS DROPDOWN FUNCTIONS ==========
+        let currentView = 'active';
+        let customViews = [];
+
+        function toggleViewsDropdown() {
+            const container = document.querySelector('.views-dropdown-container');
+            container.classList.toggle('open');
+        }
+
+        function selectView(viewType) {
+            currentView = viewType;
+
+            // Update active state
+            document.querySelectorAll('.views-dropdown-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+
+            // Update title
+            const viewNames = {
+                'all': 'All Vendors',
+                'active': 'Active Vendors',
+                'crm': 'CRM Vendors',
+                'duplicate': 'Duplicate Vendors',
+                'inactive': 'Inactive Vendors'
+            };
+            document.getElementById('currentViewName').textContent = viewNames[viewType] || viewType;
+
+            // Close dropdown
+            document.querySelector('.views-dropdown-container').classList.remove('open');
+
+            // Reload vendors with filter (placeholder - would filter based on view)
+            loadVendors();
+        }
+
+        // Click outside to close views dropdown
+        document.addEventListener('click', function (e) {
+            const viewsContainer = document.querySelector('.views-dropdown-container');
+            if (viewsContainer && !viewsContainer.contains(e.target)) {
+                viewsContainer.classList.remove('open');
+            }
+        });
+
+        // ========== CUSTOM VIEW MODAL FUNCTIONS ==========
+        function openNewCustomViewModal() {
+            document.querySelector('.views-dropdown-container').classList.remove('open');
+            document.getElementById('customViewModal').classList.add('active');
+            document.getElementById('customViewName').value = '';
+            document.getElementById('customViewName').focus();
+        }
+
+        function closeNewCustomViewModal() {
+            document.getElementById('customViewModal').classList.remove('active');
+        }
+
+        let criterionCount = 1;
+        function addCriterion() {
+            criterionCount++;
+            const container = document.getElementById('criteriaContainer');
+
+            // Add AND separator
+            const andLabel = document.createElement('div');
+            andLabel.className = 'criteria-and-label';
+            andLabel.id = 'andLabel' + criterionCount;
+            andLabel.innerHTML = '<span>AND</span> <span class="and-arrow">▼</span>';
+            container.appendChild(andLabel);
+
+            // Add new criteria row with custom dropdown
+            const newRow = document.createElement('div');
+            newRow.className = 'criteria-row';
+            newRow.id = 'criteriaRow' + criterionCount;
+            newRow.innerHTML = `
+                <span class="criteria-number">${criterionCount}</span>
+                <div class="criteria-field-dropdown" id="criteriaFieldDropdown${criterionCount}">
+                    <div class="criteria-field-header" onclick="toggleCriteriaFieldDropdown(${criterionCount})">
+                        <span class="criteria-field-text" id="criteriaFieldText${criterionCount}">Select a field</span>
+                        <span class="criteria-dropdown-arrow">▼</span>
+                    </div>
+                    <input type="hidden" id="criteriaFieldValue${criterionCount}" value="">
+                    <div class="criteria-field-menu" id="criteriaFieldMenu${criterionCount}">
+                        <div class="criteria-field-search">
+                            <span>🔍</span>
+                            <input type="text" placeholder="Search" oninput="filterCriteriaFields(${criterionCount})">
+                        </div>
+                        <div class="criteria-field-list" id="criteriaFieldList${criterionCount}">
+                            <div class="criteria-field-item" onclick="selectCriteriaField(${criterionCount}, 'display_name', 'Display Name')">Display Name</div>
+                            <div class="criteria-field-item" onclick="selectCriteriaField(${criterionCount}, 'company_name', 'Company Name')">Company Name</div>
+                            <div class="criteria-field-item" onclick="selectCriteriaField(${criterionCount}, 'first_name', 'First Name')">First Name</div>
+                            <div class="criteria-field-item" onclick="selectCriteriaField(${criterionCount}, 'last_name', 'Last Name')">Last Name</div>
+                            <div class="criteria-field-item" onclick="selectCriteriaField(${criterionCount}, 'address', 'Address')">Address</div>
+                            <div class="criteria-field-item" onclick="selectCriteriaField(${criterionCount}, 'postal_code', 'Postal Code')">Postal Code</div>
+                            <div class="criteria-field-item" onclick="selectCriteriaField(${criterionCount}, 'billing_country', 'Billing Country')">Billing Country</div>
+                            <div class="criteria-field-item" onclick="selectCriteriaField(${criterionCount}, 'shipping_country', 'Shipping Country')">Shipping Country</div>
+                            <div class="criteria-field-item" onclick="selectCriteriaField(${criterionCount}, 'status', 'Status')">Status</div>
+                            <div class="criteria-field-item" onclick="selectCriteriaField(${criterionCount}, 'portal_status', 'Portal Status')">Portal Status</div>
+                            <div class="criteria-field-item" onclick="selectCriteriaField(${criterionCount}, 'email', 'Email')">Email</div>
+                            <div class="criteria-field-item" onclick="selectCriteriaField(${criterionCount}, 'phone', 'Phone')">Phone</div>
+                            <div class="criteria-field-item" onclick="selectCriteriaField(${criterionCount}, 'notes', 'Notes')">Notes</div>
+                            <div class="criteria-field-item" onclick="selectCriteriaField(${criterionCount}, 'website', 'Website')">Website</div>
+                            <div class="criteria-field-item" onclick="selectCriteriaField(${criterionCount}, 'payables_bcy', 'Payables (BCY)')">Payables (BCY)</div>
+                            <div class="criteria-field-item" onclick="selectCriteriaField(${criterionCount}, 'unused_credits_bcy', 'Unused Credits (BCY)')">Unused Credits (BCY)</div>
+                            <div class="criteria-field-item" onclick="selectCriteriaField(${criterionCount}, 'tax', 'Tax')">Tax</div>
+                        </div>
+                    </div>
+                </div>
+                <select class="criteria-select" id="criteriaComparator${criterionCount}">
+                    <option value="">Select a comparator</option>
+                    <option value="equals">equals</option>
+                    <option value="not_equals">not equals</option>
+                    <option value="contains">contains</option>
+                    <option value="starts_with">starts with</option>
+                    <option value="ends_with">ends with</option>
+                </select>
+                <input type="text" class="criteria-value" placeholder="">
+                <button class="criteria-action-btn" onclick="addCriterion()">+</button>
+                <button class="criteria-action-btn delete-btn" onclick="removeCriterion(${criterionCount})">🗑️</button>
+            `;
+            container.appendChild(newRow);
+        }
+
+        function removeCriterion(id) {
+            const row = document.getElementById('criteriaRow' + id);
+            const andLabel = document.getElementById('andLabel' + id);
+            if (row) row.remove();
+            if (andLabel) andLabel.remove();
+
+            // Re-number remaining criteria
+            let count = 0;
+            document.querySelectorAll('.criteria-row').forEach((row, index) => {
+                count++;
+                row.querySelector('.criteria-number').textContent = count;
+            });
+            criterionCount = count;
+        }
+
+        function saveCustomView() {
+            const name = document.getElementById('customViewName').value.trim();
+            if (!name) {
+                alert('Please enter a view name');
+                return;
+            }
+
+            // Collect criteria
+            const criteria = [];
+            document.querySelectorAll('.criteria-row').forEach(row => {
+                const selects = row.querySelectorAll('.criteria-select');
+                const value = row.querySelector('.criteria-value').value;
+                if (selects[0].value && selects[1].value) {
+                    criteria.push({
+                        field: selects[0].value,
+                        comparator: selects[1].value,
+                        value: value
+                    });
+                }
+            });
+
+            // Get selected columns
+            const selectedColumns = [];
+            document.querySelectorAll('#selectedColumnsList .column-item').forEach(item => {
+                selectedColumns.push(item.dataset.column);
+            });
+
+            // Get visibility
+            const visibility = document.querySelector('input[name="visibility"]:checked').value;
+
+            const customView = {
+                name: name,
+                criteria: criteria,
+                columns: selectedColumns,
+                visibility: visibility
+            };
+            customViews.push(customView);
+
+            // Add to dropdown
+            addCustomViewToDropdown(customView);
+
+            alert(`Custom view "${name}" saved successfully!`);
+            closeNewCustomViewModal();
+        }
+
+        // Add custom view to dropdown
+        function addCustomViewToDropdown(view) {
+            const dropdown = document.getElementById('viewsDropdownMenu');
+            const divider = dropdown.querySelector('.views-dropdown-divider');
+            const newItem = document.createElement('div');
+            newItem.className = 'views-dropdown-item';
+            newItem.setAttribute('onclick', `selectCustomView('${view.name}')`);
+            newItem.innerHTML = `
+                <span>${view.name}</span>
+                <span class="star-icon">☆</span>
+            `;
+            divider.insertAdjacentElement('beforebegin', newItem);
+        }
+
+        // Select custom view
+        function selectCustomView(viewName) {
+            document.querySelectorAll('.views-dropdown-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            document.getElementById('currentViewName').textContent = viewName;
+            document.querySelector('.views-dropdown-container').classList.remove('open');
+            // Apply custom view filter logic here if needed
+        }
+
+        // Add column to selected
+        function addColumn(columnKey, columnName) {
+            // Check if already added
+            const existing = document.querySelector(`#selectedColumnsList .column-item[data-column="${columnKey}"]`);
+            if (existing) return;
+
+            // Hide from available
+            const availableItem = document.querySelector(`#availableColumnsList .column-item[data-column="${columnKey}"]`);
+            if (availableItem) {
+                availableItem.style.display = 'none';
+            }
+
+            // Add to selected
+            const selectedList = document.getElementById('selectedColumnsList');
+            const newItem = document.createElement('div');
+            newItem.className = 'column-item selected';
+            newItem.setAttribute('data-column', columnKey);
+            newItem.innerHTML = `<span class="drag-icon">⋮⋮</span> ${columnName} <button class="col-remove-btn" onclick="removeColumn('${columnKey}', '${columnName}')">−</button>`;
+            selectedList.appendChild(newItem);
+        }
+
+        // Remove column from selected
+        function removeColumn(columnKey, columnName) {
+            // Remove from selected
+            const selectedItem = document.querySelector(`#selectedColumnsList .column-item[data-column="${columnKey}"]`);
+            if (selectedItem && columnKey !== 'name') { // Don't allow removing Name
+                selectedItem.remove();
+            }
+
+            // Show in available again
+            const availableItem = document.querySelector(`#availableColumnsList .column-item[data-column="${columnKey}"]`);
+            if (availableItem) {
+                availableItem.style.display = 'flex';
+            }
+        }
+
+        // ========== CRITERIA FIELD SEARCHABLE DROPDOWN ==========
+        function toggleCriteriaFieldDropdown(id) {
+            const dropdown = document.getElementById('criteriaFieldDropdown' + id);
+            dropdown.classList.toggle('open');
+            if (dropdown.classList.contains('open')) {
+                dropdown.querySelector('.criteria-field-search input').focus();
+            }
+        }
+
+        function filterCriteriaFields(id) {
+            const dropdown = document.getElementById('criteriaFieldDropdown' + id);
+            const searchInput = dropdown.querySelector('.criteria-field-search input');
+            const searchTerm = searchInput.value.toLowerCase();
+            const items = dropdown.querySelectorAll('.criteria-field-item');
+
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(searchTerm) ? 'block' : 'none';
+            });
+        }
+
+        function selectCriteriaField(id, value, label) {
+            document.getElementById('criteriaFieldValue' + id).value = value;
+            document.getElementById('criteriaFieldText' + id).textContent = label;
+            document.getElementById('criteriaFieldText' + id).style.color = '#333';
+
+            // Update selected state
+            const dropdown = document.getElementById('criteriaFieldDropdown' + id);
+            dropdown.querySelectorAll('.criteria-field-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+
+            dropdown.classList.remove('open');
+        }
+
+        // Close criteria dropdown on click outside
+        document.addEventListener('click', function (e) {
+            document.querySelectorAll('.criteria-field-dropdown').forEach(dropdown => {
+                if (!dropdown.contains(e.target)) {
+                    dropdown.classList.remove('open');
+                }
+            });
+        });
+
+        // Load vendors on page load
+        document.addEventListener('DOMContentLoaded', loadVendors);
     </script>
 </body>
 

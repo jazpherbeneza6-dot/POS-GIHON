@@ -15,6 +15,891 @@ let poSelectedItemId = null;
 // POS Cart State
 let cart = [];
 let currentView = 'list'; // 'list' or 'grid'
+let currentDetailItemId = null; // Currently viewed item in detail view
+let selectedItems = []; // Array of selected item IDs for bulk actions
+
+// ========== BULK ACTION TOOLBAR FUNCTIONS ==========
+function updateBulkActionToolbar() {
+  const toolbar = document.getElementById('bulkActionToolbar');
+  const countEl = document.getElementById('selectedItemCount');
+  const header = document.querySelector('.zoho-items-header');
+
+  if (!toolbar || !countEl) return;
+
+  if (selectedItems.length > 0) {
+    toolbar.classList.add('active');
+    countEl.textContent = selectedItems.length;
+    if (header) header.style.display = 'none';
+  } else {
+    toolbar.classList.remove('active');
+    if (header) header.style.display = 'flex';
+  }
+}
+
+
+
+function selectAllItems() {
+  const checkboxes = document.querySelectorAll('.item-checkbox');
+  selectedItems = [];
+  checkboxes.forEach(cb => {
+    cb.checked = true;
+    selectedItems.push(parseInt(cb.dataset.itemId));
+  });
+  updateBulkActionToolbar();
+}
+
+function deselectAllItems() {
+  const checkboxes = document.querySelectorAll('.item-checkbox');
+  checkboxes.forEach(cb => cb.checked = false);
+  selectedItems = [];
+  updateBulkActionToolbar();
+}
+
+// Bulk Update functionality
+let selectedBulkField = null;
+
+function bulkUpdate() {
+  if (selectedItems.length === 0) {
+    showToast('No items selected', 'error');
+    return;
+  }
+  openBulkUpdateModal();
+}
+
+// New Transaction dropdown functionality
+function toggleNewTransactionDropdown() {
+  const menu = document.getElementById('newTransactionMenu');
+  const btn = document.querySelector('.bulk-action-btn-dropdown');
+
+  if (menu.classList.contains('show')) {
+    closeNewTransactionDropdown();
+  } else {
+    menu.classList.add('show');
+    btn.classList.add('active');
+  }
+}
+
+function closeNewTransactionDropdown() {
+  const menu = document.getElementById('newTransactionMenu');
+  const btn = document.querySelector('.bulk-action-btn-dropdown');
+
+  if (menu) menu.classList.remove('show');
+  if (btn) btn.classList.remove('active');
+}
+
+function selectTransaction(type) {
+  // Close dropdown
+  closeNewTransactionDropdown();
+
+  // Navigate directly to create new transaction pages with selected items
+  switch (type) {
+    case 'sales_order':
+      window.location.href = '/new-sales-order.html?items=' + selectedItems.join(',');
+      break;
+    case 'invoice':
+      window.location.href = '/new-invoice.html?items=' + selectedItems.join(',');
+      break;
+    case 'sales_receipt':
+      window.location.href = '/new-sales-receipt.html?items=' + selectedItems.join(',');
+      break;
+    case 'purchase_order':
+      window.location.href = '/new-purchase-order.html?items=' + selectedItems.join(',');
+      break;
+    case 'bill':
+      window.location.href = '/new-bill.html?items=' + selectedItems.join(',');
+      break;
+    default:
+      showToast('Unknown transaction type', 'error');
+  }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function (e) {
+  if (!e.target.closest('.new-transaction-dropdown')) {
+    closeNewTransactionDropdown();
+  }
+});
+
+
+// Open bulk update modal
+function openBulkUpdateModal() {
+  const modal = document.getElementById('bulkUpdateModal');
+  if (modal) {
+    // Reset the form
+    selectedBulkField = null;
+    document.getElementById('bulkUpdateFieldText').textContent = 'Select a field';
+    document.getElementById('bulkUpdateFieldText').style.color = '#6b7280';
+    document.getElementById('bulkUpdateValue').value = '';
+    document.getElementById('bulkUpdateSearch').value = '';
+
+    // Reset value dropdown and textarea
+    document.getElementById('bulkValueText').textContent = 'Select value';
+    document.getElementById('bulkValueText').style.color = '#6b7280';
+    document.getElementById('bulkValueDropdown').style.display = 'block';
+    document.getElementById('bulkDescriptionTextarea').style.display = 'none';
+    document.getElementById('bulkDescriptionInput').value = '';
+    document.getElementById('bulkValueSearch').value = '';
+
+    // Reset field selection highlights
+    document.querySelectorAll('.bulk-field-option').forEach(opt => {
+      opt.classList.remove('selected');
+      opt.style.display = 'block';
+    });
+
+    closeBulkUpdateDropdown();
+    closeBulkValueDropdown();
+    modal.classList.add('active');
+  }
+}
+
+
+// Close bulk update modal
+function closeBulkUpdateModal() {
+  const modal = document.getElementById('bulkUpdateModal');
+  if (modal) modal.classList.remove('active');
+  closeBulkUpdateDropdown();
+}
+
+// Toggle bulk update dropdown
+function toggleBulkUpdateDropdown() {
+  const menu = document.getElementById('bulkUpdateDropdownMenu');
+  const select = document.getElementById('bulkUpdateSelect');
+
+  if (!menu.classList.contains('show')) {
+    menu.style.display = 'block';
+    menu.classList.add('show');
+    select.classList.add('active');
+    document.getElementById('bulkUpdateSearch').focus();
+  } else {
+    closeBulkUpdateDropdown();
+  }
+}
+
+// Close bulk update dropdown
+function closeBulkUpdateDropdown() {
+  const menu = document.getElementById('bulkUpdateDropdownMenu');
+  const select = document.getElementById('bulkUpdateSelect');
+
+  if (menu) {
+    menu.style.display = 'none';
+    menu.classList.remove('show');
+    if (select) select.classList.remove('active');
+  }
+}
+
+// Filter bulk update fields
+function filterBulkUpdateFields() {
+  const searchValue = document.getElementById('bulkUpdateSearch').value.toLowerCase();
+  const options = document.querySelectorAll('.bulk-field-option');
+
+  options.forEach(option => {
+    const text = option.textContent.toLowerCase();
+    option.style.display = text.includes(searchValue) ? 'block' : 'none';
+  });
+}
+
+// Select a field for bulk update
+function selectBulkUpdateField(fieldKey, fieldName) {
+  selectedBulkField = fieldKey;
+
+  // Update the header text
+  document.getElementById('bulkUpdateFieldText').textContent = fieldName;
+  document.getElementById('bulkUpdateFieldText').style.color = '#1a1f3a';
+
+  // Highlight selected option
+  document.querySelectorAll('.bulk-field-option').forEach(opt => {
+    opt.classList.remove('selected');
+  });
+  document.querySelector(`[data-field="${fieldKey}"]`)?.classList.add('selected');
+
+  // Close field dropdown
+  closeBulkUpdateDropdown();
+
+  // Reset value selection and show dropdown by default
+  document.getElementById('bulkValueText').textContent = 'Select value';
+  document.getElementById('bulkValueText').style.color = '#6b7280';
+  document.getElementById('bulkUpdateValue').value = '';
+  document.getElementById('bulkValueSearch').value = '';
+  document.getElementById('bulkValueDropdown').style.display = 'block';
+  document.getElementById('bulkDescriptionTextarea').style.display = 'none';
+
+  // Populate value dropdown based on field
+  populateBulkValueOptions(fieldKey);
+}
+
+// Populate value dropdown based on selected field
+async function populateBulkValueOptions(fieldKey) {
+  const list = document.getElementById('bulkValueList');
+  list.innerHTML = '<div class="bulk-value-loading">Loading...</div>';
+
+  // Reset search box visibility (some fields hide it)
+  const searchBox = document.querySelector('#bulkValueDropdownMenu .bulk-update-search-box');
+  if (searchBox) searchBox.style.display = 'block';
+
+  let options = [];
+
+  try {
+    switch (fieldKey) {
+      case 'brand':
+        const brandsRes = await fetch('/api/brands');
+        if (brandsRes.ok) {
+          const brands = await brandsRes.json();
+          options = brands.map(b => ({ value: b.name, label: b.name }));
+        }
+        break;
+
+      case 'manufacturer':
+        const mfgRes = await fetch('/api/manufacturers');
+        if (mfgRes.ok) {
+          const manufacturers = await mfgRes.json();
+          options = manufacturers.map(m => ({ value: m.name, label: m.name }));
+        }
+        break;
+
+      case 'unit':
+        options = [
+          { value: 'pcs', label: 'pcs' },
+          { value: 'box', label: 'box' },
+          { value: 'kg', label: 'kg' },
+          { value: 'g', label: 'g' },
+          { value: 'm', label: 'm' },
+          { value: 'cm', label: 'cm' },
+          { value: 'liter', label: 'liter' },
+          { value: 'ml', label: 'ml' },
+          { value: 'dozen', label: 'dozen' },
+          { value: 'pack', label: 'pack' },
+          { value: 'set', label: 'set' }
+        ];
+        break;
+
+      case 'returnable':
+        // For returnable, show options directly without search
+        document.querySelector('#bulkValueDropdownMenu .bulk-update-search-box').style.display = 'none';
+        list.innerHTML = `
+          <div class="bulk-value-option" data-value="true" onclick="selectBulkValue('true', 'Yes (Returnable)')">Yes (Returnable)</div>
+          <div class="bulk-value-option" data-value="false" onclick="selectBulkValue('false', 'No (Non-returnable)')">No (Non-returnable)</div>
+        `;
+        return;
+
+      case 'tax':
+        options = [
+          { value: 'VAT 12%', label: 'VAT 12%' },
+          { value: 'VAT Exempt', label: 'VAT Exempt' },
+          { value: 'Zero Rated', label: 'Zero Rated' },
+          { value: 'None', label: 'None' }
+        ];
+        break;
+
+      case 'valuation_method':
+        options = [
+          { value: 'FIFO', label: 'FIFO (First In, First Out)' },
+          { value: 'LIFO', label: 'LIFO (Last In, First Out)' },
+          { value: 'Average', label: 'Weighted Average' }
+        ];
+        break;
+
+      case 'purchase_account':
+        options = [
+          { value: 'Advertising And Marketing', label: 'Advertising And Marketing' },
+          { value: 'Automobile Expense', label: 'Automobile Expense' },
+          { value: 'Bad Debt', label: 'Bad Debt' },
+          { value: 'Bank Fees and Charges', label: 'Bank Fees and Charges' },
+          { value: 'Consultant Expense', label: 'Consultant Expense' },
+          { value: 'Cost of Goods Sold', label: 'Cost of Goods Sold' },
+          { value: 'Credit Card Charges', label: 'Credit Card Charges' },
+          { value: 'Depreciation Expense', label: 'Depreciation Expense' },
+          { value: 'IT and Internet Expenses', label: 'IT and Internet Expenses' },
+          { value: 'Janitorial Expense', label: 'Janitorial Expense' },
+          { value: 'Lodging', label: 'Lodging' },
+          { value: 'Meals and Entertainment', label: 'Meals and Entertainment' },
+          { value: 'Office Supplies', label: 'Office Supplies' },
+          { value: 'Other Expenses', label: 'Other Expenses' },
+          { value: 'Postage', label: 'Postage' },
+          { value: 'Purchase Discounts', label: 'Purchase Discounts' },
+          { value: 'Rent Expense', label: 'Rent Expense' },
+          { value: 'Repairs and Maintenance', label: 'Repairs and Maintenance' },
+          { value: 'Salaries and Employee Wages', label: 'Salaries and Employee Wages' },
+          { value: 'Telephone Expense', label: 'Telephone Expense' },
+          { value: 'Travel Expense', label: 'Travel Expense' },
+          { value: 'Uncategorized', label: 'Uncategorized' }
+        ];
+        break;
+
+      case 'inventory_account':
+        // Show inventory account options with search
+        options = [
+          { value: 'Inventory Asset', label: 'Inventory Asset' }
+        ];
+        break;
+
+      case 'sales_account':
+        options = [
+          { value: 'Discount', label: 'Discount' },
+          { value: 'General Income', label: 'General Income' },
+          { value: 'Interest Income', label: 'Interest Income' },
+          { value: 'Late Fee Income', label: 'Late Fee Income' },
+          { value: 'Other Charges', label: 'Other Charges' },
+          { value: 'Sales', label: 'Sales' },
+          { value: 'Shipping Charge', label: 'Shipping Charge' }
+        ];
+        break;
+
+      case 'sales_description':
+      case 'purchase_description':
+        // For description fields, hide the dropdown and show textarea directly
+        document.getElementById('bulkValueDropdown').style.display = 'none';
+        document.getElementById('bulkDescriptionTextarea').style.display = 'block';
+        document.getElementById('bulkDescriptionTextarea').querySelector('textarea').value = '';
+        return;
+
+      case 'selling_price':
+      case 'purchase_cost':
+        // For price/cost fields, show a number input
+        document.querySelector('#bulkValueDropdownMenu .bulk-update-search-box').style.display = 'none';
+        list.innerHTML = `
+          <div style="padding: 12px;">
+            <input type="number" id="bulkValueNumericInput" placeholder="Enter ${fieldKey === 'selling_price' ? 'price' : 'cost'}" 
+              style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 4px; font-size: 14px;"
+              onchange="selectBulkValue(this.value, this.value)">
+          </div>
+        `;
+        return;
+
+      case 'reorder_point':
+        // For reorder point, show number input without search
+        document.querySelector('#bulkValueDropdownMenu .bulk-update-search-box').style.display = 'none';
+        list.innerHTML = `
+          <div style="padding: 12px;">
+            <input type="number" id="bulkValueNumericInput" placeholder="Enter reorder point" 
+              style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 4px; font-size: 14px;"
+              onchange="selectBulkValue(this.value, this.value)">
+          </div>
+        `;
+        return;
+
+      default:
+        // For other text fields
+        list.innerHTML = `
+          <div style="padding: 12px;">
+            <input type="text" id="bulkValueTextInput" placeholder="Enter value" 
+              style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 4px; font-size: 14px;"
+              onchange="selectBulkValue(this.value, this.value)">
+          </div>
+        `;
+        return;
+    }
+
+    if (options.length === 0) {
+      list.innerHTML = '<div class="bulk-value-empty">No options available</div>';
+    } else {
+      list.innerHTML = options.map(opt =>
+        `<div class="bulk-value-option" data-value="${opt.value}" onclick="selectBulkValue('${opt.value}', '${opt.label}')">${opt.label}</div>`
+      ).join('');
+    }
+  } catch (error) {
+    console.error('Error loading options:', error);
+    list.innerHTML = '<div class="bulk-value-empty">Error loading options</div>';
+  }
+}
+
+// Toggle value dropdown
+function toggleBulkValueDropdown() {
+  if (!selectedBulkField) {
+    showToast('Please select a field first', 'info');
+    return;
+  }
+
+  const menu = document.getElementById('bulkValueDropdownMenu');
+  const select = document.getElementById('bulkValueSelect');
+
+  if (!menu.classList.contains('show')) {
+    menu.style.display = 'block';
+    menu.classList.add('show');
+    select.classList.add('active');
+    document.getElementById('bulkValueSearch')?.focus();
+  } else {
+    closeBulkValueDropdown();
+  }
+}
+
+// Close value dropdown
+function closeBulkValueDropdown() {
+  const menu = document.getElementById('bulkValueDropdownMenu');
+  const select = document.getElementById('bulkValueSelect');
+
+  if (menu) {
+    menu.style.display = 'none';
+    menu.classList.remove('show');
+    if (select) select.classList.remove('active');
+  }
+}
+
+// Filter value options
+function filterBulkValueOptions() {
+  const searchValue = document.getElementById('bulkValueSearch').value.toLowerCase();
+  const options = document.querySelectorAll('.bulk-value-option');
+
+  options.forEach(option => {
+    const text = option.textContent.toLowerCase();
+    option.style.display = text.includes(searchValue) ? 'block' : 'none';
+  });
+}
+
+// Select a value
+function selectBulkValue(value, label) {
+  document.getElementById('bulkUpdateValue').value = value;
+  document.getElementById('bulkValueText').textContent = label;
+  document.getElementById('bulkValueText').style.color = '#1a1f3a';
+
+  // Highlight selected option
+  document.querySelectorAll('.bulk-value-option').forEach(opt => {
+    opt.classList.remove('selected');
+  });
+  document.querySelector(`.bulk-value-option[data-value="${value}"]`)?.classList.add('selected');
+
+  closeBulkValueDropdown();
+}
+
+// Execute the bulk update
+async function executeBulkUpdate() {
+  if (!selectedBulkField) {
+    showToast('Please select a field to update', 'error');
+    return;
+  }
+
+  const newValue = document.getElementById('bulkUpdateValue').value.trim();
+  if (!newValue) {
+    showToast('Please enter a value', 'error');
+    return;
+  }
+
+  try {
+    let successCount = 0;
+    let errorCount = 0;
+
+    // Prepare the update data based on field type
+    let updateData = {};
+
+    // Handle numeric fields
+    if (['selling_price', 'purchase_cost', 'reorder_point'].includes(selectedBulkField)) {
+      const numValue = parseFloat(newValue);
+      if (isNaN(numValue)) {
+        showToast('Please enter a valid number', 'error');
+        return;
+      }
+      updateData[selectedBulkField === 'selling_price' ? 'price' : selectedBulkField === 'purchase_cost' ? 'cost' : selectedBulkField] = numValue;
+    } else if (selectedBulkField === 'returnable') {
+      // Handle boolean
+      updateData.is_returnable = newValue.toLowerCase() === 'true' || newValue.toLowerCase() === 'yes' || newValue === '1';
+    } else {
+      // String fields
+      updateData[selectedBulkField] = newValue;
+    }
+
+    // Update each selected item
+    for (const itemId of selectedItems) {
+      try {
+        // Get the current item data first
+        const item = items.find(i => i.id === itemId);
+        if (!item) continue;
+
+        // Merge with required fields for the update API
+        const fullUpdateData = {
+          name: item.name,
+          quantity: item.stock_quantity || 0,
+          price: item.selling_price || 0,
+          ...updateData
+        };
+
+        const response = await fetch(`/api/items/${itemId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(fullUpdateData)
+        });
+
+        if (response.ok) {
+          successCount++;
+        } else {
+          errorCount++;
+        }
+      } catch (error) {
+        console.error(`Error updating item ${itemId}:`, error);
+        errorCount++;
+      }
+    }
+
+    // Close modal and refresh
+    closeBulkUpdateModal();
+    await loadItems();
+    renderItemsTable();
+    deselectAllItems();
+
+    // Show result
+    if (errorCount === 0) {
+      showToast(`Updated ${successCount} item(s) successfully`, 'success');
+    } else if (successCount > 0) {
+      showToast(`Updated ${successCount} item(s), ${errorCount} failed`, 'warning');
+    } else {
+      showToast('Failed to update items', 'error');
+    }
+
+  } catch (error) {
+    console.error('Error in bulk update:', error);
+    showToast('Error updating items', 'error');
+  }
+}
+
+// Mark selected items as active
+async function bulkMarkActive() {
+  if (selectedItems.length === 0) {
+    showToast('No items selected', 'error');
+    return;
+  }
+
+  try {
+    let successCount = 0;
+    for (const itemId of selectedItems) {
+      try {
+        const response = await fetch(`/api/items/${itemId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: 'active' })
+        });
+        if (response.ok) successCount++;
+      } catch (error) {
+        console.error(`Error updating item ${itemId}:`, error);
+      }
+    }
+
+    await loadItems();
+    renderItemsTable();
+    deselectAllItems();
+    showToast(`Marked ${successCount} item(s) as active`, 'success');
+  } catch (error) {
+    console.error('Error in bulk mark active:', error);
+    showToast('Error updating items', 'error');
+  }
+}
+
+// Mark selected items as inactive
+async function bulkMarkInactive() {
+  if (selectedItems.length === 0) {
+    showToast('No items selected', 'error');
+    return;
+  }
+
+  try {
+    let successCount = 0;
+    for (const itemId of selectedItems) {
+      try {
+        const response = await fetch(`/api/items/${itemId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: 'inactive' })
+        });
+        if (response.ok) successCount++;
+      } catch (error) {
+        console.error(`Error updating item ${itemId}:`, error);
+      }
+    }
+
+    await loadItems();
+    renderItemsTable();
+    deselectAllItems();
+    showToast(`Marked ${successCount} item(s) as inactive`, 'success');
+  } catch (error) {
+    console.error('Error in bulk mark inactive:', error);
+    showToast('Error updating items', 'error');
+  }
+}
+
+// Add selected items to a group
+function bulkAddToGroup() {
+  if (selectedItems.length === 0) {
+    showToast('No items selected', 'error');
+    return;
+  }
+
+  openGroupingModal();
+}
+
+// Open the grouping modal
+function openGroupingModal() {
+  const modal = document.getElementById('groupingModal');
+  if (!modal) return;
+
+  // Populate the items to be grouped table
+  const itemsToGroup = selectedItems.map(id => items.find(i => i.id === id)).filter(Boolean);
+  const tbody = document.getElementById('groupingItemsBody');
+  if (tbody) {
+    tbody.innerHTML = itemsToGroup.map(item => `
+      <tr>
+        <td>${item.name || 'Unnamed'}</td>
+        <td><input type="text" class="group-sku-input" value="${item.sku || ''}" readonly></td>
+      </tr>
+    `).join('');
+  }
+
+  // Load existing item groups for dropdown
+  loadItemGroupsForDropdown();
+
+  // Reset form
+  document.getElementById('groupingOptionNew').checked = true;
+  toggleGroupingOption('new');
+
+  modal.classList.add('active');
+}
+
+// Close grouping modal
+function closeGroupingModal() {
+  const modal = document.getElementById('groupingModal');
+  if (modal) modal.classList.remove('active');
+}
+
+// Toggle between new group and existing group options
+function toggleGroupingOption(option) {
+  const newGroupSection = document.getElementById('newGroupSection');
+  const existingGroupSection = document.getElementById('existingGroupSection');
+  const noAttributesMessage = document.getElementById('noAttributesMessage');
+
+  if (option === 'new') {
+    newGroupSection.style.display = 'block';
+    existingGroupSection.style.display = 'none';
+    if (noAttributesMessage) noAttributesMessage.style.display = 'none';
+  } else {
+    newGroupSection.style.display = 'none';
+    existingGroupSection.style.display = 'block';
+    if (noAttributesMessage) noAttributesMessage.style.display = 'block';
+  }
+}
+
+// Load item groups for the dropdown
+async function loadItemGroupsForDropdown() {
+  try {
+    const response = await fetch('/api/items/groups/list');
+    if (!response.ok) return;
+
+    const groups = await response.json();
+    const select = document.getElementById('existingGroupSelect');
+    if (select) {
+      select.innerHTML = '<option value="">Choose Item Group</option>' +
+        groups.map(g => `<option value="${g.id}">${g.name}</option>`).join('');
+    }
+  } catch (error) {
+    console.error('Error loading groups:', error);
+  }
+}
+
+// Save grouping (either create new or add to existing)
+async function saveGrouping() {
+  const isNew = document.getElementById('groupingOptionNew').checked;
+
+  if (isNew) {
+    // Create new group
+    const groupName = document.getElementById('newGroupName').value.trim();
+    const unit = document.getElementById('newGroupUnit').value.trim();
+
+    if (!groupName) {
+      showToast('Please enter a group name', 'error');
+      return;
+    }
+
+    try {
+      // Create the group
+      const createResponse = await fetch('/api/items/groups/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: groupName, unit: unit || 'pcs' })
+      });
+
+      if (!createResponse.ok) {
+        showToast('Failed to create group', 'error');
+        return;
+      }
+
+      const newGroup = await createResponse.json();
+
+      // Add items to the new group
+      let successCount = 0;
+      for (const itemId of selectedItems) {
+        try {
+          const response = await fetch(`/api/items/${itemId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ group_id: newGroup.id })
+          });
+          if (response.ok) successCount++;
+        } catch (error) {
+          console.error(`Error adding item ${itemId} to group:`, error);
+        }
+      }
+
+      closeGroupingModal();
+      await loadItems();
+      renderItemsTable();
+      deselectAllItems();
+      showToast(`Created group "${groupName}" with ${successCount} item(s)`, 'success');
+
+    } catch (error) {
+      console.error('Error creating group:', error);
+      showToast('Error creating group', 'error');
+    }
+  } else {
+    // Add to existing group
+    const groupId = document.getElementById('existingGroupSelect').value;
+
+    if (!groupId) {
+      showToast('Please select a group', 'error');
+      return;
+    }
+
+    try {
+      let successCount = 0;
+      for (const itemId of selectedItems) {
+        try {
+          const response = await fetch(`/api/items/${itemId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ group_id: parseInt(groupId) })
+          });
+          if (response.ok) successCount++;
+        } catch (error) {
+          console.error(`Error adding item ${itemId} to group:`, error);
+        }
+      }
+
+      closeGroupingModal();
+      await loadItems();
+      renderItemsTable();
+      deselectAllItems();
+      showToast(`Added ${successCount} item(s) to group`, 'success');
+
+    } catch (error) {
+      console.error('Error adding to group:', error);
+      showToast('Error adding items to group', 'error');
+    }
+  }
+}
+
+function bulkMarkReturnable() {
+  showToast(`Marked ${selectedItems.length} items as returnable`, 'success');
+  deselectAllItems();
+}
+
+// Bulk delete selected items
+async function bulkDeleteItems() {
+  if (selectedItems.length === 0) {
+    showToast('No items selected', 'error');
+    return;
+  }
+
+  const itemCount = selectedItems.length;
+  const itemNames = selectedItems.map(id => {
+    const item = items.find(i => i.id === id);
+    return item ? item.name : `Item #${id}`;
+  }).slice(0, 3).join(', ') + (itemCount > 3 ? ` and ${itemCount - 3} more` : '');
+
+  // Confirmation dialog
+  const confirmed = confirm(`Are you sure you want to delete ${itemCount} item(s)?\n\n${itemNames}\n\nThis action cannot be undone.`);
+
+  if (!confirmed) return;
+
+  try {
+    // Delete each item
+    let successCount = 0;
+    let errorCount = 0;
+
+    for (const itemId of selectedItems) {
+      try {
+        const response = await fetch(`/api/items/${itemId}`, {
+          method: 'DELETE'
+        });
+
+        if (response.ok) {
+          successCount++;
+        } else {
+          errorCount++;
+        }
+      } catch (error) {
+        console.error(`Error deleting item ${itemId}:`, error);
+        errorCount++;
+      }
+    }
+
+    // Clear selection
+    deselectAllItems();
+
+    // Reload items
+    await loadItems();
+    renderItemsTable();
+
+    // Show result
+    if (errorCount === 0) {
+      showToast(`Successfully deleted ${successCount} item(s)`, 'success');
+    } else if (successCount > 0) {
+      showToast(`Deleted ${successCount} item(s), ${errorCount} failed`, 'warning');
+    } else {
+      showToast(`Failed to delete items`, 'error');
+    }
+  } catch (error) {
+    console.error('Error in bulk delete:', error);
+    showToast('Error deleting items', 'error');
+  }
+}
+
+function showMoreBulkActions() {
+  showToast('More bulk actions coming soon', 'info');
+}
+
+// ========== ITEM DETAIL VIEW FUNCTIONS ==========
+function openItemDetailView(itemId) {
+  currentDetailItemId = itemId;
+  const item = items.find(i => i.id === itemId);
+  if (!item) return;
+
+  // Populate left sidebar list
+  renderItemDetailLeftList();
+
+  // Populate main content with item data
+  document.getElementById('detailItemName').textContent = item.name || 'Unnamed Item';
+  document.getElementById('detailItemSku').textContent = item.sku || '-';
+  document.getElementById('detailItemUnit').textContent = item.unit || 'pcs';
+  document.getElementById('detailItemManufacturer').textContent = item.manufacturer || '-';
+  document.getElementById('detailItemBrand').textContent = item.brand || '-';
+  document.getElementById('detailItemCost').textContent = 'PHP' + formatNumber(item.purchase_cost || 0);
+  document.getElementById('detailItemPrice').textContent = 'PHP' + formatNumber(item.selling_price || 0);
+  document.getElementById('detailOpeningStock').textContent = formatNumber(item.stock_quantity || 0);
+  document.getElementById('detailStockOnHand').textContent = ': ' + formatNumber(item.stock_quantity || 0);
+  document.getElementById('detailPhysicalStock').textContent = ': ' + formatNumber(item.stock_quantity || 0);
+  document.getElementById('detailReorderPoint').textContent = formatNumber(item.reorder_point || 0);
+
+  // Show the overlay
+  document.getElementById('itemDetailOverlay').classList.add('active');
+}
+
+function closeItemDetailView() {
+  document.getElementById('itemDetailOverlay').classList.remove('active');
+  currentDetailItemId = null;
+}
+
+function renderItemDetailLeftList() {
+  const listContainer = document.getElementById('itemDetailLeftList');
+  if (!listContainer) return;
+
+  listContainer.innerHTML = items.map(item => `
+    <div class="item-detail-left-item ${item.id === currentDetailItemId ? 'active' : ''}" 
+         onclick="openItemDetailView(${item.id})">
+      <div class="item-detail-left-item-name">${item.name}</div>
+      <div class="item-detail-left-item-sku">SKU: ${item.sku || '-'}</div>
+      <div class="item-detail-left-item-price">PHP${formatNumber(item.selling_price || 0)}</div>
+    </div>
+  `).join('');
+}
+
+function formatNumber(num) {
+  if (num === null || num === undefined) return '0.00';
+  return parseFloat(num).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
 
 // Switch to List View
 function switchToListView() {
@@ -111,11 +996,25 @@ function renderGridView() {
   }).join('');
 }
 
-// Manufacturers list (stored locally, can be expanded to backend)
+// Manufacturers list (stored in database)
 let manufacturers = [];
+let manufacturersData = []; // Full data with id and name
 let editingManufacturerIndex = -1;
 let selectedManufacturer = '';
 
+// Fetch manufacturers from API
+async function fetchManufacturers() {
+  try {
+    const response = await fetch('/api/manufacturers');
+    manufacturersData = await response.json();
+    manufacturers = manufacturersData.map(m => m.name);
+    updateManufacturerDropdown();
+    renderManufacturersList();
+    renderManufacturerDropdownList();
+  } catch (error) {
+    console.error('Error fetching manufacturers:', error);
+  }
+}
 // Toggle Manufacturer Custom Dropdown
 function toggleManufacturerDropdown() {
   const dropdown = document.getElementById('manufacturerDropdown');
@@ -229,7 +1128,7 @@ function cancelNewManufacturer() {
 }
 
 // Save New Manufacturer
-function saveNewManufacturer() {
+async function saveNewManufacturer() {
   const nameInput = document.getElementById('newManufacturerName');
   const name = nameInput.value.trim();
 
@@ -238,24 +1137,28 @@ function saveNewManufacturer() {
     return;
   }
 
-  if (editingManufacturerIndex >= 0) {
-    // Editing existing
-    manufacturers[editingManufacturerIndex] = name;
-    showToast(`Manufacturer "${name}" updated`, 'success');
-  } else {
-    // Adding new
-    if (manufacturers.includes(name)) {
+  try {
+    const response = await fetch('/api/manufacturers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name })
+    });
+
+    if (response.status === 409) {
       showToast('Manufacturer already exists', 'error');
       return;
     }
-    manufacturers.push(name);
-    showToast(`Manufacturer "${name}" added`, 'success');
-  }
 
-  updateManufacturerDropdown();
-  document.getElementById('itemManufacturer').value = name;
-  renderManufacturersList();
-  cancelNewManufacturer();
+    if (!response.ok) throw new Error('Failed to save manufacturer');
+
+    await fetchManufacturers();
+    showToast(`Manufacturer "${name}" added`, 'success');
+    document.getElementById('itemManufacturer').value = name;
+    cancelNewManufacturer();
+  } catch (error) {
+    console.error('Error saving manufacturer:', error);
+    showToast('Failed to save manufacturer', 'error');
+  }
 }
 
 // Edit Manufacturer
@@ -269,13 +1172,19 @@ function editManufacturer(index) {
 }
 
 // Delete Manufacturer
-function deleteManufacturer(index) {
-  const name = manufacturers[index];
-  if (confirm(`Delete manufacturer "${name}"?`)) {
-    manufacturers.splice(index, 1);
-    updateManufacturerDropdown();
-    renderManufacturersList();
-    showToast(`Manufacturer "${name}" deleted`, 'success');
+async function deleteManufacturer(index) {
+  const manufacturer = manufacturersData[index];
+  if (!manufacturer) return;
+
+  if (confirm(`Delete manufacturer "${manufacturer.name}"?`)) {
+    try {
+      await fetch(`/api/manufacturers/${manufacturer.id}`, { method: 'DELETE' });
+      await fetchManufacturers();
+      showToast(`Manufacturer "${manufacturer.name}" deleted`, 'success');
+    } catch (error) {
+      console.error('Error deleting manufacturer:', error);
+      showToast('Failed to delete manufacturer', 'error');
+    }
   }
 }
 
@@ -319,17 +1228,423 @@ function updateManufacturerDropdown() {
   `;
 }
 
-// Brands list (stored locally, can be expanded to backend)
+// Brands list (stored in database)
 let brands = [];
+let brandsData = []; // Full data with id and name
 let editingBrandIndex = -1;
+let selectedBrand = '';
 
-// Handle Brand dropdown change
-function handleBrandChange(select) {
-  if (select.value === '__manage__') {
-    select.value = ''; // Reset selection
-    openManageBrandsModal();
+// Fetch brands from API
+async function fetchBrands() {
+  try {
+    const response = await fetch('/api/brands');
+    brandsData = await response.json();
+    brands = brandsData.map(b => b.name);
+    updateBrandDropdown();
+    renderBrandsList();
+    renderBrandDropdownList();
+  } catch (error) {
+    console.error('Error fetching brands:', error);
   }
 }
+
+// Toggle Brand Custom Dropdown
+function toggleBrandDropdown() {
+  const dropdown = document.getElementById('brandDropdown');
+  dropdown.classList.toggle('open');
+  if (dropdown.classList.contains('open')) {
+    document.getElementById('brandSearchInput').value = '';
+    document.getElementById('brandSearchInput').focus();
+    renderBrandDropdownList();
+  }
+}
+
+// Close Brand Dropdown
+function closeBrandDropdown() {
+  const dropdown = document.getElementById('brandDropdown');
+  dropdown.classList.remove('open');
+}
+
+// Filter Brands in dropdown
+function filterBrands() {
+  renderBrandDropdownList();
+}
+
+// Select Brand from custom dropdown
+function selectBrandFromDropdown(name) {
+  selectedBrand = name;
+  document.getElementById('itemBrand').value = name;
+  document.getElementById('brandDropdownText').textContent = name;
+  document.getElementById('brandDropdownText').classList.add('has-value');
+  closeBrandDropdown();
+}
+
+// Render Brand Dropdown List
+function renderBrandDropdownList() {
+  const listContainer = document.getElementById('brandDropdownList');
+  const searchInput = document.getElementById('brandSearchInput');
+  const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+
+  // Filter brands
+  const filtered = brands.filter(b =>
+    b.toLowerCase().includes(searchTerm)
+  );
+
+  if (filtered.length === 0 && brands.length === 0) {
+    listContainer.innerHTML = '<div style="padding: 12px 14px; color: #9ca3af; font-size: 13px;">No brands yet</div>';
+    return;
+  }
+
+  if (filtered.length === 0) {
+    listContainer.innerHTML = '<div style="padding: 12px 14px; color: #9ca3af; font-size: 13px;">No matches found</div>';
+    return;
+  }
+
+  listContainer.innerHTML = filtered.map(name => {
+    const isSelected = selectedBrand === name;
+    return `
+      <div class="custom-dropdown-item ${isSelected ? 'selected' : ''}" onclick="selectBrandFromDropdown('${name}')">
+        ${isSelected ? '<span class="check-icon">✓</span>' : ''}
+        <span>${name}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+// Update brand dropdown when list changes
+function updateBrandDropdown() {
+  renderBrandDropdownList();
+}
+
+// Close brand dropdown when clicking outside
+document.addEventListener('click', function (e) {
+  const brandDropdown = document.getElementById('brandDropdown');
+  if (brandDropdown && !brandDropdown.contains(e.target)) {
+    brandDropdown.classList.remove('open');
+  }
+});
+
+// ========== SALES ACCOUNT DROPDOWN ==========
+const salesAccounts = [
+  'Discount',
+  'General Income',
+  'Interest Income',
+  'Late Fee Income',
+  'Other Charges',
+  'Sales',
+  'Shipping Charge'
+];
+let selectedSalesAccount = 'Sales';
+
+function toggleSalesAccountDropdown() {
+  const dropdown = document.getElementById('salesAccountDropdown');
+  dropdown.classList.toggle('open');
+  if (dropdown.classList.contains('open')) {
+    document.getElementById('salesAccountSearchInput').value = '';
+    document.getElementById('salesAccountSearchInput').focus();
+    renderSalesAccountDropdownList();
+  }
+}
+
+function closeSalesAccountDropdown() {
+  const dropdown = document.getElementById('salesAccountDropdown');
+  dropdown.classList.remove('open');
+}
+
+function filterSalesAccounts() {
+  renderSalesAccountDropdownList();
+}
+
+function selectSalesAccountFromDropdown(name) {
+  selectedSalesAccount = name;
+  document.getElementById('salesAccount').value = name;
+  document.getElementById('salesAccountDropdownText').textContent = name;
+  document.getElementById('salesAccountDropdownText').classList.add('has-value');
+  closeSalesAccountDropdown();
+}
+
+function renderSalesAccountDropdownList() {
+  const listContainer = document.getElementById('salesAccountDropdownList');
+  const searchInput = document.getElementById('salesAccountSearchInput');
+  const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+
+  const filtered = salesAccounts.filter(a => a.toLowerCase().includes(searchTerm));
+
+  if (filtered.length === 0) {
+    listContainer.innerHTML = '<div style="padding: 12px 14px; color: #9ca3af; font-size: 13px;">No matches found</div>';
+    return;
+  }
+
+  listContainer.innerHTML = filtered.map(name => {
+    const isSelected = selectedSalesAccount === name;
+    return `
+      <div class="custom-dropdown-item ${isSelected ? 'selected' : ''}" onclick="selectSalesAccountFromDropdown('${name}')">
+        <span>${name}</span>
+        ${isSelected ? '<span class="check-icon" style="margin-left:auto;">✓</span>' : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+document.addEventListener('click', function (e) {
+  const salesAccountDropdown = document.getElementById('salesAccountDropdown');
+  if (salesAccountDropdown && !salesAccountDropdown.contains(e.target)) {
+    salesAccountDropdown.classList.remove('open');
+  }
+});
+
+// ========== PURCHASE ACCOUNT DROPDOWN ==========
+const purchaseAccountCategories = {
+  'Expense': [
+    'Advertising And Marketing',
+    'Automobile Expense',
+    'Bad Debt',
+    'Bank Fees and Charges',
+    'Consultant Expense',
+    'Credit Card Charges',
+    'Depreciation Expense',
+    'IT and Internet Expenses',
+    'Janitorial Expense',
+    'Lodging',
+    'Meals and Entertainment',
+    'Office Supplies',
+    'Other Expenses',
+    'Postage',
+    'Printing and Stationery',
+    'Purchase Discounts',
+    'Rent Expense',
+    'Repairs and Maintenance',
+    'Salaries and Employee Wages',
+    'Telephone Expense',
+    'Travel Expense',
+    'Uncategorized'
+  ],
+  'Cost Of Goods Sold': [
+    'Cost of Goods Sold'
+  ]
+};
+let selectedPurchaseAccount = 'Cost of Goods Sold';
+
+function togglePurchaseAccountDropdown() {
+  const dropdown = document.getElementById('purchaseAccountDropdown');
+  dropdown.classList.toggle('open');
+  if (dropdown.classList.contains('open')) {
+    document.getElementById('purchaseAccountSearchInput').value = '';
+    document.getElementById('purchaseAccountSearchInput').focus();
+    renderPurchaseAccountDropdownList();
+  }
+}
+
+function closePurchaseAccountDropdown() {
+  const dropdown = document.getElementById('purchaseAccountDropdown');
+  dropdown.classList.remove('open');
+}
+
+function filterPurchaseAccounts() {
+  renderPurchaseAccountDropdownList();
+}
+
+function selectPurchaseAccountFromDropdown(name) {
+  selectedPurchaseAccount = name;
+  document.getElementById('purchaseAccount').value = name;
+  document.getElementById('purchaseAccountDropdownText').textContent = name;
+  document.getElementById('purchaseAccountDropdownText').classList.add('has-value');
+  closePurchaseAccountDropdown();
+}
+
+function renderPurchaseAccountDropdownList() {
+  const listContainer = document.getElementById('purchaseAccountDropdownList');
+  const searchInput = document.getElementById('purchaseAccountSearchInput');
+  const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+
+  let html = '';
+
+  for (const [category, accounts] of Object.entries(purchaseAccountCategories)) {
+    const filtered = accounts.filter(a => a.toLowerCase().includes(searchTerm));
+
+    if (filtered.length > 0) {
+      html += `<div class="custom-dropdown-category">${category}</div>`;
+      html += filtered.map((name, index) => {
+        const isSelected = selectedPurchaseAccount === name;
+        const originalIndex = accounts.indexOf(name);
+        return `
+          <div class="custom-dropdown-item ${isSelected ? 'selected' : ''}" onclick="selectPurchaseAccountFromDropdown('${name}')">
+            <span>${name}</span>
+            <div class="dropdown-item-actions">
+              ${isSelected ? '<span class="check-icon">✓</span>' : ''}
+              <button class="dropdown-delete-btn" onclick="event.stopPropagation(); deletePurchaseAccount('${category}', ${originalIndex}, '${name}')" title="Delete">×</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+
+  if (!html) {
+    html = '<div style="padding: 12px 14px; color: #9ca3af; font-size: 13px;">No matches found</div>';
+  }
+
+  listContainer.innerHTML = html;
+}
+
+function deletePurchaseAccount(category, index, name) {
+  if (confirm(`Delete account "${name}"?`)) {
+    purchaseAccountCategories[category].splice(index, 1);
+    renderPurchaseAccountDropdownList();
+    if (selectedPurchaseAccount === name) {
+      selectedPurchaseAccount = '';
+      document.getElementById('purchaseAccount').value = '';
+      document.getElementById('purchaseAccountDropdownText').textContent = 'Select Account';
+      document.getElementById('purchaseAccountDropdownText').classList.remove('has-value');
+    }
+    showToast(`Account "${name}" deleted`, 'success');
+  }
+}
+
+let currentAccountType = 'purchase'; // 'purchase' or 'sales'
+
+function addNewPurchaseAccount() {
+  currentAccountType = 'purchase';
+  openCreateAccountModal();
+}
+
+function openCreateAccountModal() {
+  const modal = document.getElementById('createAccountModal');
+  if (modal) {
+    document.getElementById('newAccountName').value = '';
+    modal.classList.add('active');
+    document.getElementById('newAccountName').focus();
+  }
+}
+
+function closeCreateAccountModal() {
+  const modal = document.getElementById('createAccountModal');
+  if (modal) {
+    modal.classList.remove('active');
+    document.getElementById('newAccountName').value = '';
+  }
+}
+
+function saveNewAccount() {
+  const nameInput = document.getElementById('newAccountName');
+  const name = nameInput.value.trim();
+
+  if (!name) {
+    showToast('Please enter an account name', 'error');
+    return;
+  }
+
+  if (currentAccountType === 'purchase') {
+    purchaseAccountCategories['Expense'].push(name);
+    selectPurchaseAccountFromDropdown(name);
+  } else {
+    salesAccounts.push(name);
+    selectSalesAccountFromDropdown(name);
+  }
+
+  showToast(`Account "${name}" added`, 'success');
+  closeCreateAccountModal();
+}
+
+document.addEventListener('click', function (e) {
+  const purchaseAccountDropdown = document.getElementById('purchaseAccountDropdown');
+  if (purchaseAccountDropdown && !purchaseAccountDropdown.contains(e.target)) {
+    purchaseAccountDropdown.classList.remove('open');
+  }
+});
+
+// ========== PREFERRED VENDOR DROPDOWN ==========
+let vendors = [];
+let selectedVendor = '';
+
+// Fetch vendors from API
+async function fetchVendors() {
+  try {
+    const response = await fetch('/api/suppliers');
+    const suppliers = await response.json();
+    // Extract vendor names from suppliers
+    vendors = suppliers.map(s => s.name).filter(v => v);
+    renderVendorDropdownList();
+  } catch (error) {
+    console.error('Error fetching vendors:', error);
+  }
+}
+
+function toggleVendorDropdown() {
+  const dropdown = document.getElementById('vendorDropdown');
+  dropdown.classList.toggle('open');
+  if (dropdown.classList.contains('open')) {
+    document.getElementById('vendorSearchInput').value = '';
+    document.getElementById('vendorSearchInput').focus();
+    renderVendorDropdownList();
+  }
+}
+
+function closeVendorDropdown() {
+  const dropdown = document.getElementById('vendorDropdown');
+  dropdown.classList.remove('open');
+}
+
+function filterVendors() {
+  renderVendorDropdownList();
+}
+
+function selectVendorFromDropdown(name) {
+  selectedVendor = name;
+  document.getElementById('preferredVendor').value = name;
+  document.getElementById('vendorDropdownText').textContent = name;
+  document.getElementById('vendorDropdownText').classList.add('has-value');
+  closeVendorDropdown();
+}
+
+function renderVendorDropdownList() {
+  const listContainer = document.getElementById('vendorDropdownList');
+  const searchInput = document.getElementById('vendorSearchInput');
+  const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+
+  const filtered = vendors.filter(v => v.toLowerCase().includes(searchTerm));
+
+  if (filtered.length === 0 && vendors.length === 0) {
+    listContainer.innerHTML = '<div style="padding: 12px 14px; color: #9ca3af; font-size: 13px;">No vendors yet. Add vendors in Purchases.</div>';
+    return;
+  }
+
+  if (filtered.length === 0) {
+    listContainer.innerHTML = '<div style="padding: 12px 14px; color: #9ca3af; font-size: 13px;">No matches found</div>';
+    return;
+  }
+
+  listContainer.innerHTML = filtered.map(name => {
+    const isSelected = selectedVendor === name;
+    return `
+      <div class="custom-dropdown-item ${isSelected ? 'selected' : ''}" onclick="selectVendorFromDropdown('${name}')">
+        <span>${name}</span>
+        ${isSelected ? '<span class="check-icon" style="margin-left:auto;">✓</span>' : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+document.addEventListener('click', function (e) {
+  const vendorDropdown = document.getElementById('vendorDropdown');
+  if (vendorDropdown && !vendorDropdown.contains(e.target)) {
+    vendorDropdown.classList.remove('open');
+  }
+});
+
+// Fetch vendors, manufacturers and brands when page loads
+document.addEventListener('DOMContentLoaded', function () {
+  fetchVendors();
+  fetchManufacturers();
+  fetchBrands();
+
+  // Event delegation for checkbox changes
+  document.addEventListener('change', function (e) {
+    if (e.target.classList.contains('item-checkbox')) {
+      handleCheckboxChange(e);
+    }
+  });
+});
 
 // Open Manage Brands Modal
 function openManageBrandsModal() {
@@ -368,7 +1683,7 @@ function cancelNewBrand() {
 }
 
 // Save New Brand
-function saveNewBrand() {
+async function saveNewBrand() {
   const nameInput = document.getElementById('newBrandName');
   const name = nameInput.value.trim();
 
@@ -377,24 +1692,28 @@ function saveNewBrand() {
     return;
   }
 
-  if (editingBrandIndex >= 0) {
-    // Editing existing
-    brands[editingBrandIndex] = name;
-    showToast(`Brand "${name}" updated`, 'success');
-  } else {
-    // Adding new
-    if (brands.includes(name)) {
+  try {
+    const response = await fetch('/api/brands', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name })
+    });
+
+    if (response.status === 409) {
       showToast('Brand already exists', 'error');
       return;
     }
-    brands.push(name);
-    showToast(`Brand "${name}" added`, 'success');
-  }
 
-  updateBrandDropdown();
-  document.getElementById('itemBrand').value = name;
-  renderBrandsList();
-  cancelNewBrand();
+    if (!response.ok) throw new Error('Failed to save brand');
+
+    await fetchBrands();
+    showToast(`Brand "${name}" added`, 'success');
+    document.getElementById('itemBrand').value = name;
+    cancelNewBrand();
+  } catch (error) {
+    console.error('Error saving brand:', error);
+    showToast('Failed to save brand', 'error');
+  }
 }
 
 // Edit Brand
@@ -408,13 +1727,19 @@ function editBrand(index) {
 }
 
 // Delete Brand
-function deleteBrand(index) {
-  const name = brands[index];
-  if (confirm(`Delete brand "${name}"?`)) {
-    brands.splice(index, 1);
-    updateBrandDropdown();
-    renderBrandsList();
-    showToast(`Brand "${name}" deleted`, 'success');
+async function deleteBrand(index) {
+  const brand = brandsData[index];
+  if (!brand) return;
+
+  if (confirm(`Delete brand "${brand.name}"?`)) {
+    try {
+      await fetch(`/api/brands/${brand.id}`, { method: 'DELETE' });
+      await fetchBrands();
+      showToast(`Brand "${brand.name}" deleted`, 'success');
+    } catch (error) {
+      console.error('Error deleting brand:', error);
+      showToast('Failed to delete brand', 'error');
+    }
   }
 }
 
@@ -477,10 +1802,23 @@ function toggleSelectAll() {
 
   if (selectAllCheckbox) {
     const isChecked = selectAllCheckbox.checked;
+    selectedItems = []; // Reset selected items array
 
     itemCheckboxes.forEach(checkbox => {
       checkbox.checked = isChecked;
+      const row = checkbox.closest('tr');
+      if (isChecked) {
+        const itemId = parseInt(checkbox.dataset.itemId);
+        if (!selectedItems.includes(itemId)) {
+          selectedItems.push(itemId);
+        }
+        if (row) row.classList.add('selected');
+      } else {
+        if (row) row.classList.remove('selected');
+      }
     });
+
+    updateBulkActionToolbar();
   }
 }
 
@@ -1189,16 +2527,51 @@ function renderItemsTable() {
     });
 
     return `
-      <tr class="${isSelected}" onclick="selectItem(${item.id})">
+      <tr class="${isSelected} ${selectedItems.includes(item.id) ? 'selected' : ''}" onclick="selectItem(${item.id})">
         <td class="zoho-td-filter"></td>
         <td class="zoho-td-checkbox" onclick="event.stopPropagation();">
-          <input type="checkbox" class="item-checkbox" data-item-id="${item.id}">
+          <input type="checkbox" class="item-checkbox" data-item-id="${item.id}" ${selectedItems.includes(item.id) ? 'checked' : ''}>
         </td>
         ${columnCells}
         <td class="zoho-td-search"></td>
       </tr>
     `;
   }).join('');
+
+  // Attach event listeners to checkboxes after rendering
+  attachCheckboxListeners();
+  updateBulkActionToolbar();
+}
+
+// Attach event listeners to all checkboxes
+function attachCheckboxListeners() {
+  const checkboxes = document.querySelectorAll('.item-checkbox');
+  checkboxes.forEach(checkbox => {
+    checkbox.removeEventListener('change', handleCheckboxChangeEvent);
+    checkbox.addEventListener('change', handleCheckboxChangeEvent);
+  });
+}
+
+// Event handler for checkbox change
+function handleCheckboxChangeEvent(e) {
+  e.stopPropagation();
+  const checkbox = e.target;
+  const itemId = parseInt(checkbox.dataset.itemId);
+
+  if (checkbox.checked) {
+    if (!selectedItems.includes(itemId)) {
+      selectedItems.push(itemId);
+    }
+    // Add selected class to row
+    checkbox.closest('tr').classList.add('selected');
+  } else {
+    selectedItems = selectedItems.filter(id => id !== itemId);
+    // Remove selected class from row
+    checkbox.closest('tr').classList.remove('selected');
+  }
+
+  updateBulkActionToolbar();
+  updateSelectAllCheckbox();
 }
 
 // Select item and show detail panel
@@ -1206,19 +2579,8 @@ async function selectItem(itemId) {
   selectedItemId = itemId;
   renderItemsTable();
 
-  const item = items.find(i => i.id === itemId);
-  if (!item) return;
-
-  const panel = document.getElementById('itemDetailPanel');
-  const container = document.getElementById('itemsContainer');
-
-  // Show detail panel
-  panel.style.display = 'flex';
-  container.classList.add('has-detail');
-  panel.classList.add('active');
-
-  // Load item details
-  await renderItemDetail(item);
+  // Open the fullscreen item detail view
+  openItemDetailView(itemId);
 }
 
 // Close item detail panel
@@ -1563,6 +2925,61 @@ function closeItemModal() {
   modal.classList.remove('active');
   document.getElementById('itemForm').reset();
   resetImageUpload();
+}
+
+// Save item (called from Save button)
+async function saveItem(event) {
+  if (event) event.preventDefault();
+
+  const itemId = document.getElementById('itemId').value;
+  const nameInput = document.getElementById('itemName').value.trim();
+  const skuInput = document.getElementById('itemSku').value.trim();
+  const unitInput = document.getElementById('itemUnit').value || 'pcs';
+  const quantityInput = document.getElementById('itemQuantity')?.value || '0';
+  const reorderPointInput = document.getElementById('itemReorderPoint')?.value || '10';
+  const priceInput = document.getElementById('itemPrice')?.value || '0';
+  const costInput = document.getElementById('itemCost')?.value || '0';
+  const wholesaleInput = document.getElementById('itemWholesale')?.checked || false;
+  const imageUrl = document.getElementById('itemImageUrl')?.value || null;
+
+  // Validate inputs
+  if (!nameInput) {
+    showToast('Item name is required', 'error');
+    return;
+  }
+
+  const quantity = parseInt(quantityInput) || 0;
+  const price = parseFloat(priceInput) || 0;
+  const reorderPoint = parseInt(reorderPointInput) || 10;
+  const cost = parseFloat(costInput) || 0;
+
+  const data = {
+    name: nameInput,
+    sku: skuInput || null,
+    unit: unitInput,
+    quantity: quantity,
+    reorder_point: reorderPoint,
+    price: price,
+    cost: cost,
+    can_be_wholesale: wholesaleInput,
+    image_url: imageUrl
+  };
+
+  try {
+    if (itemId) {
+      await itemsAPI.update(itemId, data);
+      showToast('Item updated successfully', 'success');
+    } else {
+      await itemsAPI.create(data);
+      showToast('Item created successfully', 'success');
+    }
+    closeItemModal();
+    await loadItems();
+    renderItemsTable();
+  } catch (error) {
+    console.error('Error saving item:', error);
+    showToast(error.message || 'Failed to save item', 'error');
+  }
 }
 
 // Edit item

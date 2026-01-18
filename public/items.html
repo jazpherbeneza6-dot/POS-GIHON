@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="/css/alert-dialog.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="/css/mobile.css">
+
   <link rel="stylesheet" href="/css/utilities.css">
   <link rel="stylesheet" href="/css/items-utilities.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
@@ -263,9 +263,9 @@
     /* Items Table Premium */
     .items-table-wrapper {
       background: white;
-      border-radius: 16px;
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-      overflow-x: auto;
+      border-radius: 0;
+      box-shadow: none;
+      overflow: visible;
       max-width: 100%;
     }
 
@@ -339,15 +339,16 @@
     .filter-dropdown-menu {
       display: none;
       position: absolute;
-      top: 100%;
+      top: calc(100% + 8px);
       left: 0;
       background: white;
+      border: 1px solid #e5e7eb;
       border-radius: 8px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-      min-width: 170px;
-      z-index: 1000;
-      padding: 6px 0;
-      margin-top: 6px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      min-width: 200px;
+      z-index: 9999;
+      padding: 8px 0;
+      overflow: visible;
     }
 
     .filter-dropdown-menu.active {
@@ -370,24 +371,23 @@
     .filter-dropdown-item {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 8px 12px;
+      gap: 12px;
+      padding: 10px 16px;
       cursor: pointer;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 500;
       color: #374151;
-      transition: all 0.2s ease;
-      letter-spacing: -0.01em;
+      transition: all 0.15s ease;
+      white-space: nowrap;
     }
 
     .filter-dropdown-item:first-child {
-      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      background: #3b82f6;
       color: white;
-      margin: 6px 8px 4px 8px;
+      margin: 4px 8px 8px 8px;
       border-radius: 6px;
-      padding: 8px 12px;
+      padding: 10px 16px;
       font-weight: 600;
-      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
     }
 
     .filter-dropdown-item:first-child .filter-dropdown-icon {
@@ -395,20 +395,22 @@
     }
 
     .filter-dropdown-item:hover {
-      background: #f0f4ff;
-      color: #2563eb;
+      background: #f3f4f6;
+      color: #1a1f3a;
     }
 
     .filter-dropdown-item:first-child:hover {
-      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-      box-shadow: 0 3px 8px rgba(37, 99, 235, 0.35);
+      background: #2563eb;
+      color: white;
     }
 
     .filter-dropdown-icon {
       font-size: 16px;
-      width: 22px;
+      width: 20px;
       text-align: center;
+      flex-shrink: 0;
     }
+
 
     .zoho-th-checkbox {
       width: 40px;
@@ -507,9 +509,12 @@
     }
 
     .zoho-td-checkbox input[type="checkbox"] {
-      width: 16px;
-      height: 16px;
+      width: 18px;
+      height: 18px;
       cursor: pointer;
+      accent-color: #3b82f6;
+      border: 2px solid #d1d5db;
+      border-radius: 4px;
     }
 
     .zoho-td-filter {
@@ -1103,7 +1108,7 @@
     }
 
     .dimension-input {
-      width: 60px !important;
+      width: 90px !important;
     }
 
     .dimension-x {
@@ -1112,7 +1117,7 @@
     }
 
     .dimension-unit {
-      width: 60px !important;
+      width: 80px !important;
     }
 
     .weight-row {
@@ -1566,6 +1571,38 @@
       font-weight: bold;
     }
 
+    .dropdown-item-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+    }
+
+    .dropdown-delete-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: #ef4444;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 0 4px;
+      line-height: 1;
+      opacity: 0.7;
+    }
+
+    .dropdown-delete-btn:hover {
+      opacity: 1;
+    }
+
+    .custom-dropdown-item:hover .dropdown-delete-btn {
+      display: block;
+    }
+
+    .custom-dropdown-item.selected .dropdown-delete-btn {
+      color: white;
+    }
+
     .custom-dropdown-manage {
       padding: 12px 14px;
       border-top: 1px solid #e5e7eb;
@@ -1584,6 +1621,61 @@
 
     .custom-dropdown-manage .manage-icon {
       font-size: 14px;
+    }
+
+    .custom-dropdown-category {
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #6b7280;
+      background: #f9fafb;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .custom-dropdown-category:first-child {
+      border-top: none;
+    }
+
+    /* Create Account Modal Styles */
+    .create-account-form {
+      padding: 20px 0;
+      border-bottom: 1px solid #e5e7eb;
+      margin-bottom: 20px;
+    }
+
+    .create-account-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .create-account-label {
+      width: 120px;
+      flex-shrink: 0;
+      font-size: 14px;
+      color: #dc2626;
+      font-weight: 500;
+      padding-top: 10px;
+    }
+
+    .create-account-input {
+      flex: 1;
+      padding: 10px 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .create-account-input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .create-account-actions {
+      display: flex;
+      gap: 12px;
     }
 
     .item-badge {
@@ -3225,12 +3317,1206 @@
         width: 100%;
       }
     }
+
+    /* ========== ITEM DETAIL FULLSCREEN VIEW ========== */
+    .item-detail-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 260px;
+      /* Match main sidebar width (260px) */
+      right: 0;
+      bottom: 0;
+      background: #f5f6fa;
+      z-index: 1000;
+      overflow: hidden;
+    }
+
+    .item-detail-overlay.active {
+      display: flex;
+    }
+
+    .item-detail-left {
+      width: 280px;
+      background: white;
+      border-right: 1px solid #e5e7eb;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .item-detail-left-header {
+      padding: 16px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .item-detail-left-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1f2937;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .item-detail-left-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .item-detail-left-btn {
+      width: 28px;
+      height: 28px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .item-detail-left-list {
+      flex: 1;
+      overflow-y: auto;
+      background: white;
+    }
+
+    .item-detail-left-item {
+      padding: 14px 16px;
+      border-bottom: 1px solid #f0f0f0;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      position: relative;
+      border-left: 3px solid transparent;
+    }
+
+    .item-detail-left-item:hover {
+      background: #fafafa;
+    }
+
+    .item-detail-left-item.active {
+      background: #f8f9fa;
+      border-left: 3px solid #5a6acf;
+    }
+
+    .item-detail-left-item-name {
+      font-size: 13px;
+      color: #333;
+      font-weight: 500;
+      margin-bottom: 3px;
+    }
+
+    .item-detail-left-item-sku {
+      font-size: 11px;
+      color: #888;
+    }
+
+    .item-detail-left-item-price {
+      font-size: 13px;
+      color: #1f2937;
+      font-weight: 600;
+      float: right;
+      margin-top: -28px;
+    }
+
+    .item-detail-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .item-detail-main-header {
+      padding: 16px 24px;
+      background: white;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .item-detail-title-section h1 {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1f2937;
+      margin: 0 0 4px 0;
+    }
+
+    .item-detail-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .item-detail-tabs {
+      display: flex;
+      gap: 24px;
+      margin-top: 12px;
+    }
+
+    .item-detail-tab {
+      padding: 8px 0;
+      font-size: 13px;
+      color: #6b7280;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+    }
+
+    .item-detail-tab.active {
+      color: #3b82f6;
+      border-bottom-color: #3b82f6;
+    }
+
+    .item-detail-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-adjust-stock {
+      padding: 8px 16px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .btn-more {
+      padding: 8px 16px;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .btn-close-detail {
+      width: 32px;
+      height: 32px;
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: #6b7280;
+      cursor: pointer;
+    }
+
+    .item-detail-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      gap: 24px;
+    }
+
+    .item-detail-content {
+      flex: 1;
+    }
+
+    .item-detail-sidebar {
+      width: 320px;
+    }
+
+    .detail-section {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .detail-section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 16px;
+    }
+
+    .detail-row {
+      display: flex;
+      padding: 8px 0;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+
+    .detail-label {
+      width: 140px;
+      color: #6b7280;
+      font-size: 13px;
+    }
+
+    .detail-value {
+      flex: 1;
+      color: #1f2937;
+      font-size: 13px;
+    }
+
+    .detail-value a {
+      color: #3b82f6;
+      text-decoration: none;
+    }
+
+    /* Right sidebar image upload */
+    .detail-image-area {
+      background: white;
+      border-radius: 8px;
+      padding: 24px;
+      text-align: center;
+      border: 2px dashed #e5e7eb;
+      margin-bottom: 20px;
+    }
+
+    .detail-image-icon {
+      font-size: 48px;
+      color: #d1d5db;
+      margin-bottom: 8px;
+    }
+
+    .detail-image-text {
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    .detail-image-link {
+      color: #3b82f6;
+      cursor: pointer;
+    }
+
+    /* Stock panels */
+    .stock-panel {
+      background: white;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .stock-panel-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stock-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      font-size: 13px;
+    }
+
+    .stock-label {
+      color: #6b7280;
+    }
+
+    .stock-value {
+      color: #1f2937;
+    }
+
+    .stock-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .stock-box {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .stock-box-number {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .stock-box-unit {
+      font-size: 11px;
+      color: #6b7280;
+    }
+
+    .stock-box-label {
+      font-size: 11px;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+
+    .reorder-point {
+      background: white;
+      border-radius: 8px;
+      padding: 16px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .reorder-point-title {
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 4px;
+    }
+
+    .reorder-point-value {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    /* ========== BULK ACTION TOOLBAR ========== */
+    .bulk-action-toolbar {
+      display: none;
+      position: sticky;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      border-bottom: 1px solid #e8e8e8;
+      padding: 16px 24px;
+      z-index: 100;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      min-height: 64px;
+      box-sizing: border-box;
+      margin: -24px -24px 0 -24px;
+      width: calc(100% + 48px);
+    }
+
+    .bulk-action-toolbar.active {
+      display: flex;
+    }
+
+    .bulk-action-toolbar.active+.zoho-items-header {
+      display: none;
+    }
+
+    .bulk-action-btn {
+      padding: 8px 16px;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #374151;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .bulk-action-btn:hover {
+      background: #f3f4f6;
+      border-color: #d1d5db;
+    }
+
+    .bulk-action-btn-primary {
+      background: #3b82f6;
+      border-color: #3b82f6;
+      color: white;
+    }
+
+    .bulk-action-btn-primary:hover {
+      background: #2563eb;
+      border-color: #2563eb;
+    }
+
+    .bulk-action-btn-danger {
+      background: #ef4444;
+      border-color: #ef4444;
+      color: white;
+    }
+
+    .bulk-action-btn-danger:hover {
+      background: #dc2626;
+      border-color: #dc2626;
+    }
+
+    .bulk-action-btn-dropdown {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .bulk-action-btn-dropdown .dropdown-arrow {
+      font-size: 10px;
+      transition: transform 0.2s;
+    }
+
+    .bulk-action-btn-dropdown.active .dropdown-arrow {
+      transform: rotate(180deg);
+    }
+
+    .new-transaction-dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .new-transaction-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: 4px;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      min-width: 180px;
+      z-index: 1000;
+      overflow: hidden;
+    }
+
+    .new-transaction-menu.show {
+      display: block;
+    }
+
+    .transaction-option {
+      padding: 12px 16px;
+      font-size: 14px;
+      color: #1a1f3a;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .transaction-option:hover {
+      background: #f3f4f6;
+    }
+
+    .transaction-option.selected {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .transaction-option.selected:hover {
+      background: #2563eb;
+    }
+
+    .bulk-action-more {
+      padding: 8px 12px;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      font-size: 16px;
+      color: #6b7280;
+      cursor: pointer;
+    }
+
+    .bulk-action-more:hover {
+      background: #f3f4f6;
+    }
+
+    .bulk-action-count {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: #374151;
+    }
+
+    .bulk-action-count-number {
+      background: #3b82f6;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
   </style>
 </head>
 
 <body>
   <!-- Toast Container -->
   <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Grouping of Items Modal -->
+  <div class="modal" id="groupingModal">
+    <div class="modal-content" style="max-width: 650px;">
+      <div class="modal-header" style="background: white; color: #1a1f3a; border-bottom: 1px solid #e5e7eb;">
+        <h2 style="font-size: 18px; font-weight: 600;">Grouping of Items</h2>
+        <button onclick="closeGroupingModal()"
+          style="color: #ef4444; font-size: 28px; background: none; border: none; cursor: pointer;">×</button>
+      </div>
+      <div class="modal-body" style="padding: 24px;">
+        <!-- Radio Options -->
+        <div
+          style="display: grid; grid-template-columns: 140px 1fr; gap: 16px; margin-bottom: 24px; align-items: start;">
+          <label style="font-size: 14px; color: #374151; padding-top: 4px;">Would you like to</label>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+              <input type="radio" name="groupingOption" id="groupingOptionNew" value="new" checked
+                onchange="toggleGroupingOption('new')" style="accent-color: #3b82f6;">
+              <span style="font-size: 14px; color: #1a1f3a;">Create a new Item Group</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+              <input type="radio" name="groupingOption" id="groupingOptionExisting" value="existing"
+                onchange="toggleGroupingOption('existing')" style="accent-color: #3b82f6;">
+              <span style="font-size: 14px; color: #1a1f3a;">Add them to an existing Item Group</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- New Group Section -->
+        <div id="newGroupSection">
+          <div
+            style="display: grid; grid-template-columns: 140px 1fr; gap: 16px; margin-bottom: 16px; align-items: center;">
+            <label style="font-size: 14px; color: #ef4444;">Item Group Name<span
+                style="color: #ef4444;">*</span></label>
+            <input type="text" id="newGroupName" class="form-input"
+              style="padding: 10px 14px; border: 1px solid #3b82f6; border-radius: 4px; font-size: 14px;"
+              placeholder="">
+          </div>
+          <div
+            style="display: grid; grid-template-columns: 140px 1fr; gap: 16px; margin-bottom: 16px; align-items: center;">
+            <label style="font-size: 14px; color: #374151; display: flex; align-items: center; gap: 4px;">Unit<span
+                style="color: #ef4444;">*</span> <span
+                style="width: 14px; height: 14px; border: 1px solid #9ca3af; border-radius: 50%; font-size: 10px; display: inline-flex; align-items: center; justify-content: center; color: #9ca3af;">?</span></label>
+            <select id="newGroupUnit" class="form-input"
+              style="padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px; background: white;">
+              <option value="">Select or type to add</option>
+              <option value="pcs">pcs</option>
+              <option value="kg">kg</option>
+              <option value="lbs">lbs</option>
+              <option value="box">box</option>
+              <option value="pack">pack</option>
+            </select>
+          </div>
+          <div
+            style="display: grid; grid-template-columns: 140px 1fr; gap: 16px; margin-bottom: 16px; align-items: center;">
+            <label style="font-size: 14px; color: #ef4444;">Attribute and Options<span
+                style="color: #ef4444;">*</span></label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" id="createAttributes" style="accent-color: #3b82f6;">
+              <span style="font-size: 14px; color: #1a1f3a;">Create Attributes and Options</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Existing Group Section -->
+        <div id="existingGroupSection" style="display: none;">
+          <div
+            style="display: grid; grid-template-columns: 140px 1fr; gap: 16px; margin-bottom: 16px; align-items: center;">
+            <label style="font-size: 14px; color: #ef4444;">Item Group Name<span
+                style="color: #ef4444;">*</span></label>
+            <select id="existingGroupSelect" class="form-input"
+              style="padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px; background: white;">
+              <option value="">Choose Item Group</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Items to be grouped table -->
+        <div style="margin-top: 24px; border-top: 1px solid #e5e7eb; padding-top: 16px;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr style="border-bottom: 1px solid #e5e7eb;">
+                <th
+                  style="text-align: left; padding: 10px 0; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase;">
+                  Items to be Grouped</th>
+                <th
+                  style="text-align: left; padding: 10px 0; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; display: flex; align-items: center; gap: 4px;">
+                  SKU <span
+                    style="width: 14px; height: 14px; border: 1px solid #9ca3af; border-radius: 50%; font-size: 10px; display: inline-flex; align-items: center; justify-content: center; color: #9ca3af;">?</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody id="groupingItemsBody">
+              <!-- Items will be populated here -->
+            </tbody>
+          </table>
+          <div id="noAttributesMessage"
+            style="text-align: center; padding: 16px; color: #3b82f6; font-size: 14px; display: none;">
+            No attributes present for this group! Go ahead and move this item.
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div style="padding: 16px 24px; border-top: 1px solid #e5e7eb; display: flex; gap: 12px;">
+        <button onclick="saveGrouping()" class="btn btn-primary"
+          style="padding: 10px 20px; background: #3b82f6; color: white; border: none; border-radius: 4px; font-size: 14px; font-weight: 500; cursor: pointer;">Save</button>
+        <button onclick="closeGroupingModal()" class="btn btn-secondary"
+          style="padding: 10px 20px; background: #374151; color: white; border: none; border-radius: 4px; font-size: 14px; font-weight: 500; cursor: pointer;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bulk Update Modal -->
+  <div class="modal" id="bulkUpdateModal">
+    <div class="modal-content bulk-update-modal-content">
+      <div class="bulk-update-header">
+        <h2>Bulk Update Items</h2>
+        <button onclick="closeBulkUpdateModal()" class="bulk-update-close">×</button>
+      </div>
+      <div class="bulk-update-body">
+        <p class="bulk-update-instruction">Choose a field from the dropdown and update with new information.</p>
+
+        <!-- Field Selection and Value Row -->
+        <div class="bulk-update-row">
+          <!-- Custom Dropdown -->
+          <div class="bulk-update-dropdown-wrapper" id="bulkUpdateDropdown">
+            <div class="bulk-update-select" id="bulkUpdateSelect" onclick="toggleBulkUpdateDropdown()">
+              <span id="bulkUpdateFieldText">Select a field</span>
+              <span id="bulkUpdateArrow" class="bulk-update-arrow">▼</span>
+            </div>
+            <div class="bulk-update-menu" id="bulkUpdateDropdownMenu">
+              <div class="bulk-update-search-box">
+                <svg class="bulk-search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                  fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                    clip-rule="evenodd" />
+                </svg>
+                <input type="text" id="bulkUpdateSearch" placeholder="Search" oninput="filterBulkUpdateFields()">
+              </div>
+              <div class="bulk-update-options" id="bulkUpdateFieldsList">
+                <div class="bulk-field-option" data-field="brand" onclick="selectBulkUpdateField('brand', 'Brand')">
+                  Brand</div>
+                <div class="bulk-field-option" data-field="manufacturer"
+                  onclick="selectBulkUpdateField('manufacturer', 'Manufacturer')">Manufacturer</div>
+                <div class="bulk-field-option" data-field="sales_description"
+                  onclick="selectBulkUpdateField('sales_description', 'Sales Description')">Sales Description</div>
+                <div class="bulk-field-option" data-field="selling_price"
+                  onclick="selectBulkUpdateField('selling_price', 'Selling Price')">Selling Price</div>
+                <div class="bulk-field-option" data-field="sales_account"
+                  onclick="selectBulkUpdateField('sales_account', 'Sales Account')">Sales Account</div>
+                <div class="bulk-field-option" data-field="tax" onclick="selectBulkUpdateField('tax', 'Tax')">Tax</div>
+                <div class="bulk-field-option" data-field="purchase_cost"
+                  onclick="selectBulkUpdateField('purchase_cost', 'Purchase Price')">Purchase Price</div>
+                <div class="bulk-field-option" data-field="purchase_account"
+                  onclick="selectBulkUpdateField('purchase_account', 'Purchase Account')">Purchase Account</div>
+                <div class="bulk-field-option" data-field="inventory_account"
+                  onclick="selectBulkUpdateField('inventory_account', 'Inventory Account')">Inventory Account</div>
+                <div class="bulk-field-option" data-field="valuation_method"
+                  onclick="selectBulkUpdateField('valuation_method', 'Inventory Valuation Method')">Inventory Valuation
+                  Method</div>
+                <div class="bulk-field-option" data-field="purchase_description"
+                  onclick="selectBulkUpdateField('purchase_description', 'Purchase Description')">Purchase Description
+                </div>
+                <div class="bulk-field-option" data-field="returnable"
+                  onclick="selectBulkUpdateField('returnable', 'Returnable')">Returnable</div>
+                <div class="bulk-field-option" data-field="unit" onclick="selectBulkUpdateField('unit', 'Unit')">Unit
+                </div>
+                <div class="bulk-field-option" data-field="reorder_point"
+                  onclick="selectBulkUpdateField('reorder_point', 'Reorder Point')">Reorder Point</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Value Dropdown -->
+          <div class="bulk-update-value-wrapper">
+            <div class="bulk-update-dropdown-wrapper" id="bulkValueDropdown">
+              <div class="bulk-update-select" id="bulkValueSelect" onclick="toggleBulkValueDropdown()">
+                <span id="bulkValueText">Select value</span>
+                <span class="bulk-update-arrow">▼</span>
+              </div>
+              <div class="bulk-update-menu" id="bulkValueDropdownMenu">
+                <div class="bulk-update-search-box">
+                  <svg class="bulk-search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path fill-rule="evenodd"
+                      d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                      clip-rule="evenodd" />
+                  </svg>
+                  <input type="text" id="bulkValueSearch" placeholder="Search" oninput="filterBulkValueOptions()">
+                </div>
+                <div class="bulk-update-options" id="bulkValueList">
+                  <!-- Options populated dynamically -->
+                  <div class="bulk-value-empty">Select a field first</div>
+                </div>
+              </div>
+            </div>
+            <!-- Textarea for description fields -->
+            <div id="bulkDescriptionTextarea" class="bulk-description-textarea" style="display: none;">
+              <textarea id="bulkDescriptionInput" placeholder="" rows="4"
+                oninput="document.getElementById('bulkUpdateValue').value = this.value;"></textarea>
+            </div>
+            <input type="hidden" id="bulkUpdateValue">
+          </div>
+        </div>
+
+        <!-- Note -->
+        <p class="bulk-update-note">
+          <strong>Note:</strong> All the selected items will be updated with the new information and you cannot undo
+          this action.
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div class="bulk-update-footer">
+        <button onclick="executeBulkUpdate()" class="bulk-update-btn-primary">Update</button>
+        <button onclick="closeBulkUpdateModal()" class="bulk-update-btn-secondary">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+
+  <style>
+    .bulk-update-modal-content {
+      max-width: 620px;
+      border-radius: 8px;
+      overflow: visible;
+    }
+
+    .bulk-update-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 24px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .bulk-update-header h2 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1a1f3a;
+      margin: 0;
+    }
+
+    .bulk-update-close {
+      color: #ef4444;
+      font-size: 28px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0;
+    }
+
+    .bulk-update-body {
+      padding: 24px;
+    }
+
+    .bulk-update-instruction {
+      font-size: 14px;
+      color: #374151;
+      margin: 0 0 20px 0;
+    }
+
+    .bulk-update-row {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .bulk-update-dropdown-wrapper {
+      flex: 1;
+      position: relative;
+    }
+
+    .bulk-update-select {
+      padding: 12px 14px;
+      border: 2px solid #d1d5db;
+      border-radius: 6px;
+      background: white;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      color: #6b7280;
+      transition: border-color 0.2s;
+    }
+
+    .bulk-update-select.active {
+      border-color: #3b82f6;
+      border-radius: 6px 6px 0 0;
+    }
+
+    .bulk-update-select.active #bulkUpdateFieldText {
+      color: #1a1f3a;
+    }
+
+    .bulk-update-arrow {
+      font-size: 12px;
+      color: #3b82f6;
+      transition: transform 0.2s;
+    }
+
+    .bulk-update-select.active .bulk-update-arrow {
+      transform: rotate(180deg);
+    }
+
+    .bulk-update-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 2px solid #3b82f6;
+      border-top: none;
+      border-radius: 0 0 6px 6px;
+      max-height: 280px;
+      overflow: hidden;
+      z-index: 1000;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .bulk-update-search-box {
+      padding: 12px;
+      border-bottom: 1px solid #e5e7eb;
+      position: relative;
+    }
+
+    .bulk-search-icon {
+      position: absolute;
+      left: 22px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      color: #9ca3af;
+    }
+
+    .bulk-update-search-box input {
+      width: 100%;
+      padding: 10px 12px 10px 36px;
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .bulk-update-search-box input:focus {
+      border-color: #3b82f6;
+    }
+
+    .bulk-update-options {
+      max-height: 220px;
+      overflow-y: auto;
+    }
+
+    .bulk-field-option {
+      padding: 12px 16px;
+      font-size: 14px;
+      color: #1a1f3a;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .bulk-field-option:hover {
+      background: #f3f4f6;
+    }
+
+    .bulk-field-option.selected {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .bulk-field-option.selected:hover {
+      background: #2563eb;
+    }
+
+    .bulk-value-option {
+      padding: 12px 16px;
+      font-size: 14px;
+      color: #1a1f3a;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .bulk-value-option:hover {
+      background: #f3f4f6;
+    }
+
+    .bulk-value-option.selected {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .bulk-value-option.selected:hover {
+      background: #2563eb;
+    }
+
+    .bulk-value-empty,
+    .bulk-value-loading {
+      padding: 16px;
+      text-align: center;
+      color: #9ca3af;
+      font-size: 14px;
+    }
+
+    .bulk-update-value-wrapper {
+      flex: 1;
+    }
+
+    .bulk-update-value-input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .bulk-update-value-input:focus {
+      border-color: #3b82f6;
+    }
+
+    .bulk-description-textarea {
+      flex: 1;
+    }
+
+    .bulk-description-textarea textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 14px;
+      outline: none;
+      resize: vertical;
+      min-height: 80px;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+
+    .bulk-description-textarea textarea:focus {
+      border-color: #3b82f6;
+    }
+
+    .bulk-update-note {
+      font-size: 13px;
+      color: #6b7280;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .bulk-update-note strong {
+      color: #ef4444;
+    }
+
+    .bulk-update-footer {
+      padding: 16px 24px;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      gap: 12px;
+    }
+
+    .bulk-update-btn-primary {
+      padding: 10px 24px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .bulk-update-btn-primary:hover {
+      background: #2563eb;
+    }
+
+    .bulk-update-btn-secondary {
+      padding: 10px 24px;
+      background: #374151;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .bulk-update-btn-secondary:hover {
+      background: #1f2937;
+    }
+  </style>
+
+  <!-- Item Detail Fullscreen Overlay -->
+  <div class="item-detail-overlay" id="itemDetailOverlay">
+    <div class="item-detail-left">
+      <div class="item-detail-left-header">
+        <div class="item-detail-left-title">
+          Active Items <span>▼</span>
+        </div>
+        <div class="item-detail-left-actions">
+          <button class="item-detail-left-btn" onclick="openItemModal()">+</button>
+          <button class="item-detail-left-btn" style="background:#6b7280;">⋯</button>
+        </div>
+      </div>
+      <div class="item-detail-left-list" id="itemDetailLeftList">
+        <!-- Items list populated dynamically -->
+      </div>
+    </div>
+    <div class="item-detail-main">
+      <div class="item-detail-main-header">
+        <div class="item-detail-title-section">
+          <h1 id="detailItemName">Item Name</h1>
+          <div class="item-detail-badge">
+            <span>↻</span> Returnable Item
+          </div>
+          <div class="item-detail-tabs">
+            <div class="item-detail-tab active">Overview</div>
+            <div class="item-detail-tab">Transactions</div>
+            <div class="item-detail-tab">History</div>
+          </div>
+        </div>
+        <div class="item-detail-actions">
+          <button class="btn-adjust-stock" onclick="openAdjustStockModal()">✏️ Adjust Stock</button>
+          <button class="btn-more">More ▼</button>
+          <button class="btn-close-detail" onclick="closeItemDetailView()">×</button>
+        </div>
+      </div>
+      <div class="item-detail-body">
+        <div class="item-detail-content">
+          <!-- Item Information Section -->
+          <div class="detail-section">
+            <div class="detail-row">
+              <div class="detail-label">Item Type</div>
+              <div class="detail-value" id="detailItemType">Inventory Items</div>
+            </div>
+            <div class="detail-row">
+              <div class="detail-label">SKU</div>
+              <div class="detail-value" id="detailItemSku">-</div>
+            </div>
+            <div class="detail-row">
+              <div class="detail-label">Unit</div>
+              <div class="detail-value" id="detailItemUnit">pcs</div>
+            </div>
+            <div class="detail-row">
+              <div class="detail-label">Manufacturer</div>
+              <div class="detail-value" id="detailItemManufacturer">-</div>
+            </div>
+            <div class="detail-row">
+              <div class="detail-label">Brand</div>
+              <div class="detail-value" id="detailItemBrand">-</div>
+            </div>
+            <div class="detail-row">
+              <div class="detail-label">Created Source</div>
+              <div class="detail-value">User</div>
+            </div>
+          </div>
+
+          <!-- Purchase Information Section -->
+          <div class="detail-section">
+            <div class="detail-section-title">Purchase Information</div>
+            <div class="detail-row">
+              <div class="detail-label">Cost Price</div>
+              <div class="detail-value" id="detailItemCost">PHP0.00</div>
+            </div>
+            <div class="detail-row">
+              <div class="detail-label">Purchase Account</div>
+              <div class="detail-value">Cost of Goods Sold</div>
+            </div>
+          </div>
+
+          <!-- Sales Information Section -->
+          <div class="detail-section">
+            <div class="detail-section-title">Sales Information</div>
+            <div class="detail-row">
+              <div class="detail-label">Selling Price</div>
+              <div class="detail-value" id="detailItemPrice">PHP0.00</div>
+            </div>
+            <div class="detail-row">
+              <div class="detail-label">Sales Account</div>
+              <div class="detail-value">Sales</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="item-detail-sidebar">
+          <!-- Image Upload Area -->
+          <div class="detail-image-area">
+            <div class="detail-image-icon">🖼️</div>
+            <div class="detail-image-text">
+              Drag image(s) here or<br>
+              <span class="detail-image-link">Browse Images</span>
+            </div>
+          </div>
+
+          <!-- Opening Stock -->
+          <div class="stock-panel">
+            <div class="stock-panel-title">
+              Opening Stock : <span id="detailOpeningStock">0.00</span>
+              <span style="margin-left:auto;color:#3b82f6;font-size:12px;cursor:pointer;">✏️ Edit</span>
+            </div>
+          </div>
+
+          <!-- Accounting Stock -->
+          <div class="stock-panel">
+            <div class="stock-panel-title">Accounting Stock <span style="color:#9ca3af;">ⓘ</span></div>
+            <div class="stock-row">
+              <span class="stock-label">Stock on Hand</span>
+              <span class="stock-value" id="detailStockOnHand">: 0.00</span>
+            </div>
+            <div class="stock-row">
+              <span class="stock-label">Committed Stock</span>
+              <span class="stock-value">: 0.00</span>
+            </div>
+            <div class="stock-row">
+              <span class="stock-label">Available for Sale</span>
+              <span class="stock-value">: 0.00</span>
+            </div>
+          </div>
+
+          <!-- Physical Stock -->
+          <div class="stock-panel">
+            <div class="stock-panel-title">Physical Stock <span style="color:#9ca3af;">ⓘ</span></div>
+            <div class="stock-row">
+              <span class="stock-label">Stock on Hand</span>
+              <span class="stock-value" id="detailPhysicalStock">: 0.00</span>
+            </div>
+            <div class="stock-row">
+              <span class="stock-label">Committed Stock</span>
+              <span class="stock-value">: 0.00</span>
+            </div>
+            <div class="stock-row">
+              <span class="stock-label">Available for Sale</span>
+              <span class="stock-value">: 0.00</span>
+            </div>
+          </div>
+
+          <!-- Stock Boxes -->
+          <div class="stock-grid">
+            <div class="stock-box">
+              <div class="stock-box-number">0</div>
+              <div class="stock-box-unit">Qty</div>
+              <div class="stock-box-label">To be Shipped</div>
+            </div>
+            <div class="stock-box">
+              <div class="stock-box-number">0</div>
+              <div class="stock-box-unit">Qty</div>
+              <div class="stock-box-label">To be Received</div>
+            </div>
+            <div class="stock-box">
+              <div class="stock-box-number">0</div>
+              <div class="stock-box-unit">Qty</div>
+              <div class="stock-box-label">To be Invoiced</div>
+            </div>
+            <div class="stock-box">
+              <div class="stock-box-number">0</div>
+              <div class="stock-box-unit">Qty</div>
+              <div class="stock-box-label">To be Billed</div>
+            </div>
+          </div>
+
+          <!-- Reorder Point -->
+          <div class="reorder-point">
+            <div class="reorder-point-title">Reorder Point</div>
+            <div class="reorder-point-value" id="detailReorderPoint">0.00</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Manage Manufacturers Modal -->
   <div id="manageManufacturersModal" class="manage-modal">
@@ -3287,6 +4573,28 @@
     </div>
   </div>
 
+  <!-- Create Account Modal -->
+  <div id="createAccountModal" class="manage-modal">
+    <div class="manage-modal-content" style="max-width: 450px;">
+      <div class="manage-modal-header">
+        <h2>Create Account</h2>
+        <button class="manage-modal-close" onclick="closeCreateAccountModal()">×</button>
+      </div>
+      <div class="manage-modal-body">
+        <div class="create-account-form">
+          <div class="create-account-row">
+            <label class="create-account-label">Account Name*</label>
+            <input type="text" class="create-account-input" id="newAccountName" required>
+          </div>
+        </div>
+        <div class="create-account-actions">
+          <button class="btn-save-select" onclick="saveNewAccount()">Save and Select</button>
+          <button class="btn-cancel-form" onclick="closeCreateAccountModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Sidebar Container -->
   <div id="sidebarContainer"></div>
 
@@ -3306,6 +4614,32 @@
   <!-- Main Content -->
   <div class="main-layout">
     <div class="content" id="content">
+      <!-- Bulk Action Toolbar -->
+      <div class="bulk-action-toolbar" id="bulkActionToolbar">
+        <button class="bulk-action-btn bulk-action-btn-danger" onclick="bulkDeleteItems()">🗑️ Delete</button>
+        <button class="bulk-action-btn" onclick="bulkUpdate()">Bulk Update</button>
+        <div class="new-transaction-dropdown">
+          <button class="bulk-action-btn bulk-action-btn-dropdown" onclick="toggleNewTransactionDropdown()">
+            New Transaction <span class="dropdown-arrow">▼</span>
+          </button>
+          <div class="new-transaction-menu" id="newTransactionMenu">
+            <div class="transaction-option selected" onclick="selectTransaction('sales_order')">Sales Order</div>
+            <div class="transaction-option" onclick="selectTransaction('invoice')">Invoice</div>
+            <div class="transaction-option" onclick="selectTransaction('sales_receipt')">Sales Receipt</div>
+            <div class="transaction-option" onclick="selectTransaction('purchase_order')">Purchase Order</div>
+            <div class="transaction-option" onclick="selectTransaction('bill')">Bill</div>
+          </div>
+        </div>
+        <button class="bulk-action-btn" onclick="bulkMarkActive()">Mark as Active</button>
+        <button class="bulk-action-btn" onclick="bulkMarkInactive()">Mark as Inactive</button>
+        <button class="bulk-action-btn" onclick="bulkAddToGroup()">Add to group</button>
+        <button class="bulk-action-btn" onclick="bulkMarkReturnable()">Mark as Returnable</button>
+        <button class="bulk-action-more" onclick="showMoreBulkActions()">⋯</button>
+        <div class="bulk-action-count">
+          <span class="bulk-action-count-number" id="selectedItemCount">0</span>
+          <span>Selected</span>
+        </div>
+      </div>
       <!-- Zoho-style Header -->
       <div class="zoho-items-header">
         <div class="zoho-header-left">
@@ -3674,9 +5008,23 @@
 
               <div class="section-row">
                 <label class="section-label required">Account*</label>
-                <select class="form-select" id="salesAccount">
-                  <option value="sales">Sales</option>
-                </select>
+                <input type="hidden" id="salesAccount" value="sales">
+                <div class="custom-dropdown" id="salesAccountDropdown">
+                  <div class="custom-dropdown-header" onclick="toggleSalesAccountDropdown()">
+                    <span class="custom-dropdown-text has-value" id="salesAccountDropdownText">Sales</span>
+                    <span class="custom-dropdown-arrow">▼</span>
+                  </div>
+                  <div class="custom-dropdown-menu" id="salesAccountDropdownMenu">
+                    <div class="custom-dropdown-search">
+                      <span class="search-icon">🔍</span>
+                      <input type="text" class="custom-dropdown-search-input" id="salesAccountSearchInput"
+                        placeholder="Search" oninput="filterSalesAccounts()">
+                    </div>
+                    <div class="custom-dropdown-list" id="salesAccountDropdownList">
+                      <!-- Accounts will be listed here -->
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div class="section-row">
@@ -3712,9 +5060,28 @@
 
               <div class="section-row">
                 <label class="section-label required">Account*</label>
-                <select class="form-select" id="purchaseAccount">
-                  <option value="cost_of_goods">Cost of Goods Sold</option>
-                </select>
+                <input type="hidden" id="purchaseAccount" value="cost_of_goods">
+                <div class="custom-dropdown" id="purchaseAccountDropdown">
+                  <div class="custom-dropdown-header" onclick="togglePurchaseAccountDropdown()">
+                    <span class="custom-dropdown-text has-value" id="purchaseAccountDropdownText">Cost of Goods
+                      Sold</span>
+                    <span class="custom-dropdown-arrow">▼</span>
+                  </div>
+                  <div class="custom-dropdown-menu" id="purchaseAccountDropdownMenu">
+                    <div class="custom-dropdown-search">
+                      <span class="search-icon">🔍</span>
+                      <input type="text" class="custom-dropdown-search-input" id="purchaseAccountSearchInput"
+                        placeholder="Search" oninput="filterPurchaseAccounts()">
+                    </div>
+                    <div class="custom-dropdown-list" id="purchaseAccountDropdownList">
+                      <!-- Accounts will be listed here -->
+                    </div>
+                    <div class="custom-dropdown-manage" onclick="addNewPurchaseAccount()">
+                      <span class="manage-icon">➕</span>
+                      <span>New Account</span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div class="section-row">
@@ -3731,9 +5098,23 @@
 
               <div class="section-row">
                 <label class="section-label">Preferred Vendor</label>
-                <select class="form-select" id="preferredVendor">
-                  <option value=""></option>
-                </select>
+                <input type="hidden" id="preferredVendor" value="">
+                <div class="custom-dropdown" id="vendorDropdown">
+                  <div class="custom-dropdown-header" onclick="toggleVendorDropdown()">
+                    <span class="custom-dropdown-text" id="vendorDropdownText"></span>
+                    <span class="custom-dropdown-arrow">▼</span>
+                  </div>
+                  <div class="custom-dropdown-menu" id="vendorDropdownMenu">
+                    <div class="custom-dropdown-search">
+                      <span class="search-icon">🔍</span>
+                      <input type="text" class="custom-dropdown-search-input" id="vendorSearchInput"
+                        placeholder="Search" oninput="filterVendors()">
+                    </div>
+                    <div class="custom-dropdown-list" id="vendorDropdownList">
+                      <!-- Vendors will be listed here -->
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
