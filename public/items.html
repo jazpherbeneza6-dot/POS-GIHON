@@ -249,6 +249,190 @@
       color: #6c757d;
     }
 
+    .zoho-more-btn:hover {
+      background: #f3f4f6;
+    }
+
+    .zoho-more-dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .more-dropdown-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      min-width: 180px;
+      z-index: 9999;
+      padding: 8px 0;
+    }
+
+    .more-dropdown-menu.show {
+      display: block;
+    }
+
+    .more-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #374151;
+      transition: all 0.15s ease;
+      position: relative;
+    }
+
+    .more-dropdown-item:hover {
+      background: #f3f4f6;
+    }
+
+    .more-dropdown-item.has-submenu:first-child {
+      background: #3b82f6;
+      color: white;
+      margin: 4px 8px 8px 8px;
+      border-radius: 6px;
+      padding: 10px 16px;
+    }
+
+    .more-dropdown-item.has-submenu:first-child:hover {
+      background: #2563eb;
+    }
+
+    .more-dropdown-item.has-submenu:first-child .more-dropdown-icon,
+    .more-dropdown-item.has-submenu:first-child .submenu-arrow {
+      color: white;
+    }
+
+    .more-dropdown-icon {
+      font-size: 16px;
+      color: #3b82f6;
+      width: 20px;
+      text-align: center;
+    }
+
+    .submenu-arrow {
+      margin-left: auto;
+      color: #9ca3af;
+      font-size: 14px;
+    }
+
+    /* Sort Submenu */
+    .sort-submenu {
+      display: none;
+      position: absolute;
+      left: -180px;
+      top: -4px;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      min-width: 170px;
+      padding: 8px 0;
+      z-index: 10000;
+    }
+
+    .more-dropdown-item.has-submenu:hover .sort-submenu {
+      display: block;
+    }
+
+    .sort-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #374151;
+      transition: all 0.15s ease;
+    }
+
+    .sort-option:hover {
+      background: #f3f4f6;
+    }
+
+    .sort-option.selected {
+      background: #3b82f6;
+      color: white;
+      margin: 4px 8px;
+      border-radius: 6px;
+    }
+
+    .sort-option.selected:hover {
+      background: #2563eb;
+    }
+
+    .sort-arrow {
+      font-size: 14px;
+    }
+
+    /* Import Submenu */
+    .import-submenu {
+      display: none;
+      position: absolute;
+      left: -170px;
+      top: 0;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      min-width: 160px;
+      padding: 8px 0;
+      z-index: 10000;
+    }
+
+    .more-dropdown-item.has-submenu:hover .import-submenu {
+      display: block;
+    }
+
+    .import-option {
+      padding: 10px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #374151;
+      transition: all 0.15s ease;
+    }
+
+    .import-option:hover {
+      background: #f3f4f6;
+    }
+
+    /* Export Submenu */
+    .export-submenu {
+      display: none;
+      position: absolute;
+      left: -175px;
+      top: 0;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      min-width: 165px;
+      padding: 8px 0;
+      z-index: 10000;
+    }
+
+    .more-dropdown-item.has-submenu:hover .export-submenu {
+      display: block;
+    }
+
+    .export-option {
+      padding: 10px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #374151;
+      transition: all 0.15s ease;
+    }
+
+    .export-option:hover {
+      background: #f3f4f6;
+    }
+
     .items-container {
       display: grid;
       grid-template-columns: 1fr;
@@ -3693,8 +3877,7 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
       min-height: 64px;
       box-sizing: border-box;
-      margin: -24px -24px 0 -24px;
-      width: calc(100% + 48px);
+      width: 100%;
     }
 
     .bulk-action-toolbar.active {
@@ -4660,7 +4843,68 @@
             <button class="zoho-view-btn" id="gridViewBtn" title="Grid View" onclick="switchToGridView()">▦</button>
           </div>
           <button class="zoho-new-btn" onclick="showAddItemModal()">+ New</button>
-          <button class="zoho-more-btn">⋯</button>
+          <div class="zoho-more-dropdown">
+            <button class="zoho-more-btn" onclick="toggleMoreDropdown()">⋯</button>
+            <div class="more-dropdown-menu" id="moreDropdownMenu">
+              <!-- Sort By Submenu -->
+              <div class="more-dropdown-item has-submenu" onmouseenter="showSortSubmenu()"
+                onmouseleave="hideSortSubmenu()">
+                <span class="more-dropdown-icon">↑↓</span>
+                <span>Sort by</span>
+                <span class="submenu-arrow">›</span>
+                <div class="sort-submenu" id="sortSubmenu">
+                  <div class="sort-option selected" onclick="sortItemsBy('name', 'asc')">
+                    <span>Name</span>
+                    <span class="sort-arrow">↑</span>
+                  </div>
+                  <div class="sort-option" onclick="sortItemsBy('sku', 'asc')">SKU</div>
+                  <div class="sort-option" onclick="sortItemsBy('stock_on_hand', 'asc')">Stock On Hand</div>
+                  <div class="sort-option" onclick="sortItemsBy('reorder_level', 'asc')">Reorder Level</div>
+                  <div class="sort-option" onclick="sortItemsBy('purchase_rate', 'asc')">Purchase Rate</div>
+                  <div class="sort-option" onclick="sortItemsBy('rate', 'asc')">Rate</div>
+                  <div class="sort-option" onclick="sortItemsBy('created_time', 'asc')">Created Time</div>
+                  <div class="sort-option" onclick="sortItemsBy('last_modified_time', 'asc')">Last Modified Time</div>
+                </div>
+              </div>
+              <!-- Import -->
+              <div class="more-dropdown-item has-submenu">
+                <span class="more-dropdown-icon">↓</span>
+                <span>Import</span>
+                <span class="submenu-arrow">›</span>
+                <div class="import-submenu">
+                  <div class="import-option" onclick="importItems(); closeMoreDropdown();">Import Items</div>
+                  <div class="import-option" onclick="importItemImages(); closeMoreDropdown();">Import Items Images
+                  </div>
+                </div>
+              </div>
+              <!-- Export -->
+              <div class="more-dropdown-item has-submenu">
+                <span class="more-dropdown-icon">↑</span>
+                <span>Export</span>
+                <span class="submenu-arrow">›</span>
+                <div class="export-submenu">
+                  <div class="export-option" onclick="exportItems(); closeMoreDropdown();">Export Items</div>
+                  <div class="export-option" onclick="exportCurrentView(); closeMoreDropdown();">Export Current View
+                  </div>
+                </div>
+              </div>
+              <!-- Preferences -->
+              <div class="more-dropdown-item" onclick="openPreferences(); closeMoreDropdown();">
+                <span class="more-dropdown-icon">⚙</span>
+                <span>Preferences</span>
+              </div>
+              <!-- Refresh List -->
+              <div class="more-dropdown-item" onclick="refreshItemsList(); closeMoreDropdown();">
+                <span class="more-dropdown-icon">↻</span>
+                <span>Refresh List</span>
+              </div>
+              <!-- Reset Column Width -->
+              <div class="more-dropdown-item" onclick="resetColumnWidth(); closeMoreDropdown();">
+                <span class="more-dropdown-icon">↺</span>
+                <span>Reset Column Width</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

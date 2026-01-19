@@ -118,7 +118,92 @@ document.addEventListener('click', function (e) {
   if (!e.target.closest('.new-transaction-dropdown')) {
     closeNewTransactionDropdown();
   }
+  if (!e.target.closest('.zoho-more-dropdown')) {
+    closeMoreDropdown();
+  }
 });
+
+// More dropdown functionality
+function toggleMoreDropdown() {
+  const menu = document.getElementById('moreDropdownMenu');
+  if (menu.classList.contains('show')) {
+    closeMoreDropdown();
+  } else {
+    menu.classList.add('show');
+  }
+}
+
+function closeMoreDropdown() {
+  const menu = document.getElementById('moreDropdownMenu');
+  if (menu) menu.classList.remove('show');
+}
+
+function showSortSubmenu() {
+  const submenu = document.getElementById('sortSubmenu');
+  if (submenu) submenu.style.display = 'block';
+}
+
+function hideSortSubmenu() {
+  const submenu = document.getElementById('sortSubmenu');
+  if (submenu) submenu.style.display = 'none';
+}
+
+function sortItemsBy(field, direction) {
+  // Update the selected state
+  document.querySelectorAll('.sort-option').forEach(opt => opt.classList.remove('selected'));
+  event.target.closest('.sort-option').classList.add('selected');
+
+  // Sort the items
+  filters.sort = field;
+  loadItems();
+  closeMoreDropdown();
+  showToast(`Sorted by ${field.replace('_', ' ')}`, 'success');
+}
+
+function refreshItemsList() {
+  loadItems();
+  showToast('List refreshed', 'success');
+}
+
+function resetColumnWidth() {
+  // Reset any custom column widths
+  const table = document.querySelector('.items-table');
+  if (table) {
+    table.querySelectorAll('th, td').forEach(cell => {
+      cell.style.width = '';
+      cell.style.minWidth = '';
+    });
+  }
+  showToast('Column widths reset', 'success');
+}
+
+function openImportModal() {
+  showToast('Import feature coming soon', 'info');
+}
+
+function importItems() {
+  showToast('Import Items feature coming soon', 'info');
+}
+
+function importItemImages() {
+  showToast('Import Items Images feature coming soon', 'info');
+}
+
+function openExportModal() {
+  showToast('Export feature coming soon', 'info');
+}
+
+function exportItems() {
+  showToast('Export Items feature coming soon', 'info');
+}
+
+function exportCurrentView() {
+  showToast('Export Current View feature coming soon', 'info');
+}
+
+function openPreferences() {
+  showToast('Preferences feature coming soon', 'info');
+}
 
 
 // Open bulk update modal
