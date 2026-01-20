@@ -130,6 +130,214 @@ document.addEventListener('click', function (e) {
   }
 });
 
+// ========== ITEM DETAIL TAB FUNCTIONS ==========
+let itemTransactions = [];
+
+function switchItemDetailTab(tabName) {
+  // Update tab buttons
+  document.querySelectorAll('.item-detail-tab').forEach(tab => {
+    tab.classList.remove('active');
+  });
+  document.querySelector(`[data-tab="${tabName}"]`)?.classList.add('active');
+
+  // Update tab panes
+  document.querySelectorAll('.tab-pane').forEach(pane => {
+    pane.classList.remove('active');
+  });
+
+  if (tabName === 'overview') {
+    document.getElementById('overviewPane')?.classList.add('active');
+  } else if (tabName === 'transactions') {
+    document.getElementById('transactionsPane')?.classList.add('active');
+    loadItemTransactions(currentDetailItemId);
+  } else if (tabName === 'history') {
+    document.getElementById('historyPane')?.classList.add('active');
+    loadItemHistory(currentDetailItemId);
+  }
+}
+
+async function loadItemTransactions(itemId) {
+  if (!itemId) return;
+
+  try {
+    // Fetch sales that include this item
+    const response = await fetch('/api/sales');
+    if (!response.ok) throw new Error('Failed to fetch sales');
+
+    const sales = await response.json();
+
+    // Filter sales that contain this item
+    itemTransactions = [];
+    for (const sale of sales) {
+      // Check if sale has items array
+      if (sale.items && Array.isArray(sale.items)) {
+        const matchingItem = sale.items.find(item => item.item_id == itemId);
+        if (matchingItem) {
+          itemTransactions.push({
+            date: sale.created_at,
+            order_number: `SO-${String(sale.id).padStart(5, '0')}`,
+            customer_name: sale.customer_name || 'Walk-in Customer',
+            quantity: matchingItem.quantity,
+            price: matchingItem.price || matchingItem.unit_price,
+            total: matchingItem.total || (matchingItem.quantity * (matchingItem.price || matchingItem.unit_price)),
+            status: sale.status || 'confirmed'
+          });
+        }
+      }
+    }
+
+    renderTransactionsTable();
+  } catch (error) {
+    console.error('Error loading transactions:', error);
+    renderTransactionsTable();
+  }
+}
+
+function filterTransactions() {
+  renderTransactionsTable();
+}
+
+function renderTransactionsTable() {
+  const tbody = document.getElementById('transactionsTableBody');
+  if (!tbody) return;
+
+  const typeFilter = document.getElementById('transactionFilterType')?.value || 'sales_orders';
+  const statusFilter = document.getElementById('transactionStatusFilter')?.value || 'all';
+
+  let filteredTransactions = [...itemTransactions];
+
+  // Apply status filter
+  if (statusFilter !== 'all') {
+    filteredTransactions = filteredTransactions.filter(t =>
+      t.status.toLowerCase() === statusFilter.toLowerCase()
+    );
+  }
+
+  if (filteredTransactions.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="7" class="transactions-empty">No transactions found for this item</td>
+      </tr>
+    `;
+    return;
+  }
+
+  tbody.innerHTML = filteredTransactions.map(t => {
+    const date = new Date(t.date);
+    const dateStr = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    const price = parseFloat(t.price) || 0;
+    const qty = parseFloat(t.quantity) || 0;
+    const total = parseFloat(t.total) || (price * qty);
+    const statusClass = t.status === 'confirmed' ? 'status-confirmed' :
+      t.status === 'pending' ? 'status-pending' :
+        t.status === 'cancelled' ? 'status-cancelled' : '';
+
+    return `
+      <tr>
+        <td>${dateStr}</td>
+        <td>${t.order_number}</td>
+        <td>${t.customer_name}</td>
+        <td>${qty.toFixed(6)}</td>
+        <td>PHP${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+        <td>PHP${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+        <td class="${statusClass}">${t.status.charAt(0).toUpperCase() + t.status.slice(1)}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// ========== ITEM HISTORY FUNCTIONS ==========
+let itemHistory = [];
+
+async function loadItemHistory(itemId) {
+  if (!itemId) return;
+
+  try {
+    // Get item details for creation date
+    const item = items.find(i => i.id == itemId);
+    if (!item) return;
+
+    // Build history from item data
+    itemHistory = [];
+
+    // Add creation entry
+    if (item.created_at) {
+      itemHistory.push({
+        date: item.created_at,
+        action: 'created',
+        details: 'created by',
+        user: 'System'
+      });
+    }
+
+    // Add update entry if different from creation
+    if (item.updated_at && item.updated_at !== item.created_at) {
+      itemHistory.push({
+        date: item.updated_at,
+        action: 'updated',
+        details: 'updated by',
+        user: 'System'
+      });
+    }
+
+    // Check if there were stock adjustments
+    try {
+      const adjustmentsResponse = await fetch(`/api/inventory-adjustments?item_id=${itemId}`);
+      if (adjustmentsResponse.ok) {
+        const adjustments = await adjustmentsResponse.json();
+        for (const adj of adjustments) {
+          const changeType = adj.adjustment_type === 'add' ? 'increased' : 'decreased';
+          itemHistory.push({
+            date: adj.created_at,
+            action: 'stock_adjusted',
+            details: `updated. Initial stock changed from ${adj.previous_quantity || 0} to ${adj.new_quantity || adj.previous_quantity + adj.quantity}`,
+            user: adj.created_by || 'System'
+          });
+        }
+      }
+    } catch (e) {
+      // Adjustments endpoint might not exist
+    }
+
+    // Sort by date descending (newest first)
+    itemHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    renderHistoryTable();
+  } catch (error) {
+    console.error('Error loading history:', error);
+    renderHistoryTable();
+  }
+}
+
+function renderHistoryTable() {
+  const tbody = document.getElementById('historyTableBody');
+  if (!tbody) return;
+
+  if (itemHistory.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="2" class="transactions-empty">No history found for this item</td>
+      </tr>
+    `;
+    return;
+  }
+
+  tbody.innerHTML = itemHistory.map(h => {
+    const date = new Date(h.date);
+    const dateStr = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+    return `
+      <tr>
+        <td class="history-date">${dateStr} ${timeStr}</td>
+        <td class="history-details">
+          <span class="change-highlight">${h.details}</span> - <span class="user-name">${h.user}</span>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
 // ========== BULK ACTION TOOLBAR FUNCTIONS ==========
 function updateBulkActionToolbar() {
   const toolbar = document.getElementById('bulkActionToolbar');

@@ -3787,6 +3787,170 @@
       border-bottom-color: #3b82f6;
     }
 
+    /* Tab Panes */
+    .tab-pane {
+      display: none;
+    }
+
+    .tab-pane.active {
+      display: flex;
+      gap: 24px;
+    }
+
+    .tab-pane.transactions-pane.active {
+      display: block;
+    }
+
+    /* Transactions Filter Bar */
+    .transactions-filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .filter-select-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .filter-label {
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    .filter-select {
+      padding: 6px 28px 6px 12px;
+      font-size: 13px;
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      background: white;
+      color: #3b82f6;
+      font-weight: 500;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%233b82f6' d='M6 8L2 4h8z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+    }
+
+    /* Transactions Table */
+    .transactions-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .transactions-table thead th {
+      text-align: left;
+      padding: 12px 16px;
+      font-weight: 500;
+      color: #6b7280;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .transactions-table thead th.sortable {
+      cursor: pointer;
+    }
+
+    .transactions-table thead th .sort-icon {
+      margin-left: 4px;
+      font-size: 10px;
+    }
+
+    .transactions-table tbody tr {
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .transactions-table tbody tr:hover {
+      background: #f9fafb;
+    }
+
+    .transactions-table tbody td {
+      padding: 12px 16px;
+      color: #374151;
+    }
+
+    .transactions-table .status-confirmed {
+      color: #10b981;
+      font-weight: 500;
+    }
+
+    .transactions-table .status-pending {
+      color: #f59e0b;
+      font-weight: 500;
+    }
+
+    .transactions-table .status-cancelled {
+      color: #ef4444;
+      font-weight: 500;
+    }
+
+    .transactions-empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: #9ca3af;
+      font-size: 14px;
+    }
+
+    /* History Table */
+    .history-pane.active {
+      display: block;
+    }
+
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .history-table thead th {
+      text-align: left;
+      padding: 12px 16px;
+      font-weight: 500;
+      color: #6b7280;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .history-table tbody tr {
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .history-table tbody tr:hover {
+      background: #f9fafb;
+    }
+
+    .history-table tbody td {
+      padding: 12px 16px;
+      color: #374151;
+      vertical-align: top;
+    }
+
+    .history-table .history-date {
+      color: #3b82f6;
+      white-space: nowrap;
+    }
+
+    .history-table .history-details {
+      color: #374151;
+    }
+
+    .history-table .history-details .user-name {
+      color: #3b82f6;
+    }
+
+    .history-table .history-details .change-highlight {
+      font-weight: 500;
+    }
+
     .item-detail-actions {
       display: flex;
       align-items: center;
@@ -4692,9 +4856,11 @@
             <span>↻</span> Returnable Item
           </div>
           <div class="item-detail-tabs">
-            <div class="item-detail-tab active">Overview</div>
-            <div class="item-detail-tab">Transactions</div>
-            <div class="item-detail-tab">History</div>
+            <div class="item-detail-tab active" data-tab="overview" onclick="switchItemDetailTab('overview')">Overview
+            </div>
+            <div class="item-detail-tab" data-tab="transactions" onclick="switchItemDetailTab('transactions')">
+              Transactions</div>
+            <div class="item-detail-tab" data-tab="history" onclick="switchItemDetailTab('history')">History</div>
           </div>
         </div>
         <div class="item-detail-actions">
@@ -4704,143 +4870,205 @@
         </div>
       </div>
       <div class="item-detail-body">
-        <div class="item-detail-content">
-          <!-- Item Information Section -->
-          <div class="detail-section">
-            <div class="detail-row">
-              <div class="detail-label">Item Type</div>
-              <div class="detail-value" id="detailItemType">Inventory Items</div>
+        <!-- Overview Tab Pane -->
+        <div class="tab-pane active" id="overviewPane">
+          <div class="item-detail-content">
+            <!-- Item Information Section -->
+            <div class="detail-section">
+              <div class="detail-row">
+                <div class="detail-label">Item Type</div>
+                <div class="detail-value" id="detailItemType">Inventory Items</div>
+              </div>
+              <div class="detail-row">
+                <div class="detail-label">SKU</div>
+                <div class="detail-value" id="detailItemSku">-</div>
+              </div>
+              <div class="detail-row">
+                <div class="detail-label">Unit</div>
+                <div class="detail-value" id="detailItemUnit">pcs</div>
+              </div>
+              <div class="detail-row">
+                <div class="detail-label">Manufacturer</div>
+                <div class="detail-value" id="detailItemManufacturer">-</div>
+              </div>
+              <div class="detail-row">
+                <div class="detail-label">Brand</div>
+                <div class="detail-value" id="detailItemBrand">-</div>
+              </div>
+              <div class="detail-row">
+                <div class="detail-label">Created Source</div>
+                <div class="detail-value">User</div>
+              </div>
             </div>
-            <div class="detail-row">
-              <div class="detail-label">SKU</div>
-              <div class="detail-value" id="detailItemSku">-</div>
+
+            <!-- Purchase Information Section -->
+            <div class="detail-section">
+              <div class="detail-section-title">Purchase Information</div>
+              <div class="detail-row">
+                <div class="detail-label">Cost Price</div>
+                <div class="detail-value" id="detailItemCost">PHP0.00</div>
+              </div>
+              <div class="detail-row">
+                <div class="detail-label">Purchase Account</div>
+                <div class="detail-value">Cost of Goods Sold</div>
+              </div>
             </div>
-            <div class="detail-row">
-              <div class="detail-label">Unit</div>
-              <div class="detail-value" id="detailItemUnit">pcs</div>
-            </div>
-            <div class="detail-row">
-              <div class="detail-label">Manufacturer</div>
-              <div class="detail-value" id="detailItemManufacturer">-</div>
-            </div>
-            <div class="detail-row">
-              <div class="detail-label">Brand</div>
-              <div class="detail-value" id="detailItemBrand">-</div>
-            </div>
-            <div class="detail-row">
-              <div class="detail-label">Created Source</div>
-              <div class="detail-value">User</div>
+
+            <!-- Sales Information Section -->
+            <div class="detail-section">
+              <div class="detail-section-title">Sales Information</div>
+              <div class="detail-row">
+                <div class="detail-label">Selling Price</div>
+                <div class="detail-value" id="detailItemPrice">PHP0.00</div>
+              </div>
+              <div class="detail-row">
+                <div class="detail-label">Sales Account</div>
+                <div class="detail-value">Sales</div>
+              </div>
             </div>
           </div>
 
-          <!-- Purchase Information Section -->
-          <div class="detail-section">
-            <div class="detail-section-title">Purchase Information</div>
-            <div class="detail-row">
-              <div class="detail-label">Cost Price</div>
-              <div class="detail-value" id="detailItemCost">PHP0.00</div>
+          <div class="item-detail-sidebar">
+            <!-- Image Upload Area -->
+            <div class="detail-image-area">
+              <div class="detail-image-icon">🖼️</div>
+              <div class="detail-image-text">
+                Drag image(s) here or<br>
+                <span class="detail-image-link">Browse Images</span>
+              </div>
             </div>
-            <div class="detail-row">
-              <div class="detail-label">Purchase Account</div>
-              <div class="detail-value">Cost of Goods Sold</div>
-            </div>
-          </div>
 
-          <!-- Sales Information Section -->
-          <div class="detail-section">
-            <div class="detail-section-title">Sales Information</div>
-            <div class="detail-row">
-              <div class="detail-label">Selling Price</div>
-              <div class="detail-value" id="detailItemPrice">PHP0.00</div>
+            <!-- Opening Stock -->
+            <div class="stock-panel">
+              <div class="stock-panel-title">
+                Opening Stock : <span id="detailOpeningStock">0.00</span>
+                <span style="margin-left:auto;color:#3b82f6;font-size:12px;cursor:pointer;">✏️ Edit</span>
+              </div>
             </div>
-            <div class="detail-row">
-              <div class="detail-label">Sales Account</div>
-              <div class="detail-value">Sales</div>
+
+            <!-- Accounting Stock -->
+            <div class="stock-panel">
+              <div class="stock-panel-title">Accounting Stock <span style="color:#9ca3af;">ⓘ</span></div>
+              <div class="stock-row">
+                <span class="stock-label">Stock on Hand</span>
+                <span class="stock-value" id="detailStockOnHand">: 0.00</span>
+              </div>
+              <div class="stock-row">
+                <span class="stock-label">Committed Stock</span>
+                <span class="stock-value">: 0.00</span>
+              </div>
+              <div class="stock-row">
+                <span class="stock-label">Available for Sale</span>
+                <span class="stock-value">: 0.00</span>
+              </div>
+            </div>
+
+            <!-- Physical Stock -->
+            <div class="stock-panel">
+              <div class="stock-panel-title">Physical Stock <span style="color:#9ca3af;">ⓘ</span></div>
+              <div class="stock-row">
+                <span class="stock-label">Stock on Hand</span>
+                <span class="stock-value" id="detailPhysicalStock">: 0.00</span>
+              </div>
+              <div class="stock-row">
+                <span class="stock-label">Committed Stock</span>
+                <span class="stock-value">: 0.00</span>
+              </div>
+              <div class="stock-row">
+                <span class="stock-label">Available for Sale</span>
+                <span class="stock-value">: 0.00</span>
+              </div>
+            </div>
+
+            <!-- Stock Boxes -->
+            <div class="stock-grid">
+              <div class="stock-box">
+                <div class="stock-box-number">0</div>
+                <div class="stock-box-unit">Qty</div>
+                <div class="stock-box-label">To be Shipped</div>
+              </div>
+              <div class="stock-box">
+                <div class="stock-box-number">0</div>
+                <div class="stock-box-unit">Qty</div>
+                <div class="stock-box-label">To be Received</div>
+              </div>
+              <div class="stock-box">
+                <div class="stock-box-number">0</div>
+                <div class="stock-box-unit">Qty</div>
+                <div class="stock-box-label">To be Invoiced</div>
+              </div>
+              <div class="stock-box">
+                <div class="stock-box-number">0</div>
+                <div class="stock-box-unit">Qty</div>
+                <div class="stock-box-label">To be Billed</div>
+              </div>
+            </div>
+
+            <!-- Reorder Point -->
+            <div class="reorder-point">
+              <div class="reorder-point-title">Reorder Point</div>
+              <div class="reorder-point-value" id="detailReorderPoint">0.00</div>
             </div>
           </div>
         </div>
 
-        <div class="item-detail-sidebar">
-          <!-- Image Upload Area -->
-          <div class="detail-image-area">
-            <div class="detail-image-icon">🖼️</div>
-            <div class="detail-image-text">
-              Drag image(s) here or<br>
-              <span class="detail-image-link">Browse Images</span>
+        <!-- Transactions Tab Pane -->
+        <div class="tab-pane transactions-pane" id="transactionsPane">
+          <div class="transactions-filter-bar">
+            <div class="filter-select-wrapper">
+              <span class="filter-label">Filter By:</span>
+              <select class="filter-select" id="transactionFilterType" onchange="filterTransactions()">
+                <option value="sales_orders">Sales Orders</option>
+                <option value="invoices">Invoices</option>
+                <option value="purchase_orders">Purchase Orders</option>
+                <option value="all">All Transactions</option>
+              </select>
+            </div>
+            <div class="filter-select-wrapper">
+              <span class="filter-label">Status:</span>
+              <select class="filter-select" id="transactionStatusFilter" onchange="filterTransactions()">
+                <option value="all">All</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="pending">Pending</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
             </div>
           </div>
+          <table class="transactions-table">
+            <thead>
+              <tr>
+                <th class="sortable">DATE <span class="sort-icon">↓</span></th>
+                <th>SALES ORDER#</th>
+                <th>CUSTOMER NAME</th>
+                <th>QUANTITY SOLD</th>
+                <th>PRICE</th>
+                <th>TOTAL</th>
+                <th>STATUS</th>
+              </tr>
+            </thead>
+            <tbody id="transactionsTableBody">
+              <tr>
+                <td colspan="7" class="transactions-empty">No transactions found for this item</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-          <!-- Opening Stock -->
-          <div class="stock-panel">
-            <div class="stock-panel-title">
-              Opening Stock : <span id="detailOpeningStock">0.00</span>
-              <span style="margin-left:auto;color:#3b82f6;font-size:12px;cursor:pointer;">✏️ Edit</span>
-            </div>
-          </div>
-
-          <!-- Accounting Stock -->
-          <div class="stock-panel">
-            <div class="stock-panel-title">Accounting Stock <span style="color:#9ca3af;">ⓘ</span></div>
-            <div class="stock-row">
-              <span class="stock-label">Stock on Hand</span>
-              <span class="stock-value" id="detailStockOnHand">: 0.00</span>
-            </div>
-            <div class="stock-row">
-              <span class="stock-label">Committed Stock</span>
-              <span class="stock-value">: 0.00</span>
-            </div>
-            <div class="stock-row">
-              <span class="stock-label">Available for Sale</span>
-              <span class="stock-value">: 0.00</span>
-            </div>
-          </div>
-
-          <!-- Physical Stock -->
-          <div class="stock-panel">
-            <div class="stock-panel-title">Physical Stock <span style="color:#9ca3af;">ⓘ</span></div>
-            <div class="stock-row">
-              <span class="stock-label">Stock on Hand</span>
-              <span class="stock-value" id="detailPhysicalStock">: 0.00</span>
-            </div>
-            <div class="stock-row">
-              <span class="stock-label">Committed Stock</span>
-              <span class="stock-value">: 0.00</span>
-            </div>
-            <div class="stock-row">
-              <span class="stock-label">Available for Sale</span>
-              <span class="stock-value">: 0.00</span>
-            </div>
-          </div>
-
-          <!-- Stock Boxes -->
-          <div class="stock-grid">
-            <div class="stock-box">
-              <div class="stock-box-number">0</div>
-              <div class="stock-box-unit">Qty</div>
-              <div class="stock-box-label">To be Shipped</div>
-            </div>
-            <div class="stock-box">
-              <div class="stock-box-number">0</div>
-              <div class="stock-box-unit">Qty</div>
-              <div class="stock-box-label">To be Received</div>
-            </div>
-            <div class="stock-box">
-              <div class="stock-box-number">0</div>
-              <div class="stock-box-unit">Qty</div>
-              <div class="stock-box-label">To be Invoiced</div>
-            </div>
-            <div class="stock-box">
-              <div class="stock-box-number">0</div>
-              <div class="stock-box-unit">Qty</div>
-              <div class="stock-box-label">To be Billed</div>
-            </div>
-          </div>
-
-          <!-- Reorder Point -->
-          <div class="reorder-point">
-            <div class="reorder-point-title">Reorder Point</div>
-            <div class="reorder-point-value" id="detailReorderPoint">0.00</div>
-          </div>
+        <!-- History Tab Pane -->
+        <div class="tab-pane history-pane" id="historyPane">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th style="width: 200px;">DATE</th>
+                <th>DETAILS</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody">
+              <tr>
+                <td colspan="2" class="transactions-empty">No history found for this item</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
