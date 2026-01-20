@@ -338,6 +338,127 @@ function renderHistoryTable() {
   }).join('');
 }
 
+// ========== ADJUST STOCK FUNCTIONS ==========
+let adjustStockItemId = null;
+
+function openAdjustStockModal() {
+  if (!currentDetailItemId) {
+    showToast('Please select an item first', 'error');
+    return;
+  }
+
+  adjustStockItemId = currentDetailItemId;
+  const item = items.find(i => i.id == adjustStockItemId);
+  if (!item) {
+    showToast('Item not found', 'error');
+    return;
+  }
+
+  // Set title
+  document.getElementById('adjustStockTitle').textContent = `Adjust Stock - ${item.name}`;
+
+  // Set today's date
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('adjustStockDate').value = today;
+
+  // Set quantity available
+  const qtyAvailable = parseFloat(item.stock_quantity) || 0;
+  document.getElementById('adjustQuantityAvailable').value = qtyAvailable.toFixed(6);
+
+  // Set cost price
+  const costPrice = parseFloat(item.purchase_cost) || parseFloat(item.cost) || 0;
+  document.getElementById('adjustCostPrice').value = costPrice.toFixed(0);
+
+  // Reset other fields
+  document.getElementById('adjustNewQuantity').value = '0.00';
+  document.getElementById('adjustQuantityAdjusted').value = '';
+  document.getElementById('adjustStockReference').value = '';
+  document.getElementById('adjustStockReason').value = '';
+  document.getElementById('adjustStockDescription').value = '';
+
+  // Set up quantity adjusted input event
+  document.getElementById('adjustQuantityAdjusted').addEventListener('input', calculateNewQuantity);
+
+  // Close item detail view and show adjust stock overlay
+  document.getElementById('itemDetailOverlay').classList.remove('active');
+  document.getElementById('adjustStockOverlay').classList.add('active');
+}
+
+function closeAdjustStockModal() {
+  document.getElementById('adjustStockOverlay').classList.remove('active');
+  adjustStockItemId = null;
+}
+
+function calculateNewQuantity() {
+  const qtyAvailable = parseFloat(document.getElementById('adjustQuantityAvailable').value) || 0;
+  const qtyAdjusted = parseFloat(document.getElementById('adjustQuantityAdjusted').value) || 0;
+  const newQty = qtyAvailable + qtyAdjusted;
+  document.getElementById('adjustNewQuantity').value = newQty.toFixed(2);
+}
+
+async function saveAdjustmentAsDraft() {
+  const reason = document.getElementById('adjustStockReason').value;
+  if (!reason) {
+    showToast('Please select a reason', 'error');
+    return;
+  }
+
+  const qtyAdjusted = parseFloat(document.getElementById('adjustQuantityAdjusted').value);
+  if (!qtyAdjusted || qtyAdjusted === 0) {
+    showToast('Please enter a quantity to adjust', 'error');
+    return;
+  }
+
+  showToast('Adjustment saved as draft', 'success');
+  closeAdjustStockModal();
+}
+
+async function convertToAdjusted() {
+  const reason = document.getElementById('adjustStockReason').value;
+  if (!reason) {
+    showToast('Please select a reason', 'error');
+    return;
+  }
+
+  const qtyAdjusted = parseFloat(document.getElementById('adjustQuantityAdjusted').value);
+  if (!qtyAdjusted || qtyAdjusted === 0) {
+    showToast('Please enter a quantity to adjust', 'error');
+    return;
+  }
+
+  const item = items.find(i => i.id == adjustStockItemId);
+  if (!item) {
+    showToast('Item not found', 'error');
+    return;
+  }
+
+  try {
+    // Calculate new quantity
+    const currentQty = parseFloat(item.stock_quantity) || 0;
+    const newQty = currentQty + qtyAdjusted;
+
+    // Update the item's stock quantity
+    const response = await fetch(`/api/items/${adjustStockItemId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...item,
+        stock_quantity: newQty,
+        quantity: newQty
+      })
+    });
+
+    if (!response.ok) throw new Error('Failed to update stock');
+
+    showToast('Stock adjusted successfully', 'success');
+    closeAdjustStockModal();
+    await loadItems();
+  } catch (error) {
+    console.error('Error adjusting stock:', error);
+    showToast('Error adjusting stock', 'error');
+  }
+}
+
 // ========== BULK ACTION TOOLBAR FUNCTIONS ==========
 function updateBulkActionToolbar() {
   const toolbar = document.getElementById('bulkActionToolbar');
@@ -1287,6 +1408,15 @@ function openItemDetailView(itemId) {
 function closeItemDetailView() {
   document.getElementById('itemDetailOverlay').classList.remove('active');
   currentDetailItemId = null;
+}
+
+function editCurrentItem() {
+  if (currentDetailItemId) {
+    // Close detail view first
+    closeItemDetailView();
+    // Open edit modal for the current item
+    openItemModal(currentDetailItemId);
+  }
 }
 
 function renderItemDetailLeftList() {

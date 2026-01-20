@@ -3968,6 +3968,29 @@
       cursor: pointer;
     }
 
+    .btn-adjust-stock:hover {
+      background: #2563eb;
+    }
+
+    .btn-edit-item {
+      width: 36px;
+      height: 36px;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #6b7280;
+    }
+
+    .btn-edit-item:hover {
+      background: #f9fafb;
+      border-color: #d1d5db;
+    }
+
     .btn-more {
       padding: 8px 16px;
       background: white;
@@ -3975,6 +3998,14 @@
       border-radius: 6px;
       font-size: 13px;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-more:hover {
+      background: #f9fafb;
+      border-color: #d1d5db;
     }
 
     .btn-close-detail {
@@ -3985,6 +4016,269 @@
       font-size: 24px;
       color: #6b7280;
       cursor: pointer;
+    }
+
+    /* Adjust Stock Overlay */
+    .adjust-stock-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: white;
+      z-index: 1000;
+      display: none;
+      flex-direction: column;
+    }
+
+    .adjust-stock-overlay.active {
+      display: flex;
+    }
+
+    .adjust-stock-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .adjust-stock-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1a1f3a;
+    }
+
+    .adjust-stock-close {
+      width: 32px;
+      height: 32px;
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: #6b7280;
+      cursor: pointer;
+    }
+
+    .adjust-stock-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 32px;
+    }
+
+    .adjustment-type-row {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .adjustment-type-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #374151;
+    }
+
+    .adjustment-type-option input[type="radio"] {
+      accent-color: #3b82f6;
+      width: 16px;
+      height: 16px;
+    }
+
+    .adjust-stock-form-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .adjust-stock-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .adjust-stock-field label {
+      font-size: 13px;
+      color: #ef4444;
+    }
+
+    .adjust-stock-field label.normal {
+      color: #374151;
+    }
+
+    .adjust-stock-field input,
+    .adjust-stock-field select {
+      padding: 10px 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .adjust-stock-field input:focus,
+    .adjust-stock-field select:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .adjust-stock-field input.highlight {
+      border-color: #3b82f6;
+    }
+
+    /* Quantity adjustment section */
+    .quantity-adjust-section {
+      background: #fafafa;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .quantity-row {
+      display: grid;
+      grid-template-columns: 200px 1fr 50px;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .quantity-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .quantity-label {
+      font-size: 14px;
+      color: #374151;
+    }
+
+    .quantity-label.required {
+      color: #ef4444;
+    }
+
+    .quantity-input {
+      padding: 10px 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      font-size: 14px;
+      text-align: right;
+      outline: none;
+    }
+
+    .quantity-input:focus {
+      border-color: #3b82f6;
+    }
+
+    .quantity-unit {
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    .quantity-placeholder {
+      font-size: 12px;
+      color: #9ca3af;
+    }
+
+    /* Reason and description */
+    .reason-section {
+      margin-bottom: 24px;
+    }
+
+    .reason-label {
+      font-size: 13px;
+      color: #ef4444;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .reason-select {
+      width: 100%;
+      max-width: 400px;
+      padding: 10px 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .description-section {
+      margin-bottom: 24px;
+    }
+
+    .description-label {
+      font-size: 13px;
+      color: #374151;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .description-textarea {
+      width: 100%;
+      max-width: 600px;
+      min-height: 100px;
+      padding: 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      font-size: 14px;
+      resize: vertical;
+      outline: none;
+    }
+
+    .description-textarea:focus {
+      border-color: #3b82f6;
+    }
+
+    /* Action buttons */
+    .adjust-stock-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .btn-save-draft {
+      padding: 10px 20px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .btn-save-draft:hover {
+      background: #2563eb;
+    }
+
+    .btn-convert-adjusted {
+      padding: 10px 20px;
+      background: white;
+      color: #374151;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .btn-convert-adjusted:hover {
+      background: #f9fafb;
+    }
+
+    .btn-cancel-adjust {
+      padding: 10px 20px;
+      background: white;
+      color: #374151;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .btn-cancel-adjust:hover {
+      background: #f9fafb;
     }
 
     .item-detail-body {
@@ -4864,8 +5158,9 @@
           </div>
         </div>
         <div class="item-detail-actions">
-          <button class="btn-adjust-stock" onclick="openAdjustStockModal()">✏️ Adjust Stock</button>
-          <button class="btn-more">More ▼</button>
+          <button class="btn-edit-item" onclick="editCurrentItem()" title="Edit Item">✏</button>
+          <button class="btn-adjust-stock" onclick="openAdjustStockModal()">Adjust Stock</button>
+          <button class="btn-more">More <span>▼</span></button>
           <button class="btn-close-detail" onclick="closeItemDetailView()">×</button>
         </div>
       </div>
@@ -5070,6 +5365,101 @@
             </tbody>
           </table>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Adjust Stock Overlay -->
+  <div class="adjust-stock-overlay" id="adjustStockOverlay">
+    <div class="adjust-stock-header">
+      <div class="adjust-stock-title" id="adjustStockTitle">Adjust Stock - Item Name</div>
+      <button class="adjust-stock-close" onclick="closeAdjustStockModal()">×</button>
+    </div>
+    <div class="adjust-stock-body">
+      <!-- Adjustment Type -->
+      <div class="adjustment-type-row">
+        <label class="adjustment-type-option">
+          <input type="radio" name="adjustmentType" value="quantity" checked>
+          <span>Quantity Adjustment</span>
+        </label>
+        <label class="adjustment-type-option">
+          <input type="radio" name="adjustmentType" value="value">
+          <span>Value Adjustment</span>
+        </label>
+      </div>
+
+      <!-- Date, Account, Reference Number Row -->
+      <div class="adjust-stock-form-row">
+        <div class="adjust-stock-field">
+          <label>Date*</label>
+          <input type="date" id="adjustStockDate" required>
+        </div>
+        <div class="adjust-stock-field">
+          <label>Account*</label>
+          <select id="adjustStockAccount">
+            <option value="cogs">Cost of Goods Sold</option>
+            <option value="inventory">Inventory Asset</option>
+            <option value="expense">Expense</option>
+          </select>
+        </div>
+        <div class="adjust-stock-field">
+          <label class="normal">Reference Number</label>
+          <input type="text" id="adjustStockReference" class="highlight" placeholder="">
+        </div>
+      </div>
+
+      <!-- Quantity Adjustment Section -->
+      <div class="quantity-adjust-section">
+        <div class="quantity-row">
+          <div class="quantity-label">Quantity Available</div>
+          <input type="text" class="quantity-input" id="adjustQuantityAvailable" readonly>
+          <div class="quantity-unit">pcs</div>
+        </div>
+        <div class="quantity-row">
+          <div class="quantity-label">New Quantity on hand</div>
+          <input type="text" class="quantity-input" id="adjustNewQuantity" value="0.00">
+          <div class="quantity-unit"></div>
+        </div>
+        <div class="quantity-row">
+          <div class="quantity-label required">Quantity Adjusted*</div>
+          <input type="text" class="quantity-input" id="adjustQuantityAdjusted" placeholder="Eg. +10, -10">
+          <div class="quantity-unit"></div>
+        </div>
+        <div class="quantity-row">
+          <div class="quantity-label">Cost Price</div>
+          <input type="text" class="quantity-input" id="adjustCostPrice" value="0">
+          <div class="quantity-unit"></div>
+        </div>
+      </div>
+
+      <!-- Reason -->
+      <div class="reason-section">
+        <label class="reason-label">Reason*</label>
+        <select class="reason-select" id="adjustStockReason" required>
+          <option value="">Select a reason</option>
+          <option value="damaged">Damaged Goods</option>
+          <option value="stolen">Stolen</option>
+          <option value="loss">Stock Loss</option>
+          <option value="stock_received">Stock Received</option>
+          <option value="recount">Stock Recount</option>
+          <option value="opening_stock">Opening Stock</option>
+          <option value="returned">Returned Goods</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <!-- Description -->
+      <div class="description-section">
+        <label class="description-label">Description</label>
+        <textarea class="description-textarea" id="adjustStockDescription" placeholder="Max 500 characters"
+          maxlength="500"></textarea>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="adjust-stock-actions">
+        <button class="btn-save-draft" onclick="saveAdjustmentAsDraft()">Save as Draft</button>
+        <button class="btn-convert-adjusted" onclick="convertToAdjusted()">Convert to Adjusted</button>
+        <button class="btn-cancel-adjust" onclick="closeAdjustStockModal()">Cancel</button>
       </div>
     </div>
   </div>
