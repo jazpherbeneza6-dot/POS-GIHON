@@ -91,6 +91,137 @@
     .zoho-dropdown-arrow {
       font-size: 10px;
       color: #6c757d;
+      transition: transform 0.2s ease;
+    }
+
+    .zoho-dropdown.open .zoho-dropdown-arrow {
+      transform: rotate(180deg);
+    }
+
+    /* Items Filter Dropdown */
+    .items-filter-dropdown {
+      position: relative;
+    }
+
+    .items-filter-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 280px;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+      z-index: 1000;
+      display: none;
+      margin-top: 8px;
+    }
+
+    .items-filter-menu.show {
+      display: block;
+      animation: slideDown 0.15s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .items-filter-search {
+      padding: 12px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .items-filter-search input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .items-filter-search input:focus {
+      border-color: #3b82f6;
+    }
+
+    .items-filter-options {
+      max-height: 350px;
+      overflow-y: auto;
+    }
+
+    .items-filter-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #374151;
+      transition: background 0.1s ease;
+    }
+
+    .items-filter-option:hover {
+      background: #f3f4f6;
+    }
+
+    .items-filter-option.selected {
+      background: #eff6ff;
+      color: #3b82f6;
+    }
+
+    .items-filter-option .star-icon {
+      color: #d1d5db;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .items-filter-option .star-icon:hover {
+      color: #fbbf24;
+    }
+
+    .items-filter-option.favorited .star-icon {
+      color: #fbbf24;
+    }
+
+    .items-filter-divider {
+      height: 1px;
+      background: #e5e7eb;
+      margin: 4px 0;
+    }
+
+    .items-filter-new-view {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      color: #3b82f6;
+      font-size: 14px;
+      cursor: pointer;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .items-filter-new-view:hover {
+      background: #eff6ff;
+    }
+
+    .items-filter-new-view .plus-icon {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #3b82f6;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
     }
 
     .zoho-header-right {
@@ -4840,9 +4971,65 @@
       <!-- Zoho-style Header -->
       <div class="zoho-items-header">
         <div class="zoho-header-left">
-          <div class="zoho-dropdown">
-            <span class="zoho-dropdown-title">All Items</span>
-            <span class="zoho-dropdown-arrow">▼</span>
+          <div class="zoho-dropdown items-filter-dropdown" id="itemsFilterDropdown" onclick="toggleItemsFilter(event)">
+            <span class="zoho-dropdown-title" id="itemsFilterTitle">Active Items</span>
+            <span class="zoho-dropdown-arrow">▲</span>
+            <div class="items-filter-menu" id="itemsFilterMenu">
+              <div class="items-filter-search">
+                <input type="text" id="itemsFilterSearch" placeholder="Search..." onclick="event.stopPropagation()"
+                  oninput="filterItemsOptions()">
+              </div>
+              <div class="items-filter-options" id="itemsFilterOptions">
+                <div class="items-filter-option" data-filter="all" onclick="selectItemsFilter('all', 'All Items')">
+                  <span>All Items</span>
+                  <span class="star-icon">☆</span>
+                </div>
+                <div class="items-filter-option selected" data-filter="active"
+                  onclick="selectItemsFilter('active', 'Active Items')">
+                  <span>Active Items</span>
+                  <span class="star-icon">☆</span>
+                </div>
+                <div class="items-filter-option" data-filter="inactive"
+                  onclick="selectItemsFilter('inactive', 'Inactive Items')">
+                  <span>Inactive Items</span>
+                  <span class="star-icon">☆</span>
+                </div>
+                <div class="items-filter-option" data-filter="ungrouped"
+                  onclick="selectItemsFilter('ungrouped', 'Ungrouped Items')">
+                  <span>Ungrouped Items</span>
+                  <span class="star-icon">☆</span>
+                </div>
+                <div class="items-filter-option" data-filter="lowstock"
+                  onclick="selectItemsFilter('lowstock', 'Low Stock Items')">
+                  <span>Low Stock Items</span>
+                  <span class="star-icon">☆</span>
+                </div>
+                <div class="items-filter-divider"></div>
+                <div class="items-filter-option" data-filter="sales" onclick="selectItemsFilter('sales', 'Sales')">
+                  <span>Sales</span>
+                  <span class="star-icon">☆</span>
+                </div>
+                <div class="items-filter-option" data-filter="purchases"
+                  onclick="selectItemsFilter('purchases', 'Purchases')">
+                  <span>Purchases</span>
+                  <span class="star-icon">☆</span>
+                </div>
+                <div class="items-filter-option" data-filter="zohocrm"
+                  onclick="selectItemsFilter('zohocrm', 'Zoho CRM')">
+                  <span>Zoho CRM</span>
+                  <span class="star-icon">☆</span>
+                </div>
+                <div class="items-filter-option" data-filter="inventory"
+                  onclick="selectItemsFilter('inventory', 'Inventory Items')">
+                  <span>Inventory Items</span>
+                  <span class="star-icon">☆</span>
+                </div>
+              </div>
+              <div class="items-filter-new-view" onclick="createNewCustomView()">
+                <span class="plus-icon">+</span>
+                <span>New Custom View</span>
+              </div>
+            </div>
           </div>
           <div class="zoho-search-container">
             <input type="text" id="itemSearchInput" class="zoho-search-input"

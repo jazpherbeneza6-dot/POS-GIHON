@@ -566,6 +566,142 @@
             background: #2563eb;
         }
 
+        /* More Dropdown */
+        .more-dropdown-wrapper {
+            position: relative;
+        }
+
+        .more-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 220px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+            z-index: 1000;
+            display: none;
+            margin-top: 4px;
+        }
+
+        .more-dropdown-menu.show {
+            display: block;
+            animation: slideDown 0.15s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .more-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #374151;
+            transition: background 0.1s ease;
+        }
+
+        .more-menu-item:hover {
+            background: #f3f4f6;
+        }
+
+        .more-menu-item:first-child {
+            border-radius: 8px 8px 0 0;
+        }
+
+        .more-menu-item:last-child {
+            border-radius: 0 0 8px 8px;
+        }
+
+        .more-menu-item .menu-icon {
+            font-size: 16px;
+            color: #6b7280;
+            width: 20px;
+            text-align: center;
+        }
+
+        .more-menu-item.sort-by {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .more-menu-item.sort-by .menu-icon {
+            color: white;
+        }
+
+        .more-menu-item.sort-by:hover {
+            background: #2563eb;
+        }
+
+        .more-menu-item .arrow-icon {
+            margin-left: auto;
+            font-size: 12px;
+        }
+
+        /* Sort Submenu */
+        .sort-submenu-wrapper {
+            position: relative;
+        }
+
+        .sort-submenu {
+            position: absolute;
+            left: -180px;
+            top: 0;
+            width: 160px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+            display: none;
+        }
+
+        .sort-submenu-wrapper:hover .sort-submenu {
+            display: block;
+        }
+
+        .sort-submenu-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #374151;
+        }
+
+        .sort-submenu-item:hover {
+            background: #f3f4f6;
+        }
+
+        .sort-submenu-item.selected {
+            background: #eff6ff;
+            color: #3b82f6;
+        }
+
+        .sort-submenu-item:first-child {
+            border-radius: 8px 8px 0 0;
+        }
+
+        .sort-submenu-item:last-child {
+            border-radius: 0 0 8px 8px;
+        }
+
+        .sort-submenu-item .sort-arrow {
+            color: #3b82f6;
+        }
+
         /* Empty State */
         .empty-items {
             text-align: center;
@@ -731,7 +867,43 @@
                 <div class="header-actions">
                     <button class="btn-icon" title="Filter">☰</button>
                     <button class="btn-new" onclick="window.location.href='/new-item-group.html'">+ New</button>
-                    <button class="btn-icon" title="More">⋯</button>
+                    <div class="more-dropdown-wrapper">
+                        <button class="btn-icon" title="More" onclick="toggleGroupsMoreMenu(event)">⋯</button>
+                        <div class="more-dropdown-menu" id="groupsMoreMenu">
+                            <div class="more-menu-item sort-by sort-submenu-wrapper">
+                                <span class="menu-icon">↕</span>
+                                <span>Sort by</span>
+                                <span class="arrow-icon">›</span>
+                                <div class="sort-submenu">
+                                    <div class="sort-submenu-item"
+                                        onclick="sortGroupsBy('created_at'); event.stopPropagation();">
+                                        <span>Created Time</span>
+                                    </div>
+                                    <div class="sort-submenu-item selected"
+                                        onclick="sortGroupsBy('name'); event.stopPropagation();">
+                                        <span>Name</span>
+                                        <span class="sort-arrow">↓</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="more-menu-item" onclick="importItemGroups()">
+                                <span class="menu-icon">↓</span>
+                                <span>Import Item Groups</span>
+                            </div>
+                            <div class="more-menu-item" onclick="exportItemGroups()">
+                                <span class="menu-icon">↑</span>
+                                <span>Export Item Groups</span>
+                            </div>
+                            <div class="more-menu-item" onclick="openGroupsPreferences()">
+                                <span class="menu-icon">⚙</span>
+                                <span>Preferences</span>
+                            </div>
+                            <div class="more-menu-item" onclick="refreshGroupsList()">
+                                <span class="menu-icon">↻</span>
+                                <span>Refresh List</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -913,6 +1085,91 @@
             container.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
+
+        // ========== MORE DROPDOWN FUNCTIONS ==========
+        let currentGroupsSortBy = 'name';
+
+        function toggleGroupsMoreMenu(event) {
+            event.stopPropagation();
+            const menu = document.getElementById('groupsMoreMenu');
+            if (menu.classList.contains('show')) {
+                menu.classList.remove('show');
+            } else {
+                menu.classList.add('show');
+            }
+        }
+
+        function closeGroupsMoreMenu() {
+            const menu = document.getElementById('groupsMoreMenu');
+            if (menu) menu.classList.remove('show');
+        }
+
+        function sortGroupsBy(field) {
+            currentGroupsSortBy = field;
+
+            // Update UI to show selected
+            document.querySelectorAll('.sort-submenu-item').forEach(item => {
+                item.classList.remove('selected');
+                const arrow = item.querySelector('.sort-arrow');
+                if (arrow) arrow.remove();
+            });
+
+            const sortItems = document.querySelectorAll('.sort-submenu-item');
+            sortItems.forEach(item => {
+                if (item.textContent.trim().toLowerCase().includes(field === 'created_at' ? 'created' : field)) {
+                    item.classList.add('selected');
+                    if (!item.querySelector('.sort-arrow')) {
+                        const arrow = document.createElement('span');
+                        arrow.className = 'sort-arrow';
+                        arrow.textContent = '↓';
+                        item.appendChild(arrow);
+                    }
+                }
+            });
+
+            // Sort the groups
+            itemGroups.sort((a, b) => {
+                if (field === 'name') {
+                    return (a.name || '').localeCompare(b.name || '');
+                } else if (field === 'created_at') {
+                    return new Date(b.created_at) - new Date(a.created_at);
+                }
+                return 0;
+            });
+
+            renderGroupsList();
+            renderGroupsTable();
+            closeGroupsMoreMenu();
+            showToast(`Sorted by ${field === 'created_at' ? 'Created Time' : 'Name'}`, 'success');
+        }
+
+        function importItemGroups() {
+            closeGroupsMoreMenu();
+            showToast('Import Item Groups feature coming soon', 'info');
+        }
+
+        function exportItemGroups() {
+            closeGroupsMoreMenu();
+            showToast('Export Item Groups feature coming soon', 'info');
+        }
+
+        function openGroupsPreferences() {
+            closeGroupsMoreMenu();
+            showToast('Preferences feature coming soon', 'info');
+        }
+
+        function refreshGroupsList() {
+            closeGroupsMoreMenu();
+            loadItemGroups();
+            showToast('List refreshed', 'success');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.more-dropdown-wrapper')) {
+                closeGroupsMoreMenu();
+            }
+        });
 
         // Load item groups
         async function loadItemGroups() {

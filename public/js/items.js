@@ -17,6 +17,118 @@ let cart = [];
 let currentView = 'list'; // 'list' or 'grid'
 let currentDetailItemId = null; // Currently viewed item in detail view
 let selectedItems = []; // Array of selected item IDs for bulk actions
+let currentItemsFilter = 'active'; // Current filter for items list
+
+// ========== ITEMS FILTER DROPDOWN FUNCTIONS ==========
+function toggleItemsFilter(event) {
+  event.stopPropagation();
+  const dropdown = document.getElementById('itemsFilterDropdown');
+  const menu = document.getElementById('itemsFilterMenu');
+
+  if (menu.classList.contains('show')) {
+    menu.classList.remove('show');
+    dropdown.classList.remove('open');
+  } else {
+    menu.classList.add('show');
+    dropdown.classList.add('open');
+    document.getElementById('itemsFilterSearch').focus();
+  }
+}
+
+function closeItemsFilter() {
+  const dropdown = document.getElementById('itemsFilterDropdown');
+  const menu = document.getElementById('itemsFilterMenu');
+  if (menu) menu.classList.remove('show');
+  if (dropdown) dropdown.classList.remove('open');
+}
+
+function filterItemsOptions() {
+  const searchValue = document.getElementById('itemsFilterSearch').value.toLowerCase();
+  const options = document.querySelectorAll('.items-filter-option');
+
+  options.forEach(option => {
+    const text = option.textContent.toLowerCase();
+    option.style.display = text.includes(searchValue) ? 'flex' : 'none';
+  });
+}
+
+function selectItemsFilter(filterKey, filterLabel) {
+  event.stopPropagation();
+  currentItemsFilter = filterKey;
+
+  // Update title
+  document.getElementById('itemsFilterTitle').textContent = filterLabel;
+
+  // Update selected state
+  document.querySelectorAll('.items-filter-option').forEach(opt => {
+    opt.classList.remove('selected');
+  });
+  document.querySelector(`[data-filter="${filterKey}"]`)?.classList.add('selected');
+
+  // Close dropdown
+  closeItemsFilter();
+
+  // Apply filter and re-render
+  applyItemsFilter();
+}
+
+function applyItemsFilter() {
+  let filteredItems = [...items];
+
+  switch (currentItemsFilter) {
+    case 'all':
+      // Show all items
+      break;
+    case 'active':
+      filteredItems = items.filter(item => item.status !== 'inactive');
+      break;
+    case 'inactive':
+      filteredItems = items.filter(item => item.status === 'inactive');
+      break;
+    case 'ungrouped':
+      filteredItems = items.filter(item => !item.group_id);
+      break;
+    case 'lowstock':
+      filteredItems = items.filter(item => {
+        const qty = parseFloat(item.stock_quantity) || 0;
+        const reorderPoint = item.reorder_point || 20;
+        return qty <= reorderPoint && qty > 0;
+      });
+      break;
+    case 'inventory':
+      // Show inventory items (all by default as we only have inventory items)
+      break;
+    case 'sales':
+    case 'purchases':
+    case 'zohocrm':
+      // Placeholder filters - show toast
+      showToast(`${currentItemsFilter.charAt(0).toUpperCase() + currentItemsFilter.slice(1)} filter coming soon`, 'info');
+      filteredItems = [...items];
+      break;
+    default:
+      break;
+  }
+
+  // Store original items and render filtered list
+  const originalItems = items;
+  items = filteredItems;
+  renderItemsTable();
+  renderItemsGrid();
+  items = originalItems;
+}
+
+function createNewCustomView() {
+  event.stopPropagation();
+  closeItemsFilter();
+  showToast('Custom View feature coming soon', 'info');
+}
+
+// Close filter dropdown when clicking outside
+document.addEventListener('click', function (e) {
+  if (!e.target.closest('.items-filter-dropdown')) {
+    closeItemsFilter();
+  }
+});
 
 // ========== BULK ACTION TOOLBAR FUNCTIONS ==========
 function updateBulkActionToolbar() {
