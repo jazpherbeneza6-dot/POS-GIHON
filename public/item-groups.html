@@ -810,6 +810,90 @@
         </div>
     </div>
 
+    <!-- Add Item Modal -->
+    <div id="addItemModal" class="modal">
+        <div class="modal-content" style="max-width: 550px;">
+            <div class="modal-header" style="background: #3b82f6; color: white; border-radius: 8px 8px 0 0;">
+                <h2>➕ Add New Item to Group</h2>
+                <button onclick="closeAddItemModal()" style="color: white;">×</button>
+            </div>
+            <div class="modal-body" style="padding: 24px;">
+                <form id="addItemForm">
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; font-size: 14px; color: #ef4444; margin-bottom: 6px;">Item
+                            Name*</label>
+                        <input type="text" id="newItemName" class="form-input"
+                            style="width: 100%; padding: 10px 14px; border: 1px solid #3b82f6; border-radius: 4px; font-size: 14px;"
+                            placeholder="Enter item name" required>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                        <div>
+                            <label
+                                style="display: block; font-size: 14px; color: #374151; margin-bottom: 6px;">SKU</label>
+                            <input type="text" id="newItemSku" class="form-input"
+                                style="width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px;"
+                                placeholder="Auto-generate">
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; font-size: 14px; color: #374151; margin-bottom: 6px;">Unit</label>
+                            <select id="newItemUnit" class="form-input"
+                                style="width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px; background: white;">
+                                <option value="pcs">pcs</option>
+                                <option value="kg">kg</option>
+                                <option value="lbs">lbs</option>
+                                <option value="box">box</option>
+                                <option value="pack">pack</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                        <div>
+                            <label style="display: block; font-size: 14px; color: #ef4444; margin-bottom: 6px;">Cost
+                                Price (PHP)*</label>
+                            <input type="number" id="newItemCost" class="form-input"
+                                style="width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px;"
+                                placeholder="0.00" step="0.01" required>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 14px; color: #ef4444; margin-bottom: 6px;">Selling
+                                Price (PHP)*</label>
+                            <input type="number" id="newItemPrice" class="form-input"
+                                style="width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px;"
+                                placeholder="0.00" step="0.01" required>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                        <div>
+                            <label style="display: block; font-size: 14px; color: #374151; margin-bottom: 6px;">Initial
+                                Stock</label>
+                            <input type="number" id="newItemStock" class="form-input"
+                                style="width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px;"
+                                placeholder="0" value="0">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 14px; color: #374151; margin-bottom: 6px;">Reorder
+                                Point</label>
+                            <input type="number" id="newItemReorder" class="form-input"
+                                style="width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px;"
+                                placeholder="10" value="10">
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-top: 24px;">
+                        <button type="submit" class="btn btn-primary"
+                            style="flex: 1; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 4px; font-size: 14px; font-weight: 500; cursor: pointer;">
+                            Save Item
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="closeAddItemModal()"
+                            style="flex: 1; padding: 12px; background: #6b7280; color: white; border: none; border-radius: 4px; font-size: 14px; font-weight: 500; cursor: pointer;">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Layout Scripts -->
     <script src="/js/layout.js"></script>
 
@@ -1087,11 +1171,73 @@
             itemGroups = original;
         }
 
-        // Add item modal placeholder
+        // Add item modal functions
         function openAddItemModal() {
-            // Navigate to add item page with group pre-selected
-            window.location.href = `/items.html?addToGroup=${selectedGroupId}`;
+            if (!selectedGroupId) {
+                showToast('Please select a group first', 'error');
+                return;
+            }
+            // Reset form
+            document.getElementById('addItemForm').reset();
+            document.getElementById('newItemStock').value = '0';
+            document.getElementById('newItemReorder').value = '10';
+
+            // Show modal
+            document.getElementById('addItemModal').classList.add('active');
         }
+
+        function closeAddItemModal() {
+            document.getElementById('addItemModal').classList.remove('active');
+        }
+
+        // Handle Add Item form submission
+        document.addEventListener('DOMContentLoaded', () => {
+            const addItemForm = document.getElementById('addItemForm');
+            if (addItemForm) {
+                addItemForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+
+                    const itemData = {
+                        name: document.getElementById('newItemName').value.trim(),
+                        sku: document.getElementById('newItemSku').value.trim() || null,
+                        unit: document.getElementById('newItemUnit').value,
+                        quantity: parseInt(document.getElementById('newItemStock').value) || 0,
+                        reorder_point: parseInt(document.getElementById('newItemReorder').value) || 10,
+                        price: parseFloat(document.getElementById('newItemPrice').value) || 0,
+                        cost: parseFloat(document.getElementById('newItemCost').value) || 0,
+                        group_id: selectedGroupId
+                    };
+
+                    if (!itemData.name) {
+                        showToast('Please enter an item name', 'error');
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch('/api/items', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(itemData)
+                        });
+
+                        if (!response.ok) {
+                            const error = await response.json();
+                            throw new Error(error.error || 'Failed to create item');
+                        }
+
+                        showToast('Item created successfully!', 'success');
+                        closeAddItemModal();
+
+                        // Refresh the detail view to show the new item
+                        showGroupDetail(selectedGroupId);
+
+                    } catch (error) {
+                        console.error('Error creating item:', error);
+                        showToast(error.message, 'error');
+                    }
+                });
+            }
+        });
 
         // Item Groups Filter Dropdown
         let currentGroupFilter = 'active';

@@ -198,6 +198,14 @@ async function init() {
         CREATE INDEX IF NOT EXISTS idx_items_group_id ON items(group_id);
       `);
 
+      // Add manufacturer and brand columns to items table
+      await pool.query(`
+        ALTER TABLE items ADD COLUMN IF NOT EXISTS manufacturer VARCHAR(255);
+      `);
+      await pool.query(`
+        ALTER TABLE items ADD COLUMN IF NOT EXISTS brand VARCHAR(255);
+      `);
+
       // High-precision NUMERIC(38,10) migration for existing columns
       // This upgrades INTEGER columns to support extremely large values (up to 10^38)
       console.log('Running high-precision NUMERIC migration...');

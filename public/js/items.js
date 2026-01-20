@@ -783,6 +783,8 @@ async function saveGrouping() {
     // Create new group
     const groupName = document.getElementById('newGroupName').value.trim();
     const unit = document.getElementById('newGroupUnit').value.trim();
+    const manufacturer = document.getElementById('newGroupManufacturer')?.value.trim() || null;
+    const brand = document.getElementById('newGroupBrand')?.value.trim() || null;
 
     if (!groupName) {
       showToast('Please enter a group name', 'error');
@@ -791,10 +793,10 @@ async function saveGrouping() {
 
     try {
       // Create the group
-      const createResponse = await fetch('/api/items/groups/create', {
+      const createResponse = await fetch('/api/items/groups', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: groupName, unit: unit || 'pcs' })
+        body: JSON.stringify({ name: groupName, unit: unit || 'pcs', manufacturer: manufacturer, brand: brand })
       });
 
       if (!createResponse.ok) {
@@ -3026,6 +3028,8 @@ async function saveItem(event) {
   const costInput = document.getElementById('itemCost')?.value || '0';
   const wholesaleInput = document.getElementById('itemWholesale')?.checked || false;
   const imageUrl = document.getElementById('itemImageUrl')?.value || null;
+  const manufacturerInput = document.getElementById('itemManufacturer')?.value || null;
+  const brandInput = document.getElementById('itemBrand')?.value || null;
 
   // Validate inputs
   if (!nameInput) {
@@ -3047,7 +3051,9 @@ async function saveItem(event) {
     price: price,
     cost: cost,
     can_be_wholesale: wholesaleInput,
-    image_url: imageUrl
+    image_url: imageUrl,
+    manufacturer: manufacturerInput,
+    brand: brandInput
   };
 
   try {

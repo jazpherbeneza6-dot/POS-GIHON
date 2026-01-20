@@ -6,7 +6,7 @@ const os = require('os');
 const database = require('./database');
 
 const app = express();
-const PORT = 4000;
+const PORT = 4001;
 
 // Middleware
 app.use(cors());

@@ -7,7 +7,9 @@ router.get('/', async (req, res) => {
   try {
     const db = database.getDb();
     const result = await db.query(`
-      SELECT i.*, ig.name as group_name 
+      SELECT i.*, ig.name as group_name,
+             COALESCE(i.manufacturer, ig.manufacturer) as manufacturer,
+             COALESCE(i.brand, ig.brand) as brand
       FROM items i 
       LEFT JOIN item_groups ig ON i.group_id = ig.id 
       ORDER BY i.created_at DESC
@@ -28,7 +30,9 @@ router.get('/:id', async (req, res) => {
   try {
     const db = database.getDb();
     const result = await db.query(`
-      SELECT i.*, ig.name as group_name 
+      SELECT i.*, ig.name as group_name,
+             COALESCE(i.manufacturer, ig.manufacturer) as manufacturer,
+             COALESCE(i.brand, ig.brand) as brand
       FROM items i 
       LEFT JOIN item_groups ig ON i.group_id = ig.id 
       WHERE i.id = $1
@@ -50,7 +54,9 @@ router.get('/search', async (req, res) => {
     const query = req.query.q || '';
     const db = database.getDb();
     const result = await db.query(`
-      SELECT i.*, ig.name as group_name 
+      SELECT i.*, ig.name as group_name,
+             COALESCE(i.manufacturer, ig.manufacturer) as manufacturer,
+             COALESCE(i.brand, ig.brand) as brand
       FROM items i 
       LEFT JOIN item_groups ig ON i.group_id = ig.id 
       WHERE i.name ILIKE $1 OR i.sku ILIKE $1 OR i.barcode ILIKE $1
@@ -67,7 +73,7 @@ router.get('/search', async (req, res) => {
 // Create item
 router.post('/', async (req, res) => {
   try {
-    const { name, sku, unit, quantity, reorder_point, price, cost, can_be_wholesale, image_url, group_id } = req.body;
+    const { name, sku, unit, quantity, reorder_point, price, cost, can_be_wholesale, image_url, group_id, manufacturer, brand } = req.body;
 
 
     if (!name || name.trim() === '') {
@@ -88,6 +94,8 @@ router.post('/', async (req, res) => {
     const reorderPointValue = parseInt(reorder_point) || 10;
     const unitValue = unit || 'pcs';
     const groupIdValue = group_id ? parseInt(group_id) : null;
+    const manufacturerValue = manufacturer || null;
+    const brandValue = brand || null;
 
     if (isNaN(stockQuantity) || stockQuantity < 0) {
       return res.status(400).json({ error: 'Quantity must be a valid positive number' });
@@ -134,10 +142,10 @@ router.post('/', async (req, res) => {
     }
 
     const result = await db.query(`
-      INSERT INTO items (name, sku, unit, stock_quantity, reorder_point, selling_price, purchase_cost, can_be_wholesale, image_url, group_id)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      INSERT INTO items (name, sku, unit, stock_quantity, reorder_point, selling_price, purchase_cost, can_be_wholesale, image_url, group_id, manufacturer, brand)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
       RETURNING id
-    `, [name.trim(), finalSku, unitValue, stockQuantity, reorderPointValue, sellingPrice, purchaseCost, can_be_wholesale || false, image_url || null, groupIdValue]);
+    `, [name.trim(), finalSku, unitValue, stockQuantity, reorderPointValue, sellingPrice, purchaseCost, can_be_wholesale || false, image_url || null, groupIdValue, manufacturerValue, brandValue]);
 
     const itemId = result.rows[0].id;
     const itemResult = await db.query('SELECT * FROM items WHERE id = $1', [itemId]);
@@ -153,10 +161,39 @@ router.post('/', async (req, res) => {
 // Update item
 router.put('/:id', async (req, res) => {
   try {
-    const { name, sku, unit, quantity, reorder_point, price, cost, can_be_wholesale, image_url } = req.body;
+    const { name, sku, unit, quantity, reorder_point, price, cost, can_be_wholesale, image_url, group_id, manufacturer, brand } = req.body;
     const db = database.getDb();
 
+    // Check if this is a group_id-only update
+    const isGroupIdOnlyUpdate = group_id !== undefined && name === undefined && quantity === undefined && price === undefined;
 
+    if (isGroupIdOnlyUpdate) {
+      // Only updating group_id - simpler update
+      const groupIdValue = group_id === null || group_id === '' ? null : parseInt(group_id);
+
+      await db.query(`
+        UPDATE items 
+        SET group_id = $1, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $2
+      `, [groupIdValue, req.params.id]);
+
+      const result = await db.query(`
+        SELECT i.*, ig.name as group_name,
+               COALESCE(i.manufacturer, ig.manufacturer) as manufacturer,
+               COALESCE(i.brand, ig.brand) as brand
+        FROM items i 
+        LEFT JOIN item_groups ig ON i.group_id = ig.id 
+        WHERE i.id = $1
+      `, [req.params.id]);
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({ error: 'Item not found' });
+      }
+
+      return res.json(result.rows[0]);
+    }
+
+    // Full update - validate required fields
     if (!name || name.trim() === '') {
       return res.status(400).json({ error: 'Item name is required' });
     }
@@ -174,6 +211,9 @@ router.put('/:id', async (req, res) => {
     const purchaseCost = parseInt(cost) || 0;
     const reorderPointValue = parseInt(reorder_point) || 10;
     const unitValue = unit || 'pcs';
+    const groupIdValue = group_id !== undefined ? (group_id === null || group_id === '' ? null : parseInt(group_id)) : null;
+    const manufacturerValue = manufacturer !== undefined ? manufacturer : null;
+    const brandValue = brand !== undefined ? brand : null;
 
     if (isNaN(stockQuantity) || stockQuantity < 0) {
       return res.status(400).json({ error: 'Quantity must be a valid positive number' });
@@ -186,12 +226,19 @@ router.put('/:id', async (req, res) => {
     await db.query(`
       UPDATE items 
       SET name = $1, sku = $2, unit = $3, stock_quantity = $4, reorder_point = $5,
-          selling_price = $6, purchase_cost = $7, can_be_wholesale = $8, image_url = $9, updated_at = CURRENT_TIMESTAMP
-      WHERE id = $10
-    `, [name.trim(), sku || null, unitValue, stockQuantity, reorderPointValue, sellingPrice, purchaseCost, can_be_wholesale || false, image_url || null, req.params.id]);
+          selling_price = $6, purchase_cost = $7, can_be_wholesale = $8, image_url = $9, 
+          group_id = $10, manufacturer = $11, brand = $12, updated_at = CURRENT_TIMESTAMP
+      WHERE id = $13
+    `, [name.trim(), sku || null, unitValue, stockQuantity, reorderPointValue, sellingPrice, purchaseCost, can_be_wholesale || false, image_url || null, groupIdValue, manufacturerValue, brandValue, req.params.id]);
 
-    const result = await db.query('SELECT * FROM items WHERE id = $1', [req.params.id]);
-
+    const result = await db.query(`
+      SELECT i.*, ig.name as group_name,
+             COALESCE(i.manufacturer, ig.manufacturer) as manufacturer,
+             COALESCE(i.brand, ig.brand) as brand
+      FROM items i 
+      LEFT JOIN item_groups ig ON i.group_id = ig.id 
+      WHERE i.id = $1
+    `, [req.params.id]);
 
     res.json(result.rows[0]);
   } catch (error) {
