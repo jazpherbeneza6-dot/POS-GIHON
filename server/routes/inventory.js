@@ -193,24 +193,44 @@ router.post('/adjustments', async (req, res) => {
 
         const existingItem = itemResult.rows[0];
         const currentStock = parseFloat(existingItem.stock_quantity) || 0;
-        const newQuantity = currentStock + quantityChange;
         const unitCost = parseFloat(existingItem.purchase_cost) || 0;
-        const valueChange = quantityChange * unitCost;
+
+        let newQuantity = currentStock;
+        let valueChange = 0;
+
+        if (mode === 'value') {
+          // Value adjustment: only change the value, NOT stock quantity
+          valueChange = quantityChange; // quantityChange here is the value delta
+          newQuantity = currentStock; // stock stays the same
+        } else {
+          // Quantity adjustment: change stock quantity
+          newQuantity = currentStock + quantityChange;
+          valueChange = quantityChange * unitCost;
+        }
 
         // Only update stock if status is 'adjusted' (not draft)
         if (status === 'adjusted') {
-          // Update item stock quantity
-          await client.query(`
-            UPDATE items 
-            SET stock_quantity = $1, updated_at = CURRENT_TIMESTAMP
-            WHERE id = $2
-          `, [newQuantity, item_id]);
+          if (mode === 'quantity') {
+            // Only update stock_quantity for quantity mode
+            await client.query(`
+              UPDATE items 
+              SET stock_quantity = $1, updated_at = CURRENT_TIMESTAMP
+              WHERE id = $2
+            `, [newQuantity, item_id]);
+          } else {
+            // For value mode, just update timestamp (stock stays same)
+            await client.query(`
+              UPDATE items 
+              SET updated_at = CURRENT_TIMESTAMP
+              WHERE id = $2
+            `, [item_id]);
+          }
 
           // Create inventory transaction for audit trail
           await client.query(`
             INSERT INTO inventory_transactions (item_id, type, quantity, reference, notes)
             VALUES ($1, 'ADJUSTMENT', $2, $3, $4)
-          `, [item_id, quantityChange, finalReferenceNumber, `Adjustment: ${reason || 'N/A'}`]);
+          `, [item_id, mode === 'value' ? 0 : quantityChange, finalReferenceNumber, `${mode === 'value' ? 'Value' : 'Quantity'} Adjustment: ${reason || 'N/A'}`]);
         }
 
         // Create adjustment item record
@@ -343,6 +363,73 @@ router.get('/adjustments/:id', async (req, res) => {
   }
 });
 
+// Update an adjustment
+router.put('/adjustments/:id', async (req, res) => {
+  try {
+    const db = database.getDb();
+    const { reference_number, mode, reason, description, account, items } = req.body;
+
+    const existing = await db.query('SELECT * FROM inventory_adjustments WHERE id = $1', [req.params.id]);
+    if (existing.rows.length === 0) {
+      return res.status(404).json({ error: 'Adjustment not found' });
+    }
+
+    await database.transaction(async (client) => {
+      // Update adjustment header
+      await client.query(`
+        UPDATE inventory_adjustments 
+        SET reference_number = $1, mode = $2, reason = $3, description = $4, account = $5, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $6
+      `, [reference_number, mode, reason, description, account, req.params.id]);
+
+      // Only update items if provided and still draft
+      if (items && items.length > 0 && existing.rows[0].status === 'draft') {
+        // Delete old items
+        await client.query('DELETE FROM inventory_adjustment_items WHERE adjustment_id = $1', [req.params.id]);
+
+        // Insert new items
+        let totalQtyChange = 0;
+        let totalValueChange = 0;
+
+        for (const item of items) {
+          const itemData = await client.query('SELECT * FROM items WHERE id = $1', [item.item_id]);
+          const itemInfo = itemData.rows[0];
+          const unitCost = parseFloat(itemInfo?.purchase_cost || itemInfo?.selling_price || 0);
+
+          await client.query(`
+            INSERT INTO inventory_adjustment_items 
+            (adjustment_id, item_id, item_name, quantity_on_hand, quantity_adjusted, new_quantity, unit_cost, value_change)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+          `, [
+            req.params.id,
+            item.item_id,
+            itemInfo?.name || 'Unknown',
+            parseFloat(itemInfo?.stock_quantity || 0),
+            item.quantity_adjusted,
+            parseFloat(itemInfo?.stock_quantity || 0) + item.quantity_adjusted,
+            unitCost,
+            unitCost * item.quantity_adjusted
+          ]);
+
+          totalQtyChange += item.quantity_adjusted;
+          totalValueChange += unitCost * item.quantity_adjusted;
+        }
+
+        await client.query(`
+          UPDATE inventory_adjustments 
+          SET total_quantity_change = $1, total_value_change = $2 
+          WHERE id = $3
+        `, [totalQtyChange, totalValueChange, req.params.id]);
+      }
+    });
+
+    res.json({ message: 'Adjustment updated successfully' });
+  } catch (error) {
+    console.error('Error updating adjustment:', error);
+    res.status(500).json({ error: 'Failed to update adjustment' });
+  }
+});
+
 // Convert draft to adjusted (apply stock changes)
 router.put('/adjustments/:id/convert', async (req, res) => {
   try {
@@ -374,18 +461,27 @@ router.put('/adjustments/:id/convert', async (req, res) => {
       for (const adjustmentItem of itemsResult.rows) {
         const quantityChange = parseFloat(adjustmentItem.quantity_adjusted);
 
-        // Update item stock
-        await client.query(`
-          UPDATE items 
-          SET stock_quantity = stock_quantity + $1, updated_at = CURRENT_TIMESTAMP
-          WHERE id = $2
-        `, [quantityChange, adjustmentItem.item_id]);
+        if (adjustment.mode === 'quantity') {
+          // Quantity mode: update stock quantity
+          await client.query(`
+            UPDATE items 
+            SET stock_quantity = stock_quantity + $1, updated_at = CURRENT_TIMESTAMP
+            WHERE id = $2
+          `, [quantityChange, adjustmentItem.item_id]);
+        } else {
+          // Value mode: do NOT change stock quantity
+          await client.query(`
+            UPDATE items 
+            SET updated_at = CURRENT_TIMESTAMP
+            WHERE id = $2
+          `, [adjustmentItem.item_id]);
+        }
 
         // Create audit transaction
         await client.query(`
           INSERT INTO inventory_transactions (item_id, type, quantity, reference, notes)
           VALUES ($1, 'ADJUSTMENT', $2, $3, $4)
-        `, [adjustmentItem.item_id, quantityChange, adjustment.reference_number, `Adjustment: ${adjustment.reason || 'N/A'}`]);
+        `, [adjustmentItem.item_id, adjustment.mode === 'value' ? 0 : quantityChange, adjustment.reference_number, `${adjustment.mode === 'value' ? 'Value' : 'Quantity'} Adjustment: ${adjustment.reason || 'N/A'}`]);
       }
 
       // Update adjustment status
@@ -403,7 +499,37 @@ router.put('/adjustments/:id/convert', async (req, res) => {
   }
 });
 
-// Delete adjustment (only drafts)
+// Bulk delete adjustments
+router.post('/adjustments/bulk-delete', async (req, res) => {
+  try {
+    const { ids } = req.body;
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ error: 'An array of adjustment IDs is required' });
+    }
+
+    const db = database.getDb();
+
+    await database.transaction(async (client) => {
+      // Delete adjustment items first (foreign key)
+      await client.query(
+        'DELETE FROM inventory_adjustment_items WHERE adjustment_id = ANY($1::int[])',
+        [ids]
+      );
+      // Delete adjustments
+      await client.query(
+        'DELETE FROM inventory_adjustments WHERE id = ANY($1::int[])',
+        [ids]
+      );
+    });
+
+    res.json({ message: `${ids.length} adjustment${ids.length > 1 ? 's' : ''} deleted successfully` });
+  } catch (error) {
+    console.error('Error bulk deleting adjustments:', error);
+    res.status(500).json({ error: 'Failed to delete adjustments' });
+  }
+});
+
+// Delete adjustment
 router.delete('/adjustments/:id', async (req, res) => {
   try {
     const db = database.getDb();
@@ -417,11 +543,11 @@ router.delete('/adjustments/:id', async (req, res) => {
       return res.status(404).json({ error: 'Adjustment not found' });
     }
 
-    if (adjustmentResult.rows[0].status === 'adjusted') {
-      return res.status(400).json({ error: 'Cannot delete applied adjustments' });
-    }
+    await database.transaction(async (client) => {
+      await client.query('DELETE FROM inventory_adjustment_items WHERE adjustment_id = $1', [req.params.id]);
+      await client.query('DELETE FROM inventory_adjustments WHERE id = $1', [req.params.id]);
+    });
 
-    await db.query('DELETE FROM inventory_adjustments WHERE id = $1', [req.params.id]);
     res.json({ message: 'Adjustment deleted successfully' });
   } catch (error) {
     console.error('Error deleting adjustment:', error);

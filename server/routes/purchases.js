@@ -402,4 +402,18 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// Get all purchase items (for filtering items that have been purchased)
+router.get('/items-list/all', async (req, res) => {
+  try {
+    const db = database.getDb();
+    const result = await db.query(`
+      SELECT DISTINCT item_id FROM purchase_items WHERE item_id IS NOT NULL
+    `);
+    res.json(result.rows || []);
+  } catch (error) {
+    console.error('Error fetching purchase items list:', error);
+    res.status(500).json({ error: 'Failed to fetch purchase items list' });
+  }
+});
+
 module.exports = router;

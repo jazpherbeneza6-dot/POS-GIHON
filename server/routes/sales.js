@@ -133,12 +133,12 @@ router.get('/', async (req, res) => {
   try {
     const { limit = 50, offset = 0 } = req.query;
     const db = database.getDb();
-    
+
     if (!db) {
       console.error('Database connection not available');
       return res.status(500).json({ error: 'Database connection not available' });
     }
-    
+
     const result = await db.query(`
       SELECT s.*, 
              COUNT(si.id) as item_count,
@@ -150,7 +150,7 @@ router.get('/', async (req, res) => {
       ORDER BY s.date DESC
       LIMIT $1 OFFSET $2
     `, [parseInt(limit), parseInt(offset)]);
-    
+
     // Ensure we return an array even if result.rows is undefined
     res.json(result.rows || []);
   } catch (error) {
@@ -188,12 +188,12 @@ router.get('/:id', async (req, res) => {
 router.get('/receipt/:id', async (req, res) => {
   try {
     const db = database.getDb();
-    
+
     if (!db) {
       console.error('Database connection not available');
       return res.status(500).json({ error: 'Database connection not available' });
     }
-    
+
     const saleResult = await db.query('SELECT * FROM sales WHERE id = $1', [req.params.id]);
 
     if (saleResult.rows.length === 0) {
@@ -201,7 +201,7 @@ router.get('/receipt/:id', async (req, res) => {
     }
 
     const sale = saleResult.rows[0];
-    
+
     const itemsResult = await db.query(`
       SELECT si.*, i.name as item_name, i.sku, i.unit
       FROM sales_items si
@@ -328,6 +328,20 @@ router.delete('/:id', async (req, res) => {
   } catch (error) {
     console.error('Error deleting sale:', error);
     res.status(500).json({ error: 'Failed to delete sale' });
+  }
+});
+
+// Get all sales items (for filtering items that have been sold)
+router.get('/items-list/all', async (req, res) => {
+  try {
+    const db = database.getDb();
+    const result = await db.query(`
+      SELECT DISTINCT item_id FROM sales_items WHERE item_id IS NOT NULL
+    `);
+    res.json(result.rows || []);
+  } catch (error) {
+    console.error('Error fetching sales items list:', error);
+    res.status(500).json({ error: 'Failed to fetch sales items list' });
   }
 });
 

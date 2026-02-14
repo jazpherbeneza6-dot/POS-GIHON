@@ -73,7 +73,8 @@ router.get('/search', async (req, res) => {
 // Create item
 router.post('/', async (req, res) => {
   try {
-    const { name, sku, unit, quantity, reorder_point, price, cost, can_be_wholesale, image_url, group_id, manufacturer, brand } = req.body;
+    const db = database.getDb();
+    const { name, sku, unit, quantity, reorder_point, price, cost, can_be_wholesale, image_url, group_id, manufacturer, brand, description, upc, ean, isbn, dimensions, tax_rate, account, type, weight, purchase_account, purchase_description } = req.body;
 
 
     if (!name || name.trim() === '') {
@@ -88,6 +89,17 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'Price is required' });
     }
 
+    // Check for duplicate SKU (if SKU is provided)
+    if (sku && sku.trim() !== '') {
+      const existingSku = await db.query(
+        'SELECT id FROM items WHERE LOWER(sku) = LOWER($1)',
+        [sku.trim()]
+      );
+      if (existingSku.rows.length > 0) {
+        return res.status(400).json({ error: `SKU "${sku}" already exists. Please use a different SKU.` });
+      }
+    }
+
     const stockQuantity = parseInt(quantity);
     const sellingPrice = parseInt(price);
     const purchaseCost = parseInt(cost) || 0;
@@ -96,6 +108,17 @@ router.post('/', async (req, res) => {
     const groupIdValue = group_id ? parseInt(group_id) : null;
     const manufacturerValue = manufacturer || null;
     const brandValue = brand || null;
+    const descriptionValue = description || null;
+    const upcValue = upc || null;
+    const eanValue = ean || null;
+    const isbnValue = isbn || null;
+    const dimensionsValue = dimensions || null;
+    const taxRateValue = tax_rate || null;
+    const accountValue = account || null;
+    const typeValue = type || 'goods';
+    const weightValue = weight || null;
+    const purchaseAccountValue = purchase_account || null;
+    const purchaseDescriptionValue = purchase_description || null;
 
     if (isNaN(stockQuantity) || stockQuantity < 0) {
       return res.status(400).json({ error: 'Quantity must be a valid positive number' });
@@ -105,7 +128,6 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'Price must be a valid positive number' });
     }
 
-    const db = database.getDb();
 
     // Check for duplicate name
     const existingName = await db.query('SELECT id FROM items WHERE name ILIKE $1', [name.trim()]);
@@ -142,10 +164,10 @@ router.post('/', async (req, res) => {
     }
 
     const result = await db.query(`
-      INSERT INTO items (name, sku, unit, stock_quantity, reorder_point, selling_price, purchase_cost, can_be_wholesale, image_url, group_id, manufacturer, brand)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+      INSERT INTO items (name, sku, unit, stock_quantity, reorder_point, selling_price, purchase_cost, can_be_wholesale, image_url, group_id, manufacturer, brand, description, upc, ean, isbn, dimensions, tax_rate, account, type, weight, purchase_account, purchase_description)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23)
       RETURNING id
-    `, [name.trim(), finalSku, unitValue, stockQuantity, reorderPointValue, sellingPrice, purchaseCost, can_be_wholesale || false, image_url || null, groupIdValue, manufacturerValue, brandValue]);
+    `, [name.trim(), finalSku, unitValue, stockQuantity, reorderPointValue, sellingPrice, purchaseCost, can_be_wholesale || false, image_url || null, groupIdValue, manufacturerValue, brandValue, descriptionValue, upcValue, eanValue, isbnValue, dimensionsValue, taxRateValue, accountValue, typeValue, weightValue, purchaseAccountValue, purchaseDescriptionValue]);
 
     const itemId = result.rows[0].id;
     const itemResult = await db.query('SELECT * FROM items WHERE id = $1', [itemId]);
@@ -161,8 +183,109 @@ router.post('/', async (req, res) => {
 // Update item
 router.put('/:id', async (req, res) => {
   try {
-    const { name, sku, unit, quantity, reorder_point, price, cost, can_be_wholesale, image_url, group_id, manufacturer, brand } = req.body;
+    const { name, sku, unit, quantity, reorder_point, price, cost, can_be_wholesale, image_url, group_id, manufacturer, brand, description, upc, ean, isbn, dimensions, tax_rate, account, type, weight, purchase_account, purchase_description, status, is_active, _partialUpdate, selling_price, purchase_cost, stock_quantity } = req.body;
     const db = database.getDb();
+
+    // Check if this is a partial/single-field update from bulk update
+    if (_partialUpdate) {
+      // Build dynamic update query for only the fields that were provided
+      const updates = [];
+      const values = [];
+      let paramIndex = 1;
+
+      // Map of allowed fields for partial update
+      const fieldMap = {
+        'selling_price': 'selling_price',
+        'purchase_cost': 'purchase_cost',
+        'reorder_point': 'reorder_point',
+        'stock_quantity': 'stock_quantity',
+        'name': 'name',
+        'sku': 'sku',
+        'unit': 'unit',
+        'manufacturer': 'manufacturer',
+        'brand': 'brand',
+        'description': 'description',
+        'upc': 'upc',
+        'ean': 'ean',
+        'isbn': 'isbn',
+        'dimensions': 'dimensions',
+        'tax_rate': 'tax_rate',
+        'account': 'account',
+        'type': 'type',
+        'weight': 'weight',
+        'purchase_account': 'purchase_account',
+        'purchase_description': 'purchase_description',
+        'status': 'status',
+        'is_returnable': 'is_returnable',
+        'image_url': 'image_url'
+      };
+
+      // Add only the fields that were provided
+      for (const [key, column] of Object.entries(fieldMap)) {
+        if (req.body[key] !== undefined) {
+          updates.push(`${column} = $${paramIndex}`);
+          values.push(req.body[key]);
+          paramIndex++;
+        }
+      }
+
+      if (updates.length === 0) {
+        return res.status(400).json({ error: 'No fields to update' });
+      }
+
+      updates.push(`updated_at = CURRENT_TIMESTAMP`);
+      values.push(req.params.id);
+
+      await db.query(`
+        UPDATE items 
+        SET ${updates.join(', ')}
+        WHERE id = $${paramIndex}
+      `, values);
+
+      const result = await db.query(`
+        SELECT i.*, ig.name as group_name,
+               COALESCE(i.manufacturer, ig.manufacturer) as manufacturer,
+               COALESCE(i.brand, ig.brand) as brand
+        FROM items i 
+        LEFT JOIN item_groups ig ON i.group_id = ig.id 
+        WHERE i.id = $1
+      `, [req.params.id]);
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({ error: 'Item not found' });
+      }
+
+      return res.json(result.rows[0]);
+    }
+
+    // Check if this is a status-only update (for mark as inactive/active)
+    const isStatusOnlyUpdate = (status !== undefined || is_active !== undefined) && name === undefined && quantity === undefined && price === undefined;
+
+    if (isStatusOnlyUpdate) {
+      // Only updating status - simpler update
+      const statusValue = status || (is_active === false ? 'inactive' : 'active');
+
+      await db.query(`
+        UPDATE items 
+        SET status = $1, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $2
+      `, [statusValue, req.params.id]);
+
+      const result = await db.query(`
+        SELECT i.*, ig.name as group_name,
+               COALESCE(i.manufacturer, ig.manufacturer) as manufacturer,
+               COALESCE(i.brand, ig.brand) as brand
+        FROM items i 
+        LEFT JOIN item_groups ig ON i.group_id = ig.id 
+        WHERE i.id = $1
+      `, [req.params.id]);
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({ error: 'Item not found' });
+      }
+
+      return res.json(result.rows[0]);
+    }
 
     // Check if this is a group_id-only update
     const isGroupIdOnlyUpdate = group_id !== undefined && name === undefined && quantity === undefined && price === undefined;
@@ -206,6 +329,17 @@ router.put('/:id', async (req, res) => {
       return res.status(400).json({ error: 'Price is required' });
     }
 
+    // Check for duplicate SKU (if SKU is provided) - exclude current item
+    if (sku && sku.trim() !== '') {
+      const existingSku = await db.query(
+        'SELECT id FROM items WHERE LOWER(sku) = LOWER($1) AND id != $2',
+        [sku.trim(), req.params.id]
+      );
+      if (existingSku.rows.length > 0) {
+        return res.status(400).json({ error: `SKU "${sku}" already exists. Please use a different SKU.` });
+      }
+    }
+
     const stockQuantity = parseInt(quantity);
     const sellingPrice = parseInt(price);
     const purchaseCost = parseInt(cost) || 0;
@@ -214,6 +348,17 @@ router.put('/:id', async (req, res) => {
     const groupIdValue = group_id !== undefined ? (group_id === null || group_id === '' ? null : parseInt(group_id)) : null;
     const manufacturerValue = manufacturer !== undefined ? manufacturer : null;
     const brandValue = brand !== undefined ? brand : null;
+    const descriptionValue = description !== undefined ? description : null;
+    const upcValue = upc !== undefined ? upc : null;
+    const eanValue = ean !== undefined ? ean : null;
+    const isbnValue = isbn !== undefined ? isbn : null;
+    const dimensionsValue = dimensions !== undefined ? dimensions : null;
+    const taxRateValue = tax_rate !== undefined ? tax_rate : null;
+    const accountValue = account !== undefined ? account : null;
+    const typeValue = type !== undefined ? type : 'goods';
+    const weightValue = weight !== undefined ? weight : null;
+    const purchaseAccountValue = purchase_account !== undefined ? purchase_account : null;
+    const purchaseDescriptionValue = purchase_description !== undefined ? purchase_description : null;
 
     if (isNaN(stockQuantity) || stockQuantity < 0) {
       return res.status(400).json({ error: 'Quantity must be a valid positive number' });
@@ -227,9 +372,11 @@ router.put('/:id', async (req, res) => {
       UPDATE items 
       SET name = $1, sku = $2, unit = $3, stock_quantity = $4, reorder_point = $5,
           selling_price = $6, purchase_cost = $7, can_be_wholesale = $8, image_url = $9, 
-          group_id = $10, manufacturer = $11, brand = $12, updated_at = CURRENT_TIMESTAMP
-      WHERE id = $13
-    `, [name.trim(), sku || null, unitValue, stockQuantity, reorderPointValue, sellingPrice, purchaseCost, can_be_wholesale || false, image_url || null, groupIdValue, manufacturerValue, brandValue, req.params.id]);
+          group_id = $10, manufacturer = $11, brand = $12, description = $13, upc = $14,
+          ean = $15, isbn = $16, dimensions = $17, tax_rate = $18, account = $19,
+          type = $20, weight = $21, purchase_account = $22, purchase_description = $23, updated_at = CURRENT_TIMESTAMP
+      WHERE id = $24
+    `, [name.trim(), sku || null, unitValue, stockQuantity, reorderPointValue, sellingPrice, purchaseCost, can_be_wholesale || false, image_url || null, groupIdValue, manufacturerValue, brandValue, descriptionValue, upcValue, eanValue, isbnValue, dimensionsValue, taxRateValue, accountValue, typeValue, weightValue, purchaseAccountValue, purchaseDescriptionValue, req.params.id]);
 
     const result = await db.query(`
       SELECT i.*, ig.name as group_name,
@@ -365,6 +512,76 @@ router.delete('/groups/:id', async (req, res) => {
   } catch (error) {
     console.error('Error deleting item group:', error);
     res.status(500).json({ error: 'Failed to delete item group' });
+  }
+});
+
+// Get all transactions for a specific item (sales, purchases, adjustments)
+router.get('/:id/transactions', async (req, res) => {
+  try {
+    const db = database.getDb();
+    const itemId = req.params.id;
+
+    // Get sales transactions for this item
+    const salesResult = await db.query(`
+      SELECT 
+        'sales' as type,
+        s.date,
+        s.receipt_number as reference,
+        s.customer_name as party_name,
+        si.quantity,
+        si.unit_price as price,
+        si.total_price as total,
+        s.status
+      FROM sales_items si
+      JOIN sales s ON si.sale_id = s.id
+      WHERE si.item_id = $1
+      ORDER BY s.date DESC
+    `, [itemId]);
+
+    // Get purchase transactions for this item
+    const purchasesResult = await db.query(`
+      SELECT 
+        'purchases' as type,
+        p.date,
+        COALESCE(p.invoice_number, p.po_number, 'PO-' || LPAD(p.id::text, 5, '0')) as reference,
+        COALESCE(p.supplier_name, 'Unknown Supplier') as party_name,
+        pi.quantity,
+        pi.unit_price as price,
+        pi.total_price as total,
+        p.status
+      FROM purchase_items pi
+      JOIN purchases p ON pi.purchase_id = p.id
+      WHERE pi.item_id = $1
+      ORDER BY p.date DESC
+    `, [itemId]);
+
+    // Get inventory adjustment transactions for this item
+    const adjustmentsResult = await db.query(`
+      SELECT 
+        'adjustments' as type,
+        t.date,
+        t.reference,
+        '-' as party_name,
+        t.quantity,
+        0 as price,
+        0 as total,
+        'adjusted' as status
+      FROM inventory_transactions t
+      WHERE t.item_id = $1 AND t.type = 'ADJUSTMENT'
+      ORDER BY t.date DESC
+    `, [itemId]);
+
+    // Combine all transactions
+    const allTransactions = [
+      ...salesResult.rows,
+      ...purchasesResult.rows,
+      ...adjustmentsResult.rows
+    ].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    res.json(allTransactions);
+  } catch (error) {
+    console.error('Error fetching item transactions:', error);
+    res.status(500).json({ error: 'Failed to fetch item transactions' });
   }
 });
 

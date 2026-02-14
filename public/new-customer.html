@@ -165,6 +165,18 @@
             align-items: center;
         }
 
+        .input-group .form-select {
+            min-width: 80px;
+            max-width: 100px;
+            flex-shrink: 0;
+        }
+
+        .input-group .form-input {
+            width: auto;
+            max-width: 150px;
+            flex: 0 1 150px;
+        }
+
         .phone-group {
             display: flex;
             gap: 8px;
@@ -349,6 +361,437 @@
         .btn-cancel:hover {
             background: #e0e0e0;
         }
+
+        /* Display Name Custom Dropdown */
+        .display-name-wrapper {
+            position: relative;
+            max-width: 300px;
+        }
+
+        .display-name-input-wrap {
+            display: flex;
+            align-items: center;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .display-name-input-wrap:focus-within,
+        .display-name-input-wrap.open {
+            border-color: #4285f4;
+        }
+
+        .display-name-input-wrap input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 10px 12px;
+            font-size: 13px;
+            background: transparent;
+            font-family: inherit;
+        }
+
+        .display-name-toggle {
+            padding: 0 10px;
+            color: #999;
+            font-size: 11px;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.2s;
+        }
+
+        .display-name-toggle.open {
+            transform: rotate(180deg);
+        }
+
+        .display-name-dropdown {
+            position: absolute;
+            top: calc(100% + 2px);
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 200;
+            display: none;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .display-name-dropdown.open {
+            display: block;
+        }
+
+        .display-name-option {
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.15s;
+        }
+
+        .display-name-option:hover {
+            background: #f0f4ff;
+        }
+
+        .display-name-option.selected {
+            background: #e8f0fe;
+            color: #1a73e8;
+            font-weight: 500;
+        }
+
+        .display-name-option .check-icon {
+            color: #1a73e8;
+            font-size: 16px;
+            display: none;
+        }
+
+        .display-name-option.selected .check-icon {
+            display: inline;
+        }
+
+        /* ===== Payment Terms Custom Dropdown ===== */
+        .pt-wrapper {
+            position: relative;
+            max-width: 300px;
+        }
+
+        .pt-input-wrap {
+            display: flex;
+            align-items: center;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .pt-input-wrap:focus-within,
+        .pt-input-wrap.open {
+            border-color: #4285f4;
+        }
+
+        .pt-input-wrap .pt-display {
+            flex: 1;
+            padding: 10px 12px;
+            font-size: 13px;
+            color: #333;
+            user-select: none;
+        }
+
+        .pt-toggle {
+            padding: 0 10px;
+            color: #999;
+            font-size: 11px;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.2s;
+        }
+
+        .pt-toggle.open {
+            transform: rotate(180deg);
+        }
+
+        .pt-dropdown {
+            position: absolute;
+            bottom: calc(100% + 2px);
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+            z-index: 201;
+            display: none;
+        }
+
+        #ptOptionsList {
+            max-height: 200px;
+            overflow-y: auto;
+            overflow-x: scroll;
+        }
+
+        #ptOptionsList::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+
+        #ptOptionsList::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        #ptOptionsList::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+
+        #ptOptionsList::-webkit-scrollbar-thumb:hover {
+            background: #a1a1a1;
+        }
+
+        .pt-dropdown.open {
+            display: block;
+        }
+
+        .pt-search-wrap {
+            padding: 8px;
+            border-bottom: 1px solid #f1f3f5;
+        }
+
+        .pt-search-wrap input {
+            width: 100%;
+            padding: 8px 10px 8px 30px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            outline: none;
+            box-sizing: border-box;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") no-repeat 9px center;
+        }
+
+        .pt-search-wrap input:focus {
+            border-color: #4285f4;
+        }
+
+        .pt-option {
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.15s;
+        }
+
+        .pt-option:hover {
+            background: #f0f4ff;
+        }
+
+        .pt-option.selected {
+            background: #4285f4;
+            color: white;
+        }
+
+        .pt-option .pt-check {
+            font-size: 16px;
+            display: none;
+        }
+
+        .pt-option.selected .pt-check {
+            display: inline;
+            color: white;
+        }
+
+        .pt-configure-link {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 14px;
+            border-top: 1px solid #f1f3f5;
+            color: #4285f4;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .pt-configure-link:hover {
+            background: #f0f4ff;
+        }
+
+        /* ===== Configure Payment Terms Modal ===== */
+        .pt-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pt-modal-overlay.open {
+            display: flex;
+        }
+
+        .pt-modal {
+            background: white;
+            border-radius: 8px;
+            width: 700px;
+            max-width: 90vw;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+        }
+
+        .pt-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .pt-modal-header h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .pt-modal-close {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: #dc2626;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .pt-modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .pt-modal table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+        }
+
+        .pt-modal table th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: #fafafa;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .pt-modal table th:nth-child(2) {
+            text-align: right;
+        }
+
+        .pt-modal table td {
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #333;
+            border-bottom: 1px solid #f1f3f5;
+        }
+
+        .pt-modal table td:nth-child(2) {
+            text-align: right;
+        }
+
+        .pt-modal table td input {
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 6px 10px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .pt-modal table td input:focus {
+            border-color: #4285f4;
+        }
+
+        .pt-modal table td input.term-name-input {
+            width: 200px;
+        }
+
+        .pt-modal table td input.term-days-input {
+            width: 80px;
+            text-align: right;
+        }
+
+        .pt-term-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .pt-term-actions a {
+            font-size: 12px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .pt-mark-default {
+            color: #4285f4;
+        }
+
+        .pt-mark-default:hover {
+            text-decoration: underline;
+        }
+
+        .pt-delete-term {
+            color: #dc2626;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .pt-delete-term:hover {
+            text-decoration: underline;
+        }
+
+        .pt-add-new {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 16px;
+            color: #4285f4;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .pt-add-new:hover {
+            text-decoration: underline;
+        }
+
+        .pt-modal-footer {
+            display: flex;
+            gap: 12px;
+            padding: 16px 24px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .pt-modal-footer .btn-save {
+            padding: 10px 24px;
+        }
+
+        .pt-modal-footer .btn-cancel-modal {
+            padding: 10px 20px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .pt-modal-footer .btn-cancel-modal:hover {
+            background: #555;
+        }
     </style>
 </head>
 
@@ -387,30 +830,42 @@
                     <div class="form-row">
                         <label class="form-label">Primary Contact <span class="info-icon">ⓘ</span></label>
                         <div class="input-group">
-                            <select class="form-select" id="salutation">
+                            <select class="form-select" id="salutation" onchange="updateDisplayNameOptions()">
                                 <option value="">Salutation</option>
                                 <option value="Mr.">Mr.</option>
                                 <option value="Mrs.">Mrs.</option>
                                 <option value="Ms.">Ms.</option>
+                                <option value="Miss">Miss</option>
                                 <option value="Dr.">Dr.</option>
                             </select>
-                            <input type="text" class="form-input" id="firstName" placeholder="First Name">
-                            <input type="text" class="form-input" id="lastName" placeholder="Last Name">
+                            <input type="text" class="form-input" id="firstName" placeholder="First Name"
+                                oninput="updateDisplayNameOptions()">
+                            <input type="text" class="form-input" id="lastName" placeholder="Last Name"
+                                oninput="updateDisplayNameOptions()">
                         </div>
                     </div>
 
                     <!-- Company Name -->
                     <div class="form-row">
                         <label class="form-label">Company Name</label>
-                        <input type="text" class="form-input wide" id="companyName">
+                        <input type="text" class="form-input wide" id="companyName"
+                            oninput="updateDisplayNameOptions()">
                     </div>
 
                     <!-- Display Name -->
                     <div class="form-row">
                         <label class="form-label required">Display Name* <span class="info-icon">ⓘ</span></label>
-                        <select class="form-select" id="displayName" style="max-width: 300px;">
-                            <option value="">Select or type to add</option>
-                        </select>
+                        <div class="display-name-wrapper" id="displayNameWrapper">
+                            <div class="display-name-input-wrap" id="displayNameInputWrap">
+                                <input type="text" id="displayName" placeholder="Select or type to add"
+                                    autocomplete="off">
+                                <span class="display-name-toggle" id="displayNameToggle"
+                                    onclick="toggleDisplayNameDropdown()">▼</span>
+                            </div>
+                            <div class="display-name-dropdown" id="displayNameDropdown">
+                                <!-- Options will be populated dynamically -->
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Email Address -->
@@ -425,18 +880,21 @@
                     <!-- Phone -->
                     <div class="form-row">
                         <label class="form-label">Phone <span class="info-icon">ⓘ</span></label>
-                        <div class="input-group">
-                            <div class="phone-group">
-                                <select class="form-select" id="workPhoneCode">
+                        <div style="display: flex; gap: 16px; align-items: center;">
+                            <div class="phone-group" style="flex: 0 0 auto;">
+                                <select class="form-select" id="workPhoneCode"
+                                    style="min-width: 60px; max-width: 70px;">
                                     <option value="+63">+63</option>
                                 </select>
-                                <input type="text" class="form-input" id="workPhone" placeholder="Work Phone">
+                                <input type="text" class="form-input" id="workPhone" placeholder="Work Phone"
+                                    style="max-width: 130px; width: 130px;">
                             </div>
-                            <div class="phone-group">
-                                <select class="form-select" id="mobileCode">
+                            <div class="phone-group" style="flex: 0 0 auto;">
+                                <select class="form-select" id="mobileCode" style="min-width: 60px; max-width: 70px;">
                                     <option value="+63">+63</option>
                                 </select>
-                                <input type="text" class="form-input" id="mobile" placeholder="Mobile">
+                                <input type="text" class="form-input" id="mobile" placeholder="Mobile"
+                                    style="max-width: 130px; width: 130px;">
                             </div>
                         </div>
                     </div>
@@ -495,13 +953,23 @@
                     <!-- Payment Terms -->
                     <div class="form-row">
                         <label class="form-label">Payment Terms</label>
-                        <select class="form-select" id="paymentTerms" style="max-width: 200px;">
-                            <option value="due_on_receipt">Due on Receipt</option>
-                            <option value="net_15">Net 15</option>
-                            <option value="net_30">Net 30</option>
-                            <option value="net_45">Net 45</option>
-                            <option value="net_60">Net 60</option>
-                        </select>
+                        <div class="pt-wrapper" id="ptWrapper">
+                            <input type="hidden" id="paymentTerms" value="due_on_receipt">
+                            <div class="pt-input-wrap" id="ptInputWrap" onclick="togglePTDropdown()">
+                                <span class="pt-display" id="ptDisplay">Due on Receipt</span>
+                                <span class="pt-toggle" id="ptToggle">▼</span>
+                            </div>
+                            <div class="pt-dropdown" id="ptDropdown">
+                                <div class="pt-search-wrap">
+                                    <input type="text" id="ptSearch" placeholder="Search" oninput="filterPTOptions()"
+                                        onclick="event.stopPropagation()">
+                                </div>
+                                <div id="ptOptionsList"></div>
+                                <div class="pt-configure-link" onclick="openConfigureTerms()">
+                                    <span>⚙</span> Configure Terms
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Enable Portal -->
@@ -531,11 +999,167 @@
                 </div>
 
                 <div class="tab-content" id="address">
-                    <p style="color: #999;">Address fields will be shown here</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 48px;">
+                        <!-- Billing Address -->
+                        <div>
+                            <h3 style="font-size: 15px; font-weight: 600; color: #333; margin: 0 0 20px 0;">Billing
+                                Address</h3>
+
+                            <div
+                                style="display: grid; grid-template-columns: 120px 1fr; align-items: center; gap: 12px 16px;">
+                                <label class="form-label">Attention</label>
+                                <input type="text" class="form-input" id="billingAttention" style="max-width: 220px;">
+
+                                <label class="form-label">Country/Region</label>
+                                <select class="form-select" id="billingCountry" style="max-width: 220px;">
+                                    <option value="">Select or type to add</option>
+                                    <option value="PH">Philippines</option>
+                                    <option value="US">United States</option>
+                                    <option value="JP">Japan</option>
+                                    <option value="SG">Singapore</option>
+                                    <option value="AU">Australia</option>
+                                </select>
+
+                                <label class="form-label">Address</label>
+                                <div>
+                                    <textarea class="form-input" id="billingStreet1" placeholder="Street 1" rows="2"
+                                        style="max-width: 220px; resize: vertical; margin-bottom: 8px;"></textarea>
+                                    <textarea class="form-input" id="billingStreet2" placeholder="Street 2" rows="2"
+                                        style="max-width: 220px; resize: vertical;"></textarea>
+                                </div>
+
+                                <label class="form-label">City</label>
+                                <input type="text" class="form-input" id="billingCity" style="max-width: 220px;">
+
+                                <label class="form-label">State</label>
+                                <select class="form-select" id="billingState" style="max-width: 220px;">
+                                    <option value="">Select or type to add</option>
+                                </select>
+
+                                <label class="form-label">ZIP Code</label>
+                                <input type="text" class="form-input" id="billingZip" style="max-width: 220px;">
+
+                                <label class="form-label">Phone</label>
+                                <div class="phone-group">
+                                    <select class="form-select" id="billingPhoneCode"
+                                        style="min-width: 60px; max-width: 70px;">
+                                        <option value="+63">+63</option>
+                                    </select>
+                                    <input type="text" class="form-input" id="billingPhone" style="max-width: 145px;">
+                                </div>
+
+                                <label class="form-label">Fax Number</label>
+                                <input type="text" class="form-input" id="billingFax" style="max-width: 220px;">
+                            </div>
+                        </div>
+
+                        <!-- Shipping Address -->
+                        <div>
+                            <h3 style="font-size: 15px; font-weight: 600; color: #333; margin: 0 0 20px 0;">
+                                Shipping Address
+                                <span style="font-weight: 400; font-size: 13px; margin-left: 4px;">(</span>
+                                <a href="#" onclick="copyBillingToShipping(); return false;"
+                                    style="color: #4285f4; text-decoration: none; font-size: 13px; font-weight: 400;">
+                                    <span style="margin-right: 2px;">⬇</span> Copy billing address
+                                </a>
+                                <span style="font-weight: 400; font-size: 13px;">)</span>
+                            </h3>
+
+                            <div
+                                style="display: grid; grid-template-columns: 120px 1fr; align-items: center; gap: 12px 16px;">
+                                <label class="form-label">Attention</label>
+                                <input type="text" class="form-input" id="shippingAttention" style="max-width: 220px;">
+
+                                <label class="form-label">Country/Region</label>
+                                <select class="form-select" id="shippingCountry" style="max-width: 220px;">
+                                    <option value="">Select or type to add</option>
+                                    <option value="PH">Philippines</option>
+                                    <option value="US">United States</option>
+                                    <option value="JP">Japan</option>
+                                    <option value="SG">Singapore</option>
+                                    <option value="AU">Australia</option>
+                                </select>
+
+                                <label class="form-label">Address</label>
+                                <div>
+                                    <textarea class="form-input" id="shippingStreet1" placeholder="Street 1" rows="2"
+                                        style="max-width: 220px; resize: vertical; margin-bottom: 8px;"></textarea>
+                                    <textarea class="form-input" id="shippingStreet2" placeholder="Street 2" rows="2"
+                                        style="max-width: 220px; resize: vertical;"></textarea>
+                                </div>
+
+                                <label class="form-label">City</label>
+                                <input type="text" class="form-input" id="shippingCity" style="max-width: 220px;">
+
+                                <label class="form-label">State</label>
+                                <select class="form-select" id="shippingState" style="max-width: 220px;">
+                                    <option value="">Select or type to add</option>
+                                </select>
+
+                                <label class="form-label">ZIP Code</label>
+                                <input type="text" class="form-input" id="shippingZip" style="max-width: 220px;">
+
+                                <label class="form-label">Phone</label>
+                                <div class="phone-group">
+                                    <select class="form-select" id="shippingPhoneCode"
+                                        style="min-width: 60px; max-width: 70px;">
+                                        <option value="+63">+63</option>
+                                    </select>
+                                    <input type="text" class="form-input" id="shippingPhone" style="max-width: 145px;">
+                                </div>
+
+                                <label class="form-label">Fax Number</label>
+                                <input type="text" class="form-input" id="shippingFax" style="max-width: 220px;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Note -->
+                    <div
+                        style="margin-top: 32px; padding: 16px 20px; border-left: 3px solid #e0e0e0; background: #fafafa; border-radius: 0 4px 4px 0;">
+                        <div style="font-size: 13px; font-weight: 600; color: #333; margin-bottom: 6px;">Note:</div>
+                        <ul style="margin: 0; padding-left: 18px; font-size: 12px; color: #555; line-height: 1.8;">
+                            <li>Add and manage additional addresses from this Customers and Vendors details section.
+                            </li>
+                            <li>You can customise how customers' addresses are displayed in transaction PDFs. To do
+                                this, go to Settings > Preferences > Customers and Vendors, and navigate to the Address
+                                Format sections.</li>
+                        </ul>
+                    </div>
                 </div>
 
                 <div class="tab-content" id="contactPersons">
-                    <p style="color: #999;">Contact persons will be shown here</p>
+                    <table id="contactPersonsTable" style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid #e0e0e0;">
+                                <th
+                                    style="text-align: left; padding: 10px 8px; font-size: 11px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px;">
+                                    Salutation</th>
+                                <th
+                                    style="text-align: left; padding: 10px 8px; font-size: 11px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px;">
+                                    First Name</th>
+                                <th
+                                    style="text-align: left; padding: 10px 8px; font-size: 11px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px;">
+                                    Last Name</th>
+                                <th
+                                    style="text-align: left; padding: 10px 8px; font-size: 11px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px;">
+                                    Email Address</th>
+                                <th
+                                    style="text-align: left; padding: 10px 8px; font-size: 11px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px;">
+                                    Work Phone</th>
+                                <th
+                                    style="text-align: left; padding: 10px 8px; font-size: 11px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px;">
+                                    Mobile</th>
+                                <th style="width: 50px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="contactPersonsBody">
+                        </tbody>
+                    </table>
+                    <a href="#" onclick="addContactPersonRow(); return false;"
+                        style="display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; color: #4285f4; font-size: 13px; text-decoration: none;">
+                        <span style="font-size: 16px; font-weight: 700;">⊕</span> Add Contact Person
+                    </a>
                 </div>
 
                 <div class="tab-content" id="customFields">
@@ -559,17 +1183,43 @@
         </div>
     </div>
 
+    <!-- Configure Payment Terms Modal -->
+    <div class="pt-modal-overlay" id="ptModalOverlay">
+        <div class="pt-modal">
+            <div class="pt-modal-header">
+                <h2>Configure Payment Terms</h2>
+                <button class="pt-modal-close" onclick="closeConfigureTerms()">✕</button>
+            </div>
+            <div class="pt-modal-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Term Name</th>
+                            <th>Number of Days</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="ptTermsTableBody"></tbody>
+                </table>
+                <a class="pt-add-new" onclick="addNewTerm()">
+                    <span style="font-size: 16px; font-weight: 700;">⊕</span> Add New
+                </a>
+            </div>
+            <div class="pt-modal-footer">
+                <button class="btn-save" onclick="saveConfiguredTerms()">Save</button>
+                <button class="btn-cancel-modal" onclick="closeConfigureTerms()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Layout Script -->
     <script src="/js/layout.js"></script>
     <script>
         // Tab switching
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', function () {
-                // Remove active from all tabs
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-
-                // Add active to clicked tab
                 this.classList.add('active');
                 document.getElementById(this.dataset.tab).classList.add('active');
             });
@@ -580,8 +1230,530 @@
             window.location.href = '/customers.html';
         }
 
-        // Save Customer
-        function saveCustomer() {
+        // ===== Display Name Dropdown Logic =====
+        let selectedDisplayName = '';
+        let previousDisplayNameOptions = [];
+
+        function updateDisplayNameOptions() {
+            const salutation = document.getElementById('salutation').value;
+            const firstName = (document.getElementById('firstName').value || '').trim();
+            const lastName = (document.getElementById('lastName').value || '').trim();
+            const companyName = (document.getElementById('companyName').value || '').trim();
+
+            const options = [];
+
+            // Option 1: Salutation + First + Last (only if salutation and at least one name exists)
+            if (salutation && (firstName || lastName)) {
+                const fullWithSalutation = [salutation, firstName, lastName].filter(Boolean).join(' ');
+                options.push(fullWithSalutation);
+            }
+
+            // Option 2: First + Last
+            if (firstName || lastName) {
+                const fullName = [firstName, lastName].filter(Boolean).join(' ');
+                if (!options.includes(fullName)) options.push(fullName);
+            }
+
+            // Option 3: Last, First (only if both exist)
+            if (firstName && lastName) {
+                const reverseName = `${lastName}, ${firstName}`;
+                if (!options.includes(reverseName)) options.push(reverseName);
+            }
+
+            // Option 4: Company Name
+            if (companyName) {
+                if (!options.includes(companyName)) options.push(companyName);
+            }
+
+            renderDisplayNameOptions(options);
+
+            // Auto-update display name if it matches one of the previous patterns
+            const input = document.getElementById('displayName');
+            const currentVal = input.value.trim();
+
+            if (currentVal && previousDisplayNameOptions.length > 0) {
+                const oldIndex = previousDisplayNameOptions.findIndex(o => o === currentVal);
+                if (oldIndex !== -1 && options[oldIndex]) {
+                    // Current display name matched old pattern at same position, update to new
+                    input.value = options[oldIndex];
+                } else if (previousDisplayNameOptions.includes(currentVal) && options.length > 0) {
+                    // Matched any old pattern, update to first new option
+                    input.value = options[0];
+                }
+            } else if (!currentVal && options.length > 0) {
+                // No display name set yet, use first option
+                input.value = options[0];
+            }
+
+            // Store current options for next comparison
+            previousDisplayNameOptions = [...options];
+        }
+
+        function renderDisplayNameOptions(options) {
+            const dropdown = document.getElementById('displayNameDropdown');
+            const currentValue = document.getElementById('displayName').value;
+
+            dropdown.innerHTML = options.map(opt => {
+                const isSelected = opt === currentValue;
+                return `<div class="display-name-option${isSelected ? ' selected' : ''}" onclick="selectDisplayName('${opt.replace(/'/g, "\\'")}')">` +
+                    `<span>${opt}</span>` +
+                    `<span class="check-icon">✓</span>` +
+                    `</div>`;
+            }).join('');
+
+            if (options.length === 0) {
+                dropdown.innerHTML = '<div style="padding: 12px 14px; color: #999; font-size: 13px;">Type a name to see options</div>';
+            }
+        }
+
+        function selectDisplayName(value) {
+            document.getElementById('displayName').value = value;
+            selectedDisplayName = value;
+            closeDisplayNameDropdown();
+            updateDisplayNameOptions(); // Re-render to update checkmark
+        }
+
+        function toggleDisplayNameDropdown() {
+            const dropdown = document.getElementById('displayNameDropdown');
+            const toggle = document.getElementById('displayNameToggle');
+            const wrap = document.getElementById('displayNameInputWrap');
+
+            if (dropdown.classList.contains('open')) {
+                closeDisplayNameDropdown();
+            } else {
+                dropdown.classList.add('open');
+                toggle.classList.add('open');
+                wrap.classList.add('open');
+                updateDisplayNameOptions();
+            }
+        }
+
+        function closeDisplayNameDropdown() {
+            document.getElementById('displayNameDropdown').classList.remove('open');
+            document.getElementById('displayNameToggle').classList.remove('open');
+            document.getElementById('displayNameInputWrap').classList.remove('open');
+        }
+
+        // Open dropdown on input focus
+        document.getElementById('displayName').addEventListener('focus', function () {
+            document.getElementById('displayNameDropdown').classList.add('open');
+            document.getElementById('displayNameToggle').classList.add('open');
+            document.getElementById('displayNameInputWrap').classList.add('open');
+            updateDisplayNameOptions();
+        });
+
+        // Mark as manually edited when user types
+        document.getElementById('displayName').addEventListener('input', function () {
+            this.dataset.manuallyEdited = 'true';
+            updateDisplayNameOptions();
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('#displayNameWrapper')) {
+                closeDisplayNameDropdown();
+            }
+        });
+
+        // ===== Payment Terms Dropdown Logic =====
+        let paymentTermsList = [
+            { id: 'due_end_next_month', name: 'Due end of next month', days: 'N/A' },
+            { id: 'due_end_of_month', name: 'Due end of the month', days: 'N/A' },
+            { id: 'due_on_receipt', name: 'Due on Receipt', days: 0 },
+            { id: 'net_15', name: 'Net 15', days: 15 },
+            { id: 'net_30', name: 'Net 30', days: 30 },
+            { id: 'net_45', name: 'Net 45', days: 45 },
+            { id: 'net_60', name: 'Net 60', days: 60 }
+        ];
+        let selectedPT = 'due_on_receipt';
+
+        // Initialize dropdown options
+        renderPTOptions();
+
+        function renderPTOptions(filter = '') {
+            const list = document.getElementById('ptOptionsList');
+            const filtered = paymentTermsList.filter(t =>
+                t.name.toLowerCase().includes(filter.toLowerCase())
+            );
+
+            list.innerHTML = filtered.map(t => {
+                const isSelected = t.id === selectedPT;
+                return `<div class="pt-option${isSelected ? ' selected' : ''}" onclick="selectPT('${t.id}', '${t.name.replace(/'/g, "\\'")}')">
+                    <span>${t.name}</span>
+                    <span class="pt-check">✓</span>
+                </div>`;
+            }).join('');
+
+            if (filtered.length === 0) {
+                list.innerHTML = '<div style="padding: 12px 14px; color: #999; font-size: 13px;">No results found</div>';
+            }
+        }
+
+        function selectPT(id, name) {
+            selectedPT = id;
+            document.getElementById('paymentTerms').value = id;
+            document.getElementById('ptDisplay').textContent = name;
+            closePTDropdown();
+            renderPTOptions();
+        }
+
+        function togglePTDropdown() {
+            const dropdown = document.getElementById('ptDropdown');
+            const toggle = document.getElementById('ptToggle');
+            const wrap = document.getElementById('ptInputWrap');
+
+            if (dropdown.classList.contains('open')) {
+                closePTDropdown();
+            } else {
+                dropdown.classList.add('open');
+                toggle.classList.add('open');
+                wrap.classList.add('open');
+                document.getElementById('ptSearch').value = '';
+                renderPTOptions();
+                setTimeout(() => document.getElementById('ptSearch').focus(), 50);
+            }
+        }
+
+        function closePTDropdown() {
+            document.getElementById('ptDropdown').classList.remove('open');
+            document.getElementById('ptToggle').classList.remove('open');
+            document.getElementById('ptInputWrap').classList.remove('open');
+        }
+
+        function filterPTOptions() {
+            const q = document.getElementById('ptSearch').value;
+            renderPTOptions(q);
+        }
+
+        // Close dropdown on click outside
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('#ptWrapper')) {
+                closePTDropdown();
+            }
+        });
+
+        // ===== Configure Payment Terms Modal =====
+        let editableTerms = [];
+
+        function openConfigureTerms() {
+            closePTDropdown();
+            // Clone current terms for editing
+            editableTerms = paymentTermsList.map(t => ({ ...t }));
+            renderTermsTable();
+            document.getElementById('ptModalOverlay').classList.add('open');
+        }
+
+        function closeConfigureTerms() {
+            document.getElementById('ptModalOverlay').classList.remove('open');
+        }
+
+        function renderTermsTable() {
+            const tbody = document.getElementById('ptTermsTableBody');
+            tbody.innerHTML = editableTerms.map((t, i) => {
+                const daysDisplay = t.days === 'N/A' ? 'N/A' : t.days;
+                const daysInput = t.days === 'N/A'
+                    ? `<span style="color: #999;">N/A</span>`
+                    : `<input type="number" class="term-days-input" value="${t.days}" onchange="updateTermDays(${i}, this.value)" min="0">`;
+
+                return `<tr>
+                    <td><input type="text" class="term-name-input" value="${t.name}" onchange="updateTermName(${i}, this.value)"></td>
+                    <td>${daysInput}</td>
+                    <td>
+                        <div class="pt-term-actions">
+                            <a class="pt-mark-default" onclick="markTermDefault(${i})">Mark as Default</a>
+                            <span style="color: #e0e0e0;">|</span>
+                            <a class="pt-delete-term" onclick="deleteTerm(${i})">🗑 Delete</a>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        function updateTermName(index, value) {
+            editableTerms[index].name = value;
+            editableTerms[index].id = value.toLowerCase().replace(/\s+/g, '_');
+        }
+
+        function updateTermDays(index, value) {
+            editableTerms[index].days = parseInt(value) || 0;
+        }
+
+        function markTermDefault(index) {
+            const term = editableTerms[index];
+            selectedPT = term.id;
+            document.getElementById('paymentTerms').value = term.id;
+            document.getElementById('ptDisplay').textContent = term.name;
+            alert(`"${term.name}" set as default payment term`);
+        }
+
+        function deleteTerm(index) {
+            if (editableTerms.length <= 1) {
+                alert('You must keep at least one payment term.');
+                return;
+            }
+            const removed = editableTerms.splice(index, 1)[0];
+            // If deleted term was selected, select the first one
+            if (selectedPT === removed.id && editableTerms.length > 0) {
+                selectedPT = editableTerms[0].id;
+                document.getElementById('paymentTerms').value = editableTerms[0].id;
+                document.getElementById('ptDisplay').textContent = editableTerms[0].name;
+            }
+            renderTermsTable();
+        }
+
+        function addNewTerm() {
+            editableTerms.push({ id: 'custom_' + Date.now(), name: '', days: 0 });
+            renderTermsTable();
+            // Focus the last name input
+            setTimeout(() => {
+                const inputs = document.querySelectorAll('.term-name-input');
+                if (inputs.length > 0) inputs[inputs.length - 1].focus();
+            }, 50);
+        }
+
+        function saveConfiguredTerms() {
+            // Validate - no empty names
+            const hasEmpty = editableTerms.some(t => !t.name.trim());
+            if (hasEmpty) {
+                alert('Please fill in all term names before saving.');
+                return;
+            }
+            // Apply changes
+            paymentTermsList = editableTerms.map(t => ({
+                ...t,
+                id: t.id || t.name.toLowerCase().replace(/\s+/g, '_'),
+                name: t.name.trim()
+            }));
+            // If selected term was removed, fallback to first
+            if (!paymentTermsList.find(t => t.id === selectedPT) && paymentTermsList.length > 0) {
+                selectedPT = paymentTermsList[0].id;
+                document.getElementById('paymentTerms').value = paymentTermsList[0].id;
+                document.getElementById('ptDisplay').textContent = paymentTermsList[0].name;
+            }
+            renderPTOptions();
+            closeConfigureTerms();
+        }
+
+        // ===== Contact Persons Table =====
+        let contactPersonRowId = 0;
+
+        function addContactPersonRow(data) {
+            const tbody = document.getElementById('contactPersonsBody');
+            const rowId = contactPersonRowId++;
+            const tr = document.createElement('tr');
+            tr.id = 'cpRow_' + rowId;
+            tr.className = 'cp-row';
+            tr.style.borderBottom = '1px solid #f1f3f5';
+            tr.innerHTML = `
+                <td style="padding: 8px;">
+                    <select data-field="salutation" style="padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px; background: white; cursor: pointer; width: 70px;">
+                        <option value=""></option>
+                        <option value="Mr.">Mr.</option>
+                        <option value="Mrs.">Mrs.</option>
+                        <option value="Ms.">Ms.</option>
+                        <option value="Miss">Miss</option>
+                        <option value="Dr.">Dr.</option>
+                    </select>
+                </td>
+                <td style="padding: 8px;">
+                    <input type="text" data-field="first_name" style="padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px; width: 100%; box-sizing: border-box;">
+                </td>
+                <td style="padding: 8px;">
+                    <input type="text" data-field="last_name" style="padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px; width: 100%; box-sizing: border-box;">
+                </td>
+                <td style="padding: 8px;">
+                    <input type="email" data-field="email" style="padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px; width: 100%; box-sizing: border-box;">
+                </td>
+                <td style="padding: 8px;">
+                    <div style="display: flex; gap: 4px; align-items: center;">
+                        <select style="padding: 6px 4px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 11px; background: white; min-width: 52px; max-width: 58px;">
+                            <option value="+63">+63</option>
+                        </select>
+                        <input type="text" data-field="work_phone" style="padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px; width: 100%; box-sizing: border-box;">
+                    </div>
+                </td>
+                <td style="padding: 8px;">
+                    <div style="display: flex; gap: 4px; align-items: center;">
+                        <select style="padding: 6px 4px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 11px; background: white; min-width: 52px; max-width: 58px;">
+                            <option value="+63">+63</option>
+                        </select>
+                        <input type="text" data-field="mobile" style="padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px; width: 100%; box-sizing: border-box;">
+                    </div>
+                </td>
+                <td style="padding: 8px; text-align: center;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span style="cursor: pointer; font-size: 16px; color: #999;" title="More">⋮</span>
+                        <span onclick="removeContactPersonRow(${rowId})" style="cursor: pointer; font-size: 16px; color: #e57373; width: 22px; height: 22px; border: 1px solid #e57373; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px;" title="Remove">✕</span>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(tr);
+
+            // Pre-populate data if provided
+            if (data) {
+                const sal = tr.querySelector('[data-field="salutation"]');
+                if (sal && data.salutation) sal.value = data.salutation;
+                const fn = tr.querySelector('[data-field="first_name"]');
+                if (fn && data.first_name) fn.value = data.first_name;
+                const ln = tr.querySelector('[data-field="last_name"]');
+                if (ln && data.last_name) ln.value = data.last_name;
+                const em = tr.querySelector('[data-field="email"]');
+                if (em && data.email) em.value = data.email;
+                const wp = tr.querySelector('[data-field="work_phone"]');
+                if (wp && data.work_phone) wp.value = data.work_phone;
+                const mb = tr.querySelector('[data-field="mobile"]');
+                if (mb && data.mobile) mb.value = data.mobile;
+            }
+        }
+
+        function removeContactPersonRow(rowId) {
+            const row = document.getElementById('cpRow_' + rowId);
+            if (row) row.remove();
+        }
+
+        // Collect contact persons data from the form
+        function collectContactPersons() {
+            const rows = document.querySelectorAll('.cp-row');
+            const contacts = [];
+            rows.forEach(row => {
+                const cp = {};
+                cp.salutation = (row.querySelector('[data-field="salutation"]') || {}).value || '';
+                cp.first_name = (row.querySelector('[data-field="first_name"]') || {}).value || '';
+                cp.last_name = (row.querySelector('[data-field="last_name"]') || {}).value || '';
+                cp.email = (row.querySelector('[data-field="email"]') || {}).value || '';
+                cp.work_phone = (row.querySelector('[data-field="work_phone"]') || {}).value || '';
+                cp.mobile = (row.querySelector('[data-field="mobile"]') || {}).value || '';
+                // Only include non-empty rows
+                if (cp.first_name || cp.last_name || cp.email) {
+                    contacts.push(cp);
+                }
+            });
+            return contacts;
+        }
+
+        // Add initial empty row
+        addContactPersonRow();
+
+        // ===== Copy Billing to Shipping =====
+        function copyBillingToShipping() {
+            document.getElementById('shippingAttention').value = document.getElementById('billingAttention').value;
+            document.getElementById('shippingCountry').value = document.getElementById('billingCountry').value;
+            document.getElementById('shippingStreet1').value = document.getElementById('billingStreet1').value;
+            document.getElementById('shippingStreet2').value = document.getElementById('billingStreet2').value;
+            document.getElementById('shippingCity').value = document.getElementById('billingCity').value;
+            document.getElementById('shippingState').value = document.getElementById('billingState').value;
+            document.getElementById('shippingZip').value = document.getElementById('billingZip').value;
+            document.getElementById('shippingPhoneCode').value = document.getElementById('billingPhoneCode').value;
+            document.getElementById('shippingPhone').value = document.getElementById('billingPhone').value;
+            document.getElementById('shippingFax').value = document.getElementById('billingFax').value;
+        }
+
+        // ===== Edit Mode =====
+        let editCustomerId = null;
+
+        (async function checkEditMode() {
+            const params = new URLSearchParams(window.location.search);
+            const editId = params.get('edit');
+            if (!editId) return;
+
+            editCustomerId = editId;
+
+            // Update page title
+            document.querySelector('.page-title').textContent = 'Edit Customer';
+            document.title = 'Edit Customer - Inventory Management';
+
+            try {
+                const res = await fetch('/api/customers/' + editId);
+                if (!res.ok) return;
+                const c = await res.json();
+
+                // Fill form fields
+                if (c.customer_type) {
+                    const radio = document.querySelector(`input[name="customerType"][value="${c.customer_type}"]`);
+                    if (radio) radio.checked = true;
+                }
+                if (c.salutation) document.getElementById('salutation').value = c.salutation;
+                if (c.first_name) document.getElementById('firstName').value = c.first_name;
+                if (c.last_name) document.getElementById('lastName').value = c.last_name;
+                if (c.company_name) document.getElementById('companyName').value = c.company_name;
+                if (c.display_name) document.getElementById('displayName').value = c.display_name;
+                if (c.email) document.getElementById('email').value = c.email;
+
+                // Parse work phone (format: +63-1234567)
+                if (c.work_phone && c.work_phone.includes('-')) {
+                    const parts = c.work_phone.split('-');
+                    document.getElementById('workPhoneCode').value = parts[0];
+                    document.getElementById('workPhone').value = parts.slice(1).join('-');
+                } else if (c.work_phone) {
+                    document.getElementById('workPhone').value = c.work_phone;
+                }
+
+                // Parse mobile
+                if (c.mobile && c.mobile.includes('-')) {
+                    const parts = c.mobile.split('-');
+                    document.getElementById('mobileCode').value = parts[0];
+                    document.getElementById('mobile').value = parts.slice(1).join('-');
+                } else if (c.mobile) {
+                    document.getElementById('mobile').value = c.mobile;
+                }
+
+                if (c.payment_terms) document.getElementById('paymentTerms').value = c.payment_terms;
+                if (c.currency) document.getElementById('currency').value = c.currency;
+
+                // Populate address fields
+                if (c.billing_street) document.getElementById('billingStreet1').value = c.billing_street;
+                if (c.billing_city) document.getElementById('billingCity').value = c.billing_city;
+                if (c.billing_state) document.getElementById('billingState').value = c.billing_state;
+                if (c.billing_zip) document.getElementById('billingZip').value = c.billing_zip;
+                if (c.billing_country) document.getElementById('billingCountry').value = c.billing_country;
+                if (c.shipping_street) document.getElementById('shippingStreet1').value = c.shipping_street;
+                if (c.shipping_city) document.getElementById('shippingCity').value = c.shipping_city;
+                if (c.shipping_state) document.getElementById('shippingState').value = c.shipping_state;
+                if (c.shipping_zip) document.getElementById('shippingZip').value = c.shipping_zip;
+                if (c.shipping_country) document.getElementById('shippingCountry').value = c.shipping_country;
+
+                // Initialize display name options tracking for auto-update
+                // Build the initial options list from loaded data so tracking works
+                const initOptions = [];
+                const initSal = c.salutation || '';
+                const initFirst = (c.first_name || '').trim();
+                const initLast = (c.last_name || '').trim();
+                const initComp = (c.company_name || '').trim();
+                if (initSal && (initFirst || initLast)) {
+                    initOptions.push([initSal, initFirst, initLast].filter(Boolean).join(' '));
+                }
+                if (initFirst || initLast) {
+                    const fn = [initFirst, initLast].filter(Boolean).join(' ');
+                    if (!initOptions.includes(fn)) initOptions.push(fn);
+                }
+                if (initFirst && initLast) {
+                    const rn = `${initLast}, ${initFirst}`;
+                    if (!initOptions.includes(rn)) initOptions.push(rn);
+                }
+                if (initComp && !initOptions.includes(initComp)) initOptions.push(initComp);
+                previousDisplayNameOptions = initOptions;
+
+                // Load contact persons
+                try {
+                    const cpRes = await fetch('/api/customers/' + editId + '/contacts');
+                    if (cpRes.ok) {
+                        const contacts = await cpRes.json();
+                        if (contacts.length > 0) {
+                            // Remove the default empty row
+                            document.getElementById('contactPersonsBody').innerHTML = '';
+                            contacts.forEach(cp => addContactPersonRow(cp));
+                        }
+                    }
+                } catch (cpErr) {
+                    console.log('Could not load contact persons:', cpErr);
+                }
+            } catch (err) {
+                console.error('Error loading customer for edit:', err);
+            }
+        })();
+
+        // ===== Save Customer =====
+        async function saveCustomer() {
             const displayName = document.getElementById('displayName').value;
 
             if (!displayName) {
@@ -589,27 +1761,72 @@
                 return;
             }
 
-            // Here you would save to the database
+            const workPhoneCode = document.getElementById('workPhoneCode').value;
+            const workPhoneNum = document.getElementById('workPhone').value;
+            const mobileCode = document.getElementById('mobileCode').value;
+            const mobileNum = document.getElementById('mobile').value;
+
             const customerData = {
-                customerType: document.querySelector('input[name="customerType"]:checked').value,
+                customer_type: document.querySelector('input[name="customerType"]:checked').value,
                 salutation: document.getElementById('salutation').value,
-                firstName: document.getElementById('firstName').value,
-                lastName: document.getElementById('lastName').value,
-                companyName: document.getElementById('companyName').value,
-                displayName: displayName,
+                first_name: document.getElementById('firstName').value,
+                last_name: document.getElementById('lastName').value,
+                company_name: document.getElementById('companyName').value,
+                display_name: displayName,
                 email: document.getElementById('email').value,
-                workPhone: document.getElementById('workPhone').value,
-                mobile: document.getElementById('mobile').value,
-                customerLanguage: document.getElementById('customerLanguage').value,
-                taxRate: document.getElementById('taxRate').value,
-                companyId: document.getElementById('companyId').value,
+                work_phone: workPhoneNum ? workPhoneCode + '-' + workPhoneNum : '',
+                mobile: mobileNum ? mobileCode + '-' + mobileNum : '',
+                payment_terms: document.getElementById('paymentTerms').value,
                 currency: document.getElementById('currency').value,
-                paymentTerms: document.getElementById('paymentTerms').value,
-                enablePortal: document.getElementById('enablePortal').checked
+                billing_street: document.getElementById('billingStreet1').value,
+                billing_city: document.getElementById('billingCity').value,
+                billing_state: document.getElementById('billingState').value,
+                billing_zip: document.getElementById('billingZip').value,
+                billing_country: document.getElementById('billingCountry').value,
+                shipping_street: document.getElementById('shippingStreet1').value,
+                shipping_city: document.getElementById('shippingCity').value,
+                shipping_state: document.getElementById('shippingState').value,
+                shipping_zip: document.getElementById('shippingZip').value,
+                shipping_country: document.getElementById('shippingCountry').value
             };
 
-            alert('Customer saved successfully!');
-            goBack();
+            try {
+                const url = editCustomerId
+                    ? '/api/customers/' + editCustomerId
+                    : '/api/customers';
+                const method = editCustomerId ? 'PUT' : 'POST';
+
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(customerData)
+                });
+
+                if (!res.ok) {
+                    const err = await res.json();
+                    alert('Error: ' + (err.error || 'Failed to save customer'));
+                    return;
+                }
+
+                const savedCustomer = await res.json();
+                const customerId = editCustomerId || savedCustomer.id;
+
+                // Save contact persons
+                const contacts = collectContactPersons();
+                if (contacts.length > 0 || editCustomerId) {
+                    await fetch('/api/customers/' + customerId + '/contacts', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ contacts })
+                    });
+                }
+
+                alert(editCustomerId ? 'Customer updated successfully!' : 'Customer saved successfully!');
+                window.location.href = '/customers.html?view=' + customerId;
+            } catch (error) {
+                console.error('Error saving customer:', error);
+                alert('Failed to save customer. Please try again.');
+            }
         }
     </script>
 </body>

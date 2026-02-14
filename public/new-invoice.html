@@ -568,6 +568,624 @@
             font-weight: 600;
             font-size: 12px;
         }
+
+        /* Custom Dropdown */
+        .custom-dd-wrap {
+            position: relative;
+        }
+
+        .custom-dd-trigger {
+            padding: 6px 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            user-select: none;
+            min-height: 20px;
+        }
+
+        .custom-dd-trigger:hover,
+        .custom-dd-trigger.open {
+            border-color: #4285f4;
+        }
+
+        .custom-dd-trigger .dd-arrow {
+            color: #4285f4;
+            font-size: 10px;
+            flex-shrink: 0;
+        }
+
+        .custom-dd-panel {
+            display: none;
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #d0d5dd;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            z-index: 999;
+            min-width: 260px;
+        }
+
+        .custom-dd-panel.open {
+            display: block;
+        }
+
+        .custom-dd-search {
+            padding: 8px;
+        }
+
+        .custom-dd-search-inner {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid #4285f4;
+            border-radius: 6px;
+            padding: 6px 10px;
+        }
+
+        .custom-dd-search-inner input {
+            border: none;
+            outline: none;
+            font-size: 13px;
+            flex: 1;
+            font-family: inherit;
+        }
+
+        .custom-dd-options {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .custom-dd-option {
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.1s;
+        }
+
+        .custom-dd-option:hover {
+            background: #4285f4;
+            color: white;
+        }
+
+        .custom-dd-option.selected {
+            background: #f0f0f0;
+        }
+
+        .custom-dd-option.selected:hover {
+            background: #4285f4;
+            color: white;
+        }
+
+        .custom-dd-empty {
+            padding: 16px;
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+        }
+
+        .custom-dd-footer {
+            border-top: 1px solid #e9ecef;
+            padding: 10px 14px;
+        }
+
+        .custom-dd-footer a {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #4285f4;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        .custom-dd-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Item Picker */
+        .item-picker-cell {
+            position: relative;
+        }
+
+        .item-picker-input {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid #d0d5dd;
+            border-radius: 4px;
+            font-size: 13px;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .item-picker-input:focus {
+            border-color: #4285f4;
+        }
+
+        .item-picker-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            min-width: 320px;
+            max-height: 260px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+        }
+
+        .item-picker-dropdown.open {
+            display: block;
+        }
+
+        .item-picker-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.15s;
+        }
+
+        .item-picker-option:last-child {
+            border-bottom: none;
+        }
+
+        .item-picker-option:hover {
+            background: #f0f5ff;
+        }
+
+        .item-picker-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 4px;
+            object-fit: cover;
+            background: #f5f5f5;
+            border: 1px solid #e9ecef;
+            flex-shrink: 0;
+        }
+
+        .item-picker-placeholder-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 4px;
+            background: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #999;
+            flex-shrink: 0;
+        }
+
+        .item-picker-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .item-picker-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .item-picker-meta {
+            font-size: 11px;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .item-picker-price {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            white-space: nowrap;
+        }
+
+        .item-picker-empty {
+            padding: 20px;
+            text-align: center;
+            color: #999;
+            font-size: 13px;
+        }
+
+        .item-selected-display {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .item-selected-display img {
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            object-fit: cover;
+            border: 1px solid #e9ecef;
+        }
+
+        .item-selected-placeholder {
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            background: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #999;
+            flex-shrink: 0;
+        }
+
+        .item-selected-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        /* Manage Salespersons Modal */
+        .sp-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1100;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 60px;
+        }
+
+        .sp-modal-overlay.open {
+            display: flex;
+        }
+
+        .sp-modal {
+            background: white;
+            border-radius: 8px;
+            width: 700px;
+            max-width: 90vw;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+        }
+
+        .sp-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 24px;
+            background: #f9fafb;
+            border-bottom: 1px solid #e9ecef;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .sp-modal-header h2 {
+            margin: 0;
+            font-size: 17px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .sp-modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #dc2626;
+            cursor: pointer;
+        }
+
+        .sp-modal-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            gap: 16px;
+        }
+
+        .sp-search-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid #d0d5dd;
+            border-radius: 6px;
+            padding: 8px 12px;
+            flex: 1;
+            max-width: 380px;
+        }
+
+        .sp-search-box:focus-within {
+            border-color: #4285f4;
+        }
+
+        .sp-search-box input {
+            border: none;
+            outline: none;
+            font-size: 13px;
+            flex: 1;
+            font-family: inherit;
+        }
+
+        .sp-btn-new {
+            padding: 8px 18px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .sp-btn-new:hover {
+            background: #3367d6;
+        }
+
+        .sp-modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 24px 24px;
+        }
+
+        .sp-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .sp-table th {
+            text-align: left;
+            padding: 10px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: #f9fafb;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .sp-table td {
+            padding: 10px 12px;
+            font-size: 13px;
+            color: #333;
+            border-bottom: 1px solid #f1f3f5;
+        }
+
+        .sp-table td input {
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 6px 10px;
+            font-size: 13px;
+            outline: none;
+            width: 100%;
+        }
+
+        .sp-table td input:focus {
+            border-color: #4285f4;
+        }
+
+        .sp-empty {
+            text-align: center;
+            padding: 30px;
+            color: #888;
+            font-size: 14px;
+        }
+
+        .sp-delete-btn {
+            background: none;
+            border: none;
+            color: #dc2626;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        /* Configure Terms Modal */
+        .pt-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pt-modal-overlay.open {
+            display: flex;
+        }
+
+        .pt-modal {
+            background: white;
+            border-radius: 8px;
+            width: 700px;
+            max-width: 90vw;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+        }
+
+        .pt-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .pt-modal-header h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .pt-modal-close {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: #dc2626;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .pt-modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .pt-modal table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+        }
+
+        .pt-modal table th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: #fafafa;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .pt-modal table th:nth-child(2) {
+            text-align: right;
+        }
+
+        .pt-modal table td {
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #333;
+            border-bottom: 1px solid #f1f3f5;
+        }
+
+        .pt-modal table td:nth-child(2) {
+            text-align: right;
+        }
+
+        .pt-modal table td input {
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 6px 10px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .pt-modal table td input:focus {
+            border-color: #4285f4;
+        }
+
+        .pt-modal table td input.term-name-input {
+            width: 200px;
+        }
+
+        .pt-modal table td input.term-days-input {
+            width: 80px;
+            text-align: right;
+        }
+
+        .pt-term-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .pt-term-actions a {
+            font-size: 12px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .pt-mark-default {
+            color: #4285f4;
+        }
+
+        .pt-mark-default:hover {
+            text-decoration: underline;
+        }
+
+        .pt-delete-term {
+            color: #dc2626;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .pt-delete-term:hover {
+            text-decoration: underline;
+        }
+
+        .pt-add-new {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 16px;
+            color: #4285f4;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .pt-add-new:hover {
+            text-decoration: underline;
+        }
+
+        .pt-modal-footer {
+            display: flex;
+            gap: 12px;
+            padding: 16px 24px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .pt-modal-footer .btn-save {
+            padding: 10px 24px;
+        }
+
+        .pt-modal-footer .btn-cancel-modal {
+            padding: 10px 20px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .pt-modal-footer .btn-cancel-modal:hover {
+            background: #555;
+        }
     </style>
 </head>
 
@@ -595,11 +1213,23 @@
                 <div class="form-section">
                     <div class="form-row">
                         <label class="form-label required">Customer Name*</label>
-                        <div class="input-with-btn">
-                            <select class="form-select blue-border" id="customerName">
-                                <option value="">Select or add a customer</option>
-                            </select>
-                            <button class="input-add-btn">👤</button>
+                        <div class="custom-dd-wrap" id="custDdWrap" style="max-width:350px;">
+                            <input type="hidden" id="customerName" value="">
+                            <div class="custom-dd-trigger" id="custDdTrigger" onclick="toggleCustDd()"
+                                style="border-color: #4285f4;">
+                                <span id="custDdLabel" style="color: #999;">Select or add a customer</span>
+                                <span class="dd-arrow">▼</span>
+                            </div>
+                            <div class="custom-dd-panel" id="custDdPanel">
+                                <div class="custom-dd-search">
+                                    <div class="custom-dd-search-inner">
+                                        <span style="color: #999;">🔍</span>
+                                        <input type="text" id="custDdSearch" placeholder="Search"
+                                            oninput="filterCustDd()">
+                                    </div>
+                                </div>
+                                <div class="custom-dd-options" id="custDdOptions"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -619,27 +1249,61 @@
                     </div>
                     <div class="form-row-inline">
                         <label class="form-label required">Invoice Date*</label>
-                        <input type="text" class="form-input" id="invoiceDate" value="12 Jan 2026"
-                            style="max-width: 130px;">
+                        <input type="date" class="form-input" id="invoiceDate" style="max-width: 150px;">
                         <span class="inline-label">Terms</span>
-                        <select class="form-select" id="terms" style="max-width: 130px;">
-                            <option value="due_on_receipt">Due on Receipt</option>
-                            <option value="net_15">Net 15</option>
-                            <option value="net_30">Net 30</option>
-                        </select>
+                        <div class="custom-dd-wrap" id="termsDdWrap" style="max-width:180px;min-width:160px;">
+                            <input type="hidden" id="terms" value="due_on_receipt">
+                            <div class="custom-dd-trigger" id="termsDdTrigger" onclick="toggleTermsDd()">
+                                <span id="termsDdLabel">Due on Receipt</span>
+                                <span class="dd-arrow">▼</span>
+                            </div>
+                            <div class="custom-dd-panel" id="termsDdPanel">
+                                <div class="custom-dd-search">
+                                    <div class="custom-dd-search-inner">
+                                        <span style="color: #999;">🔍</span>
+                                        <input type="text" id="termsDdSearch" placeholder="Search"
+                                            oninput="filterTermsDd()">
+                                    </div>
+                                </div>
+                                <div class="custom-dd-options" id="termsDdOptions"></div>
+                                <div style="border-top:1px solid #e9ecef;padding:10px 14px;">
+                                    <a href="#" onclick="event.preventDefault(); openConfigureTerms();"
+                                        style="color:#4285f4;text-decoration:none;font-size:13px;display:flex;align-items:center;gap:6px;"><span
+                                            style="font-size:14px;">⚙</span>
+                                        Configure Terms</a>
+                                </div>
+                            </div>
+                        </div>
                         <span class="inline-label">Due Date</span>
-                        <input type="text" class="form-input" id="dueDate" value="12 Jan 2026"
-                            style="max-width: 130px;">
+                        <input type="date" class="form-input" id="dueDate" style="max-width: 150px;">
                     </div>
                     <div class="form-row">
                         <label class="form-label">Salesperson</label>
-                        <select class="form-select" id="salesperson">
-                            <option value="">Select or Add Salesperson</option>
-                        </select>
+                        <div class="custom-dd-wrap" id="spDdWrap" style="max-width: 200px;">
+                            <input type="hidden" id="salesperson" value="">
+                            <div class="custom-dd-trigger" id="spDdTrigger" onclick="toggleSpDd()">
+                                <span id="spDdLabel" style="color: #999;">Select or Add Salesperson</span>
+                                <span class="dd-arrow">▼</span>
+                            </div>
+                            <div class="custom-dd-panel" id="spDdPanel">
+                                <div class="custom-dd-search">
+                                    <div class="custom-dd-search-inner">
+                                        <span style="color: #999;">🔍</span>
+                                        <input type="text" id="spDdSearch" placeholder="Search" oninput="filterSpDd()">
+                                    </div>
+                                </div>
+                                <div class="custom-dd-options" id="spDdOptions"></div>
+                                <div class="custom-dd-footer">
+                                    <a href="#" onclick="event.preventDefault(); openManageSalespersons();">
+                                        <span>⚙</span> Manage Salespersons
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-row">
                         <label class="form-label">Subject <span style="color: #999;">ⓘ</span></label>
-                        <textarea class="form-textarea" id="subject"
+                        <textarea class="form-textarea" id="subject" style="max-width: 350px;"
                             placeholder="Let your customer know what this Invoice is for"></textarea>
                     </div>
                 </div>
@@ -649,7 +1313,7 @@
                     <div class="item-table-header">
                         <span class="item-table-title">Item Table</span>
                         <div class="table-actions">
-                            <a href="#" class="action-link">📷 Scan Item</a>
+
                             <a href="#" class="action-link">⚡ Bulk Actions</a>
                         </div>
                     </div>
@@ -657,54 +1321,42 @@
                     <table class="item-table">
                         <thead>
                             <tr>
-                                <th style="width: 20px;"></th>
                                 <th>ITEM DETAILS</th>
-                                <th class="center" style="width: 100px;">QUANTITY</th>
-                                <th class="center" style="width: 80px;">RATE <span style="font-size: 9px;">₱</span></th>
-                                <th style="width: 120px;">TAX</th>
+                                <th class="center" style="width: 70px;">QTY</th>
+                                <th class="center" style="width: 80px;">RATE ₱</th>
+                                <th style="width: 90px;">TAX</th>
                                 <th class="center" style="width: 80px;">AMOUNT</th>
-                                <th style="width: 40px;"></th>
+                                <th style="width: 30px;"></th>
                             </tr>
                         </thead>
                         <tbody id="itemsBody">
                             <tr>
-                                <td class="center" style="color: #ccc;">⋮⋮</td>
-                                <td>
-                                    <div style="display: flex; align-items: center; gap: 8px;">
-                                        <span
-                                            style="width: 32px; height: 32px; background: #f5f5f5; border: 1px solid #e0e0e0; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#bbb"
-                                                stroke-width="2">
-                                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                                                <polyline points="21 15 16 10 5 21"></polyline>
-                                            </svg>
-                                        </span>
-                                        <input type="text" placeholder="Type or click to select an item."
-                                            style="border: none; background: none; flex: 1; font-size: 12px; color: #999;">
-                                    </div>
+                                <td class="item-picker-cell">
+                                    <input type="text" class="item-picker-input"
+                                        placeholder="Type or click to select an item." onfocus="openItemPicker(this)"
+                                        oninput="filterItemPicker(this)">
+                                    <input type="hidden" class="item-id-hidden" value="">
+                                    <div class="item-picker-dropdown"></div>
                                 </td>
-                                <td class="center"><input type="text" value="1.00"
-                                        style="text-align: center; border: none; background: none;"></td>
-                                <td class="center"><input type="text" value="0.00"
-                                        style="text-align: center; border: none; background: none;"></td>
+                                <td class="center"><input type="number" value="1.00" style="text-align: center;"
+                                        class="qty-input" onchange="recalcRow(this)"></td>
+                                <td class="center"><input type="number" value="0.00" style="text-align: right;"
+                                        class="rate-input" onchange="recalcRow(this)"></td>
                                 <td>
-                                    <select style="border: none; background: none; color: #999;">
-                                        <option value="">Select a Tax</option>
+                                    <select>
+                                        <option value="">Select Tax</option>
                                     </select>
                                 </td>
-                                <td class="center" style="font-weight: 500;">0.00</td>
+                                <td class="center amount-cell">0.00</td>
                                 <td class="center"><button class="delete-row-btn"
-                                        style="display: flex; align-items: center; gap: 2px;"><span
-                                            style="color: #999;">⋮</span> <span
-                                            style="color: #dc2626;">×</span></button></td>
+                                        onclick="deleteItemRow(this)">×</button></td>
                             </tr>
                         </tbody>
                     </table>
 
                     <div class="add-row-buttons">
-                        <button class="add-row-btn">+ Add New Row ▼</button>
-                        <button class="add-row-btn secondary">+ Add Items in Bulk</button>
+                        <button class="add-row-btn primary">+ Add New Row</button>
+                        <button class="add-row-btn">+ Add Items in Bulk</button>
                     </div>
                 </div>
 
@@ -787,7 +1439,7 @@
                 <div class="footer-left">
                     <button class="btn-draft" onclick="saveAsDraft()">Save as Draft</button>
                     <div class="btn-save-group">
-                        <button class="btn-save" onclick="saveAndSend()">Save and Send</button>
+                        <button class="btn-save" onclick="saveAndPrint()">Save and Print</button>
                         <button class="btn-save-dropdown">▼</button>
                     </div>
                     <button class="btn-cancel" onclick="goBack()">Cancel</button>
@@ -796,6 +1448,65 @@
                     <div><span class="label">Total Amount:</span> <span class="amount">PHP 0.00</span></div>
                     <div><span class="label">Total Quantity:</span> 0</div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Configure Terms Modal -->
+    <div class="pt-modal-overlay" id="ptModalOverlay">
+        <div class="pt-modal">
+            <div class="pt-modal-header">
+                <h2>Configure Payment Terms</h2>
+                <button class="pt-modal-close" onclick="closeConfigureTerms()">✕</button>
+            </div>
+            <div class="pt-modal-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Term Name</th>
+                            <th>Number of Days</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="ptTermsTableBody"></tbody>
+                </table>
+                <a class="pt-add-new" onclick="addNewTerm()">
+                    <span style="font-size: 16px; font-weight: 700;">⊕</span> Add New
+                </a>
+            </div>
+            <div class="pt-modal-footer">
+                <button class="btn-save" onclick="saveConfiguredTerms()">Save</button>
+                <button class="btn-cancel-modal" onclick="closeConfigureTerms()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manage Salespersons Modal -->
+    <div class="sp-modal-overlay" id="spModalOverlay">
+        <div class="sp-modal">
+            <div class="sp-modal-header">
+                <h2>Manage Salespersons</h2>
+                <button class="sp-modal-close" onclick="closeManageSalespersons()">✕</button>
+            </div>
+            <div class="sp-modal-toolbar">
+                <div class="sp-search-box">
+                    <span style="color: #999;">🔍</span>
+                    <input type="text" id="spModalSearch" placeholder="Search Salesperson" oninput="filterSpTable()">
+                </div>
+                <button class="sp-btn-new" onclick="addNewSalesperson()">+ New Salesperson</button>
+            </div>
+            <div class="sp-modal-body">
+                <table class="sp-table">
+                    <thead>
+                        <tr>
+                            <th>Salesperson Name</th>
+                            <th>Email</th>
+                            <th style="width: 40px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="spTableBody"></tbody>
+                </table>
+                <div id="spEmptyMsg" class="sp-empty">No salespersons found.</div>
             </div>
         </div>
     </div>
@@ -812,30 +1523,745 @@
             goBack();
         }
 
-        function saveAndSend() {
+        function saveAndPrint() {
             const customerName = document.getElementById('customerName').value;
             if (!customerName) {
                 alert('Please select a customer');
                 return;
             }
-            alert('Invoice saved and sent!');
+            alert('Invoice saved and printing!');
             goBack();
         }
 
-        document.querySelector('.add-row-btn').addEventListener('click', function () {
+        // ===== Customer Name Custom Dropdown =====
+        let customersList = [];
+        let selectedCustomerId = '';
+
+        (async function loadCustomers() {
+            try {
+                const res = await fetch('/api/customers');
+                if (res.ok) {
+                    customersList = await res.json();
+                    renderCustDdOptions();
+                }
+            } catch (err) {
+                console.error('Error loading customers:', err);
+            }
+        })();
+
+        function getCustomerDisplayName(c) {
+            return c.display_name || [c.first_name, c.last_name].filter(Boolean).join(' ') || c.company_name || 'Unnamed';
+        }
+
+        function renderCustDdOptions(filter = '') {
+            const container = document.getElementById('custDdOptions');
+            const filtered = customersList.filter(c =>
+                getCustomerDisplayName(c).toLowerCase().includes(filter.toLowerCase())
+            );
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="custom-dd-empty">NO RESULTS FOUND</div>';
+                return;
+            }
+            container.innerHTML = filtered.map(c => {
+                const name = getCustomerDisplayName(c);
+                const isSelected = String(c.id) === String(selectedCustomerId);
+                return `<div class="custom-dd-option${isSelected ? ' selected' : ''}" data-id="${c.id}" onclick="selectCustDd('${c.id}', '${name.replace(/'/g, "\\'")}')">${name}${isSelected ? ' <span style="color:#4285f4;font-weight:600;">✓</span>' : ''}</div>`;
+            }).join('');
+        }
+
+        function toggleCustDd() {
+            const panel = document.getElementById('custDdPanel');
+            const trigger = document.getElementById('custDdTrigger');
+            const isOpen = panel.classList.contains('open');
+            closeAllCustomDds();
+            if (!isOpen) {
+                panel.classList.add('open');
+                trigger.classList.add('open');
+                trigger.querySelector('.dd-arrow').textContent = '▲';
+                document.getElementById('custDdSearch').value = '';
+                renderCustDdOptions();
+                document.getElementById('custDdSearch').focus();
+            }
+        }
+
+        function selectCustDd(id, name) {
+            selectedCustomerId = id;
+            document.getElementById('customerName').value = id;
+            const label = document.getElementById('custDdLabel');
+            label.textContent = name;
+            label.style.color = '#333';
+            closeAllCustomDds();
+        }
+
+        function filterCustDd() {
+            renderCustDdOptions(document.getElementById('custDdSearch').value);
+        }
+
+        // ===== Terms Custom Dropdown =====
+        const termsList = [
+            { value: 'due_end_of_next_month', label: 'Due end of next month' },
+            { value: 'end_of_month', label: 'Due end of the month' },
+            { value: 'due_on_receipt', label: 'Due on Receipt' },
+            { value: 'net_15', label: 'Net 15' },
+            { value: 'net_30', label: 'Net 30' },
+            { value: 'net_45', label: 'Net 45' },
+            { value: 'net_60', label: 'Net 60' },
+        ];
+        let selectedTermValue = 'due_on_receipt';
+
+        function renderTermsDdOptions(filter = '') {
+            const container = document.getElementById('termsDdOptions');
+            const filtered = termsList.filter(t =>
+                t.label.toLowerCase().includes(filter.toLowerCase())
+            );
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="custom-dd-empty">NO RESULTS FOUND</div>';
+                return;
+            }
+            container.innerHTML = filtered.map(t => {
+                const isSelected = t.value === selectedTermValue;
+                return `<div class="custom-dd-option${isSelected ? ' selected' : ''}" onclick="selectTermsDd('${t.value}', '${t.label}')">${t.label}${isSelected ? ' <span style="color:#4285f4;font-weight:600;">✓</span>' : ''}</div>`;
+            }).join('');
+        }
+
+        function toggleTermsDd() {
+            const panel = document.getElementById('termsDdPanel');
+            const trigger = document.getElementById('termsDdTrigger');
+            const isOpen = panel.classList.contains('open');
+            closeAllCustomDds();
+            if (!isOpen) {
+                panel.classList.add('open');
+                trigger.classList.add('open');
+                trigger.querySelector('.dd-arrow').textContent = '▲';
+                document.getElementById('termsDdSearch').value = '';
+                renderTermsDdOptions();
+                document.getElementById('termsDdSearch').focus();
+            }
+        }
+
+        function selectTermsDd(value, label) {
+            selectedTermValue = value;
+            document.getElementById('terms').value = value;
+            const ddLabel = document.getElementById('termsDdLabel');
+            ddLabel.textContent = label;
+            closeAllCustomDds();
+            updateDueDate();
+        }
+
+        function filterTermsDd() {
+            renderTermsDdOptions(document.getElementById('termsDdSearch').value);
+        }
+
+        // Initialize terms dropdown
+        renderTermsDdOptions();
+
+        function closeAllCustomDds() {
+            document.querySelectorAll('.custom-dd-panel').forEach(p => p.classList.remove('open'));
+            document.querySelectorAll('.custom-dd-trigger').forEach(t => {
+                t.classList.remove('open');
+                const arrow = t.querySelector('.dd-arrow');
+                if (arrow) arrow.textContent = '▼';
+            });
+        }
+
+        // Close dropdowns on outside click
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.custom-dd-wrap')) {
+                closeAllCustomDds();
+            }
+        });
+
+        // Set today's date on date fields
+        function setTodayDates() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('invoiceDate').value = today;
+            document.getElementById('dueDate').value = today;
+        }
+
+        // Update due date based on payment terms
+        function updateDueDate() {
+            const terms = document.getElementById('terms').value;
+            const invoiceDateVal = document.getElementById('invoiceDate').value;
+            if (!invoiceDateVal) return;
+
+            const invoiceDate = new Date(invoiceDateVal);
+            let dueDate = new Date(invoiceDate);
+
+            switch (terms) {
+                case 'due_on_receipt':
+                    dueDate = new Date(invoiceDate);
+                    break;
+                case 'net_15':
+                    dueDate.setDate(dueDate.getDate() + 15);
+                    break;
+                case 'net_30':
+                    dueDate.setDate(dueDate.getDate() + 30);
+                    break;
+                case 'net_45':
+                    dueDate.setDate(dueDate.getDate() + 45);
+                    break;
+                case 'net_60':
+                    dueDate.setDate(dueDate.getDate() + 60);
+                    break;
+                case 'end_of_month':
+                    dueDate = new Date(invoiceDate.getFullYear(), invoiceDate.getMonth() + 1, 0);
+                    break;
+                case 'end_of_next_month':
+                case 'due_end_of_next_month':
+                    dueDate = new Date(invoiceDate.getFullYear(), invoiceDate.getMonth() + 2, 0);
+                    break;
+                case 'custom':
+                    return;
+            }
+
+            document.getElementById('dueDate').value = dueDate.toISOString().split('T')[0];
+        }
+
+        // Also update due date when invoice date changes
+        document.getElementById('invoiceDate').addEventListener('change', updateDueDate);
+
+        // ===== Item Picker System =====
+        let allItems = [];
+
+        async function loadAllItems() {
+            try {
+                const res = await fetch('/api/items');
+                if (res.ok) {
+                    allItems = await res.json();
+                }
+            } catch (err) {
+                console.error('Error loading items:', err);
+            }
+        }
+        loadAllItems();
+
+        function openItemPicker(input) {
+            document.querySelectorAll('.item-picker-dropdown.open').forEach(d => {
+                if (d !== input.parentElement.querySelector('.item-picker-dropdown')) {
+                    d.classList.remove('open');
+                }
+            });
+            const dropdown = input.parentElement.querySelector('.item-picker-dropdown');
+            renderItemPickerOptions(dropdown, input.value);
+            dropdown.classList.add('open');
+        }
+
+        function filterItemPicker(input) {
+            const dropdown = input.parentElement.querySelector('.item-picker-dropdown');
+            renderItemPickerOptions(dropdown, input.value);
+            if (!dropdown.classList.contains('open')) {
+                dropdown.classList.add('open');
+            }
+        }
+
+        function renderItemPickerOptions(dropdown, filter = '') {
+            const filtered = allItems.filter(item =>
+                item.name.toLowerCase().includes((filter || '').toLowerCase()) ||
+                (item.sku && item.sku.toLowerCase().includes((filter || '').toLowerCase()))
+            );
+
+            if (filtered.length === 0) {
+                dropdown.innerHTML = '<div class="item-picker-empty">No items found</div>';
+                return;
+            }
+
+            dropdown.innerHTML = filtered.map(item => {
+                const imgHtml = item.image_url
+                    ? `<img src="${item.image_url}" class="item-picker-img" onerror="this.outerHTML='<div class=\\'item-picker-placeholder-img\\'>\ud83d\udce6</div>'">`
+                    : '<div class="item-picker-placeholder-img">\ud83d\udce6</div>';
+                const price = parseFloat(item.selling_price || 0).toFixed(2);
+                const stock = item.stock_quantity || 0;
+                return `<div class="item-picker-option" onclick="selectItem(this, ${item.id}, '${item.name.replace(/'/g, "\\'")}', ${item.selling_price || 0}, '${(item.image_url || '').replace(/'/g, "\\'")}', '${(item.sku || '').replace(/'/g, "\\'")}')">
+                    ${imgHtml}
+                    <div class="item-picker-info">
+                        <div class="item-picker-name">${item.name}</div>
+                        <div class="item-picker-meta">SKU: ${item.sku || 'N/A'} · Stock: ${stock}</div>
+                    </div>
+                    <div class="item-picker-price">₱${price}</div>
+                </div>`;
+            }).join('');
+        }
+
+        function selectItem(optionEl, id, name, price, imageUrl, sku) {
+            const cell = optionEl.closest('.item-picker-cell');
+            const input = cell.querySelector('.item-picker-input');
+            const hiddenInput = cell.querySelector('.item-id-hidden');
+            const dropdown = cell.querySelector('.item-picker-dropdown');
+
+            input.value = name;
+            hiddenInput.value = id;
+            dropdown.classList.remove('open');
+
+            // Set rate
+            const row = cell.closest('tr');
+            const rateInput = row.querySelector('.rate-input');
+            rateInput.value = parseFloat(price).toFixed(2);
+
+            // Set image display
+            const imgHtml = imageUrl
+                ? `<img src="${imageUrl}" onerror="this.outerHTML='<div class=\\'item-selected-placeholder\\'>\ud83d\udce6</div>'">`
+                : '<div class="item-selected-placeholder">\ud83d\udce6</div>';
+
+            input.style.display = 'none';
+            const existing = cell.querySelector('.item-selected-display');
+            if (existing) existing.remove();
+
+            const display = document.createElement('div');
+            display.className = 'item-selected-display';
+            display.innerHTML = `${imgHtml}<span class="item-selected-name">${name}</span>`;
+            display.style.cursor = 'pointer';
+            display.onclick = function () {
+                display.remove();
+                input.style.display = '';
+                input.value = name;
+                input.focus();
+            };
+            cell.insertBefore(display, input);
+
+            recalcRow(rateInput);
+        }
+
+        function recalcRow(inputEl) {
+            const row = inputEl.closest('tr');
+            const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
+            const rate = parseFloat(row.querySelector('.rate-input').value) || 0;
+            const amount = qty * rate;
+            row.querySelector('.amount-cell').textContent = amount.toFixed(2);
+            recalcTotals();
+        }
+
+        function recalcTotals() {
+            let subTotal = 0;
+            document.querySelectorAll('#itemsBody tr').forEach(row => {
+                const amountCell = row.querySelector('.amount-cell');
+                if (amountCell) {
+                    subTotal += parseFloat(amountCell.textContent) || 0;
+                }
+            });
+            const totalsValues = document.querySelectorAll('.totals-value');
+            if (totalsValues.length > 0) {
+                totalsValues[0].textContent = subTotal.toFixed(2);
+            }
+            if (totalsValues.length > 2) {
+                totalsValues[totalsValues.length - 1].textContent = subTotal.toFixed(2);
+            }
+        }
+
+        function deleteItemRow(btn) {
+            const row = btn.closest('tr');
+            row.remove();
+            recalcTotals();
+        }
+
+        // Close item picker on outside click
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.item-picker-cell')) {
+                document.querySelectorAll('.item-picker-dropdown.open').forEach(d => {
+                    d.classList.remove('open');
+                });
+            }
+        });
+
+        document.querySelector('.add-row-btn.primary').addEventListener('click', function () {
             const tbody = document.getElementById('itemsBody');
             const newRow = document.createElement('tr');
             newRow.innerHTML = `
-                <td class="center"><input type="checkbox" class="item-checkbox"></td>
-                <td><input type="text" placeholder="Type or click to select an item."></td>
-                <td class="center"><input type="number" value="1.00" style="text-align: center;"></td>
-                <td class="center"><input type="number" value="0.00" style="text-align: right;"></td>
-                <td><select><option value="">Select a Tax</option></select></td>
-                <td class="center">0.00</td>
-                <td class="center"><button class="delete-row-btn">: ×</button></td>
+                <td class="item-picker-cell">
+                    <input type="text" class="item-picker-input" placeholder="Type or click to select an item." onfocus="openItemPicker(this)" oninput="filterItemPicker(this)">
+                    <input type="hidden" class="item-id-hidden" value="">
+                    <div class="item-picker-dropdown"></div>
+                </td>
+                <td class="center"><input type="number" value="1.00" style="text-align: center;" class="qty-input" onchange="recalcRow(this)"></td>
+                <td class="center"><input type="number" value="0.00" style="text-align: right;" class="rate-input" onchange="recalcRow(this)"></td>
+                <td><select><option value="">Select Tax</option></select></td>
+                <td class="center amount-cell">0.00</td>
+                <td class="center"><button class="delete-row-btn" onclick="deleteItemRow(this)">×</button></td>
             `;
             tbody.appendChild(newRow);
         });
+
+        // Initialize
+        setTodayDates();
+
+        // ===== Salesperson Custom Dropdown =====
+        let salespersonsList = [];
+        let selectedSalesperson = '';
+
+        async function loadSalespersons() {
+            try {
+                const res = await fetch('/api/salespersons');
+                if (res.ok) {
+                    const data = await res.json();
+                    salespersonsList = data.map(sp => ({
+                        id: sp.id,
+                        dbId: sp.id,
+                        name: sp.name,
+                        email: sp.email || '',
+                        password: sp.password || '',
+                        editing: false
+                    }));
+                    renderSpDdOptions();
+                }
+            } catch (err) {
+                console.error('Error loading salespersons:', err);
+            }
+        }
+        loadSalespersons();
+
+        function renderSpDdOptions(filter = '') {
+            const container = document.getElementById('spDdOptions');
+            const filtered = salespersonsList.filter(s =>
+                s.name.toLowerCase().includes(filter.toLowerCase())
+            );
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="custom-dd-empty">NO RESULTS FOUND</div>';
+                return;
+            }
+            container.innerHTML = filtered.map(s => {
+                const isSelected = s.id == selectedSalesperson;
+                return `<div class="custom-dd-option${isSelected ? ' selected' : ''}" onclick="selectSpDd('${s.id}', '${s.name.replace(/'/g, "\\'")}')">${s.name}${isSelected ? ' <span style="color:#4285f4;font-weight:600;">✓</span>' : ''}</div>`;
+            }).join('');
+        }
+
+        function toggleSpDd() {
+            const panel = document.getElementById('spDdPanel');
+            const trigger = document.getElementById('spDdTrigger');
+            const isOpen = panel.classList.contains('open');
+            closeAllCustomDds();
+            if (!isOpen) {
+                panel.classList.add('open');
+                trigger.classList.add('open');
+                trigger.querySelector('.dd-arrow').textContent = '▲';
+                document.getElementById('spDdSearch').value = '';
+                renderSpDdOptions();
+                document.getElementById('spDdSearch').focus();
+            }
+        }
+
+        function selectSpDd(id, name) {
+            selectedSalesperson = id;
+            document.getElementById('salesperson').value = id;
+            const label = document.getElementById('spDdLabel');
+            label.textContent = name;
+            label.style.color = '#333';
+            closeAllCustomDds();
+        }
+
+        function filterSpDd() {
+            renderSpDdOptions(document.getElementById('spDdSearch').value);
+        }
+
+        // ===== Manage Salespersons Modal =====
+        function openManageSalespersons() {
+            closeAllCustomDds();
+            renderSpTable();
+            document.getElementById('spModalOverlay').classList.add('open');
+            document.getElementById('spModalSearch').value = '';
+        }
+
+        function closeManageSalespersons() {
+            document.getElementById('spModalOverlay').classList.remove('open');
+            renderSpDdOptions();
+        }
+
+        function renderSpTable(filter = '') {
+            const tbody = document.getElementById('spTableBody');
+            const emptyMsg = document.getElementById('spEmptyMsg');
+            const filtered = salespersonsList.filter(s =>
+                s.name.toLowerCase().includes(filter.toLowerCase()) ||
+                (s.email || '').toLowerCase().includes(filter.toLowerCase())
+            );
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '';
+                emptyMsg.style.display = 'block';
+                return;
+            }
+
+            emptyMsg.style.display = 'none';
+            tbody.innerHTML = filtered.map((s, i) => {
+                const realIndex = salespersonsList.indexOf(s);
+                const hasPw = s.password ? true : false;
+
+                let pwSection = '';
+                if (s.settingPw) {
+                    pwSection = `
+                        <div style="margin-top: 8px; padding: 8px; background: #f9fafb; border-radius: 4px; border: 1px solid #e0e0e0;">
+                            <input type="password" id="spPw_${realIndex}" placeholder="Enter password" style="width: 100%; padding: 6px 8px; border: 1px solid #d0d5dd; border-radius: 4px; font-size: 12px; margin-bottom: 6px; box-sizing: border-box;">
+                            <input type="password" id="spPwC_${realIndex}" placeholder="Confirm password" style="width: 100%; padding: 6px 8px; border: 1px solid #d0d5dd; border-radius: 4px; font-size: 12px; margin-bottom: 8px; box-sizing: border-box;">
+                            <div style="display: flex; gap: 6px;">
+                                <button onclick="saveSpPasswordInline(${realIndex})" style="padding: 5px 14px; background: #4285f4; color: white; border: none; border-radius: 4px; font-size: 12px; cursor: pointer;">Save Password</button>
+                                <button onclick="cancelSetPw(${realIndex})" style="padding: 5px 14px; background: #f1f3f5; color: #333; border: none; border-radius: 4px; font-size: 12px; cursor: pointer;">Cancel</button>
+                            </div>
+                        </div>`;
+                } else if (hasPw) {
+                    pwSection = `<div style="margin-top: 4px;"><span style="color: #16a34a; font-size: 11px; font-weight: 500;">🔒 Password set</span> · <a href="#" onclick="event.preventDefault(); startSetPw(${realIndex})" style="color: #4285f4; font-size: 11px; text-decoration: none;">Change</a></div>`;
+                } else {
+                    pwSection = `<div style="margin-top: 4px;"><a href="#" onclick="event.preventDefault(); startSetPw(${realIndex})" style="color: #4285f4; font-size: 12px; text-decoration: none; font-weight: 500;">Set Password</a></div>`;
+                }
+
+                if (s.editing) {
+                    return `<tr>
+                        <td>
+                            <input type="text" value="${s.name}" onchange="updateSpName(${realIndex}, this.value)" placeholder="Salesperson name">
+                            ${pwSection}
+                        </td>
+                        <td><input type="text" value="${s.email || ''}" onchange="updateSpEmail(${realIndex}, this.value)" placeholder="Email address"></td>
+                        <td><button class="sp-delete-btn" onclick="deleteSalesperson(${realIndex})" title="Delete">🗑</button></td>
+                    </tr>`;
+                } else {
+                    return `<tr>
+                        <td>
+                            <span style="font-weight: 500;">${s.name}</span>
+                            ${pwSection}
+                        </td>
+                        <td>${s.email || '—'}</td>
+                        <td><button class="sp-delete-btn" onclick="deleteSalesperson(${realIndex})" title="Delete">🗑</button></td>
+                    </tr>`;
+                }
+            }).join('');
+        }
+
+        function addNewSalesperson() {
+            salespersonsList.push({
+                id: 'new_' + Date.now(),
+                dbId: null,
+                name: '',
+                email: '',
+                password: '',
+                editing: true
+            });
+            renderSpTable();
+            document.getElementById('spEmptyMsg').style.display = 'none';
+            setTimeout(() => {
+                const inputs = document.querySelectorAll('#spTableBody input[placeholder="Salesperson name"]');
+                if (inputs.length > 0) inputs[inputs.length - 1].focus();
+            }, 50);
+        }
+
+        async function updateSpName(index, value) {
+            salespersonsList[index].name = value;
+            await syncSpToDb(index);
+        }
+
+        async function updateSpEmail(index, value) {
+            salespersonsList[index].email = value;
+            await syncSpToDb(index);
+        }
+
+        async function syncSpToDb(index) {
+            const sp = salespersonsList[index];
+            if (!sp.name) return;
+            try {
+                if (sp.dbId) {
+                    const res = await fetch('/api/salespersons/' + sp.dbId, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name: sp.name, email: sp.email, password: sp.password })
+                    });
+                    if (res.ok) {
+                        const updated = await res.json();
+                        salespersonsList[index].id = updated.id;
+                    }
+                } else {
+                    const res = await fetch('/api/salespersons', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name: sp.name, email: sp.email, password: sp.password })
+                    });
+                    if (res.ok) {
+                        const created = await res.json();
+                        salespersonsList[index].dbId = created.id;
+                        salespersonsList[index].id = created.id;
+                    }
+                }
+                renderSpDdOptions();
+            } catch (err) {
+                console.error('Error saving salesperson:', err);
+            }
+        }
+
+        async function deleteSalesperson(index) {
+            const sp = salespersonsList[index];
+            if (sp.password) {
+                const enteredPw = prompt(`Enter the password for "${sp.name}" to delete:`);
+                if (enteredPw === null) return;
+                if (enteredPw !== sp.password) {
+                    alert('Incorrect password. Only the owner can delete this salesperson.');
+                    return;
+                }
+            }
+            if (sp.dbId) {
+                try {
+                    await fetch('/api/salespersons/' + sp.dbId, { method: 'DELETE' });
+                } catch (err) {
+                    console.error('Error deleting salesperson:', err);
+                }
+            }
+            const removed = salespersonsList.splice(index, 1)[0];
+            if (selectedSalesperson == removed.id || selectedSalesperson == removed.dbId) {
+                selectedSalesperson = '';
+                document.getElementById('salesperson').value = '';
+                document.getElementById('spDdLabel').textContent = 'Select or Add Salesperson';
+                document.getElementById('spDdLabel').style.color = '#999';
+            }
+            renderSpTable(document.getElementById('spModalSearch').value);
+            renderSpDdOptions();
+        }
+
+        function filterSpTable() {
+            renderSpTable(document.getElementById('spModalSearch').value);
+        }
+
+        function startSetPw(index) {
+            salespersonsList[index].settingPw = true;
+            renderSpTable(document.getElementById('spModalSearch').value);
+            setTimeout(() => {
+                const el = document.getElementById('spPw_' + index);
+                if (el) el.focus();
+            }, 50);
+        }
+
+        function cancelSetPw(index) {
+            salespersonsList[index].settingPw = false;
+            renderSpTable(document.getElementById('spModalSearch').value);
+        }
+
+        async function saveSpPasswordInline(index) {
+            const pw = document.getElementById('spPw_' + index).value;
+            const confirmPw = document.getElementById('spPwC_' + index).value;
+
+            if (!pw) {
+                alert('Please enter a password.');
+                return;
+            }
+            if (pw !== confirmPw) {
+                alert('Passwords do not match.');
+                return;
+            }
+            if (pw.length < 4) {
+                alert('Password must be at least 4 characters.');
+                return;
+            }
+
+            salespersonsList[index].password = pw;
+            salespersonsList[index].settingPw = false;
+            salespersonsList[index].editing = false;
+            await syncSpToDb(index);
+            renderSpTable(document.getElementById('spModalSearch').value);
+            alert('Password saved! Only this salesperson should know this password.');
+        }
+
+        // ===== Configure Terms Modal =====
+        let editableTerms = [];
+
+        function openConfigureTerms() {
+            closeAllCustomDds();
+            editableTerms = termsList.map(t => ({ ...t, id: t.value, name: t.label, days: getDaysForTerm(t.value) }));
+            renderTermsTable();
+            document.getElementById('ptModalOverlay').classList.add('open');
+        }
+
+        function getDaysForTerm(value) {
+            switch (value) {
+                case 'due_on_receipt': return 'N/A';
+                case 'net_15': return 15;
+                case 'net_30': return 30;
+                case 'net_45': return 45;
+                case 'net_60': return 60;
+                case 'end_of_month': return 'N/A';
+                case 'due_end_of_next_month': return 'N/A';
+                default: return 0;
+            }
+        }
+
+        function closeConfigureTerms() {
+            document.getElementById('ptModalOverlay').classList.remove('open');
+        }
+
+        function renderTermsTable() {
+            const tbody = document.getElementById('ptTermsTableBody');
+            tbody.innerHTML = editableTerms.map((t, i) => {
+                const daysInput = t.days === 'N/A'
+                    ? `<span style="color: #999;">N/A</span>`
+                    : `<input type="number" class="term-days-input" value="${t.days}" onchange="updateTermDays(${i}, this.value)" min="0">`;
+                return `<tr>
+                    <td><input type="text" class="term-name-input" value="${t.name}" onchange="updateTermName(${i}, this.value)"></td>
+                    <td>${daysInput}</td>
+                    <td>
+                        <div class="pt-term-actions">
+                            <a class="pt-mark-default" onclick="markTermDefault(${i})">Mark as Default</a>
+                            <span style="color: #e0e0e0;">|</span>
+                            <a class="pt-delete-term" onclick="deleteTerm(${i})">🗑 Delete</a>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        function updateTermName(index, value) {
+            editableTerms[index].name = value;
+            editableTerms[index].id = value.toLowerCase().replace(/\s+/g, '_');
+        }
+
+        function updateTermDays(index, value) {
+            editableTerms[index].days = parseInt(value) || 0;
+        }
+
+        function markTermDefault(index) {
+            const term = editableTerms[index];
+            selectedTermValue = term.id;
+            document.getElementById('terms').value = term.id;
+            document.getElementById('termsDdLabel').textContent = term.name;
+            alert(`"${term.name}" set as default payment term`);
+        }
+
+        function deleteTerm(index) {
+            if (editableTerms.length <= 1) {
+                alert('You must keep at least one payment term.');
+                return;
+            }
+            const removed = editableTerms.splice(index, 1)[0];
+            if (selectedTermValue === removed.id && editableTerms.length > 0) {
+                selectedTermValue = editableTerms[0].id;
+                document.getElementById('terms').value = editableTerms[0].id;
+                document.getElementById('termsDdLabel').textContent = editableTerms[0].name;
+            }
+            renderTermsTable();
+        }
+
+        function addNewTerm() {
+            editableTerms.push({ id: 'custom_' + Date.now(), name: '', days: 0 });
+            renderTermsTable();
+            setTimeout(() => {
+                const inputs = document.querySelectorAll('.term-name-input');
+                if (inputs.length > 0) inputs[inputs.length - 1].focus();
+            }, 50);
+        }
+
+        function saveConfiguredTerms() {
+            const hasEmpty = editableTerms.some(t => !t.name.trim());
+            if (hasEmpty) {
+                alert('Please fill in all term names before saving.');
+                return;
+            }
+            // Update the termsList array
+            termsList.length = 0;
+            editableTerms.forEach(t => {
+                termsList.push({
+                    value: t.id || t.name.toLowerCase().replace(/\s+/g, '_'),
+                    label: t.name.trim()
+                });
+            });
+            if (!termsList.find(t => t.value === selectedTermValue) && termsList.length > 0) {
+                selectedTermValue = termsList[0].value;
+                document.getElementById('terms').value = termsList[0].value;
+                document.getElementById('termsDdLabel').textContent = termsList[0].label;
+            }
+            renderTermsDdOptions();
+            closeConfigureTerms();
+            updateDueDate();
+        }
     </script>
 </body>
 

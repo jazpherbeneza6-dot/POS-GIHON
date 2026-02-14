@@ -37,7 +37,7 @@
             background: white;
         }
 
-        /* Page Header */
+        /* ===== TABLE LIST VIEW ===== */
         .page-header {
             display: flex;
             align-items: center;
@@ -128,7 +128,6 @@
             background: #f5f5f5;
         }
 
-        /* Empty State */
         .empty-state {
             display: flex;
             flex-direction: column;
@@ -169,11 +168,6 @@
             background: #3367d6;
         }
 
-        /* Sales Orders Table */
-        .orders-container {
-            padding: 24px;
-        }
-
         .orders-table {
             width: 100%;
             border-collapse: collapse;
@@ -182,7 +176,7 @@
 
         .orders-table th {
             text-align: left;
-            padding: 14px 16px;
+            padding: 12px 16px;
             font-size: 11px;
             font-weight: 600;
             color: #999;
@@ -190,12 +184,599 @@
             letter-spacing: 0.5px;
             border-bottom: 2px solid #e9ecef;
             background: #f9fafb;
+            white-space: nowrap;
+        }
+
+        .orders-table th:first-child {
+            width: 36px;
+            text-align: center;
         }
 
         .orders-table td {
             padding: 14px 16px;
             border-bottom: 1px solid #f0f0f0;
             font-size: 13px;
+            color: #333;
+        }
+
+        .orders-table td:first-child {
+            width: 36px;
+            text-align: center;
+        }
+
+        .orders-table tr {
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .orders-table tr:hover {
+            background: #f8f9ff;
+        }
+
+        .order-number-link {
+            color: #4285f4;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .order-number-link:hover {
+            text-decoration: underline;
+        }
+
+        .status-draft {
+            color: #555;
+            font-weight: 500;
+            font-size: 12px;
+        }
+
+        .status-confirmed {
+            color: #16a34a;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .status-closed {
+            color: #16a34a;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ddd;
+        }
+
+        .status-dot.active {
+            background: #4285f4;
+        }
+
+        .status-dot.done {
+            background: #16a34a;
+        }
+
+        .status-dot.partial {
+            background: #f59e0b;
+        }
+
+        .filter-icon {
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #999;
+        }
+
+        /* ===== DETAIL VIEW (hidden by default) ===== */
+        .detail-wrapper {
+            display: none;
+            height: calc(100vh);
+            overflow: hidden;
+        }
+
+        .detail-wrapper.active {
+            display: flex;
+        }
+
+        /* Left Panel */
+        .so-left-panel {
+            width: 260px;
+            min-width: 260px;
+            border-right: 1px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+        }
+
+        .so-left-header {
+            padding: 12px 14px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .so-left-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .so-left-title:hover {
+            color: #4285f4;
+        }
+
+        .so-left-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .so-left-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .so-left-btn.add {
+            background: #16a34a;
+            color: white;
+        }
+
+        .so-left-btn.more {
+            background: transparent;
+            color: #666;
+            font-size: 18px;
+        }
+
+        .so-left-btn:hover {
+            opacity: 0.85;
+        }
+
+        .so-left-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .so-left-item {
+            padding: 12px 14px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .so-left-item:hover {
+            background: #f8f9ff;
+        }
+
+        .so-left-item.active {
+            background: #eef2ff;
+            border-left: 3px solid #4285f4;
+        }
+
+        .so-left-item-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .so-left-item-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .so-left-item-amount {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .so-left-item-bottom {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: #888;
+        }
+
+        .so-left-item-status {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .so-left-item-status.draft {
+            color: #555;
+        }
+
+        .so-left-item-status.confirmed {
+            color: #16a34a;
+        }
+
+        .so-left-item-status.closed {
+            color: #16a34a;
+        }
+
+        /* Right Panel */
+        .so-right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f9fafb;
+            overflow: hidden;
+        }
+
+        .so-right-header {
+            padding: 10px 20px;
+            background: #fff;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .so-right-header-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .so-right-location {
+            font-size: 11px;
+            color: #888;
+        }
+
+        .so-right-order-num {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .so-right-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .so-right-header-actions button {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #666;
+            font-size: 16px;
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .so-right-header-actions button:hover {
+            background: #f0f0f0;
+        }
+
+        .so-action-bar {
+            padding: 8px 20px;
+            background: #fff;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+        }
+
+        .so-action-btn {
+            padding: 6px 12px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        .so-action-btn:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .so-action-separator {
+            width: 1px;
+            height: 20px;
+            background: #e0e0e0;
+            margin: 0 4px;
+        }
+
+        .so-pdf-toggle {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .so-detail-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .so-detail-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+            padding: 32px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .so-detail-top {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .so-detail-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin: 0 0 4px 0;
+        }
+
+        .so-detail-subtitle {
+            font-size: 13px;
+            color: #666;
+            margin: 0;
+        }
+
+        .so-address-block {
+            text-align: right;
+        }
+
+        .so-address-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .so-address-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #4285f4;
+            margin-bottom: 4px;
+        }
+
+        .so-address-text {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .so-status-section {
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .so-status-grid {
+            display: grid;
+            grid-template-columns: 100px 1fr;
+            gap: 10px 16px;
+            font-size: 13px;
+        }
+
+        .so-status-label {
+            color: #888;
+            font-weight: 500;
+        }
+
+        .so-status-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .so-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .so-badge.draft {
+            background: #f0f0f0;
+            color: #555;
+        }
+
+        .so-badge.confirmed {
+            background: #16a34a;
+            color: #fff;
+        }
+
+        .so-badge.closed {
+            background: #2563eb;
+            color: #fff;
+        }
+
+        .so-unpaid {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        .so-pending {
+            color: #f59e0b;
+            font-weight: 600;
+        }
+
+        .so-not-invoiced {
+            color: #888;
+        }
+
+        .so-fields-section {
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .so-fields-grid {
+            display: grid;
+            grid-template-columns: 160px 1fr;
+            gap: 10px 20px;
+            font-size: 13px;
+        }
+
+        .so-field-label {
+            color: #888;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 11px;
+        }
+
+        .so-field-value {
+            color: #333;
+        }
+
+        .so-items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .so-items-table th {
+            text-align: left;
+            padding: 10px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            border-bottom: 2px solid #e9ecef;
+            background: #f9fafb;
+        }
+
+        .so-items-table td {
+            padding: 12px;
+            font-size: 13px;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: top;
+        }
+
+        .so-item-placeholder {
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            background: #e9ecef;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #999;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .so-item-name-link {
+            color: #4285f4;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .so-totals {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .so-totals-row {
+            display: flex;
+            justify-content: space-between;
+            width: 300px;
+            font-size: 13px;
+        }
+
+        .so-totals-row.subtotal {
+            border-top: 1px solid #e9ecef;
+            padding-top: 12px;
+            font-weight: 600;
+        }
+
+        .so-totals-row.total {
+            border-top: 2px solid #333;
+            padding-top: 12px;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .so-totals-label {
+            color: #666;
+        }
+
+        .so-totals-value {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .so-totals-qty {
+            font-size: 11px;
+            color: #888;
+        }
+
+        .so-more-info {
+            margin-top: 32px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .so-more-info h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 16px 0;
+        }
+
+        .so-more-info-grid {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            gap: 8px 16px;
+            font-size: 13px;
+        }
+
+        .so-more-info-label {
+            color: #4285f4;
+            font-weight: 500;
+        }
+
+        .so-more-info-value {
             color: #333;
         }
     </style>
@@ -207,60 +788,353 @@
 
     <div class="main-layout">
         <div class="content" id="content">
-            <!-- Page Header -->
-            <div class="page-header">
-                <div class="page-title-wrapper">
-                    <h1 class="page-title">
-                        All Sales Orders
-                        <span class="dropdown-arrow">▼</span>
-                    </h1>
+
+            <!-- ===== TABLE LIST VIEW ===== -->
+            <div id="listView">
+                <div class="page-header">
+                    <div class="page-title-wrapper">
+                        <h1 class="page-title">
+                            All Sales Orders
+                            <span class="dropdown-arrow">▼</span>
+                        </h1>
+                    </div>
+                    <div class="header-actions">
+                        <a href="#" class="view-stats-link">
+                            <span style="color: #16a34a;">●</span> View Order Stats
+                        </a>
+                        <button class="btn-new" onclick="window.location.href='/new-sales-order.html'">
+                            <span>+</span> New
+                        </button>
+                        <button class="btn-more">⋯</button>
+                    </div>
                 </div>
-                <div class="header-actions">
-                    <a href="#" class="view-stats-link">
-                        <span>📊</span> View Order Stats
-                    </a>
-                    <button class="btn-new" onclick="createSalesOrder()">
-                        <span>+</span> New
-                    </button>
-                    <button class="btn-more">⋯</button>
+
+                <!-- Empty State -->
+                <div class="empty-state" id="emptyState">
+                    <h2 class="empty-state-title">Start Managing Your Sales Activities!</h2>
+                    <p class="empty-state-subtitle">Create, customize and send professional Sales Orders.</p>
+                    <button class="btn-create" onclick="window.location.href='/new-sales-order.html'">CREATE SALES
+                        ORDER</button>
+                </div>
+
+                <!-- Orders Table -->
+                <div id="ordersContainer" style="display: none;">
+                    <table class="orders-table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)"></th>
+                                <th><span class="filter-icon">⇕</span> DATE</th>
+                                <th>SALES ORDER#</th>
+                                <th>REFERENCE#</th>
+                                <th>CUSTOMER NAME</th>
+                                <th>ORDER STATUS</th>
+                                <th style="text-align: center;">INVOICED</th>
+                                <th style="text-align: center;">PAYMENT</th>
+                                <th style="text-align: center;">PACKED</th>
+                                <th style="text-align: center;">SHIPPED</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersBody"></tbody>
+                    </table>
                 </div>
             </div>
 
-            <!-- Empty State -->
-            <div class="empty-state" id="emptyState">
-                <h2 class="empty-state-title">Start Managing Your Sales Activities!</h2>
-                <p class="empty-state-subtitle">Create, customize and send professional Sales Orders.</p>
-                <button class="btn-create" onclick="createSalesOrder()">CREATE SALES ORDER</button>
+            <!-- ===== DETAIL VIEW (hidden by default) ===== -->
+            <div class="detail-wrapper" id="detailView">
+                <div class="so-left-panel">
+                    <div class="so-left-header">
+                        <div class="so-left-title" onclick="backToList()">← All Sales Orders</div>
+                        <div class="so-left-actions">
+                            <button class="so-left-btn add" onclick="window.location.href='/new-sales-order.html'"
+                                title="New Sales Order">+</button>
+                            <button class="so-left-btn more" title="More">⋯</button>
+                        </div>
+                    </div>
+                    <div class="so-left-list" id="soLeftList"></div>
+                </div>
+                <div class="so-right-panel" id="soRightPanel"></div>
             </div>
 
-            <!-- Sales Orders Container (hidden when empty) -->
-            <div class="orders-container" id="ordersContainer" style="display: none;">
-                <table class="orders-table">
-                    <thead>
-                        <tr>
-                            <th>DATE</th>
-                            <th>SALES ORDER#</th>
-                            <th>REFERENCE#</th>
-                            <th>CUSTOMER NAME</th>
-                            <th>STATUS</th>
-                            <th>AMOUNT</th>
-                        </tr>
-                    </thead>
-                    <tbody id="ordersBody">
-                        <!-- Orders will be added here -->
-                    </tbody>
-                </table>
-            </div>
         </div>
     </div>
 
     <!-- Layout Script -->
     <script src="/js/layout.js"></script>
     <script>
-        // Create new sales order
-        function createSalesOrder() {
-            window.location.href = '/new-sales-order.html';
+        let allOrders = [];
+        let selectedOrderId = null;
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const d = new Date(dateStr);
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            return `${String(d.getDate()).padStart(2, '0')} ${months[d.getMonth()]} ${d.getFullYear()}`;
         }
+
+        function getStatusClass(status) {
+            const s = (status || '').toUpperCase();
+            if (s === 'DRAFT') return 'draft';
+            if (s === 'CLOSED') return 'closed';
+            return 'confirmed';
+        }
+
+        function getStatusDots(status) {
+            const s = (status || '').toUpperCase();
+            if (s === 'CLOSED') return { invoiced: 'active', payment: 'done', packed: 'done', shipped: 'done' };
+            return { invoiced: '', payment: '', packed: '', shipped: '' };
+        }
+
+        function formatCurrency(val) {
+            return 'PHP' + parseFloat(val || 0).toFixed(2);
+        }
+
+        function toggleSelectAll(checkbox) {
+            document.querySelectorAll('.order-checkbox').forEach(cb => cb.checked = checkbox.checked);
+        }
+
+        // ===== LOAD TABLE LIST =====
+        async function loadOrders() {
+            try {
+                const res = await fetch('/api/sales-orders');
+                if (!res.ok) return;
+                allOrders = await res.json();
+
+                if (allOrders.length === 0) {
+                    document.getElementById('emptyState').style.display = 'flex';
+                    document.getElementById('ordersContainer').style.display = 'none';
+                    return;
+                }
+
+                document.getElementById('emptyState').style.display = 'none';
+                document.getElementById('ordersContainer').style.display = 'block';
+
+                const tbody = document.getElementById('ordersBody');
+                tbody.innerHTML = allOrders.map(order => {
+                    const dots = getStatusDots(order.status);
+                    const statusCls = 'status-' + getStatusClass(order.status);
+                    return `<tr onclick="openOrderDetail(${order.id})" style="cursor:pointer;">
+                        <td><input type="checkbox" class="order-checkbox" value="${order.id}" onclick="event.stopPropagation()"></td>
+                        <td>${formatDate(order.order_date)}</td>
+                        <td><span class="order-number-link">${order.order_number}</span></td>
+                        <td>${order.reference_number || ''}</td>
+                        <td>${order.customer_name || ''}</td>
+                        <td><span class="${statusCls}">${(order.status || 'DRAFT').toUpperCase()}</span></td>
+                        <td style="text-align: center;">${dots.invoiced ? `<span class="status-dot ${dots.invoiced}"></span>` : ''}</td>
+                        <td style="text-align: center;">${dots.payment ? `<span class="status-dot ${dots.payment}"></span>` : ''}</td>
+                        <td style="text-align: center;">${dots.packed ? `<span class="status-dot ${dots.packed}"></span>` : ''}</td>
+                        <td style="text-align: center;">${dots.shipped ? `<span class="status-dot ${dots.shipped}"></span>` : ''}</td>
+                    </tr>`;
+                }).join('');
+            } catch (err) {
+                console.error('Error loading orders:', err);
+            }
+        }
+
+        // ===== OPEN DETAIL VIEW =====
+        function openOrderDetail(orderId) {
+            // Hide list, show detail
+            document.getElementById('listView').style.display = 'none';
+            document.getElementById('detailView').classList.add('active');
+
+            // Build left sidebar list
+            const list = document.getElementById('soLeftList');
+            list.innerHTML = allOrders.map(order => {
+                const statusCls = getStatusClass(order.status);
+                return `<div class="so-left-item ${order.id === orderId ? 'active' : ''}" data-id="${order.id}" onclick="selectOrder(${order.id})">
+                    <div class="so-left-item-top">
+                        <span class="so-left-item-name">${order.customer_name || 'No Customer'}</span>
+                        <span class="so-left-item-amount">${formatCurrency(order.total)}</span>
+                    </div>
+                    <div class="so-left-item-bottom">
+                        <span>${order.order_number}</span>
+                        <span>·</span>
+                        <span>${formatDate(order.order_date)}</span>
+                    </div>
+                    <div class="so-left-item-status ${statusCls}">${(order.status || 'DRAFT').toUpperCase()}</div>
+                </div>`;
+            }).join('');
+
+            selectOrder(orderId);
+        }
+
+        async function selectOrder(orderId) {
+            selectedOrderId = orderId;
+
+            document.querySelectorAll('.so-left-item').forEach(el => {
+                el.classList.toggle('active', parseInt(el.dataset.id) === orderId);
+            });
+
+            try {
+                const res = await fetch(`/api/sales-orders/${orderId}`);
+                if (!res.ok) return;
+                const order = await res.json();
+                renderDetail(order);
+            } catch (err) {
+                console.error('Error loading order detail:', err);
+            }
+        }
+
+        function renderDetail(order) {
+            const panel = document.getElementById('soRightPanel');
+            const statusCls = getStatusClass(order.status);
+            const statusLabel = (order.status || 'DRAFT').toUpperCase();
+            const items = order.items || [];
+            const subTotal = items.reduce((sum, i) => sum + parseFloat(i.amount || 0), 0);
+            const totalQty = items.reduce((sum, i) => sum + parseFloat(i.quantity || 0), 0);
+            const total = parseFloat(order.total || subTotal);
+
+            // Build address strings
+            function buildAddress(street, city, state, zip, country) {
+                const parts = [street, city, state, zip, country].filter(p => p && p.trim());
+                if (parts.length === 0) return '';
+                const lines = [];
+                if (street) lines.push(street);
+                const cityState = [city, state].filter(p => p && p.trim()).join(', ');
+                if (cityState) lines.push(cityState);
+                if (country) lines.push(country);
+                if (zip) lines.push(zip);
+                return lines.join('<br>');
+            }
+
+            const billingAddr = buildAddress(order.billing_street, order.billing_city, order.billing_state, order.billing_zip, order.billing_country);
+            const shippingAddr = buildAddress(order.shipping_street, order.shipping_city, order.shipping_state, order.shipping_zip, order.shipping_country);
+
+            panel.innerHTML = `
+                <div class="so-right-header">
+                    <div class="so-right-header-left">
+                        <span class="so-right-location">Location: Head Office</span>
+                        <span class="so-right-order-num">${order.order_number}</span>
+                    </div>
+                    <div class="so-right-header-actions">
+                        <button title="Print" onclick="window.print()">🖨</button>
+                        <button title="Fullscreen">⛶</button>
+                        <button title="Close" style="font-size:20px;" onclick="backToList()">✕</button>
+                    </div>
+                </div>
+
+                <div class="so-action-bar">
+                    <button class="so-action-btn">✏️ Edit</button>
+                    <button class="so-action-btn">📄 PDF/Print ▾</button>
+                    <div class="so-action-separator"></div>
+                    <button class="so-action-btn">🔄 Convert to Invoice</button>
+                    <div class="so-action-separator"></div>
+                    <button class="so-action-btn">➕ Create ▾</button>
+                    <div class="so-action-separator"></div>
+                    <button class="so-action-btn">⋯</button>
+                    <div class="so-pdf-toggle">
+                        <span>Show PDF View</span>
+                        <input type="checkbox">
+                    </div>
+                </div>
+
+                <div class="so-detail-scroll">
+                    <div class="so-detail-card">
+                        <div class="so-detail-top">
+                            <div>
+                                <h2 class="so-detail-title">SALES ORDER</h2>
+                                <p class="so-detail-subtitle">Sales Order# ${order.order_number}</p>
+                            </div>
+                            <div>
+                                <div class="so-address-block" style="margin-bottom:20px;">
+                                    <div class="so-address-label">BILLING ADDRESS</div>
+                                    <div class="so-address-name">${order.customer_name || 'N/A'}</div>
+                                    <div class="so-address-text">${billingAddr || '<span style="color:#999;">No billing address</span>'}</div>
+                                </div>
+                                <div class="so-address-block">
+                                    <div class="so-address-label">SHIPPING ADDRESS</div>
+                                    <div class="so-address-text">${shippingAddr || '<span style="color:#999;">No shipping address</span>'}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="so-status-section">
+                            <div class="so-status-grid">
+                                <span class="so-status-label">Order</span>
+                                <span class="so-status-value"><span class="so-badge ${statusCls}">${statusLabel}</span></span>
+                                <span class="so-status-label">Invoice</span>
+                                <span class="so-status-value so-not-invoiced">Not Invoiced</span>
+                                <span class="so-status-label">Payment</span>
+                                <span class="so-status-value so-unpaid">Unpaid</span>
+                                <span class="so-status-label">Shipment</span>
+                                <span class="so-status-value so-pending">Pending</span>
+                            </div>
+                        </div>
+
+                        <div class="so-fields-section">
+                            <div class="so-fields-grid">
+                                <span class="so-field-label">REFERENCE</span>
+                                <span class="so-field-value">${order.reference_number || 'N/A'}</span>
+                                <span class="so-field-label">ORDER DATE</span>
+                                <span class="so-field-value">${formatDate(order.order_date)}</span>
+                                <span class="so-field-label">PAYMENT TERMS</span>
+                                <span class="so-field-value">${order.payment_terms || 'Due on Receipt'}</span>
+                                <span class="so-field-label">SALESPERSON</span>
+                                <span class="so-field-value">${order.salesperson_name || 'N/A'}</span>
+                            </div>
+                        </div>
+
+                        <table class="so-items-table">
+                            <thead>
+                                <tr>
+                                    <th>ITEMS & DESCRIPTION</th>
+                                    <th style="text-align:center;width:80px;">ORDERED</th>
+                                    <th style="text-align:right;width:100px;">RATE</th>
+                                    <th style="text-align:right;width:80px;">DISCOUNT</th>
+                                    <th style="text-align:right;width:100px;">AMOUNT</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${items.length > 0 ? items.map(item => `
+                                <tr>
+                                    <td>
+                                        <div style="display:flex;align-items:center;">
+                                            <span class="so-item-placeholder">📦</span>
+                                            <span class="so-item-name-link">${item.item_name}</span>
+                                        </div>
+                                    </td>
+                                    <td style="text-align:center;">${parseFloat(item.quantity || 0)}<br><span style="font-size:11px;color:#888;">pcs</span></td>
+                                    <td style="text-align:right;">${formatCurrency(item.rate)}</td>
+                                    <td style="text-align:right;">0</td>
+                                    <td style="text-align:right;">${formatCurrency(item.amount)}</td>
+                                </tr>`).join('') : '<tr><td colspan="5" style="text-align:center;padding:20px;color:#999;">No items</td></tr>'}
+                            </tbody>
+                        </table>
+
+                        <div class="so-totals">
+                            <div class="so-totals-row subtotal">
+                                <span class="so-totals-label">Sub Total</span>
+                                <span class="so-totals-value">${formatCurrency(subTotal)}</span>
+                            </div>
+                            <div class="so-totals-row">
+                                <span class="so-totals-qty">Total Quantity : ${totalQty}</span>
+                                <span></span>
+                            </div>
+                            <div class="so-totals-row total">
+                                <span class="so-totals-label">Total</span>
+                                <span class="so-totals-value">${formatCurrency(total)}</span>
+                            </div>
+                        </div>
+
+                        <div class="so-more-info">
+                            <h3>More Information</h3>
+                            <div class="so-more-info-grid">
+                                <span class="so-more-info-label">Salesperson</span>
+                                <span class="so-more-info-value">: ${order.salesperson_name || 'N/A'}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ===== BACK TO LIST =====
+        function backToList() {
+            document.getElementById('detailView').classList.remove('active');
+            document.getElementById('listView').style.display = 'block';
+            selectedOrderId = null;
+        }
+
+        loadOrders();
     </script>
 </body>
 

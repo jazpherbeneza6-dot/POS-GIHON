@@ -537,6 +537,42 @@
             gap: 8px;
         }
 
+        /* Groups Search Bar */
+        .groups-search-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .groups-search-input {
+            width: 250px;
+            padding: 8px 14px 8px 36px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+            background: #f9fafb;
+            transition: all 0.2s ease;
+        }
+
+        .groups-search-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .groups-search-input:focus {
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .groups-search-icon {
+            position: absolute;
+            left: 12px;
+            font-size: 14px;
+            color: #9ca3af;
+            pointer-events: none;
+        }
+
         .btn-icon {
             width: 32px;
             height: 32px;
@@ -865,6 +901,11 @@
                     </div>
                 </div>
                 <div class="header-actions">
+                    <div class="groups-search-container">
+                        <span class="groups-search-icon">🔍</span>
+                        <input type="text" id="groupSearch" class="groups-search-input"
+                            placeholder="Search item groups..." oninput="searchGroups()">
+                    </div>
                     <button class="btn-icon" title="Filter">☰</button>
                     <button class="btn-new" onclick="window.location.href='/new-item-group.html'">+ New</button>
                     <div class="more-dropdown-wrapper">
@@ -1485,8 +1526,37 @@
                         showToast('Item created successfully!', 'success');
                         closeAddItemModal();
 
-                        // Refresh the detail view to show the new item
-                        showGroupDetail(selectedGroupId);
+                        // Reload items data and refresh the detail view
+                        const itemsResponse = await fetch('/api/items');
+                        allItems = await itemsResponse.json();
+
+                        // Recalculate item counts for groups
+                        const groupData = {};
+                        allItems.forEach(item => {
+                            if (item.group_id) {
+                                if (!groupData[item.group_id]) {
+                                    groupData[item.group_id] = { count: 0, totalStock: 0, totalReorder: 0 };
+                                }
+                                groupData[item.group_id].count++;
+                                groupData[item.group_id].totalStock += parseFloat(item.stock_quantity) || 0;
+                                groupData[item.group_id].totalReorder += parseFloat(item.reorder_point) || 0;
+                            }
+                        });
+
+                        // Update groups with new counts
+                        itemGroups = itemGroups.map(group => ({
+                            ...group,
+                            item_count: groupData[group.id]?.count || 0,
+                            total_stock: groupData[group.id]?.totalStock || 0,
+                            total_reorder: groupData[group.id]?.totalReorder || 0
+                        }));
+
+                        // Refresh the views
+                        renderGroupsList();
+                        const selectedGroup = itemGroups.find(g => g.id === selectedGroupId);
+                        if (selectedGroup) {
+                            renderDetailPanel(selectedGroup);
+                        }
 
                     } catch (error) {
                         console.error('Error creating item:', error);

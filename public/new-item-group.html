@@ -1645,6 +1645,7 @@
                                             SKU
                                             <span class="form-label-help" title="Stock Keeping Unit">?</span>
                                         </th>
+                                        <th>DESCRIPTION</th>
                                         <th class="cost-price-column">
                                             COST PRICE (PHP)*
                                             <span class="copy-link" onclick="copyToAllCost()">PER UNIT<br>COPY TO ALL
@@ -1681,6 +1682,8 @@
                                                 placeholder="Enter item name"></td>
                                         <td><input type="text" class="table-input item-sku" placeholder="Auto-generate">
                                         </td>
+                                        <td><input type="text" class="table-input item-description"
+                                                placeholder="Description"></td>
                                         <td class="cost-price-column"><input type="number" class="table-input item-cost"
                                                 placeholder="0.00" step="0.01"></td>
                                         <td class="selling-price-column"><input type="number"
@@ -1729,41 +1732,78 @@
         let attributeCount = 1;
         let uploadedImages = [];
 
-        // Load dropdown data from localStorage or start with defaults
-        function loadDropdownData() {
-            const savedUnits = localStorage.getItem('unitOptions');
-            const savedBrands = localStorage.getItem('brandOptions');
-            const savedManufacturers = localStorage.getItem('manufacturerOptions');
-            const savedTax = localStorage.getItem('taxOptions');
-            return {
-                unit: savedUnits ? JSON.parse(savedUnits) : [],
-                brand: savedBrands ? JSON.parse(savedBrands) : [],
-                manufacturer: savedManufacturers ? JSON.parse(savedManufacturers) : [],
-                tax: savedTax ? JSON.parse(savedTax) : ['No Tax (0%)', 'VAT (12%)', 'Sales Tax (5%)']
-            };
+        // Dropdown data stores
+        let dropdownData = {
+            unit: [],
+            brand: [],
+            manufacturer: [],
+            tax: ['No Tax (0%)', 'VAT (12%)', 'Sales Tax (5%)']
+        };
+
+        // Load dropdown data from database APIs
+        async function loadDropdownData() {
+            try {
+                // Fetch brands from API
+                const brandsRes = await fetch('/api/brands');
+                if (brandsRes.ok) {
+                    const brands = await brandsRes.json();
+                    dropdownData.brand = brands.map(b => b.name);
+                }
+
+                // Fetch manufacturers from API
+                const mfgRes = await fetch('/api/manufacturers');
+                if (mfgRes.ok) {
+                    const manufacturers = await mfgRes.json();
+                    dropdownData.manufacturer = manufacturers.map(m => m.name);
+                }
+
+                // Load units and tax from localStorage (these don't have API endpoints)
+                const savedUnits = localStorage.getItem('unitOptions');
+                const savedTax = localStorage.getItem('taxOptions');
+                dropdownData.unit = savedUnits ? JSON.parse(savedUnits) : ['pcs', 'kg', 'lbs', 'box', 'pack'];
+                dropdownData.tax = savedTax ? JSON.parse(savedTax) : ['No Tax (0%)', 'VAT (12%)', 'Sales Tax (5%)'];
+            } catch (error) {
+                console.error('Error loading dropdown data:', error);
+            }
         }
 
-        // Save dropdown data to localStorage
-        function saveDropdownData(name) {
-            if (name === 'unit' || !name) {
+        // Save dropdown data - brands and manufacturers go to API, others to localStorage
+        async function saveDropdownData(name, newValue) {
+            if (name === 'unit') {
                 localStorage.setItem('unitOptions', JSON.stringify(dropdownData.unit));
             }
-            if (name === 'brand' || !name) {
-                localStorage.setItem('brandOptions', JSON.stringify(dropdownData.brand));
-            }
-            if (name === 'manufacturer' || !name) {
-                localStorage.setItem('manufacturerOptions', JSON.stringify(dropdownData.manufacturer));
-            }
-            if (name === 'tax' || !name) {
+            if (name === 'tax') {
                 localStorage.setItem('taxOptions', JSON.stringify(dropdownData.tax));
+            }
+            if (name === 'brand' && newValue) {
+                try {
+                    await fetch('/api/brands', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name: newValue })
+                    });
+                } catch (error) {
+                    console.error('Error saving brand:', error);
+                }
+            }
+            if (name === 'manufacturer' && newValue) {
+                try {
+                    await fetch('/api/manufacturers', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name: newValue })
+                    });
+                } catch (error) {
+                    console.error('Error saving manufacturer:', error);
+                }
             }
         }
 
-        // Dropdown data stores (loaded from localStorage)
-        const dropdownData = loadDropdownData();
-
         // Initialize searchable dropdowns (unit, brand, manufacturer, tax)
-        function initSearchableDropdowns() {
+        async function initSearchableDropdowns() {
+            // Load data from APIs first
+            await loadDropdownData();
+
             // Setup Unit dropdown
             setupUnitDropdown();
 
@@ -2151,7 +2191,7 @@
         }
 
         // Save new option from modal
-        function saveNewOption() {
+        async function saveNewOption() {
             const inputEl = document.getElementById('addOptionInput');
             const newValue = inputEl.value.trim();
 
@@ -2171,8 +2211,8 @@
             // Add to data store
             dropdownData[currentAddDropdown].push(newValue);
 
-            // Save to localStorage
-            saveDropdownData();
+            // Save to database/localStorage
+            await saveDropdownData(currentAddDropdown, newValue);
 
             // Select the new value
             selectOption(currentAddDropdown, newValue);
@@ -2240,7 +2280,7 @@
         }
 
         // Save new item from manage modal
-        function saveNewItem(name) {
+        async function saveNewItem(name) {
             const input = document.getElementById(`${name}AddInput`);
             const newValue = input.value.trim();
 
@@ -2258,8 +2298,8 @@
             // Add to data store
             dropdownData[name].push(newValue);
 
-            // Save to localStorage
-            saveDropdownData(name);
+            // Save to database/localStorage
+            await saveDropdownData(name, newValue);
 
             // Re-render list
             renderManageList(name);
@@ -2401,6 +2441,7 @@
           <tr>
             <td><input type="text" class="table-input item-name" value="${itemName}"></td>
             <td><input type="text" class="table-input item-sku" placeholder="Auto-generate"></td>
+            <td><input type="text" class="table-input item-description" placeholder="Description"></td>
             <td class="cost-price-column"><input type="number" class="table-input item-cost" placeholder="0.00" step="0.01"></td>
             <td class="selling-price-column"><input type="number" class="table-input item-price" placeholder="0.00" step="0.01"></td>
             <td><input type="text" class="table-input item-upc" placeholder=""></td>
@@ -2538,6 +2579,9 @@
                 // Get all items from the table
                 const rows = document.querySelectorAll('#itemsTableBody tr');
                 const unit = document.getElementById('unitType').value || 'pcs';
+                const groupBrand = document.getElementById('brand')?.value || null;
+                const groupManufacturer = document.getElementById('manufacturer')?.value || null;
+                const groupTaxRate = document.getElementById('taxRate')?.value || null;
 
                 for (const row of rows) {
                     const itemName = row.querySelector('.item-name').value.trim();
@@ -2545,9 +2589,13 @@
                     const price = parseFloat(row.querySelector('.item-price').value) || 0;
                     const reorder = parseInt(row.querySelector('.item-reorder').value) || 10;
                     const sku = row.querySelector('.item-sku').value.trim();
+                    const description = row.querySelector('.item-description')?.value.trim() || null;
+                    const upc = row.querySelector('.item-upc')?.value.trim() || null;
+                    const ean = row.querySelector('.item-ean')?.value.trim() || null;
+                    const isbn = row.querySelector('.item-isbn')?.value.trim() || null;
 
                     if (itemName) {
-                        // Create each item
+                        // Create each item with all fields
                         await fetch('/api/items', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -2560,7 +2608,14 @@
                                 price: price,
                                 cost: cost,
                                 group_id: group.id,
-                                image_url: uploadedImages[0] || null
+                                image_url: uploadedImages[0] || null,
+                                manufacturer: groupManufacturer,
+                                brand: groupBrand,
+                                tax_rate: groupTaxRate,
+                                description: description,
+                                upc: upc,
+                                ean: ean,
+                                isbn: isbn
                             })
                         });
                     }

@@ -25,7 +25,6 @@
             font-size: 13px;
         }
 
-        /* Main Content */
         .main-layout {
             display: flex;
             min-height: 100vh;
@@ -36,9 +35,11 @@
             margin-left: 260px;
             padding: 0;
             background: white;
+            overflow-x: hidden;
+            min-width: 0;
         }
 
-        /* Page Header */
+        /* ===== LIST VIEW ===== */
         .page-header {
             display: flex;
             align-items: center;
@@ -46,6 +47,7 @@
             padding: 16px 24px;
             background: white;
             border-bottom: 1px solid #e9ecef;
+            box-sizing: border-box;
         }
 
         .page-title-wrapper {
@@ -71,13 +73,54 @@
 
         .dropdown-arrow {
             font-size: 10px;
-            color: #666;
+            color: #4285f4;
         }
 
         .header-actions {
             display: flex;
             align-items: center;
             gap: 12px;
+        }
+
+        /* Title filter dropdown */
+        .title-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            min-width: 200px;
+            z-index: 1000;
+            padding: 4px 0;
+            margin-top: 4px;
+        }
+
+        .title-dropdown-menu.show {
+            display: block;
+        }
+
+        .title-dropdown-item {
+            display: block;
+            width: 100%;
+            padding: 10px 16px;
+            border: none;
+            background: none;
+            text-align: left;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .title-dropdown-item:hover {
+            background: #f0f4ff;
+        }
+
+        .title-dropdown-item.active {
+            color: #4285f4;
+            font-weight: 600;
         }
 
         .btn-new {
@@ -116,6 +159,138 @@
             background: #f5f5f5;
         }
 
+        /* More dropdown menu */
+        .more-dropdown-wrapper {
+            position: relative;
+        }
+
+        .more-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+            min-width: 220px;
+            z-index: 1100;
+            padding: 6px 0;
+            margin-top: 4px;
+        }
+
+        .more-dropdown.show {
+            display: block;
+        }
+
+        .more-dropdown-item {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 10px 16px;
+            border: none;
+            background: none;
+            text-align: left;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            gap: 10px;
+            position: relative;
+        }
+
+        .more-dropdown-item:hover {
+            background: #f0f4ff;
+        }
+
+        .more-dropdown-item.highlight {
+            background: #4285f4;
+            color: white;
+            border-radius: 4px;
+            margin: 2px 6px;
+            padding: 10px 12px;
+            width: calc(100% - 12px);
+        }
+
+        .more-dropdown-item.highlight:hover {
+            background: #3367d6;
+        }
+
+        .more-dropdown-item .item-icon {
+            font-size: 16px;
+            width: 22px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .more-dropdown-item.highlight .item-icon {
+            color: white;
+        }
+
+        .more-dropdown-item .item-arrow {
+            margin-left: auto;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .more-dropdown-item.highlight .item-arrow {
+            color: white;
+        }
+
+        .more-dropdown-divider {
+            height: 1px;
+            background: #e8e8e8;
+            margin: 4px 0;
+        }
+
+        /* Sort submenu */
+        .more-submenu {
+            display: none;
+            position: absolute;
+            top: 0;
+            right: 100%;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            padding: 6px 0;
+            margin-right: 4px;
+        }
+
+        .more-dropdown-item:hover>.more-submenu {
+            display: block;
+        }
+
+        .more-submenu-item {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 10px 16px;
+            border: none;
+            background: none;
+            text-align: left;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            gap: 10px;
+        }
+
+        .more-submenu-item:hover {
+            background: #f0f4ff;
+        }
+
+        .more-submenu-item.active {
+            background: #4285f4;
+            color: white;
+            border-radius: 4px;
+            margin: 2px 6px;
+            padding: 10px 12px;
+            width: calc(100% - 12px);
+        }
+
+        .more-submenu-item .sort-arrow {
+            margin-left: auto;
+            font-size: 14px;
+        }
+
         /* Empty State */
         .empty-state {
             display: flex;
@@ -130,7 +305,6 @@
             width: 100px;
             height: 100px;
             margin-bottom: 24px;
-            position: relative;
         }
 
         .empty-state-icon svg {
@@ -211,19 +385,1263 @@
 
         /* Customers Table */
         .customers-container {
-            padding: 24px;
+            padding: 0;
+            overflow-x: scroll;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .customers-container::-webkit-scrollbar {
+            height: 12px;
+            -webkit-appearance: none;
+        }
+
+        .customers-container::-webkit-scrollbar-track {
+            background: #e8e8e8;
+            border-radius: 6px;
+        }
+
+        .customers-container::-webkit-scrollbar-thumb {
+            background: #a0a0a0;
+            border-radius: 6px;
+            border: 2px solid #e8e8e8;
+        }
+
+        .customers-container::-webkit-scrollbar-thumb:hover {
+            background: #888;
         }
 
         .customers-table {
             width: 100%;
             border-collapse: collapse;
             background: white;
+            table-layout: auto;
+            min-width: 800px;
+        }
+
+        .customers-table thead tr {
+            border-bottom: 2px solid #e9ecef;
+            background: #f9fafb;
         }
 
         .customers-table th {
             text-align: left;
-            padding: 14px 16px;
+            padding: 10px 16px;
             font-size: 11px;
+            font-weight: 600;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .customers-table th:first-child {
+            width: 30px;
+            padding-left: 12px;
+        }
+
+        .customers-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .customers-table td:first-child {
+            width: 30px;
+            padding-left: 12px;
+        }
+
+        .customers-table tbody tr:hover {
+            background: #f8f9ff;
+        }
+
+        .customer-name-link {
+            color: #4285f4;
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .customer-name-link:hover {
+            text-decoration: underline;
+        }
+
+        .td-right {
+            text-align: right !important;
+            padding-right: 24px !important;
+        }
+
+        .th-right {
+            text-align: right !important;
+            padding-right: 24px !important;
+        }
+
+        .filter-icon {
+            cursor: pointer;
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        .filter-icon:hover {
+            color: #4285f4;
+        }
+
+        /* Filter dropdown */
+        .filter-dropdown-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .cust-filter-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 6px;
+            border-radius: 4px;
+            background: #f0f5ff;
+            border: 1px solid #bfdbfe;
+        }
+
+        .cust-filter-icon:hover {
+            background: #dbeafe;
+            border-color: #93c5fd;
+        }
+
+        .cust-filter-icon svg {
+            transition: all 0.2s ease;
+        }
+
+        .cust-filter-icon:hover svg {
+            fill: #2563eb;
+        }
+
+        .cust-filter-dropdown-menu {
+            display: none;
+            position: fixed;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            min-width: 200px;
+            z-index: 9999;
+            padding: 8px 0;
+            overflow: visible;
+        }
+
+        .cust-filter-dropdown-menu.active {
+            display: block;
+            animation: custDropFadeIn 0.15s ease-out;
+        }
+
+        @keyframes custDropFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .cust-filter-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .cust-filter-dropdown-item:first-child {
+            background: #3b82f6;
+            color: white;
+            margin: 4px 8px 8px 8px;
+            border-radius: 6px;
+            padding: 10px 16px;
+            font-weight: 600;
+        }
+
+        .cust-filter-dropdown-item:first-child:hover {
+            background: #2563eb;
+            color: white;
+        }
+
+        .cust-filter-dropdown-item:hover {
+            background: #f3f4f6;
+            color: #1a1f3a;
+        }
+
+        .cust-filter-dropdown-icon {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        /* Customize Columns Modal */
+        .cust-customize-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.15);
+            z-index: 2000;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 80px;
+        }
+
+        .cust-customize-modal.active {
+            display: flex;
+        }
+
+        .cust-customize-panel {
+            background: white;
+            width: 480px;
+            max-height: 85vh;
+            border-radius: 4px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .cust-customize-header {
+            display: flex;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .cust-customize-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 500;
+            color: #333;
+            flex: 1;
+        }
+
+        .cust-customize-count {
+            font-size: 14px;
+            color: #666;
+            margin-right: 16px;
+        }
+
+        .cust-customize-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: #ef4444;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+            font-weight: 300;
+        }
+
+        .cust-customize-close:hover {
+            color: #dc2626;
+            transform: scale(1.1);
+        }
+
+        .cust-customize-search {
+            padding: 20px 24px;
+        }
+
+        .cust-customize-search input {
+            width: 100%;
+            padding: 14px 16px 14px 44px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 400;
+            outline: none;
+            background: #f9fafb url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 14px center;
+            transition: all 0.2s ease;
+        }
+
+        .cust-customize-search input::placeholder {
+            color: #9ca3af;
+            font-weight: 400;
+        }
+
+        .cust-customize-search input:focus {
+            border-color: #3b82f6;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .cust-customize-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 16px 16px 16px;
+            max-height: 400px;
+        }
+
+        .cust-col-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            margin: 6px 0;
+            background: #f8fafc;
+            border-radius: 10px;
+            gap: 14px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .cust-col-item:hover {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+            transform: translateX(2px);
+        }
+
+        .cust-col-item.checked {
+            background: #e6f4ff;
+            border-color: #91caff;
+        }
+
+        .cust-col-item.locked {
+            cursor: default;
+            background: #f5f5f5;
+        }
+
+        .cust-col-drag {
+            color: #bbb;
+            font-size: 14px;
+            cursor: grab;
+            user-select: none;
+            letter-spacing: 2px;
+        }
+
+        .cust-col-checkbox {
+            width: 20px;
+            height: 20px;
+            accent-color: #4096ff;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .cust-col-lock {
+            color: #bbb;
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .cust-col-name {
+            font-size: 16px;
+            color: #333;
+            flex: 1;
+            font-weight: 400;
+        }
+
+        .cust-customize-footer {
+            display: flex;
+            gap: 12px;
+            padding: 20px 24px;
+            border-top: 1px solid #e8e8e8;
+            background: white;
+        }
+
+        .cust-save-btn {
+            padding: 10px 24px;
+            background: #4096ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .cust-save-btn:hover {
+            background: #1677ff;
+        }
+
+        .cust-cancel-btn {
+            padding: 10px 24px;
+            background: #f0f0f0;
+            color: #333;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .cust-cancel-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .search-icon {
+            cursor: pointer;
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        .search-icon:hover {
+            color: #4285f4;
+        }
+
+        input[type="checkbox"] {
+            width: 15px;
+            height: 15px;
+            cursor: pointer;
+            accent-color: #4285f4;
+        }
+
+        /* ===== BULK ACTION BAR ===== */
+        .bulk-action-bar {
+            display: none;
+            align-items: center;
+            padding: 8px 24px;
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+            gap: 4px;
+        }
+
+        .bulk-action-bar.show {
+            display: flex;
+        }
+
+        .bulk-action-bar .bulk-btn {
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            background: white;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+            transition: all 0.15s ease;
+        }
+
+        .bulk-action-bar .bulk-btn:hover {
+            background: #f5f5f5;
+            border-color: #bbb;
+        }
+
+        .bulk-btn-print {
+            padding: 6px 8px !important;
+            min-width: 32px;
+            justify-content: center;
+        }
+
+        .bulk-separator {
+            width: 1px;
+            height: 24px;
+            background: #e0e0e0;
+            margin: 0 6px;
+        }
+
+        .bulk-btn-delete {
+            color: #333 !important;
+        }
+
+        .bulk-dots {
+            padding: 6px 10px !important;
+            font-size: 16px !important;
+            line-height: 1;
+            letter-spacing: 2px;
+        }
+
+        .bulk-count {
+            font-size: 13px;
+            font-weight: 600;
+            color: #4285f4;
+            margin-left: 4px;
+            white-space: nowrap;
+        }
+
+        .bulk-close {
+            margin-left: auto;
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #e53935;
+            cursor: pointer;
+            padding: 4px 8px;
+            line-height: 1;
+        }
+
+        .bulk-close:hover {
+            color: #c62828;
+        }
+
+        /* ===== BULK UPDATE MODAL ===== */
+        .bulk-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.35);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .bulk-modal-overlay.show {
+            display: flex;
+        }
+
+        .bulk-modal {
+            background: white;
+            border-radius: 8px;
+            width: 560px;
+            max-width: 90vw;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+            overflow: visible;
+        }
+
+        .bulk-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 28px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .bulk-modal-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .bulk-modal-close {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: #e53935;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .bulk-modal-close:hover {
+            color: #c62828;
+        }
+
+        .bulk-modal-body {
+            padding: 28px;
+            padding-bottom: 40px;
+            overflow: visible;
+        }
+
+        .bulk-modal-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .bulk-modal-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .bulk-modal-label {
+            width: 160px;
+            min-width: 160px;
+            font-size: 14px;
+            color: #333;
+            font-weight: 400;
+        }
+
+        .bulk-modal-field {
+            flex: 1;
+        }
+
+        .bulk-modal-field select {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #555;
+            background: white;
+            appearance: auto;
+            cursor: pointer;
+        }
+
+        .bulk-modal-field select:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+
+        .bulk-radio-group {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .bulk-radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .bulk-radio-group input[type="radio"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #4285f4;
+            cursor: pointer;
+        }
+
+        .bulk-modal-footer {
+            padding: 20px 28px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-bulk-submit {
+            padding: 9px 20px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-bulk-submit:hover {
+            background: #3367d6;
+        }
+
+        .btn-bulk-cancel {
+            padding: 9px 20px;
+            background: #f5f5f5;
+            color: #333;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-bulk-cancel:hover {
+            background: #e8e8e8;
+        }
+
+        /* Custom searchable dropdown */
+        .custom-dropdown {
+            position: relative;
+            width: 100%;
+        }
+
+        .custom-dropdown-trigger {
+            width: 100%;
+            padding: 9px 36px 9px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #555;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            min-height: 38px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .custom-dropdown-trigger::after {
+            content: '\25BC';
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 10px;
+            color: #888;
+            pointer-events: none;
+        }
+
+        .custom-dropdown-trigger.open {
+            border-color: #4285f4;
+            border-radius: 4px 4px 0 0;
+        }
+
+        .custom-dropdown-trigger.open::after {
+            content: '\25B2';
+            color: #4285f4;
+        }
+
+        .custom-dropdown-panel {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #d0d0d0;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+            z-index: 3000;
+            max-height: 280px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .custom-dropdown-panel.open {
+            display: block;
+        }
+
+        .custom-dropdown-search {
+            padding: 8px 12px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .custom-dropdown-search input {
+            width: 100%;
+            padding: 8px 10px 8px 28px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #333;
+            outline: none;
+            box-sizing: border-box;
+            background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") no-repeat 8px center;
+        }
+
+        .custom-dropdown-search input::placeholder {
+            color: #bbb;
+        }
+
+        .custom-dropdown-search input:focus {
+            border-color: #4285f4;
+        }
+
+        .custom-dropdown-options {
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .custom-dropdown-option {
+            padding: 10px 16px;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+
+        .custom-dropdown-option:hover {
+            background: #f0f4ff;
+        }
+
+        .custom-dropdown-option.selected {
+            background: #4285f4;
+            color: white;
+        }
+
+        .custom-dropdown-option.hidden {
+            display: none;
+        }
+
+        /* ===== DETAIL VIEW ===== */
+        .detail-wrapper {
+            display: none;
+            height: calc(100vh - 0px);
+        }
+
+        /* Left sidebar in detail */
+        .detail-left {
+            width: 240px;
+            min-width: 240px;
+            border-right: 1px solid #e9ecef;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .detail-left-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .detail-left-header-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .detail-left-header-actions button {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .detail-left-add {
+            background: #4285f4;
+            color: white;
+        }
+
+        .detail-left-more {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .detail-left-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .detail-left-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f5f5f5;
+            cursor: pointer;
+        }
+
+        .detail-left-item:hover {
+            background: #f8f9ff;
+        }
+
+        .detail-left-item.active {
+            background: #eef2ff;
+            border-left: 3px solid #4285f4;
+        }
+
+        .detail-left-item-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .detail-left-item-sub {
+            font-size: 11px;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        /* Right detail content */
+        .detail-right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Detail header */
+        .detail-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .detail-header-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .detail-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .detail-header-actions .btn-edit {
+            padding: 7px 16px;
+            background: white;
+            color: #333;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .detail-header-actions .btn-edit:hover {
+            background: #f5f5f5;
+        }
+
+        .detail-header-actions .btn-print {
+            width: 34px;
+            height: 34px;
+            background: white;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .detail-header-actions .btn-transaction {
+            padding: 7px 16px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .detail-header-actions .btn-transaction:hover {
+            background: #3367d6;
+        }
+
+        .btn-close-detail {
+            width: 34px;
+            height: 34px;
+            background: white;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-close-detail:hover {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        /* More button styled like Zoho */
+        .btn-more-detail {
+            padding: 7px 16px;
+            background: #555;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-more-detail:hover {
+            background: #444;
+        }
+
+        /* Dropdown wrappers */
+        .dropdown-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 4px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            min-width: 220px;
+            z-index: 1000;
+            padding: 6px 0;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 10px 20px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            display: block;
+            white-space: nowrap;
+        }
+
+        .dropdown-item:hover {
+            background: #4285f4;
+            color: white;
+        }
+
+        .dropdown-item.danger {
+            color: #e53935;
+        }
+
+        .dropdown-item.danger:hover {
+            background: #e53935;
+            color: white;
+        }
+
+        /* Detail tabs */
+        .detail-tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 2px solid #e9ecef;
+            padding: 0 24px;
+            background: white;
+        }
+
+        .detail-tab {
+            padding: 12px 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+
+        .detail-tab:hover {
+            color: #4285f4;
+        }
+
+        .detail-tab.active {
+            color: #4285f4;
+            border-bottom-color: #4285f4;
+        }
+
+        /* Detail body */
+        .detail-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        /* Overview left */
+        .overview-left {
+            padding: 24px;
+            border-right: 1px solid #f0f0f0;
+        }
+
+        .overview-company {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        /* Contact card */
+        .contact-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 16px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .contact-avatar {
+            width: 44px;
+            height: 44px;
+            background: #e8eaed;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #999;
+        }
+
+        .contact-info {
+            flex: 1;
+        }
+
+        .contact-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .contact-email {
+            font-size: 12px;
+            color: #666;
+            margin-top: 3px;
+        }
+
+        .contact-phone {
+            font-size: 12px;
+            color: #666;
+            margin-top: 3px;
+        }
+
+        .contact-phone::before {
+            content: '✆ ';
+        }
+
+        .contact-portal-link {
+            font-size: 12px;
+            color: #4285f4;
+            margin-top: 4px;
+            cursor: pointer;
+        }
+
+        /* Section headers */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0 10px;
+            margin-top: 8px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .section-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #333;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section-toggle {
+            cursor: pointer;
+            color: #4285f4;
+            font-size: 14px;
+        }
+
+        /* Detail rows */
+        .detail-row {
+            display: grid;
+            grid-template-columns: 160px 1fr;
+            padding: 6px 0;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .detail-value {
+            font-size: 13px;
+            color: #333;
+        }
+
+        .detail-value.status-disabled {
+            color: #e53935;
+        }
+
+        .detail-value.status-disabled::before {
+            content: '● ';
+            font-size: 8px;
+        }
+
+        /* Address blocks */
+        .address-block {
+            margin-bottom: 16px;
+        }
+
+        .address-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .address-text {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .address-edit-icon {
+            cursor: pointer;
+            color: #ccc;
+            font-size: 13px;
+        }
+
+        .address-edit-icon:hover {
+            color: #4285f4;
+        }
+
+        .add-address-link {
+            font-size: 12px;
+            color: #4285f4;
+            cursor: pointer;
+            margin-top: 4px;
+        }
+
+        /* Contact persons */
+        .no-contacts {
+            font-size: 12px;
+            color: #999;
+            font-style: italic;
+            padding: 8px 0;
+        }
+
+        /* Overview right */
+        .overview-right {
+            padding: 24px;
+        }
+
+        /* Payment info */
+        .payment-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 2px;
+        }
+
+        .payment-value {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+
+        /* Receivables table */
+        .receivables-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .receivables-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+        }
+
+        .receivables-table th {
+            text-align: left;
+            padding: 8px 12px;
+            font-size: 10px;
             font-weight: 600;
             color: #999;
             text-transform: uppercase;
@@ -232,11 +1650,117 @@
             background: #f9fafb;
         }
 
-        .customers-table td {
-            padding: 14px 16px;
-            border-bottom: 1px solid #f0f0f0;
+        .receivables-table th:not(:first-child) {
+            text-align: right;
+        }
+
+        .receivables-table td {
+            padding: 10px 12px;
             font-size: 13px;
             color: #333;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .receivables-table td:not(:first-child) {
+            text-align: right;
+        }
+
+        /* Items packed/shipped */
+        .items-status {
+            display: flex;
+            gap: 24px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 20px;
+        }
+
+        .items-status-item {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .items-status-item span {
+            color: #e53935;
+            font-weight: 600;
+        }
+
+        /* Activity Timeline */
+        .timeline-section {
+            margin-top: 8px;
+        }
+
+        .timeline-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 24px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e0e0e0;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -20px;
+            top: 4px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: 2px solid #e0e0e0;
+            background: white;
+        }
+
+        .timeline-date {
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 4px;
+        }
+
+        .timeline-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 12px 16px;
+        }
+
+        .timeline-card-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .timeline-card-desc {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .timeline-card-desc a {
+            color: #4285f4;
+            text-decoration: none;
+            font-size: 11px;
+        }
+
+        .timeline-card-desc a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -247,64 +1771,492 @@
 
     <div class="main-layout">
         <div class="content" id="content">
-            <!-- Page Header -->
-            <div class="page-header">
-                <div class="page-title-wrapper">
-                    <h1 class="page-title">
-                        All Customers
-                        <span class="dropdown-arrow">▼</span>
-                    </h1>
+
+            <!-- ===== LIST VIEW ===== -->
+            <div id="listView">
+                <div class="page-header">
+                    <div class="page-title-wrapper" style="position: relative;">
+                        <h1 class="page-title" id="pageTitleBtn" onclick="toggleTitleDropdown()">
+                            <span id="pageTitleText">Active Customers</span> <span class="dropdown-arrow">▼</span>
+                        </h1>
+                        <div class="title-dropdown-menu" id="titleDropdownMenu">
+                            <button class="title-dropdown-item active" data-filter="active"
+                                onclick="setCustomerFilter('active')">Active Customers</button>
+                            <button class="title-dropdown-item" data-filter="inactive"
+                                onclick="setCustomerFilter('inactive')">Inactive Customers</button>
+                            <button class="title-dropdown-item" data-filter="all" onclick="setCustomerFilter('all')">All
+                                Customers</button>
+                        </div>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn-new" onclick="createCustomer()"><span>+</span> New</button>
+                        <div class="more-dropdown-wrapper">
+                            <button class="btn-more" onclick="toggleMoreDropdown(event)">⋯</button>
+                            <div class="more-dropdown" id="moreDropdown">
+                                <div class="more-dropdown-item highlight">
+                                    <span class="item-icon">↑↓</span> Sort by
+                                    <span class="item-arrow">›</span>
+                                    <div class="more-submenu" id="sortSubmenu">
+                                        <div class="more-submenu-item active"
+                                            onclick="sortCustomers('display_name', this)">Name <span
+                                                class="sort-arrow">↑</span></div>
+                                        <div class="more-submenu-item" onclick="sortCustomers('company_name', this)">
+                                            Company Name</div>
+                                        <div class="more-submenu-item" onclick="sortCustomers('receivables', this)">
+                                            Receivables (BCY)</div>
+                                        <div class="more-submenu-item" onclick="sortCustomers('created_at', this)">
+                                            Created Time</div>
+                                        <div class="more-submenu-item" onclick="sortCustomers('updated_at', this)">Last
+                                            Modified Time</div>
+                                    </div>
+                                </div>
+                                <div class="more-dropdown-divider"></div>
+                                <div class="more-dropdown-item">
+                                    <span class="item-icon">⬇</span> Import
+                                    <span class="item-arrow">›</span>
+                                    <div class="more-submenu">
+                                        <div class="more-submenu-item" onclick="importCustomers()">Import Customers
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="more-dropdown-item">
+                                    <span class="item-icon">⬆</span> Export
+                                    <span class="item-arrow">›</span>
+                                    <div class="more-submenu">
+                                        <div class="more-submenu-item" onclick="exportCustomers('all')">Export Customers
+                                        </div>
+                                        <div class="more-submenu-item" onclick="exportCustomers('current')">Export
+                                            Current View</div>
+                                    </div>
+                                </div>
+                                <div class="more-dropdown-divider"></div>
+                                <div class="more-dropdown-item" onclick="openPreferences()">
+                                    <span class="item-icon">⚙</span> Preferences
+                                </div>
+                                <div class="more-dropdown-item" onclick="refreshList()">
+                                    <span class="item-icon">🔄</span> Refresh List
+                                </div>
+                                <div class="more-dropdown-item" onclick="resetColumnWidth()">
+                                    <span class="item-icon">↺</span> Reset Column Width
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="header-actions">
-                    <button class="btn-new" onclick="createCustomer()">
-                        <span>+</span> New
-                    </button>
-                    <button class="btn-more">⋯</button>
+
+                <!-- Bulk Action Bar -->
+                <div class="bulk-action-bar" id="bulkActionBar">
+                    <button class="bulk-btn" onclick="bulkUpdate()">Bulk Update</button>
+                    <button class="bulk-btn bulk-btn-print" onclick="bulkPrint()" title="Print">🖨</button>
+                    <div class="bulk-separator"></div>
+                    <button class="bulk-btn" id="btnMarkStatus" onclick="bulkMarkStatus()">Mark as Inactive</button>
+                    <button class="bulk-btn bulk-btn-delete" onclick="bulkDelete()">Delete</button>
+                    <div class="bulk-separator"></div>
+                    <span class="bulk-count" id="bulkCount">0</span>
+                    <button class="bulk-close" onclick="deselectAllCustomers()" title="Close">✕</button>
+                </div>
+
+                <!-- Empty State -->
+                <div class="empty-state" id="emptyState">
+                    <div class="empty-state-icon">
+                        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="35" r="18" class="person-circle" />
+                            <ellipse cx="50" cy="75" rx="30" ry="20" class="person-body" />
+                            <circle cx="72" cy="65" r="14" class="plus-circle" />
+                            <rect x="67" y="63" width="10" height="4" rx="2" class="plus-icon" />
+                            <rect x="70" y="60" width="4" height="10" rx="2" class="plus-icon" />
+                        </svg>
+                    </div>
+                    <h2 class="empty-state-title">Every sales starts with a customer</h2>
+                    <p class="empty-state-subtitle">Create and manage your customers and their contact persons, all in
+                        one place.</p>
+                    <div class="empty-state-actions">
+                        <button class="btn-create" onclick="createCustomer()"><span>+</span> Create New
+                            Customer</button>
+                        <button class="btn-import"><span>↓</span> Import File</button>
+                    </div>
+                </div>
+
+                <!-- Customers Table -->
+                <div class="customers-container" id="customersContainer" style="display: none;">
+                    <table class="customers-table">
+                        <thead>
+                            <tr>
+                                <th
+                                    style="width:40px;min-width:40px;text-align:center;padding:14px 8px;position:relative;">
+                                    <div class="filter-dropdown-container">
+                                        <span class="cust-filter-icon" onclick="toggleCustFilterDropdown(event)">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#3b82f6">
+                                                <path
+                                                    d="M3 5h2v2H3V5zm4 0h14v2H7V5zm-4 6h2v2H3v-2zm4 0h14v2H7v-2zm-4 6h2v2H3v-2zm4 0h14v2H7v-2z" />
+                                            </svg>
+                                        </span>
+                                        <div class="cust-filter-dropdown-menu" id="custFilterDropdown">
+                                            <div class="cust-filter-dropdown-item"
+                                                onclick="openCustCustomizeColumns(); closeCustFilterDropdown();">
+                                                <span class="cust-filter-dropdown-icon">⚙️</span>
+                                                <span>Customize Columns</span>
+                                            </div>
+                                            <div class="cust-filter-dropdown-item"
+                                                onclick="toggleCustClipText(); closeCustFilterDropdown();">
+                                                <span class="cust-filter-dropdown-icon" id="custClipIcon">📋</span>
+                                                <span id="custClipLabel">Clip Text</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th><input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)"></th>
+                                <th>NAME</th>
+                                <th>COMPANY NAME</th>
+                                <th>EMAIL</th>
+                                <th>WORK PHONE</th>
+                                <th class="th-right">RECEIVABLES (BCY)</th>
+                                <th class="th-right">UNUSED CREDITS (BCY)</th>
+                                <th style="width: 30px;"><span class="search-icon">🔍</span></th>
+                            </tr>
+                        </thead>
+                        <tbody id="customersBody"></tbody>
+                    </table>
                 </div>
             </div>
 
-            <!-- Empty State -->
-            <div class="empty-state" id="emptyState">
-                <div class="empty-state-icon">
-                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Person icon -->
-                        <circle cx="50" cy="35" r="18" class="person-circle" />
-                        <ellipse cx="50" cy="75" rx="30" ry="20" class="person-body" />
-                        <!-- Plus badge -->
-                        <circle cx="72" cy="65" r="14" class="plus-circle" />
-                        <rect x="67" y="63" width="10" height="4" rx="2" class="plus-icon" />
-                        <rect x="70" y="60" width="4" height="10" rx="2" class="plus-icon" />
-                    </svg>
-                </div>
-                <h2 class="empty-state-title">Every sales starts with a customer</h2>
-                <p class="empty-state-subtitle">Create and manage your customers and their contact persons, all in one
-                    place.</p>
-                <div class="empty-state-actions">
-                    <button class="btn-create" onclick="createCustomer()">
-                        <span>+</span> Create New Customer
-                    </button>
-                    <button class="btn-import">
-                        <span>↓</span> Import File
-                    </button>
+            <!-- Customize Columns Modal -->
+            <div id="custCustomizeModal" class="cust-customize-modal">
+                <div class="cust-customize-panel">
+                    <div class="cust-customize-header">
+                        <div class="cust-customize-title">
+                            <span>⚙</span>
+                            <span>Customize Columns</span>
+                        </div>
+                        <span class="cust-customize-count"><span id="custSelectedCount">5</span> of <span
+                                id="custTotalCount">15</span> Selected</span>
+                        <button class="cust-customize-close" onclick="closeCustCustomizeColumns()">×</button>
+                    </div>
+                    <div class="cust-customize-search">
+                        <input type="text" id="custColumnSearch" placeholder="Search" oninput="filterCustColumns()">
+                    </div>
+                    <div class="cust-customize-list" id="custColumnsList"></div>
+                    <div class="cust-customize-footer">
+                        <button class="cust-save-btn" onclick="saveCustColumnSettings()">Save</button>
+                        <button class="cust-cancel-btn" onclick="closeCustCustomizeColumns()">Cancel</button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Customers Container (hidden when empty) -->
-            <div class="customers-container" id="customersContainer" style="display: none;">
-                <table class="customers-table">
-                    <thead>
-                        <tr>
-                            <th>NAME</th>
-                            <th>COMPANY NAME</th>
-                            <th>EMAIL</th>
-                            <th>PHONE</th>
-                            <th>RECEIVABLES</th>
-                        </tr>
-                    </thead>
-                    <tbody id="customersBody">
-                        <!-- Customers will be added here -->
-                    </tbody>
-                </table>
+            <!-- ===== DETAIL VIEW ===== -->
+            <div class="detail-wrapper" id="detailView" style="display: none;">
+                <!-- Left sidebar list -->
+                <div class="detail-left">
+                    <div class="detail-left-header">
+                        <span>Active Customers ▾</span>
+                        <div class="detail-left-header-actions">
+                            <button class="detail-left-add" onclick="createCustomer()" title="New">+</button>
+                            <button class="detail-left-more" title="More">⋯</button>
+                        </div>
+                    </div>
+                    <div class="detail-left-list" id="detailLeftList"></div>
+                </div>
+
+                <!-- Right detail content -->
+                <div class="detail-right">
+                    <!-- Detail header -->
+                    <div class="detail-header">
+                        <div class="detail-header-name" id="detailName"></div>
+                        <div class="detail-header-actions">
+                            <button class="btn-edit" onclick="editCustomer()">Edit</button>
+                            <button class="btn-print" onclick="printCustomer()">🖨</button>
+                            <div class="dropdown-wrapper">
+                                <button class="btn-transaction" onclick="toggleDropdown('transactionDropdown')">New
+                                    Transaction ▾</button>
+                                <div class="dropdown-menu" id="transactionDropdown">
+                                    <div class="dropdown-item" onclick="newTransaction('invoice')">Invoice</div>
+                                    <div class="dropdown-item" onclick="newTransaction('salesReceipt')">Sales Receipt
+                                    </div>
+                                    <div class="dropdown-item" onclick="newTransaction('salesOrder')">Sales Order</div>
+                                    <div class="dropdown-item" onclick="newTransaction('estimate')">Estimate</div>
+                                    <div class="dropdown-item" onclick="newTransaction('creditNote')">Credit Note</div>
+                                    <div class="dropdown-item" onclick="newTransaction('paymentReceived')">Payment
+                                        Received</div>
+                                </div>
+                            </div>
+                            <div class="dropdown-wrapper">
+                                <button class="btn-more-detail" onclick="toggleDropdown('moreDropdown')">More ▾</button>
+                                <div class="dropdown-menu" id="moreDropdown">
+                                    <div class="dropdown-item" onclick="moreAction('associateTemplates')">Associate
+                                        Templates</div>
+                                    <div class="dropdown-item" onclick="moreAction('configurePortal')">Configure
+                                        Customer Portal</div>
+                                    <div class="dropdown-item" onclick="moreAction('stopReminders')">Stop All Reminders
+                                    </div>
+                                    <div class="dropdown-item" onclick="moreAction('linkVendor')">Link to Vendor</div>
+                                    <div class="dropdown-item" onclick="moreAction('clone')">Clone</div>
+                                    <div class="dropdown-item" onclick="moreAction('merge')">Merge Customers</div>
+                                    <div class="dropdown-item" onclick="moreAction('markInactive')">Mark as Inactive
+                                    </div>
+                                    <div class="dropdown-item danger" onclick="moreAction('delete')">Delete</div>
+                                </div>
+                            </div>
+                            <button class="btn-close-detail" onclick="closeDetailView()" title="Close">✕</button>
+                        </div>
+                    </div>
+
+                    <!-- Detail tabs -->
+                    <div class="detail-tabs">
+                        <div class="detail-tab active" data-tab="overview">Overview</div>
+                        <div class="detail-tab" data-tab="comments">Comments</div>
+                        <div class="detail-tab" data-tab="transactions">Transactions</div>
+                        <div class="detail-tab" data-tab="mails">Mails</div>
+                        <div class="detail-tab" data-tab="statement">Statement</div>
+                    </div>
+
+                    <!-- Detail body - Overview -->
+                    <div class="detail-body" id="detailBody">
+                        <!-- LEFT COLUMN -->
+                        <div class="overview-left">
+                            <div class="overview-company" id="detailCompany"></div>
+
+                            <!-- Contact Card -->
+                            <div class="contact-card">
+                                <div class="contact-avatar">👤</div>
+                                <div class="contact-info">
+                                    <div class="contact-name" id="detailContactName"></div>
+                                    <div class="contact-email" id="detailContactEmail"></div>
+                                    <div class="contact-phone" id="detailContactPhone"></div>
+                                    <div class="contact-portal-link">Invite to Portal</div>
+                                </div>
+                            </div>
+
+                            <!-- GENERAL INFORMATION Section -->
+                            <div class="section-header" onclick="toggleSection('detailGeneralSection', this)">
+                                <span class="section-title">GENERAL INFORMATION</span>
+                                <span class="section-toggle" style="display: flex; align-items: center; gap: 6px;">
+                                    <span style="color: #4285f4; cursor: pointer;"
+                                        onclick="event.stopPropagation(); editCustomer();" title="Edit">✎</span> ⌃
+                                </span>
+                            </div>
+                            <div id="detailGeneralSection">
+                                <div class="detail-row">
+                                    <span class="detail-label">Salutation</span>
+                                    <span class="detail-value" id="detailSalutation">—</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">First Name</span>
+                                    <span class="detail-value" id="detailFirstName">—</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Last Name</span>
+                                    <span class="detail-value" id="detailLastName">—</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Company Name</span>
+                                    <span class="detail-value" id="detailCompanyName">—</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Display Name</span>
+                                    <span class="detail-value" id="detailDisplayName">—</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Email</span>
+                                    <span class="detail-value" id="detailEmailInfo">—</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Work Phone</span>
+                                    <span class="detail-value" id="detailWorkPhone">—</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Mobile</span>
+                                    <span class="detail-value" id="detailMobile">—</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Website</span>
+                                    <span class="detail-value" id="detailWebsite">—</span>
+                                </div>
+                            </div>
+
+                            <!-- ADDRESS Section -->
+                            <div class="section-header" onclick="toggleSection('detailAddressSection', this)">
+                                <span class="section-title">ADDRESS</span>
+                                <span class="section-toggle" style="display: flex; align-items: center; gap: 6px;">
+                                    <span style="color: #4285f4; cursor: pointer;"
+                                        onclick="event.stopPropagation(); editCustomer();" title="Edit">✎</span> ⌃
+                                </span>
+                            </div>
+                            <div id="detailAddressSection">
+                                <div class="address-block">
+                                    <div class="address-title">Billing Address <span class="address-edit-icon"
+                                            onclick="editCustomer()">✎</span>
+                                    </div>
+                                    <div class="address-text" id="detailBillingAddress">—</div>
+                                </div>
+                                <div class="address-block">
+                                    <div class="address-title">Shipping Address <span class="address-edit-icon"
+                                            onclick="editCustomer()">✎</span>
+                                    </div>
+                                    <div class="address-text" id="detailShippingAddress">—</div>
+                                </div>
+                            </div>
+
+                            <!-- OTHER DETAILS Section -->
+                            <div class="section-header" onclick="toggleSection('detailOtherSection', this)">
+                                <span class="section-title">OTHER DETAILS</span>
+                                <span class="section-toggle">⌃</span>
+                            </div>
+                            <div id="detailOtherSection">
+                                <div class="detail-row">
+                                    <span class="detail-label">Customer Type</span>
+                                    <span class="detail-value" id="detailCustType"></span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Default Currency</span>
+                                    <span class="detail-value" id="detailCurrency"></span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Portal Status</span>
+                                    <span class="detail-value status-disabled">Disabled</span>
+                                </div>
+                            </div>
+
+                            <!-- CONTACT PERSONS Section -->
+                            <div class="section-header" onclick="toggleSection('detailContactPersonsSection', this)">
+                                <span class="section-title">CONTACT PERSONS</span>
+                                <span class="section-toggle" style="display: flex; align-items: center; gap: 6px;">
+                                    <span style="color: #4285f4; cursor: pointer;"
+                                        onclick="event.stopPropagation(); editCustomer();"
+                                        title="Add Contact Person">⊕</span> ⌃
+                                </span>
+                            </div>
+                            <div id="detailContactPersonsSection">
+                                <div id="detailContactPersons" style="padding: 4px 0;">
+                                    <div class="no-contacts" style="color: #999; font-size: 13px; padding: 12px 0;">No
+                                        contact persons found.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- RIGHT COLUMN -->
+                        <div class="overview-right">
+                            <div class="payment-label">Payment due period</div>
+                            <div class="payment-value" id="detailPaymentDue">Due on Receipt</div>
+
+                            <div class="receivables-title">Receivables</div>
+                            <table class="receivables-table">
+                                <thead>
+                                    <tr>
+                                        <th>CURRENCY</th>
+                                        <th>OUTSTANDING RECEIVABLES</th>
+                                        <th>UNUSED CREDITS</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>PHP- Philippine Peso</td>
+                                        <td>PHP0.00</td>
+                                        <td>PHP0.00</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="items-status">
+                                <div class="items-status-item">Items to be packed: <span>0.00</span></div>
+                                <div class="items-status-item">Items to be shipped: <span>0.00</span></div>
+                            </div>
+
+                            <!-- Activity Timeline -->
+                            <div class="timeline-section">
+                                <div class="timeline" id="detailTimeline">
+                                    <!-- Timeline items will be inserted here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Bulk Update Modal -->
+    <div class="bulk-modal-overlay" id="bulkUpdateModal">
+        <div class="bulk-modal">
+            <div class="bulk-modal-header">
+                <h2>Bulk Update - Customers</h2>
+                <button class="bulk-modal-close" onclick="closeBulkUpdateModal()">✕</button>
+            </div>
+            <div class="bulk-modal-body">
+                <div class="bulk-modal-row">
+                    <div class="bulk-modal-label">Customer Type</div>
+                    <div class="bulk-modal-field">
+                        <div class="bulk-radio-group">
+                            <label><input type="radio" name="bulkCustType" value="Business"> Business</label>
+                            <label><input type="radio" name="bulkCustType" value="Individual"> Individual</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="bulk-modal-row">
+                    <div class="bulk-modal-label">Tax Rate</div>
+                    <div class="bulk-modal-field">
+                        <div class="custom-dropdown" id="taxRateDropdown">
+                            <div class="custom-dropdown-trigger" onclick="toggleCustomDropdown('taxRateDropdown')">
+                                <span class="custom-dropdown-text">Select a Tax</span>
+                            </div>
+                            <div class="custom-dropdown-panel">
+                                <div class="custom-dropdown-search">
+                                    <input type="text" placeholder="Search"
+                                        oninput="filterDropdownOptions('taxRateDropdown', this.value)">
+                                </div>
+                                <div class="custom-dropdown-options">
+                                    <div class="custom-dropdown-option" data-value="VAT 12%"
+                                        onclick="selectDropdownOption('taxRateDropdown', this)">VAT 12%</div>
+                                    <div class="custom-dropdown-option" data-value="Non-VAT"
+                                        onclick="selectDropdownOption('taxRateDropdown', this)">Non-VAT</div>
+                                    <div class="custom-dropdown-option" data-value="Zero-rated"
+                                        onclick="selectDropdownOption('taxRateDropdown', this)">Zero-rated</div>
+                                    <div class="custom-dropdown-option" data-value="Exempt"
+                                        onclick="selectDropdownOption('taxRateDropdown', this)">Exempt</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bulk-modal-row">
+                    <div class="bulk-modal-label">Payment Terms</div>
+                    <div class="bulk-modal-field">
+                        <div class="custom-dropdown" id="paymentTermsDropdown">
+                            <div class="custom-dropdown-trigger" onclick="toggleCustomDropdown('paymentTermsDropdown')">
+                                <span class="custom-dropdown-text"></span>
+                            </div>
+                            <div class="custom-dropdown-panel">
+                                <div class="custom-dropdown-search">
+                                    <input type="text" placeholder="Search"
+                                        oninput="filterDropdownOptions('paymentTermsDropdown', this.value)">
+                                </div>
+                                <div class="custom-dropdown-options">
+                                    <div class="custom-dropdown-option" data-value="Due end of next month"
+                                        onclick="selectDropdownOption('paymentTermsDropdown', this)">Due end of next
+                                        month</div>
+                                    <div class="custom-dropdown-option" data-value="Due end of the month"
+                                        onclick="selectDropdownOption('paymentTermsDropdown', this)">Due end of the
+                                        month</div>
+                                    <div class="custom-dropdown-option" data-value="Due on Receipt"
+                                        onclick="selectDropdownOption('paymentTermsDropdown', this)">Due on Receipt
+                                    </div>
+                                    <div class="custom-dropdown-option" data-value="Net 15"
+                                        onclick="selectDropdownOption('paymentTermsDropdown', this)">Net 15</div>
+                                    <div class="custom-dropdown-option" data-value="Net 30"
+                                        onclick="selectDropdownOption('paymentTermsDropdown', this)">Net 30</div>
+                                    <div class="custom-dropdown-option" data-value="Net 45"
+                                        onclick="selectDropdownOption('paymentTermsDropdown', this)">Net 45</div>
+                                    <div class="custom-dropdown-option" data-value="Net 60"
+                                        onclick="selectDropdownOption('paymentTermsDropdown', this)">Net 60</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bulk-modal-footer">
+                <button class="btn-bulk-submit" onclick="submitBulkUpdate()">Update Fields</button>
+                <button class="btn-bulk-cancel" onclick="closeBulkUpdateModal()">Cancel</button>
             </div>
         </div>
     </div>
@@ -312,10 +2264,1291 @@
     <!-- Layout Script -->
     <script src="/js/layout.js"></script>
     <script>
-        // Create new customer
+        let allCustomers = [];
+        let currentCustomerId = null;
+        let currentFilter = 'active';
+
         function createCustomer() {
             window.location.href = '/new-customer.html';
         }
+
+        function toggleSelectAll(checkbox) {
+            document.querySelectorAll('#customersBody input[type="checkbox"]').forEach(cb => cb.checked = checkbox.checked);
+            updateBulkBar();
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ===== Load customers list =====
+        async function loadCustomers() {
+            try {
+                const res = await fetch('/api/customers');
+                if (!res.ok) throw new Error('Failed to fetch');
+                const allData = await res.json();
+
+                // Filter by current status filter
+                if (currentFilter === 'active') {
+                    allCustomers = allData.filter(c => (c.status || 'active') === 'active');
+                } else if (currentFilter === 'inactive') {
+                    allCustomers = allData.filter(c => c.status === 'inactive');
+                } else {
+                    allCustomers = allData;
+                }
+
+                if (allCustomers.length === 0) {
+                    document.getElementById('emptyState').style.display = 'flex';
+                    document.getElementById('customersContainer').style.display = 'none';
+                    return;
+                }
+
+                document.getElementById('emptyState').style.display = 'none';
+                document.getElementById('customersContainer').style.display = 'block';
+
+                // Render header dynamically
+                renderCustTableHeader();
+
+                const tbody = document.getElementById('customersBody');
+                tbody.innerHTML = '';
+
+                const visibleCols = custAllColumns.filter(col => col.visible);
+                const rightAlignCols = ['receivables', 'receivables_raw', 'unused_credits', 'unused_credits_bcy'];
+
+                allCustomers.forEach(c => {
+                    const tr = document.createElement('tr');
+                    tr.style.cursor = 'pointer';
+                    tr.onclick = (e) => { if (e.target.type !== 'checkbox') openDetailView(c.id); };
+
+                    let rowHtml = '<td></td>';
+                    rowHtml += `<td><input type="checkbox" value="${c.id}" data-id="${c.id}" data-status="${c.status || 'active'}" onchange="updateBulkBar()"></td>`;
+
+                    visibleCols.forEach(col => {
+                        const isRight = rightAlignCols.includes(col.id);
+                        rowHtml += `<td${isRight ? ' class="td-right"' : ''}>${getCustColumnValue(c, col.id)}</td>`;
+                    });
+
+                    rowHtml += '<td></td>';
+                    tr.innerHTML = rowHtml;
+                    tbody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error('Error loading customers:', error);
+            }
+        }
+
+        // ===== Title Filter Dropdown =====
+        function toggleTitleDropdown() {
+            document.getElementById('titleDropdownMenu').classList.toggle('show');
+        }
+
+        function setCustomerFilter(filter) {
+            currentFilter = filter;
+
+            // Update title text
+            const titles = { active: 'Active Customers', inactive: 'Inactive Customers', all: 'All Customers' };
+            document.getElementById('pageTitleText').textContent = titles[filter];
+
+            // Update active class on dropdown items
+            document.querySelectorAll('.title-dropdown-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.filter === filter);
+            });
+
+            // Close dropdown
+            document.getElementById('titleDropdownMenu').classList.remove('show');
+
+            // Deselect all and reload
+            deselectAllCustomers();
+            loadCustomers();
+        }
+
+        // Close title dropdown when clicking outside
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.page-title-wrapper')) {
+                document.getElementById('titleDropdownMenu').classList.remove('show');
+            }
+            if (!e.target.closest('.more-dropdown-wrapper')) {
+                document.getElementById('moreDropdown').classList.remove('show');
+            }
+        });
+
+        // ===== More Dropdown Functions =====
+        function toggleMoreDropdown(e) {
+            e.stopPropagation();
+            document.getElementById('moreDropdown').classList.toggle('show');
+            document.getElementById('titleDropdownMenu').classList.remove('show');
+        }
+
+        let currentSortField = 'display_name';
+        let currentSortAsc = true;
+
+        function sortCustomers(field, btnEl) {
+            // Toggle direction if same field
+            if (currentSortField === field) {
+                currentSortAsc = !currentSortAsc;
+            } else {
+                currentSortField = field;
+                currentSortAsc = true;
+            }
+
+            // Update active state in submenu
+            document.querySelectorAll('#sortSubmenu .more-submenu-item').forEach(item => {
+                item.classList.remove('active');
+                const arrow = item.querySelector('.sort-arrow');
+                if (arrow) arrow.remove();
+            });
+            btnEl.classList.add('active');
+            const arrowSpan = document.createElement('span');
+            arrowSpan.className = 'sort-arrow';
+            arrowSpan.textContent = currentSortAsc ? '↑' : '↓';
+            btnEl.appendChild(arrowSpan);
+
+            // Sort the allCustomers array
+            allCustomers.sort((a, b) => {
+                let valA = a[field] || '';
+                let valB = b[field] || '';
+                if (typeof valA === 'string') valA = valA.toLowerCase();
+                if (typeof valB === 'string') valB = valB.toLowerCase();
+                if (valA < valB) return currentSortAsc ? -1 : 1;
+                if (valA > valB) return currentSortAsc ? 1 : -1;
+                return 0;
+            });
+
+            // Re-render the table
+            const tbody = document.getElementById('customersBody');
+            tbody.innerHTML = '';
+            const visibleCols = custAllColumns.filter(col => col.visible);
+            const rightAlignCols = ['receivables', 'receivables_raw', 'unused_credits', 'unused_credits_bcy'];
+
+            allCustomers.forEach(c => {
+                const tr = document.createElement('tr');
+                tr.style.cursor = 'pointer';
+                tr.onclick = (e) => { if (e.target.type !== 'checkbox') openDetailView(c.id); };
+
+                let rowHtml = '<td></td>';
+                rowHtml += `<td><input type="checkbox" value="${c.id}" data-id="${c.id}" data-status="${c.status || 'active'}" onchange="updateBulkBar()"></td>`;
+
+                visibleCols.forEach(col => {
+                    const isRight = rightAlignCols.includes(col.id);
+                    rowHtml += `<td${isRight ? ' class="td-right"' : ''}>${getCustColumnValue(c, col.id)}</td>`;
+                });
+
+                rowHtml += '<td></td>';
+                tr.innerHTML = rowHtml;
+                tbody.appendChild(tr);
+            });
+
+            // Close the dropdown
+            document.getElementById('moreDropdown').classList.remove('show');
+        }
+
+        function importCustomers() {
+            document.getElementById('moreDropdown').classList.remove('show');
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.csv,.xlsx,.xls';
+            input.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const formData = new FormData();
+                formData.append('file', file);
+                try {
+                    const res = await fetch('/api/customers/import', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const result = await res.json();
+                    if (res.ok) {
+                        alert('✅ ' + (result.message || 'Customers imported successfully'));
+                        loadCustomers();
+                    } else {
+                        alert('Error: ' + (result.error || 'Failed to import'));
+                    }
+                } catch (err) {
+                    alert('Import failed: ' + err.message);
+                }
+            };
+            input.click();
+        }
+
+        function exportCustomers(type) {
+            document.getElementById('moreDropdown').classList.remove('show');
+            const customers = type === 'current' ? allCustomers : allCustomers;
+            if (customers.length === 0) {
+                alert('No customers to export.');
+                return;
+            }
+
+            const headers = ['Name', 'Company Name', 'Email', 'Work Phone', 'Status'];
+            const rows = customers.map(c => [
+                c.display_name || '',
+                c.company_name || '',
+                c.email || '',
+                c.work_phone || '',
+                c.status || 'active'
+            ]);
+
+            let csv = headers.join(',') + '\n';
+            rows.forEach(row => {
+                csv += row.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',') + '\n';
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `customers_${type}_${new Date().toISOString().slice(0, 10)}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function openPreferences() {
+            document.getElementById('moreDropdown').classList.remove('show');
+            alert('Preferences settings coming soon.');
+        }
+
+        function refreshList() {
+            document.getElementById('moreDropdown').classList.remove('show');
+            deselectAllCustomers();
+            loadCustomers();
+        }
+
+        function resetColumnWidth() {
+            document.getElementById('moreDropdown').classList.remove('show');
+            const table = document.querySelector('.customers-table');
+            if (table) {
+                table.querySelectorAll('th, td').forEach(cell => {
+                    cell.style.width = '';
+                    cell.style.minWidth = '';
+                    cell.style.maxWidth = '';
+                });
+            }
+            alert('Column widths have been reset.');
+        }
+
+        // ===== Customize Columns Feature =====
+        const custAllColumns = [
+            { id: 'display_name', label: 'Name', visible: true, locked: true },
+            { id: 'company_name', label: 'Company Name', visible: true, locked: false },
+            { id: 'email', label: 'Email', visible: true, locked: false },
+            { id: 'work_phone', label: 'Work Phone', visible: true, locked: false },
+            { id: 'receivables', label: 'Receivables (BCY)', visible: true, locked: false },
+            { id: 'receivables_raw', label: 'Receivables', visible: false, locked: false },
+            { id: 'unused_credits', label: 'Unused Credits', visible: false, locked: false },
+            { id: 'unused_credits_bcy', label: 'Unused Credits (BCY)', visible: false, locked: false },
+            { id: 'source', label: 'Source', visible: false, locked: false },
+            { id: 'first_name', label: 'First Name', visible: false, locked: false },
+            { id: 'last_name', label: 'Last Name', visible: false, locked: false },
+            { id: 'mobile_phone', label: 'Mobile Phone', visible: false, locked: false },
+            { id: 'payment_terms', label: 'Payment Terms', visible: false, locked: false },
+            { id: 'status', label: 'Status', visible: false, locked: false },
+            { id: 'website', label: 'Website', visible: false, locked: false }
+        ];
+
+        let custColumnSettings = JSON.parse(JSON.stringify(custAllColumns));
+        let custClipTextEnabled = false;
+
+        // Load saved column settings
+        function loadCustColumnSettings() {
+            try {
+                const saved = localStorage.getItem('custColumnSettings');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    custAllColumns.length = 0;
+                    parsed.forEach(col => custAllColumns.push(col));
+                }
+            } catch (e) {
+                console.log('Could not load customer column settings');
+            }
+        }
+
+        // Filter dropdown
+        function toggleCustFilterDropdown(e) {
+            e.stopPropagation();
+            const dropdown = document.getElementById('custFilterDropdown');
+            const icon = e.currentTarget || e.target.closest('.cust-filter-icon');
+            dropdown.classList.toggle('active');
+            // Position the fixed dropdown relative to the icon
+            if (dropdown.classList.contains('active') && icon) {
+                const rect = icon.getBoundingClientRect();
+                dropdown.style.top = (rect.bottom + 8) + 'px';
+                dropdown.style.left = rect.left + 'px';
+            }
+        }
+
+        function closeCustFilterDropdown() {
+            document.getElementById('custFilterDropdown').classList.remove('active');
+        }
+
+        document.addEventListener('click', function (e) {
+            const dropdown = document.getElementById('custFilterDropdown');
+            const icon = document.querySelector('.cust-filter-icon');
+            if (dropdown && !dropdown.contains(e.target) && e.target !== icon && !icon.contains(e.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
+
+        // Clip text toggle
+        function toggleCustClipText() {
+            custClipTextEnabled = !custClipTextEnabled;
+            const table = document.querySelector('.customers-table');
+            if (table) {
+                if (custClipTextEnabled) {
+                    table.style.tableLayout = 'fixed';
+                    table.querySelectorAll('tbody td').forEach(td => {
+                        td.style.overflow = 'hidden';
+                        td.style.textOverflow = 'ellipsis';
+                        td.style.whiteSpace = 'nowrap';
+                        td.style.maxWidth = '150px';
+                    });
+                    document.getElementById('custClipIcon').textContent = '↩️';
+                    document.getElementById('custClipLabel').textContent = 'Wrap Text';
+                } else {
+                    table.style.tableLayout = '';
+                    table.querySelectorAll('tbody td').forEach(td => {
+                        td.style.overflow = '';
+                        td.style.textOverflow = '';
+                        td.style.whiteSpace = '';
+                        td.style.maxWidth = '';
+                    });
+                    document.getElementById('custClipIcon').textContent = '📋';
+                    document.getElementById('custClipLabel').textContent = 'Clip Text';
+                }
+            }
+        }
+
+        // Open Customize Columns modal
+        function openCustCustomizeColumns() {
+            const modal = document.getElementById('custCustomizeModal');
+            if (modal) {
+                modal.classList.add('active');
+                custColumnSettings = JSON.parse(JSON.stringify(custAllColumns));
+                renderCustColumnsList();
+                updateCustColumnCount();
+            }
+        }
+
+        // Close Customize Columns modal
+        function closeCustCustomizeColumns() {
+            const modal = document.getElementById('custCustomizeModal');
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+
+        // Render columns list
+        function renderCustColumnsList(filter = '') {
+            const list = document.getElementById('custColumnsList');
+            if (!list) return;
+
+            const filtered = custColumnSettings.filter(col =>
+                col.label.toLowerCase().includes(filter.toLowerCase())
+            );
+
+            list.innerHTML = filtered.map(col => `
+                <div class="cust-col-item ${col.locked ? 'locked' : ''} ${col.visible ? 'checked' : ''}"
+                     data-column-id="${col.id}"
+                     onclick="${col.locked ? '' : `toggleCustColumnVisibility('${col.id}')`}">
+                    <span class="cust-col-drag">⋮⋮</span>
+                    ${col.locked
+                    ? `<span class="cust-col-lock">🔒</span>`
+                    : `<input type="checkbox" class="cust-col-checkbox"
+                              ${col.visible ? 'checked' : ''}
+                              onclick="event.stopPropagation();"
+                              onchange="toggleCustColumnVisibility('${col.id}')">`
+                }
+                    <span class="cust-col-name">${col.label}</span>
+                </div>
+            `).join('');
+        }
+
+        // Filter columns search
+        function filterCustColumns() {
+            const searchInput = document.getElementById('custColumnSearch');
+            const filter = searchInput ? searchInput.value : '';
+            renderCustColumnsList(filter);
+        }
+
+        // Toggle column visibility
+        function toggleCustColumnVisibility(columnId) {
+            const col = custColumnSettings.find(c => c.id === columnId);
+            if (col && !col.locked) {
+                col.visible = !col.visible;
+                updateCustColumnCount();
+                renderCustColumnsList(document.getElementById('custColumnSearch')?.value || '');
+            }
+        }
+
+        // Update column count display
+        function updateCustColumnCount() {
+            const selectedEl = document.getElementById('custSelectedCount');
+            const totalEl = document.getElementById('custTotalCount');
+            if (selectedEl) selectedEl.textContent = custColumnSettings.filter(c => c.visible).length;
+            if (totalEl) totalEl.textContent = custColumnSettings.length;
+        }
+
+        // Save column settings
+        function saveCustColumnSettings() {
+            custAllColumns.length = 0;
+            custColumnSettings.forEach(col => custAllColumns.push(JSON.parse(JSON.stringify(col))));
+
+            try {
+                localStorage.setItem('custColumnSettings', JSON.stringify(custAllColumns));
+            } catch (e) {
+                console.log('Could not save customer column settings');
+            }
+
+            closeCustCustomizeColumns();
+            renderCustTableHeader();
+            loadCustomers();
+        }
+
+        // Get column value from a customer object
+        function getCustColumnValue(customer, columnId) {
+            switch (columnId) {
+                case 'display_name':
+                    return `<a class="customer-name-link">${escapeHtml(customer.display_name || '')}</a>`;
+                case 'company_name': return escapeHtml(customer.company_name || '');
+                case 'email': return escapeHtml(customer.email || '');
+                case 'work_phone': return escapeHtml(customer.work_phone || '');
+                case 'receivables': return 'PHP0.00';
+                case 'receivables_raw': return 'PHP0.00';
+                case 'unused_credits': return 'PHP0.00';
+                case 'unused_credits_bcy': return 'PHP0.00';
+                case 'source': return escapeHtml(customer.source || '');
+                case 'first_name': return escapeHtml(customer.first_name || '');
+                case 'last_name': return escapeHtml(customer.last_name || '');
+                case 'mobile_phone': return escapeHtml(customer.mobile_phone || '');
+                case 'payment_terms': return escapeHtml(customer.payment_terms || '');
+                case 'status': return escapeHtml(customer.status || 'active');
+                case 'website': return escapeHtml(customer.website || '');
+                default: return '';
+            }
+        }
+
+        // Render table header dynamically
+        function renderCustTableHeader() {
+            const thead = document.querySelector('.customers-table thead');
+            if (!thead) return;
+
+            const visibleCols = custAllColumns.filter(c => c.visible);
+            const rightAlignCols = ['receivables', 'receivables_raw', 'unused_credits', 'unused_credits_bcy'];
+
+            let html = '<tr>';
+            // Filter icon column
+            html += `<th style="width:40px;min-width:40px;text-align:center;padding:14px 8px;position:relative;">
+                        <div class="filter-dropdown-container">
+                            <span class="cust-filter-icon" onclick="toggleCustFilterDropdown(event)">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="#3b82f6">
+                                    <path d="M3 5h2v2H3V5zm4 0h14v2H7V5zm-4 6h2v2H3v-2zm4 0h14v2H7v-2zm-4 6h2v2H3v-2zm4 0h14v2H7v-2z"/>
+                                </svg>
+                            </span>
+                            <div class="cust-filter-dropdown-menu" id="custFilterDropdown">
+                                <div class="cust-filter-dropdown-item" onclick="openCustCustomizeColumns(); closeCustFilterDropdown();">
+                                    <span class="cust-filter-dropdown-icon">⚙️</span>
+                                    <span>Customize Columns</span>
+                                </div>
+                                <div class="cust-filter-dropdown-item" onclick="toggleCustClipText(); closeCustFilterDropdown();">
+                                    <span class="cust-filter-dropdown-icon" id="custClipIcon">${custClipTextEnabled ? '↩️' : '📋'}</span>
+                                    <span id="custClipLabel">${custClipTextEnabled ? 'Wrap Text' : 'Clip Text'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </th>`;
+            // Checkbox column
+            html += '<th><input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)"></th>';
+
+            // Visible columns
+            visibleCols.forEach(col => {
+                const isRight = rightAlignCols.includes(col.id);
+                html += `<th${isRight ? ' class="th-right"' : ''}>${col.label.toUpperCase()}</th>`;
+            });
+
+            // Search column
+            html += '<th style="width:30px;"><span class="search-icon">🔍</span></th>';
+            html += '</tr>';
+
+            thead.innerHTML = html;
+        }
+
+        // Initialize column settings on load
+        loadCustColumnSettings();
+
+        // ===== Detail View =====
+        // Toggle section collapse
+        function toggleSection(sectionId, headerEl) {
+            const section = document.getElementById(sectionId);
+            if (!section) return;
+            if (section.style.display === 'none') {
+                section.style.display = '';
+                if (headerEl) {
+                    const toggle = headerEl.querySelector('.section-toggle');
+                    if (toggle) toggle.style.transform = '';
+                }
+            } else {
+                section.style.display = 'none';
+                if (headerEl) {
+                    const toggle = headerEl.querySelector('.section-toggle');
+                    if (toggle) toggle.style.transform = 'rotate(180deg)';
+                }
+            }
+        }
+
+        async function openDetailView(customerId) {
+            currentCustomerId = customerId;
+            const customer = allCustomers.find(c => c.id === customerId);
+            if (!customer) return;
+
+            // Show detail, hide list
+            document.getElementById('listView').style.display = 'none';
+            const detailView = document.getElementById('detailView');
+            detailView.style.display = 'flex';
+
+            // Populate left sidebar list
+            const leftList = document.getElementById('detailLeftList');
+            leftList.innerHTML = '';
+            allCustomers.forEach(c => {
+                const div = document.createElement('div');
+                div.className = 'detail-left-item' + (c.id === customerId ? ' active' : '');
+                div.onclick = () => openDetailView(c.id);
+                div.innerHTML = `
+                    <div class="detail-left-item-name">${escapeHtml(c.display_name)}</div>
+                    <div class="detail-left-item-sub">PHP0.00</div>
+                `;
+                leftList.appendChild(div);
+            });
+
+            // Populate detail header
+            document.getElementById('detailName').textContent = customer.display_name;
+
+            // Populate overview company
+            document.getElementById('detailCompany').textContent = customer.company_name || '';
+
+            // Contact card
+            const salutation = customer.salutation ? customer.salutation + ' ' : '';
+            const fullName = salutation + (customer.first_name || '') + ' ' + (customer.last_name || '');
+            document.getElementById('detailContactName').textContent = fullName.trim() || customer.display_name;
+            document.getElementById('detailContactEmail').textContent = customer.email || '';
+            document.getElementById('detailContactPhone').textContent = customer.work_phone || customer.mobile || '';
+
+            // Phone visibility
+            const phoneEl = document.getElementById('detailContactPhone');
+            if (!customer.work_phone && !customer.mobile) {
+                phoneEl.style.display = 'none';
+            } else {
+                phoneEl.style.display = 'block';
+            }
+
+            // General Information
+            document.getElementById('detailSalutation').textContent = customer.salutation || '—';
+            document.getElementById('detailFirstName').textContent = customer.first_name || '—';
+            document.getElementById('detailLastName').textContent = customer.last_name || '—';
+            document.getElementById('detailCompanyName').textContent = customer.company_name || '—';
+            document.getElementById('detailDisplayName').textContent = customer.display_name || '—';
+            document.getElementById('detailEmailInfo').textContent = customer.email || '—';
+            document.getElementById('detailWorkPhone').textContent = customer.work_phone || '—';
+            document.getElementById('detailMobile').textContent = customer.mobile || '—';
+            document.getElementById('detailWebsite').textContent = customer.website || '—';
+
+            // Billing address
+            const billingParts = [
+                customer.billing_street,
+                customer.billing_city,
+                customer.billing_state,
+                customer.billing_zip,
+                customer.billing_country
+            ].filter(Boolean);
+            document.getElementById('detailBillingAddress').textContent = billingParts.length > 0 ? billingParts.join(', ') : '—';
+
+            // Shipping address
+            const shippingParts = [
+                customer.shipping_street,
+                customer.shipping_city,
+                customer.shipping_state,
+                customer.shipping_zip,
+                customer.shipping_country
+            ].filter(Boolean);
+            document.getElementById('detailShippingAddress').textContent = shippingParts.length > 0 ? shippingParts.join(', ') : '—';
+
+            // Other details
+            document.getElementById('detailCustType').textContent = customer.customer_type || 'Business';
+            document.getElementById('detailCurrency').textContent = customer.currency || 'PHP';
+            document.getElementById('detailPaymentTerms').textContent = customer.payment_terms || 'Due on Receipt';
+
+            // Payment due
+            document.getElementById('detailPaymentDue').textContent = customer.payment_terms || 'Due on Receipt';
+
+            // Contact Persons
+            const cpContainer = document.getElementById('detailContactPersons');
+            try {
+                const cpRes = await fetch('/api/customers/' + customer.id + '/contacts');
+                if (cpRes.ok) {
+                    const contacts = await cpRes.json();
+                    if (contacts.length > 0) {
+                        cpContainer.innerHTML = contacts.map((cp, idx) => {
+                            const cpName = [cp.first_name, cp.last_name].filter(Boolean).join(' ') || '—';
+                            const cpWorkPhone = cp.work_phone ? `+63-${escapeHtml(cp.work_phone)}` : '';
+                            const cpMobile = cp.mobile ? `+63-${escapeHtml(cp.mobile)}` : '';
+                            return `
+                                <div style="display: flex; align-items: flex-start; gap: 14px; padding: 16px 4px; border-bottom: 1px solid #f0f0f0; position: relative;">
+                                    <!-- Person Avatar (gray silhouette) -->
+                                    <div style="width: 48px; height: 48px; background: #e8e8e8; border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="#bbb">
+                                            <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+                                        </svg>
+                                    </div>
+                                    <!-- Contact Info -->
+                                    <div style="flex: 1; min-width: 0;">
+                                        <div style="font-size: 14px; font-weight: 600; color: #333; margin-bottom: 4px;">${escapeHtml(cpName)}</div>
+                                        ${cpWorkPhone ? `<div style="font-size: 13px; color: #555; display: flex; align-items: center; gap: 6px; margin-bottom: 3px;">
+                                            <span style="font-size: 14px;">📞</span> ${cpWorkPhone}
+                                        </div>` : ''}
+                                        ${cpMobile ? `<div style="font-size: 13px; color: #555; display: flex; align-items: center; gap: 6px;">
+                                            <span style="font-size: 14px;">📱</span> ${cpMobile}
+                                        </div>` : ''}
+                                    </div>
+                                    <!-- Gear Icon -->
+                                    <div style="position: relative;" class="cp-gear-wrap">
+                                        <span onclick="toggleCpGearMenu(event, ${idx})" style="cursor: pointer; font-size: 18px; color: #999; padding: 4px;" title="Settings">⚙</span>
+                                        <div id="cpGearMenu_${idx}" style="display: none; position: absolute; right: 0; top: 28px; background: white; border: 1px solid #e0e0e0; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.12); z-index: 100; min-width: 100px;">
+                                            <div onclick="editContactPerson(${customer.id})" style="padding: 8px 16px; font-size: 13px; color: #333; cursor: pointer; white-space: nowrap; border-radius: 6px;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='white'">
+                                                ✎ Edit
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                    } else {
+                        cpContainer.innerHTML = '<div style="color: #999; font-size: 13px; padding: 12px 0;">No contact persons found.</div>';
+                    }
+                }
+            } catch (cpErr) {
+                console.log('Could not load contact persons:', cpErr);
+            }
+
+            // Activity Timeline
+            renderTimeline(customer);
+
+            // Wire tabs
+            document.querySelectorAll('.detail-tab').forEach(tab => {
+                tab.onclick = () => {
+                    document.querySelectorAll('.detail-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                };
+            });
+        }
+
+        function closeDetailView() {
+            document.getElementById('detailView').style.display = 'none';
+            document.getElementById('listView').style.display = 'block';
+            currentCustomerId = null;
+        }
+
+        // Toggle gear menu for contact person cards
+        function toggleCpGearMenu(event, idx) {
+            event.stopPropagation();
+            // Close all other gear menus
+            document.querySelectorAll('[id^="cpGearMenu_"]').forEach(m => m.style.display = 'none');
+            const menu = document.getElementById('cpGearMenu_' + idx);
+            if (menu) {
+                menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+
+        // Edit contact person - redirect to edit page
+        function editContactPerson(customerId) {
+            window.location.href = '/new-customer.html?edit=' + customerId;
+        }
+
+        // Close gear menus when clicking elsewhere
+        document.addEventListener('click', function () {
+            document.querySelectorAll('[id^="cpGearMenu_"]').forEach(m => m.style.display = 'none');
+        });
+
+        // Field name labels for display
+        const fieldLabels = {
+            customer_type: 'Customer Type', salutation: 'Salutation', first_name: 'First Name',
+            last_name: 'Last Name', company_name: 'Company Name', display_name: 'Display Name',
+            email: 'Email', work_phone: 'Work Phone', mobile: 'Mobile', website: 'Website',
+            payment_terms: 'Payment Terms', currency: 'Currency', status: 'Status',
+            billing_street: 'Billing Street', billing_city: 'Billing City', billing_state: 'Billing State',
+            billing_zip: 'Billing ZIP', billing_country: 'Billing Country',
+            shipping_street: 'Shipping Street', shipping_city: 'Shipping City', shipping_state: 'Shipping State',
+            shipping_zip: 'Shipping ZIP', shipping_country: 'Shipping Country'
+        };
+
+        async function renderTimeline(customer) {
+            const timeline = document.getElementById('detailTimeline');
+            const createdDate = new Date(customer.created_at);
+            const formattedDate = createdDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+            const formattedTime = createdDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+            // Build timeline items
+            let items = [];
+
+            // Fetch change history from API
+            try {
+                const res = await fetch('/api/customers/' + customer.id + '/changes');
+                if (res.ok) {
+                    const changes = await res.json();
+
+                    // Group changes by changed_at timestamp (within 2 seconds)
+                    const grouped = [];
+                    changes.forEach(ch => {
+                        const chTime = new Date(ch.changed_at).getTime();
+                        const existing = grouped.find(g => Math.abs(g.time - chTime) < 2000);
+                        if (existing) {
+                            existing.fields.push(ch);
+                        } else {
+                            grouped.push({ time: chTime, date: new Date(ch.changed_at), fields: [ch] });
+                        }
+                    });
+
+                    // Add grouped change events to timeline
+                    grouped.forEach(group => {
+                        const gDate = group.date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+                        const gTime = group.date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+                        const changeDetails = group.fields.map(f => {
+                            const label = fieldLabels[f.field_name] || f.field_name;
+                            const oldVal = f.old_value || '(empty)';
+                            const newVal = f.new_value || '(empty)';
+                            return `<div style="font-size: 12px; color: #555; padding: 2px 0;"><b>${label}</b>: <span style="color: #e57373; text-decoration: line-through;">${escapeHtml(oldVal)}</span> → <span style="color: #4caf50; font-weight: 500;">${escapeHtml(newVal)}</span></div>`;
+                        }).join('');
+
+                        items.push({
+                            date: gDate,
+                            time: gTime,
+                            title: 'Customer Updated',
+                            desc: `<div style="margin-bottom: 4px; color: #333;">The following fields were changed:</div>${changeDetails}`
+                        });
+                    });
+                }
+            } catch (err) {
+                console.log('Could not fetch change history:', err);
+            }
+
+            // If no detailed changes but updated_at differs, show generic update
+            if (items.length === 0 && customer.updated_at && customer.updated_at !== customer.created_at) {
+                const updDate = new Date(customer.updated_at);
+                const updFormatDate = updDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+                const updFormatTime = updDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+                items.push({
+                    date: updFormatDate,
+                    time: updFormatTime,
+                    title: 'Customer Updated',
+                    desc: `Customer details for ${escapeHtml(customer.display_name)} have been updated.`
+                });
+            }
+
+            // Created event
+            items.push({
+                date: formattedDate,
+                time: formattedTime,
+                title: 'Customer Created',
+                desc: `Customer ${escapeHtml(customer.display_name)} has been created.`
+            });
+
+            timeline.innerHTML = items.map(item => `
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div style="display: flex; gap: 16px; align-items: flex-start;">
+                        <div class="timeline-date" style="min-width: 80px; text-align: right;">
+                            ${item.date}<br>${item.time}
+                        </div>
+                        <div class="timeline-card" style="flex: 1;">
+                            <div class="timeline-card-title">${item.title}</div>
+                            <div class="timeline-card-desc">${item.desc}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ===== Dropdown toggle =====
+        function toggleDropdown(id) {
+            // Close all others first
+            document.querySelectorAll('.dropdown-menu').forEach(m => {
+                if (m.id !== id) m.classList.remove('show');
+            });
+            document.getElementById(id).classList.toggle('show');
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.dropdown-wrapper')) {
+                document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
+            }
+        });
+
+        // ===== Edit Customer =====
+        function editCustomer() {
+            if (!currentCustomerId) return;
+            window.location.href = '/new-customer.html?edit=' + currentCustomerId;
+        }
+
+        // ===== Print Customer =====
+        function printCustomer() {
+            if (!currentCustomerId) return;
+            const customer = allCustomers.find(c => c.id === currentCustomerId);
+            if (!customer) return;
+
+            const printWin = window.open('', '_blank', 'width=800,height=600');
+            const salutation = customer.salutation ? customer.salutation + ' ' : '';
+            const fullName = salutation + (customer.first_name || '') + ' ' + (customer.last_name || '');
+
+            printWin.document.write(`
+                <html><head><title>Customer - ${customer.display_name}</title>
+                <style>
+                    body { font-family: 'Inter', Arial, sans-serif; padding: 40px; color: #333; }
+                    h1 { font-size: 22px; border-bottom: 2px solid #4285f4; padding-bottom: 8px; }
+                    .section { margin: 20px 0; }
+                    .section h3 { font-size: 14px; text-transform: uppercase; color: #666; border-bottom: 1px solid #e0e0e0; padding-bottom: 6px; }
+                    .row { display: flex; padding: 6px 0; }
+                    .label { width: 180px; color: #888; font-size: 13px; }
+                    .value { font-size: 13px; color: #333; }
+                </style>
+                </head><body>
+                <h1>${customer.display_name}</h1>
+                <div class="section">
+                    <div class="row"><span class="label">Full Name</span><span class="value">${fullName.trim() || '-'}</span></div>
+                    <div class="row"><span class="label">Company</span><span class="value">${customer.company_name || '-'}</span></div>
+                    <div class="row"><span class="label">Email</span><span class="value">${customer.email || '-'}</span></div>
+                    <div class="row"><span class="label">Work Phone</span><span class="value">${customer.work_phone || '-'}</span></div>
+                    <div class="row"><span class="label">Mobile</span><span class="value">${customer.mobile || '-'}</span></div>
+                </div>
+                <div class="section">
+                    <h3>Other Details</h3>
+                    <div class="row"><span class="label">Customer Type</span><span class="value">${customer.customer_type || '-'}</span></div>
+                    <div class="row"><span class="label">Currency</span><span class="value">${customer.currency || '-'}</span></div>
+                    <div class="row"><span class="label">Payment Terms</span><span class="value">${customer.payment_terms || '-'}</span></div>
+                </div>
+                </body></html>
+            `);
+            printWin.document.close();
+            setTimeout(() => { printWin.print(); }, 300);
+        }
+
+        // ===== New Transaction =====
+        function newTransaction(type) {
+            document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
+            const customer = allCustomers.find(c => c.id === currentCustomerId);
+            const name = customer ? customer.display_name : '';
+            alert('New ' + type.replace(/([A-Z])/g, ' $1').trim() + ' for: ' + name + '\n(Transaction pages coming soon!)');
+        }
+
+        // ===== More actions =====
+        async function moreAction(action) {
+            document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
+            const customer = allCustomers.find(c => c.id === currentCustomerId);
+            if (!customer) return;
+
+            switch (action) {
+                case 'associateTemplates':
+                    alert('Associate Templates for ' + customer.display_name + '\n(Coming soon!)');
+                    break;
+                case 'configurePortal':
+                    alert('Configure Customer Portal for ' + customer.display_name + '\n(Coming soon!)');
+                    break;
+                case 'stopReminders':
+                    alert('All reminders stopped for ' + customer.display_name);
+                    break;
+                case 'linkVendor':
+                    alert('Link to Vendor for ' + customer.display_name + '\n(Coming soon!)');
+                    break;
+                case 'clone':
+                    if (confirm('Clone customer "' + customer.display_name + '"?')) {
+                        try {
+                            const cloneData = {
+                                customer_type: customer.customer_type,
+                                salutation: customer.salutation,
+                                first_name: customer.first_name,
+                                last_name: customer.last_name,
+                                company_name: customer.company_name,
+                                display_name: customer.display_name + ' (Copy)',
+                                email: customer.email,
+                                work_phone: customer.work_phone,
+                                mobile: customer.mobile,
+                                payment_terms: customer.payment_terms,
+                                currency: customer.currency
+                            };
+                            const res = await fetch('/api/customers', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(cloneData)
+                            });
+                            if (res.ok) {
+                                alert('Customer cloned successfully!');
+                                closeDetailView();
+                                loadCustomers();
+                            } else {
+                                alert('Failed to clone customer.');
+                            }
+                        } catch (err) {
+                            alert('Error cloning customer.');
+                        }
+                    }
+                    break;
+                case 'merge':
+                    alert('Merge Customers with ' + customer.display_name + '\n(Coming soon!)');
+                    break;
+                case 'markInactive':
+                    if (confirm('Mark "' + customer.display_name + '" as inactive?')) {
+                        try {
+                            const res = await fetch('/api/customers/' + customer.id, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ status: 'inactive' })
+                            });
+                            if (res.ok) {
+                                alert('Customer marked as inactive.');
+                                closeDetailView();
+                                loadCustomers();
+                            }
+                        } catch (err) {
+                            alert('Error updating customer.');
+                        }
+                    }
+                    break;
+                case 'delete':
+                    if (confirm('Are you sure you want to delete "' + customer.display_name + '"? This cannot be undone.')) {
+                        try {
+                            const res = await fetch('/api/customers/' + customer.id, { method: 'DELETE' });
+                            if (res.ok) {
+                                alert('Customer deleted successfully.');
+                                closeDetailView();
+                                loadCustomers();
+                            } else {
+                                alert('Failed to delete customer.');
+                            }
+                        } catch (err) {
+                            alert('Error deleting customer.');
+                        }
+                    }
+                    break;
+            }
+        }
+
+        // ===== BULK ACTION BAR LOGIC =====
+        function updateBulkBar() {
+            const checked = document.querySelectorAll('#customersBody input[type="checkbox"]:checked');
+            const bar = document.getElementById('bulkActionBar');
+            const countEl = document.getElementById('bulkCount');
+            const selectAllCb = document.getElementById('selectAll');
+            const allCbs = document.querySelectorAll('#customersBody input[type="checkbox"]');
+
+            if (checked.length > 0) {
+                bar.classList.add('show');
+                countEl.textContent = checked.length;
+
+                // Determine mark button label based on selected statuses
+                const hasInactive = Array.from(checked).some(cb => cb.dataset.status === 'inactive');
+                const btnLabel = document.getElementById('btnMarkStatus');
+                if (hasInactive) {
+                    btnLabel.textContent = 'Mark as Active';
+                } else {
+                    btnLabel.textContent = 'Mark as Inactive';
+                }
+            } else {
+                bar.classList.remove('show');
+            }
+
+            // Update select-all checkbox state
+            if (allCbs.length > 0 && checked.length === allCbs.length) {
+                selectAllCb.checked = true;
+                selectAllCb.indeterminate = false;
+            } else if (checked.length > 0) {
+                selectAllCb.checked = false;
+                selectAllCb.indeterminate = true;
+            } else {
+                selectAllCb.checked = false;
+                selectAllCb.indeterminate = false;
+            }
+        }
+
+        function deselectAllCustomers() {
+            document.querySelectorAll('#customersBody input[type="checkbox"]').forEach(cb => cb.checked = false);
+            document.getElementById('selectAll').checked = false;
+            document.getElementById('selectAll').indeterminate = false;
+            updateBulkBar();
+        }
+
+        function getSelectedIds() {
+            return Array.from(document.querySelectorAll('#customersBody input[type="checkbox"]:checked'))
+                .map(cb => parseInt(cb.dataset.id));
+        }
+
+        async function bulkDelete() {
+            const ids = getSelectedIds();
+            if (ids.length === 0) return;
+
+            if (!confirm(`Are you sure you want to delete ${ids.length} customer${ids.length > 1 ? 's' : ''}? This cannot be undone.`)) return;
+
+            try {
+                const res = await fetch('/api/customers/bulk-delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ids })
+                });
+                const result = await res.json();
+                if (res.ok) {
+                    alert('✅ ' + result.message);
+                    deselectAllCustomers();
+                    loadCustomers();
+                } else {
+                    alert('Error: ' + (result.error || 'Failed to delete'));
+                }
+            } catch (err) {
+                console.error('Error bulk deleting:', err);
+                alert('Failed to delete customers.');
+            }
+        }
+
+        async function bulkMarkStatus() {
+            const ids = getSelectedIds();
+            if (ids.length === 0) return;
+
+            // Determine target status from the button label
+            const btnLabel = document.getElementById('btnMarkStatus').textContent;
+            const targetStatus = btnLabel.includes('Inactive') ? 'inactive' : 'active';
+
+            if (!confirm(`Mark ${ids.length} customer${ids.length > 1 ? 's' : ''} as ${targetStatus}?`)) return;
+
+            try {
+                const res = await fetch('/api/customers/bulk-status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ids, status: targetStatus })
+                });
+                const result = await res.json();
+                if (res.ok) {
+                    alert('✅ ' + result.message);
+                    deselectAllCustomers();
+                    loadCustomers();
+                } else {
+                    alert('Error: ' + (result.error || 'Failed to update status'));
+                }
+            } catch (err) {
+                console.error('Error updating status:', err);
+                alert('Failed to update customer status.');
+            }
+        }
+
+        function bulkPrint() {
+            const ids = getSelectedIds();
+            if (ids.length === 0) return;
+
+            const selectedCustomers = allCustomers.filter(c => ids.includes(c.id));
+            if (selectedCustomers.length === 0) return;
+
+            const printWin = window.open('', '_blank', 'width=800,height=600');
+            const customersHTML = selectedCustomers.map(customer => {
+                const salutation = customer.salutation ? customer.salutation + ' ' : '';
+                const fullName = salutation + (customer.first_name || '') + ' ' + (customer.last_name || '');
+                return `
+                    <div class="customer-block">
+                        <h2>${customer.display_name}</h2>
+                        <div class="row"><span class="label">Full Name</span><span class="value">${fullName.trim() || '-'}</span></div>
+                        <div class="row"><span class="label">Company</span><span class="value">${customer.company_name || '-'}</span></div>
+                        <div class="row"><span class="label">Email</span><span class="value">${customer.email || '-'}</span></div>
+                        <div class="row"><span class="label">Work Phone</span><span class="value">${customer.work_phone || '-'}</span></div>
+                        <div class="row"><span class="label">Mobile</span><span class="value">${customer.mobile || '-'}</span></div>
+                        <div class="row"><span class="label">Customer Type</span><span class="value">${customer.customer_type || '-'}</span></div>
+                        <div class="row"><span class="label">Currency</span><span class="value">${customer.currency || '-'}</span></div>
+                        <div class="row"><span class="label">Payment Terms</span><span class="value">${customer.payment_terms || '-'}</span></div>
+                    </div>
+                `;
+            }).join('');
+
+            printWin.document.write(`
+                <html><head><title>Customers Print</title>
+                <style>
+                    body { font-family: 'Inter', Arial, sans-serif; padding: 40px; color: #333; }
+                    h1 { font-size: 22px; border-bottom: 2px solid #4285f4; padding-bottom: 8px; margin-bottom: 24px; }
+                    .customer-block { margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid #e0e0e0; }
+                    .customer-block h2 { font-size: 18px; margin: 0 0 12px 0; color: #4285f4; }
+                    .row { display: flex; padding: 4px 0; }
+                    .label { width: 160px; color: #888; font-size: 13px; }
+                    .value { font-size: 13px; color: #333; }
+                </style>
+                </head><body>
+                <h1>Customer List (${selectedCustomers.length} Customer${selectedCustomers.length > 1 ? 's' : ''})</h1>
+                ${customersHTML}
+                </body></html>
+            `);
+            printWin.document.close();
+            setTimeout(() => { printWin.print(); }, 300);
+        }
+
+        function bulkUpdate() {
+            // Reset form
+            document.querySelectorAll('input[name="bulkCustType"]').forEach(r => r.checked = false);
+            resetCustomDropdown('taxRateDropdown', 'Select a Tax');
+            resetCustomDropdown('paymentTermsDropdown', '');
+            // Show modal
+            document.getElementById('bulkUpdateModal').classList.add('show');
+        }
+
+        function closeBulkUpdateModal() {
+            document.getElementById('bulkUpdateModal').classList.remove('show');
+            // Close any open dropdowns
+            document.querySelectorAll('.custom-dropdown-panel.open').forEach(p => p.classList.remove('open'));
+            document.querySelectorAll('.custom-dropdown-trigger.open').forEach(t => t.classList.remove('open'));
+        }
+
+        async function submitBulkUpdate() {
+            const ids = getSelectedIds();
+            if (ids.length === 0) return;
+
+            // Gather only filled fields
+            const updates = {};
+            const custTypeRadio = document.querySelector('input[name="bulkCustType"]:checked');
+            if (custTypeRadio) updates.customer_type = custTypeRadio.value;
+
+            const taxRate = getCustomDropdownValue('taxRateDropdown');
+            if (taxRate) updates.tax_rate = taxRate;
+
+            const paymentTerms = getCustomDropdownValue('paymentTermsDropdown');
+            if (paymentTerms) updates.payment_terms = paymentTerms;
+
+            if (Object.keys(updates).length === 0) {
+                alert('Please fill in at least one field to update.');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/customers/bulk-update', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ids, updates })
+                });
+                const result = await res.json();
+                if (res.ok) {
+                    alert('\u2705 ' + result.message);
+                    closeBulkUpdateModal();
+                    deselectAllCustomers();
+                    loadCustomers();
+                } else {
+                    alert('Error: ' + (result.error || 'Failed to update'));
+                }
+            } catch (err) {
+                console.error('Error bulk updating:', err);
+                alert('Failed to update customers.');
+            }
+        }
+
+        // ===== CUSTOM DROPDOWN LOGIC =====
+        function toggleCustomDropdown(dropdownId) {
+            const dropdown = document.getElementById(dropdownId);
+            const trigger = dropdown.querySelector('.custom-dropdown-trigger');
+            const panel = dropdown.querySelector('.custom-dropdown-panel');
+
+            // Close other open dropdowns first
+            document.querySelectorAll('.custom-dropdown').forEach(dd => {
+                if (dd.id !== dropdownId) {
+                    dd.querySelector('.custom-dropdown-trigger').classList.remove('open');
+                    dd.querySelector('.custom-dropdown-panel').classList.remove('open');
+                }
+            });
+
+            trigger.classList.toggle('open');
+            panel.classList.toggle('open');
+
+            // Focus search input when opened
+            if (panel.classList.contains('open')) {
+                const searchInput = panel.querySelector('input');
+                if (searchInput) setTimeout(() => searchInput.focus(), 50);
+            }
+        }
+
+        function selectDropdownOption(dropdownId, optionEl) {
+            const dropdown = document.getElementById(dropdownId);
+            const trigger = dropdown.querySelector('.custom-dropdown-trigger');
+            const textEl = trigger.querySelector('.custom-dropdown-text');
+            const panel = dropdown.querySelector('.custom-dropdown-panel');
+
+            // Remove previous selection
+            dropdown.querySelectorAll('.custom-dropdown-option').forEach(o => o.classList.remove('selected'));
+            optionEl.classList.add('selected');
+
+            // Set text
+            textEl.textContent = optionEl.textContent;
+            dropdown.dataset.value = optionEl.dataset.value;
+
+            // Close
+            trigger.classList.remove('open');
+            panel.classList.remove('open');
+
+            // Reset search
+            const searchInput = panel.querySelector('input');
+            if (searchInput) {
+                searchInput.value = '';
+                filterDropdownOptions(dropdownId, '');
+            }
+        }
+
+        function filterDropdownOptions(dropdownId, query) {
+            const dropdown = document.getElementById(dropdownId);
+            const options = dropdown.querySelectorAll('.custom-dropdown-option');
+            const q = query.toLowerCase();
+            options.forEach(opt => {
+                if (opt.textContent.toLowerCase().includes(q)) {
+                    opt.classList.remove('hidden');
+                } else {
+                    opt.classList.add('hidden');
+                }
+            });
+        }
+
+        function getCustomDropdownValue(dropdownId) {
+            const dropdown = document.getElementById(dropdownId);
+            return dropdown.dataset.value || '';
+        }
+
+        function resetCustomDropdown(dropdownId, placeholder) {
+            const dropdown = document.getElementById(dropdownId);
+            const textEl = dropdown.querySelector('.custom-dropdown-text');
+            textEl.textContent = placeholder;
+            dropdown.dataset.value = '';
+            dropdown.querySelectorAll('.custom-dropdown-option').forEach(o => o.classList.remove('selected'));
+            const searchInput = dropdown.querySelector('.custom-dropdown-panel input');
+            if (searchInput) {
+                searchInput.value = '';
+                filterDropdownOptions(dropdownId, '');
+            }
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.custom-dropdown')) {
+                document.querySelectorAll('.custom-dropdown-panel.open').forEach(p => p.classList.remove('open'));
+                document.querySelectorAll('.custom-dropdown-trigger.open').forEach(t => t.classList.remove('open'));
+            }
+        });
+
+        // Close modal on overlay click
+        document.getElementById('bulkUpdateModal').addEventListener('click', function (e) {
+            if (e.target === this) closeBulkUpdateModal();
+        });
+
+        // Load on page ready
+        loadCustomers().then(() => {
+            // Auto-open detail view if ?view=ID parameter exists
+            const urlParams = new URLSearchParams(window.location.search);
+            const viewId = urlParams.get('view');
+            if (viewId) {
+                const customerId = parseInt(viewId);
+                if (customerId && allCustomers.find(c => c.id === customerId)) {
+                    openDetailView(customerId);
+                    // Clean up URL
+                    window.history.replaceState({}, '', '/customers.html');
+                }
+            }
+        });
     </script>
 </body>
 

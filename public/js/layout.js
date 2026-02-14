@@ -92,7 +92,7 @@
             }
 
             // Special handling for sales page
-            if (pageName === 'sales') {
+            if (pageName === 'sales' || pageName === 'sales-orders' || pageName === 'new-sales-order' || pageName === 'invoices' || pageName === 'sales-receipts' || pageName === 'new-sales-receipt' || pageName === 'customers' || pageName === 'new-customer') {
                 const salesMenuToggle = document.getElementById('salesMenuToggle');
                 const salesSubmenu = document.getElementById('salesSubmenu');
                 const salesArrow = document.getElementById('salesArrow');
@@ -102,6 +102,14 @@
                     salesSubmenu.style.maxHeight = '500px';
                     salesSubmenu.style.opacity = '1';
                     if (salesArrow) salesArrow.textContent = '⌄';
+                }
+
+                // Highlight the correct submenu item
+                const targetPage = pageName === 'new-sales-order' ? 'sales-orders' : (pageName === 'new-customer' ? 'customers' : (pageName === 'new-sales-receipt' ? 'sales-receipts' : pageName));
+                const subItem = document.querySelector(`.nav-submenu-item[data-page="${targetPage}"]`);
+                if (subItem) {
+                    subItem.classList.add('active');
+                    localStorage.setItem('activeSubmenuItem', targetPage);
                 }
             }
 

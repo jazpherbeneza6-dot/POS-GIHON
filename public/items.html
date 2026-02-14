@@ -457,18 +457,29 @@
     .sort-submenu {
       display: none;
       position: absolute;
-      left: -180px;
-      top: -4px;
+      left: -170px;
+      top: -8px;
       background: white;
       border: 1px solid #e5e7eb;
       border-radius: 8px;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-      min-width: 170px;
+      min-width: 180px;
       padding: 8px 0;
       z-index: 10000;
     }
 
-    .more-dropdown-item.has-submenu:hover .sort-submenu {
+    /* Create a hover bridge to prevent submenu from closing */
+    .sort-submenu::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: -30px;
+      width: 30px;
+      height: 100%;
+    }
+
+    .more-dropdown-item.has-submenu:hover .sort-submenu,
+    .sort-submenu:hover {
       display: block;
     }
 
@@ -506,18 +517,29 @@
     .import-submenu {
       display: none;
       position: absolute;
-      left: -170px;
-      top: 0;
+      left: -160px;
+      top: -8px;
       background: white;
       border: 1px solid #e5e7eb;
       border-radius: 8px;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-      min-width: 160px;
+      min-width: 170px;
       padding: 8px 0;
       z-index: 10000;
     }
 
-    .more-dropdown-item.has-submenu:hover .import-submenu {
+    /* Hover bridge for import submenu */
+    .import-submenu::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: -30px;
+      width: 30px;
+      height: 100%;
+    }
+
+    .more-dropdown-item.has-submenu:hover .import-submenu,
+    .import-submenu:hover {
       display: block;
     }
 
@@ -537,18 +559,29 @@
     .export-submenu {
       display: none;
       position: absolute;
-      left: -175px;
-      top: 0;
+      left: -165px;
+      top: -8px;
       background: white;
       border: 1px solid #e5e7eb;
       border-radius: 8px;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-      min-width: 165px;
+      min-width: 175px;
       padding: 8px 0;
       z-index: 10000;
     }
 
-    .more-dropdown-item.has-submenu:hover .export-submenu {
+    /* Hover bridge for export submenu */
+    .export-submenu::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: -30px;
+      width: 30px;
+      height: 100%;
+    }
+
+    .more-dropdown-item.has-submenu:hover .export-submenu,
+    .export-submenu:hover {
       display: block;
     }
 
@@ -580,8 +613,30 @@
       background: white;
       border-radius: 0;
       box-shadow: none;
-      overflow: visible;
+      overflow-x: auto;
+      overflow-y: visible;
       max-width: 100%;
+      /* Custom scrollbar styling */
+      scrollbar-width: thin;
+      scrollbar-color: #c1c1c1 #f1f1f1;
+    }
+
+    .items-table-wrapper::-webkit-scrollbar {
+      height: 10px;
+    }
+
+    .items-table-wrapper::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 5px;
+    }
+
+    .items-table-wrapper::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 5px;
+    }
+
+    .items-table-wrapper::-webkit-scrollbar-thumb:hover {
+      background: #a1a1a1;
     }
 
     .items-table {
@@ -841,6 +896,15 @@
     .zoho-td-name {
       font-weight: 400;
       min-width: 140px;
+    }
+
+    /* Inactive item styling - gray text to indicate inactive status */
+    .item-inactive td {
+      color: #999 !important;
+    }
+
+    .item-inactive .zoho-td-name {
+      color: #999 !important;
     }
 
     /* Right-align numeric columns */
@@ -1240,6 +1304,33 @@
       max-width: 350px;
     }
 
+    /* SKU Error Note */
+    .sku-error-note {
+      margin-top: 6px;
+      padding: 8px 12px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sku-error-note .error-icon {
+      font-size: 14px;
+    }
+
+    .sku-error-note .error-text {
+      font-size: 12px;
+      color: #dc2626;
+      font-weight: 500;
+    }
+
+    .form-input.sku-error {
+      border-color: #dc2626 !important;
+      background-color: #fef2f2 !important;
+    }
+
     .form-label-col-right {
       width: 100px;
       flex-shrink: 0;
@@ -1413,6 +1504,33 @@
       font-size: 10px;
       color: #9ca3af;
       margin-top: 8px;
+    }
+
+    /* Image Remove Button */
+    .image-remove-btn {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #ef4444;
+      color: white;
+      border: 2px solid white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      transition: all 0.2s ease;
+    }
+
+    .image-remove-btn:hover {
+      background: #dc2626;
+      transform: scale(1.1);
     }
 
     /* Dimensions Row */
@@ -3814,6 +3932,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
+      position: relative;
     }
 
     .filter-label {
@@ -3834,6 +3953,77 @@
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%233b82f6' d='M6 8L2 4h8z'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 8px center;
+    }
+
+    /* Custom Filter Dropdown */
+    .txn-filter-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      background: #374151;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+
+    .txn-filter-btn:hover {
+      background: #1f2937;
+    }
+
+    .txn-filter-btn .arrow {
+      font-size: 10px;
+      opacity: 0.7;
+    }
+
+    .txn-filter-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+      min-width: 220px;
+      z-index: 1000;
+      padding: 8px 0;
+      overflow: hidden;
+    }
+
+    .txn-filter-dropdown.open {
+      display: block;
+    }
+
+    .txn-filter-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px;
+      font-size: 14px;
+      color: #1f2937;
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+
+    .txn-filter-option:hover {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .txn-filter-option .check {
+      width: 16px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #374151;
+    }
+
+    .txn-filter-option:hover .check {
+      color: white;
     }
 
     /* Transactions Table */
@@ -4668,20 +4858,6 @@
           </div>
           <div
             style="display: grid; grid-template-columns: 140px 1fr; gap: 16px; margin-bottom: 16px; align-items: center;">
-            <label style="font-size: 14px; color: #374151;">Manufacturer</label>
-            <input type="text" id="newGroupManufacturer" class="form-input"
-              style="padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px;"
-              placeholder="Enter manufacturer name">
-          </div>
-          <div
-            style="display: grid; grid-template-columns: 140px 1fr; gap: 16px; margin-bottom: 16px; align-items: center;">
-            <label style="font-size: 14px; color: #374151;">Brand</label>
-            <input type="text" id="newGroupBrand" class="form-input"
-              style="padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px;"
-              placeholder="Enter brand name">
-          </div>
-          <div
-            style="display: grid; grid-template-columns: 140px 1fr; gap: 16px; margin-bottom: 16px; align-items: center;">
             <label style="font-size: 14px; color: #ef4444;">Attribute and Options<span
                 style="color: #ef4444;">*</span></label>
             <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
@@ -5225,7 +5401,7 @@
 
           <div class="item-detail-sidebar">
             <!-- Image Upload Area -->
-            <div class="detail-image-area">
+            <div class="detail-image-area" id="detailImageArea">
               <div class="detail-image-icon">🖼️</div>
               <div class="detail-image-text">
                 Drag image(s) here or<br>
@@ -5237,7 +5413,8 @@
             <div class="stock-panel">
               <div class="stock-panel-title">
                 Opening Stock : <span id="detailOpeningStock">0.00</span>
-                <span style="margin-left:auto;color:#3b82f6;font-size:12px;cursor:pointer;">✏️ Edit</span>
+                <span style="margin-left:auto;color:#3b82f6;font-size:12px;cursor:pointer;"
+                  onclick="openOpeningStockModal()">✏️ Edit</span>
               </div>
             </div>
 
@@ -5312,30 +5489,67 @@
           <div class="transactions-filter-bar">
             <div class="filter-select-wrapper">
               <span class="filter-label">Filter By:</span>
-              <select class="filter-select" id="transactionFilterType" onchange="filterTransactions()">
-                <option value="sales_orders">Sales Orders</option>
-                <option value="invoices">Invoices</option>
-                <option value="purchase_orders">Purchase Orders</option>
-                <option value="all">All Transactions</option>
-              </select>
+              <button class="txn-filter-btn" id="txnFilterBtn" onclick="toggleTxnFilterDropdown()">
+                <span id="txnFilterBtnText">Sales Orders</span>
+                <span class="arrow">▼</span>
+              </button>
+              <div class="txn-filter-dropdown" id="txnFilterDropdown">
+                <div class="txn-filter-option" data-value="sales" onclick="selectTxnFilter(this)"><span
+                    class="check">✓</span> Sales Orders</div>
+                <div class="txn-filter-option" data-value="invoices" onclick="selectTxnFilter(this)"><span
+                    class="check"></span> Invoices</div>
+                <div class="txn-filter-option" data-value="credit_notes" onclick="selectTxnFilter(this)"><span
+                    class="check"></span> Credit Notes</div>
+                <div class="txn-filter-option" data-value="sales_receipts" onclick="selectTxnFilter(this)"><span
+                    class="check"></span> Sales Receipts</div>
+                <div class="txn-filter-option" data-value="purchases" onclick="selectTxnFilter(this)"><span
+                    class="check"></span> Purchase Orders</div>
+                <div class="txn-filter-option" data-value="bills" onclick="selectTxnFilter(this)"><span
+                    class="check"></span> Bills</div>
+                <div class="txn-filter-option" data-value="vendor_credits" onclick="selectTxnFilter(this)"><span
+                    class="check"></span> Vendor Credits</div>
+                <div class="txn-filter-option" data-value="transfer_orders" onclick="selectTxnFilter(this)"><span
+                    class="check"></span> Transfer Orders</div>
+                <div class="txn-filter-option" data-value="adjustments" onclick="selectTxnFilter(this)"><span
+                    class="check"></span> Inventory Adjustments</div>
+              </div>
+              <input type="hidden" id="transactionFilterType" value="sales">
             </div>
             <div class="filter-select-wrapper">
               <span class="filter-label">Status:</span>
-              <select class="filter-select" id="transactionStatusFilter" onchange="filterTransactions()">
-                <option value="all">All</option>
-                <option value="confirmed">Confirmed</option>
-                <option value="pending">Pending</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
+              <button class="txn-filter-btn" id="txnStatusBtn" onclick="toggleTxnStatusDropdown()">
+                <span id="txnStatusBtnText">All</span>
+                <span class="arrow">▼</span>
+              </button>
+              <div class="txn-filter-dropdown" id="txnStatusDropdown">
+                <div class="txn-filter-option" data-value="all" onclick="selectTxnStatus(this)"><span
+                    class="check">✓</span> All</div>
+                <div class="txn-filter-option" data-value="completed" onclick="selectTxnStatus(this)"><span
+                    class="check"></span> Completed</div>
+                <div class="txn-filter-option" data-value="confirmed" onclick="selectTxnStatus(this)"><span
+                    class="check"></span> Confirmed</div>
+                <div class="txn-filter-option" data-value="received" onclick="selectTxnStatus(this)"><span
+                    class="check"></span> Received</div>
+                <div class="txn-filter-option" data-value="ordered" onclick="selectTxnStatus(this)"><span
+                    class="check"></span> Ordered</div>
+                <div class="txn-filter-option" data-value="pending" onclick="selectTxnStatus(this)"><span
+                    class="check"></span> Pending</div>
+                <div class="txn-filter-option" data-value="cancelled" onclick="selectTxnStatus(this)"><span
+                    class="check"></span> Cancelled</div>
+                <div class="txn-filter-option" data-value="adjusted" onclick="selectTxnStatus(this)"><span
+                    class="check"></span> Adjusted</div>
+              </div>
+              <input type="hidden" id="transactionStatusFilter" value="all">
             </div>
           </div>
           <table class="transactions-table">
-            <thead>
+            <thead id="transactionsTableHead">
               <tr>
                 <th class="sortable">DATE <span class="sort-icon">↓</span></th>
-                <th>SALES ORDER#</th>
-                <th>CUSTOMER NAME</th>
-                <th>QUANTITY SOLD</th>
+                <th>TYPE</th>
+                <th>REFERENCE#</th>
+                <th>PARTY NAME</th>
+                <th>QUANTITY</th>
                 <th>PRICE</th>
                 <th>TOTAL</th>
                 <th>STATUS</th>
@@ -5343,7 +5557,7 @@
             </thead>
             <tbody id="transactionsTableBody">
               <tr>
-                <td colspan="7" class="transactions-empty">No transactions found for this item</td>
+                <td colspan="8" class="transactions-empty">No transactions found for this item</td>
               </tr>
             </tbody>
           </table>
@@ -5365,6 +5579,41 @@
             </tbody>
           </table>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Opening Stock Details Modal -->
+  <div class="manage-modal" id="openingStockModal">
+    <div class="manage-modal-content" style="max-width: 550px;">
+      <div class="manage-modal-header" style="border-bottom: 1px solid #e5e7eb; padding: 18px 24px;">
+        <h2 style="font-size: 16px; font-weight: 600; color: #1a1f3a; margin: 0;">Opening Stock Details</h2>
+        <button class="manage-modal-close" onclick="closeOpeningStockModal()"
+          style="color: #3b82f6; border: 2px solid #3b82f6; border-radius: 4px; width: 28px; height: 28px; font-size: 16px; display: flex; align-items: center; justify-content: center; background: white; cursor: pointer;">✕</button>
+      </div>
+      <div class="manage-modal-body" style="padding: 30px 24px;">
+        <div style="display: flex; align-items: center; margin-bottom: 24px;">
+          <label
+            style="width: 200px; font-size: 14px; color: #333; border-bottom: 1px dashed #ccc; padding-bottom: 2px;">Opening
+            Stock</label>
+          <input type="number" id="openingStockInput" class="manage-form-input"
+            style="flex: 1; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px;"
+            placeholder="0">
+        </div>
+        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+          <label
+            style="width: 200px; font-size: 14px; color: #ef4444; border-bottom: 1px dashed #ccc; padding-bottom: 2px;">Opening
+            Stock Rate per Unit*</label>
+          <input type="number" id="openingStockRateInput" class="manage-form-input"
+            style="flex: 1; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px;"
+            placeholder="0" step="0.01">
+        </div>
+      </div>
+      <div style="padding: 16px 24px; border-top: 1px solid #e5e7eb; display: flex; gap: 12px;">
+        <button onclick="saveOpeningStock()"
+          style="padding: 8px 24px; background: #3b82f6; color: white; border: none; border-radius: 4px; font-size: 14px; font-weight: 500; cursor: pointer;">Save</button>
+        <button onclick="closeOpeningStockModal()"
+          style="padding: 8px 24px; background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px; font-weight: 500; cursor: pointer;">Cancel</button>
       </div>
     </div>
   </div>
@@ -5651,7 +5900,7 @@
           </div>
           <div class="zoho-search-container">
             <input type="text" id="itemSearchInput" class="zoho-search-input"
-              placeholder="Search by Name or Description..." oninput="searchItemsByNameDesc()">
+              placeholder="Search by Name, SKU, Barcode, or any field..." oninput="searchItemsByNameDesc()">
             <span class="zoho-search-icon">🔍</span>
           </div>
         </div>
@@ -5854,11 +6103,13 @@
             </div>
             <!-- Image Upload Area -->
             <div class="image-upload-area">
-              <div class="image-dropzone" id="imageDropzone" onclick="document.getElementById('imageFileInput').click()"
+              <div class="image-dropzone" id="imageDropzone" onclick="triggerImageUpload(event)"
                 ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
-                <div id="imagePreviewContainer" style="display: none;">
+                <div id="imagePreviewContainer" style="display: none; position: relative;">
                   <img id="imagePreview" src="" alt="Preview"
                     style="max-width: 100%; max-height: 140px; border-radius: 6px;">
+                  <button type="button" class="image-remove-btn" onclick="removeUploadedImage(event)"
+                    title="Remove image">×</button>
                 </div>
                 <div id="imageDropzoneContent">
                   <div class="image-dropzone-icon">🖼️</div>
@@ -5867,7 +6118,7 @@
                   <div class="image-dropzone-hint">You can add up to 15 images, each not exceeding 5 MB in size</div>
                 </div>
               </div>
-              <input type="file" id="imageFileInput" accept="image/*" class="d-none"
+              <input type="file" id="imageFileInput" accept="image/*" class="d-none" style="display: none;"
                 onchange="handleImageUpload(event)">
             </div>
           </div>
@@ -5878,7 +6129,11 @@
               <label class="form-label">SKU <span class="help-icon">?</span></label>
             </div>
             <div class="form-input-col">
-              <input type="text" class="form-input" id="itemSku" placeholder="">
+              <input type="text" class="form-input" id="itemSku" placeholder="" oninput="checkSkuDuplicate(this.value)">
+              <div id="skuErrorNote" class="sku-error-note" style="display: none;">
+                <span class="error-icon">⚠️</span>
+                <span class="error-text">This SKU already exists! Please use a different SKU.</span>
+              </div>
             </div>
           </div>
 
@@ -6239,7 +6494,7 @@
         </form>
       </div>
       <div class="new-item-footer">
-        <button type="submit" class="btn-save" onclick="saveItem(event)">Save</button>
+        <button type="button" class="btn-save" onclick="saveItem(event)">Save</button>
         <button type="button" class="btn-cancel" onclick="closeItemModal()">Cancel</button>
       </div>
     </div>

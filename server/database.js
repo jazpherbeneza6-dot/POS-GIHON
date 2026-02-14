@@ -206,6 +206,48 @@ async function init() {
         ALTER TABLE items ADD COLUMN IF NOT EXISTS brand VARCHAR(255);
       `);
 
+      // Add additional item fields (description, UPC, EAN, ISBN, dimensions, tax, account)
+      await pool.query(`
+        ALTER TABLE items ADD COLUMN IF NOT EXISTS description TEXT;
+      `);
+      await pool.query(`
+        ALTER TABLE items ADD COLUMN IF NOT EXISTS upc VARCHAR(100);
+      `);
+      await pool.query(`
+        ALTER TABLE items ADD COLUMN IF NOT EXISTS ean VARCHAR(100);
+      `);
+      await pool.query(`
+        ALTER TABLE items ADD COLUMN IF NOT EXISTS isbn VARCHAR(100);
+      `);
+      await pool.query(`
+        ALTER TABLE items ADD COLUMN IF NOT EXISTS dimensions VARCHAR(255);
+      `);
+      await pool.query(`
+        ALTER TABLE items ADD COLUMN IF NOT EXISTS tax_rate VARCHAR(100);
+      `);
+      await pool.query(`
+        ALTER TABLE items ADD COLUMN IF NOT EXISTS account VARCHAR(255);
+      `);
+
+      // Add type, weight, purchase_account, purchase_description columns
+      await pool.query(`
+        ALTER TABLE items ADD COLUMN IF NOT EXISTS type VARCHAR(50) DEFAULT 'goods';
+      `);
+      await pool.query(`
+        ALTER TABLE items ADD COLUMN IF NOT EXISTS weight VARCHAR(100);
+      `);
+      await pool.query(`
+        ALTER TABLE items ADD COLUMN IF NOT EXISTS purchase_account VARCHAR(255);
+      `);
+      await pool.query(`
+        ALTER TABLE items ADD COLUMN IF NOT EXISTS purchase_description TEXT;
+      `);
+
+      // Add status column to items table for active/inactive filtering
+      await pool.query(`
+        ALTER TABLE items ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'active';
+      `);
+
       // High-precision NUMERIC(38,10) migration for existing columns
       // This upgrades INTEGER columns to support extremely large values (up to 10^38)
       console.log('Running high-precision NUMERIC migration...');
@@ -293,6 +335,57 @@ async function init() {
       `);
 
       console.log('Inventory adjustments tables created');
+
+      // Add tax_rate column to customers table
+      await pool.query(`
+        ALTER TABLE customers ADD COLUMN IF NOT EXISTS tax_rate VARCHAR(50);
+      `);
+
+      // Add address and website columns to customers table
+      await pool.query(`
+        ALTER TABLE customers ADD COLUMN IF NOT EXISTS website VARCHAR(255);
+        ALTER TABLE customers ADD COLUMN IF NOT EXISTS billing_street TEXT;
+        ALTER TABLE customers ADD COLUMN IF NOT EXISTS billing_city VARCHAR(255);
+        ALTER TABLE customers ADD COLUMN IF NOT EXISTS billing_state VARCHAR(255);
+        ALTER TABLE customers ADD COLUMN IF NOT EXISTS billing_zip VARCHAR(50);
+        ALTER TABLE customers ADD COLUMN IF NOT EXISTS billing_country VARCHAR(255);
+        ALTER TABLE customers ADD COLUMN IF NOT EXISTS shipping_street TEXT;
+        ALTER TABLE customers ADD COLUMN IF NOT EXISTS shipping_city VARCHAR(255);
+        ALTER TABLE customers ADD COLUMN IF NOT EXISTS shipping_state VARCHAR(255);
+        ALTER TABLE customers ADD COLUMN IF NOT EXISTS shipping_zip VARCHAR(50);
+        ALTER TABLE customers ADD COLUMN IF NOT EXISTS shipping_country VARCHAR(255);
+      `);
+
+      // Create customer_changes table for tracking edit history
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS customer_changes (
+          id SERIAL PRIMARY KEY,
+          customer_id INTEGER NOT NULL,
+          field_name VARCHAR(100) NOT NULL,
+          old_value TEXT,
+          new_value TEXT,
+          changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
+        );
+        CREATE INDEX IF NOT EXISTS idx_customer_changes_customer_id ON customer_changes(customer_id);
+      `);
+
+      // Create contact_persons table
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS contact_persons (
+          id SERIAL PRIMARY KEY,
+          customer_id INTEGER NOT NULL,
+          salutation VARCHAR(10),
+          first_name VARCHAR(255),
+          last_name VARCHAR(255),
+          email VARCHAR(255),
+          work_phone VARCHAR(50),
+          mobile VARCHAR(50),
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
+        );
+      `);
+
       console.log('Database migration completed');
     } catch (migrationError) {
       // Column might already exist, ignore error

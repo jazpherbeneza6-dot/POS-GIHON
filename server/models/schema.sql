@@ -153,6 +153,62 @@ CREATE TABLE IF NOT EXISTS brands (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Customers table
+CREATE TABLE IF NOT EXISTS customers (
+    id SERIAL PRIMARY KEY,
+    customer_type VARCHAR(20) DEFAULT 'Business',
+    salutation VARCHAR(10),
+    first_name VARCHAR(255),
+    last_name VARCHAR(255),
+    company_name VARCHAR(255),
+    display_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255),
+    work_phone VARCHAR(50),
+    mobile VARCHAR(50),
+    website VARCHAR(255),
+    payment_terms VARCHAR(100),
+    currency VARCHAR(10) DEFAULT 'PHP',
+    tax_rate VARCHAR(50),
+    billing_street TEXT,
+    billing_city VARCHAR(255),
+    billing_state VARCHAR(255),
+    billing_zip VARCHAR(50),
+    billing_country VARCHAR(255),
+    shipping_street TEXT,
+    shipping_city VARCHAR(255),
+    shipping_state VARCHAR(255),
+    shipping_zip VARCHAR(50),
+    shipping_country VARCHAR(255),
+    status VARCHAR(20) DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Customer changes history
+CREATE TABLE IF NOT EXISTS customer_changes (
+    id SERIAL PRIMARY KEY,
+    customer_id INTEGER NOT NULL,
+    field_name VARCHAR(100) NOT NULL,
+    old_value TEXT,
+    new_value TEXT,
+    changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
+);
+
+-- Contact persons
+CREATE TABLE IF NOT EXISTS contact_persons (
+    id SERIAL PRIMARY KEY,
+    customer_id INTEGER NOT NULL,
+    salutation VARCHAR(10),
+    first_name VARCHAR(255),
+    last_name VARCHAR(255),
+    email VARCHAR(255),
+    work_phone VARCHAR(50),
+    mobile VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
+);
+
 -- Indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_items_barcode ON items(barcode);
 CREATE INDEX IF NOT EXISTS idx_items_sku ON items(sku);
@@ -166,3 +222,46 @@ CREATE INDEX IF NOT EXISTS idx_barcodes_barcode ON barcodes(barcode);
 CREATE INDEX IF NOT EXISTS idx_suppliers_name ON suppliers(name);
 CREATE INDEX IF NOT EXISTS idx_documents_folder_id ON documents(folder_id);
 CREATE INDEX IF NOT EXISTS idx_documents_trashed ON documents(trashed);
+CREATE INDEX IF NOT EXISTS idx_customers_display_name ON customers(display_name);
+CREATE INDEX IF NOT EXISTS idx_customer_changes_customer_id ON customer_changes(customer_id);
+
+-- Sales Orders
+CREATE TABLE IF NOT EXISTS sales_orders (
+    id SERIAL PRIMARY KEY,
+    order_number VARCHAR(50) UNIQUE,
+    order_date DATE DEFAULT CURRENT_DATE,
+    reference_number VARCHAR(100),
+    customer_id INTEGER,
+    customer_name VARCHAR(255),
+    salesperson_name VARCHAR(255),
+    payment_terms VARCHAR(100),
+    status VARCHAR(50) DEFAULT 'DRAFT',
+    notes TEXT,
+    sub_total DECIMAL(12,2) DEFAULT 0,
+    discount DECIMAL(12,2) DEFAULT 0,
+    total DECIMAL(12,2) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS sales_order_items (
+    id SERIAL PRIMARY KEY,
+    sales_order_id INTEGER NOT NULL,
+    item_name VARCHAR(255),
+    quantity DECIMAL(12,2) DEFAULT 1,
+    rate DECIMAL(12,2) DEFAULT 0,
+    tax VARCHAR(50),
+    amount DECIMAL(12,2) DEFAULT 0,
+    FOREIGN KEY (sales_order_id) REFERENCES sales_orders(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS salespersons (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255),
+    password VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_sales_orders_status ON sales_orders(status);
+CREATE INDEX IF NOT EXISTS idx_sales_orders_date ON sales_orders(order_date);
