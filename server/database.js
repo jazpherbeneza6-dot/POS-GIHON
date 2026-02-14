@@ -386,6 +386,54 @@ async function init() {
         );
       `);
 
+      // ========== Vendor (Suppliers) table expansion ==========
+      await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS salutation VARCHAR(10);`);
+      await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS first_name VARCHAR(255);`);
+      await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS last_name VARCHAR(255);`);
+      await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS company_name VARCHAR(255);`);
+      await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS display_name VARCHAR(255);`);
+      await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS work_phone VARCHAR(50);`);
+      await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS mobile VARCHAR(50);`);
+      await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS currency VARCHAR(10) DEFAULT 'PHP';`);
+      await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS payment_terms VARCHAR(50) DEFAULT 'due-on-receipt';`);
+      await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS tax_rate VARCHAR(50);`);
+      await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS company_id_number VARCHAR(100);`);
+      await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS vendor_language VARCHAR(50) DEFAULT 'english';`);
+      await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS billing_attention VARCHAR(255);`);
+      await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS billing_address TEXT;`);
+      await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS billing_city VARCHAR(255);`);
+      await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS billing_state VARCHAR(255);`);
+      await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS billing_zip VARCHAR(50);`);
+      await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS billing_country VARCHAR(255) DEFAULT 'Philippines';`);
+      await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS billing_phone VARCHAR(50);`);
+      await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS shipping_attention VARCHAR(255);`);
+      await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS shipping_address TEXT;`);
+      await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS shipping_city VARCHAR(255);`);
+      await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS shipping_state VARCHAR(255);`);
+      await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS shipping_zip VARCHAR(50);`);
+      await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS shipping_country VARCHAR(255) DEFAULT 'Philippines';`);
+      await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS shipping_phone VARCHAR(50);`);
+      await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS remarks TEXT;`);
+      await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'active';`);
+      await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS enable_portal BOOLEAN DEFAULT FALSE;`);
+
+      // Create vendor_contact_persons table
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS vendor_contact_persons (
+          id SERIAL PRIMARY KEY,
+          vendor_id INTEGER NOT NULL,
+          salutation VARCHAR(10),
+          first_name VARCHAR(255),
+          last_name VARCHAR(255),
+          email VARCHAR(255),
+          phone VARCHAR(50),
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (vendor_id) REFERENCES suppliers(id) ON DELETE CASCADE
+        );
+      `);
+      await pool.query(`CREATE INDEX IF NOT EXISTS idx_vendor_contact_persons_vendor_id ON vendor_contact_persons(vendor_id);`);
+
+      console.log('Vendor schema expansion completed');
       console.log('Database migration completed');
     } catch (migrationError) {
       // Column might already exist, ignore error

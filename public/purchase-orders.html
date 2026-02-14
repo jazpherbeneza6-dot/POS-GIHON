@@ -296,6 +296,61 @@
         function goToTransitReceives() {
             window.location.href = '/purchase-receives.html';
         }
+
+        // Load and display purchase orders
+        async function loadPurchaseOrders() {
+            try {
+                const response = await fetch('/api/purchases');
+                const purchases = await response.json();
+
+                if (purchases.length === 0) {
+                    document.getElementById('emptyState').style.display = 'flex';
+                    document.getElementById('ordersContainer').style.display = 'none';
+                    return;
+                }
+
+                document.getElementById('emptyState').style.display = 'none';
+                document.getElementById('ordersContainer').style.display = 'block';
+
+                const tbody = document.getElementById('ordersBody');
+                tbody.innerHTML = '';
+
+                purchases.forEach(po => {
+                    const date = po.date ? new Date(po.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+                    const status = (po.status || 'draft').toUpperCase();
+                    const statusClass = (po.status || 'draft').toLowerCase();
+                    const statusColors = {
+                        'draft': '#856404; background: #fff3cd',
+                        'ordered': '#084298; background: #cfe2ff',
+                        'received': '#0a3622; background: #d1e7dd'
+                    };
+                    const amount = parseFloat(po.total_amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+
+                    const row = document.createElement('tr');
+                    row.style.cursor = 'pointer';
+                    row.addEventListener('click', () => {
+                        window.location.href = '/purchase-order-detail.html?id=' + po.id;
+                    });
+                    row.addEventListener('mouseenter', () => { row.style.background = '#f5f8ff'; });
+                    row.addEventListener('mouseleave', () => { row.style.background = ''; });
+
+                    row.innerHTML = `
+                        <td>${date}</td>
+                        <td style="color: #3366cc; font-weight: 500;">${po.po_number || 'PO-' + po.id}</td>
+                        <td>${po.reference_number || '-'}</td>
+                        <td>${po.supplier_name || '-'}</td>
+                        <td><span style="padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; color: ${statusColors[statusClass] || '#666; background: #f0f0f0'}">${status}</span></td>
+                        <td>-</td>
+                        <td style="font-weight: 500;">PHP${amount}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading purchase orders:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadPurchaseOrders);
     </script>
 </body>
 

@@ -1,0 +1,2306 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Detail - Inventory Management</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', 'Source Sans Pro', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f5f6fa;
+            font-size: 13px;
+        }
+
+        .main-layout {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .content {
+            flex: 1;
+            margin-left: 260px;
+            background: #f5f6fa;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Top Header Bar */
+        .detail-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 24px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            flex-shrink: 0;
+        }
+
+        .detail-header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .vendor-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .detail-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-edit {
+            padding: 8px 18px;
+            background: white;
+            color: #333;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-edit:hover {
+            background: #f9fafb;
+        }
+
+        .btn-info {
+            width: 32px;
+            height: 32px;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .btn-new-transaction {
+            padding: 8px 16px;
+            background: #e85d26;
+            color: white;
+            border: none;
+            border-radius: 4px 0 0 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-new-transaction:hover {
+            background: #d04f1c;
+        }
+
+        .btn-new-transaction-dropdown {
+            padding: 8px 10px;
+            background: #d04f1c;
+            color: white;
+            border: none;
+            border-left: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            font-size: 10px;
+        }
+
+        .btn-more-detail {
+            padding: 8px 16px;
+            background: white;
+            color: #333;
+            border: 1px solid #d1d5db;
+            border-radius: 4px 0 0 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-more-detail:hover {
+            background: #f9fafb;
+        }
+
+        .btn-more-dropdown {
+            padding: 8px 10px;
+            background: white;
+            color: #333;
+            border: 1px solid #d1d5db;
+            border-left: none;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            font-size: 10px;
+        }
+
+        .btn-close-detail {
+            width: 32px;
+            height: 32px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #999;
+            cursor: pointer;
+        }
+
+        .btn-close-detail:hover {
+            color: #333;
+        }
+
+        /* Tabs */
+        .detail-tabs {
+            display: flex;
+            padding: 0 24px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            flex-shrink: 0;
+        }
+
+        .detail-tab {
+            padding: 12px 20px;
+            font-size: 13px;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .detail-tab:hover {
+            color: #333;
+        }
+
+        .detail-tab.active {
+            color: #333;
+            font-weight: 500;
+            border-bottom-color: #4285f4;
+        }
+
+        /* Main Content Area */
+        .detail-body {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Left Panel */
+        .detail-left {
+            width: 480px;
+            min-width: 480px;
+            background: white;
+            border-right: 1px solid #e9ecef;
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        .vendor-info-card {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .vendor-info-label {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 12px;
+        }
+
+        .vendor-contact-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .vendor-avatar {
+            width: 44px;
+            height: 44px;
+            background: #e8eaed;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #666;
+            flex-shrink: 0;
+        }
+
+        .vendor-contact-details {
+            flex: 1;
+        }
+
+        .vendor-contact-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+        }
+
+        .vendor-contact-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 3px;
+        }
+
+        .vendor-contact-item .icon {
+            width: 14px;
+            text-align: center;
+            color: #888;
+        }
+
+        .vendor-settings-icon {
+            color: #999;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .vendor-settings-icon:hover {
+            color: #333;
+        }
+
+        /* Collapsible Sections */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 24px;
+            cursor: pointer;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .section-header:hover {
+            background: #fafbfc;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #333;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section-toggle {
+            font-size: 10px;
+            color: #999;
+            transition: transform 0.2s;
+        }
+
+        .section-toggle.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        .section-content {
+            padding: 14px 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .section-content.collapsed {
+            display: none;
+        }
+
+        .detail-row {
+            margin-bottom: 10px;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 2px;
+        }
+
+        .detail-value {
+            font-size: 13px;
+            color: #333;
+        }
+
+        .detail-value.link {
+            color: #4285f4;
+            cursor: pointer;
+        }
+
+        .detail-value.link:hover {
+            text-decoration: underline;
+        }
+
+        /* Contact Persons Section */
+        .contacts-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 24px;
+            cursor: pointer;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .contacts-header:hover {
+            background: #fafbfc;
+        }
+
+        .contacts-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .add-contact-icon {
+            width: 24px;
+            height: 24px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .add-contact-icon:hover {
+            background: #3367d6;
+        }
+
+        .contacts-content {
+            padding: 14px 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .no-contacts {
+            font-size: 13px;
+            color: #999;
+            font-style: italic;
+        }
+
+        .contact-person-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .contact-person-item:last-child {
+            border-bottom: none;
+        }
+
+        .contact-person-avatar {
+            width: 32px;
+            height: 32px;
+            background: #e8eaed;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .contact-person-info {
+            flex: 1;
+        }
+
+        .contact-person-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .contact-person-detail {
+            font-size: 11px;
+            color: #888;
+        }
+
+        /* Right Panel */
+        .detail-right {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        /* What's Next Card */
+        .whats-next-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px 24px;
+            margin-bottom: 20px;
+        }
+
+        .whats-next-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .whats-next-icon {
+            color: #f59e0b;
+            font-size: 16px;
+        }
+
+        .whats-next-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .whats-next-text {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 14px;
+        }
+
+        .whats-next-text a {
+            color: #4285f4;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .whats-next-text a:hover {
+            text-decoration: underline;
+        }
+
+        .whats-next-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-wn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-wn-primary {
+            background: #4285f4;
+            color: white;
+            border: none;
+        }
+
+        .btn-wn-primary:hover {
+            background: #3367d6;
+        }
+
+        .btn-wn-outline {
+            background: white;
+            color: #333;
+            border: 1px solid #d1d5db;
+        }
+
+        .btn-wn-outline:hover {
+            background: #f9fafb;
+        }
+
+        .btn-wn-more {
+            width: 28px;
+            height: 28px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            color: #999;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Payment Info */
+        .payment-info {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px 24px;
+            margin-bottom: 20px;
+        }
+
+        .payment-row {
+            margin-bottom: 14px;
+        }
+
+        .payment-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 2px;
+        }
+
+        .payment-value {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* Payables Table */
+        .payables-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .payables-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+        }
+
+        .payables-table th {
+            text-align: left;
+            padding: 10px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e9ecef;
+            background: #f9fafb;
+        }
+
+        .payables-table td {
+            padding: 12px;
+            font-size: 13px;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        /* Items Summary */
+        .items-summary {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 20px;
+            padding: 12px 0;
+        }
+
+        .items-summary-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .items-summary-label {
+            font-size: 13px;
+            color: #555;
+        }
+
+        .items-summary-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #e85d26;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 18px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #4285f4;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .timeline-date {
+            position: absolute;
+            left: -40px;
+            top: 0;
+            width: 40px;
+            text-align: right;
+            padding-right: 20px;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -27px;
+            top: 6px;
+            width: 12px;
+            height: 12px;
+            background: white;
+            border: 2px solid #4285f4;
+            border-radius: 2px;
+        }
+
+        .timeline-date-text {
+            font-size: 11px;
+            color: #888;
+            white-space: nowrap;
+            position: absolute;
+            right: 32px;
+            top: 0;
+        }
+
+        .timeline-time-text {
+            font-size: 10px;
+            color: #aaa;
+            white-space: nowrap;
+            position: absolute;
+            right: 32px;
+            top: 16px;
+        }
+
+        .timeline-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-left: 20px;
+        }
+
+        .timeline-card-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .timeline-card-desc {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .timeline-card-user {
+            font-size: 12px;
+            color: #555;
+            margin-top: 2px;
+        }
+
+        /* Tab content areas */
+        .tab-content-area {
+            display: none;
+        }
+
+        .tab-content-area.active {
+            display: block;
+        }
+
+        /* ========== COMMENTS TAB ========== */
+        .comment-editor-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            margin-bottom: 24px;
+        }
+
+        .comment-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            padding: 8px 12px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .comment-toolbar-btn {
+            width: 30px;
+            height: 28px;
+            border: none;
+            background: none;
+            font-size: 14px;
+            color: #555;
+            cursor: pointer;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .comment-toolbar-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .comment-toolbar-btn.bold {
+            font-weight: 700;
+        }
+
+        .comment-toolbar-btn.italic {
+            font-style: italic;
+        }
+
+        .comment-toolbar-btn.underline {
+            text-decoration: underline;
+        }
+
+        .comment-input {
+            width: 100%;
+            min-height: 60px;
+            border: none;
+            padding: 12px 14px;
+            font-size: 13px;
+            color: #555;
+            resize: vertical;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .comment-input::placeholder {
+            color: #aaa;
+        }
+
+        .all-comments-header {
+            font-size: 13px;
+            font-weight: 700;
+            color: #333;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e9ecef;
+            margin-bottom: 16px;
+        }
+
+        .no-comments-msg {
+            text-align: center;
+            color: #888;
+            font-size: 13px;
+            padding: 40px 0;
+        }
+
+        .comment-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .comment-item:last-child {
+            border-bottom: none;
+        }
+
+        .comment-meta {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+
+        .comment-text {
+            font-size: 13px;
+            color: #333;
+        }
+
+        /* ========== TRANSACTIONS TAB ========== */
+        .txn-section {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+
+        .txn-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            cursor: pointer;
+            background: #f9fafb;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .txn-section-header:hover {
+            background: #f0f2f5;
+        }
+
+        .txn-section-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .txn-section-toggle {
+            font-size: 10px;
+            color: #888;
+            transition: transform 0.2s;
+        }
+
+        .txn-section-toggle.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        .txn-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .txn-section-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .txn-filter-btn {
+            padding: 4px 10px;
+            font-size: 11px;
+            color: #4285f4;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .txn-filter-btn:hover {
+            text-decoration: underline;
+        }
+
+        .txn-new-btn {
+            padding: 4px 12px;
+            font-size: 11px;
+            color: #e85d26;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .txn-new-btn:hover {
+            text-decoration: underline;
+        }
+
+        .txn-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .txn-table th {
+            text-align: left;
+            padding: 10px 14px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            border-bottom: 1px solid #e9ecef;
+            background: white;
+        }
+
+        .txn-table td {
+            padding: 10px 14px;
+            font-size: 12px;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .txn-empty {
+            text-align: center;
+            padding: 20px;
+            font-size: 13px;
+            color: #888;
+        }
+
+        .txn-empty a {
+            color: #e85d26;
+            text-decoration: none;
+            font-weight: 500;
+            margin-left: 4px;
+        }
+
+        .txn-empty a:hover {
+            text-decoration: underline;
+        }
+
+        .txn-section-body.collapsed {
+            display: none;
+        }
+
+        /* ========== MAILS TAB ========== */
+        .mails-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .mails-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 18px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .mails-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .link-email-btn {
+            padding: 6px 14px;
+            font-size: 12px;
+            color: #4285f4;
+            background: none;
+            border: 1px solid #4285f4;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .link-email-btn:hover {
+            background: #f0f6ff;
+        }
+
+        .mails-empty {
+            text-align: center;
+            padding: 60px 20px;
+            font-size: 14px;
+            color: #888;
+        }
+
+        .mails-empty .warn-icon {
+            color: #e8a735;
+            font-size: 16px;
+            margin-right: 8px;
+        }
+
+        /* ========== STATEMENT TAB ========== */
+        .statement-header-info {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .statement-header-info h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 4px 0;
+        }
+
+        .statement-header-info .date-range {
+            font-size: 13px;
+            color: #e85d26;
+        }
+
+        .statement-document {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+        }
+
+        .stmt-company-info {
+            text-align: right;
+            margin-bottom: 30px;
+        }
+
+        .stmt-company-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .stmt-company-detail {
+            font-size: 12px;
+            color: #555;
+        }
+
+        .stmt-to-section {
+            margin-bottom: 20px;
+        }
+
+        .stmt-to-label {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 2px;
+        }
+
+        .stmt-to-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4285f4;
+        }
+
+        .stmt-title-section {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        .stmt-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .stmt-title-underline {
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #e85d26);
+            margin: 4px 0 4px auto;
+            width: 280px;
+        }
+
+        .stmt-date-range {
+            font-size: 11px;
+            color: #888;
+        }
+
+        .stmt-summary-box {
+            border: 1px solid #e0e0e0;
+            margin-bottom: 24px;
+            width: 280px;
+            margin-left: auto;
+        }
+
+        .stmt-summary-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #333;
+            text-align: center;
+            padding: 8px;
+            border-bottom: 1px solid #e0e0e0;
+            background: #fafafa;
+        }
+
+        .stmt-summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 12px;
+            font-size: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .stmt-summary-row:last-child {
+            border-bottom: none;
+        }
+
+        .stmt-summary-label {
+            color: #555;
+        }
+
+        .stmt-summary-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .stmt-summary-value.orange {
+            color: #e85d26;
+        }
+
+        .stmt-transactions-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .stmt-transactions-table th {
+            text-align: left;
+            padding: 10px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #333;
+            border-bottom: 2px solid #333;
+            background: white;
+        }
+
+        .stmt-transactions-table td {
+            padding: 10px 12px;
+            font-size: 12px;
+            color: #333;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .stmt-transactions-table td.bold {
+            font-weight: 600;
+        }
+
+        .stmt-balance-due {
+            display: flex;
+            justify-content: flex-end;
+            gap: 40px;
+            padding: 12px 0;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .stmt-balance-due .label {
+            color: #333;
+        }
+
+        .stmt-balance-due .value {
+            color: #333;
+        }
+
+        /* ========== ADDRESS MODAL ========== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 60px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: 6px;
+            width: 440px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .modal-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .modal-close {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: none;
+            font-size: 18px;
+            color: #888;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+
+        .modal-close:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-field {
+            margin-bottom: 16px;
+        }
+
+        .modal-field label {
+            display: block;
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 4px;
+        }
+
+        .modal-field input,
+        .modal-field select,
+        .modal-field textarea {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+            color: #333;
+            outline: none;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+
+        .modal-field input:focus,
+        .modal-field select:focus,
+        .modal-field textarea:focus {
+            border-color: #4285f4;
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.1);
+        }
+
+        .modal-field textarea {
+            resize: vertical;
+            min-height: 50px;
+        }
+
+        .modal-field-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-field-row .modal-field {
+            flex: 1;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            padding: 14px 20px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .modal-btn {
+            padding: 8px 20px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .modal-btn-cancel {
+            background: white;
+            border: 1px solid #d1d5db;
+            color: #333;
+        }
+
+        .modal-btn-cancel:hover {
+            background: #f9fafb;
+        }
+
+        .modal-btn-save {
+            background: #4285f4;
+            border: none;
+            color: white;
+        }
+
+        .modal-btn-save:hover {
+            background: #3367d6;
+        }
+
+        /* ========== NEW TRANSACTION DROPDOWN ========== */
+        .txn-dropdown-wrapper {
+            position: relative;
+            display: flex;
+        }
+
+        .txn-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            min-width: 180px;
+            z-index: 100;
+            padding: 6px 0;
+            margin-top: 4px;
+        }
+
+        .txn-dropdown-menu.open {
+            display: block;
+        }
+
+        .txn-dropdown-category {
+            font-size: 11px;
+            font-weight: 700;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 8px 16px 4px;
+        }
+
+        .txn-dropdown-item {
+            padding: 8px 16px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .txn-dropdown-item:hover {
+            background: #4285f4;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer"></div>
+
+    <div class="main-layout">
+        <div class="content" id="content">
+            <!-- Top Header Bar -->
+            <div class="detail-header">
+                <div class="detail-header-left">
+                    <h1 class="vendor-title" id="vendorTitle">Loading...</h1>
+                </div>
+                <div class="detail-header-actions">
+                    <button class="btn-edit" onclick="editVendor()">Edit</button>
+                    <button class="btn-info" title="Info">ⓘ</button>
+                    <div class="txn-dropdown-wrapper">
+                        <button class="btn-new-transaction" onclick="toggleTxnDropdown(event)">New Transaction</button>
+                        <button class="btn-new-transaction-dropdown" onclick="toggleTxnDropdown(event)">▼</button>
+                        <div class="txn-dropdown-menu" id="txnDropdownMenu">
+                            <div class="txn-dropdown-category">PURCHASES</div>
+                            <div class="txn-dropdown-item" onclick="handleTxnAction('bill')">Bill</div>
+                            <div class="txn-dropdown-item" onclick="handleTxnAction('bill-payment')">Bill Payment</div>
+                            <div class="txn-dropdown-item" onclick="handleTxnAction('purchase-order')">Purchase Order
+                            </div>
+                            <div class="txn-dropdown-item" onclick="handleTxnAction('purchase-receive')">Purchase
+                                Receive</div>
+                            <div class="txn-dropdown-item" onclick="handleTxnAction('vendor-credit')">Vendor Credit
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex;">
+                        <button class="btn-more-detail">More</button>
+                        <button class="btn-more-dropdown">▼</button>
+                    </div>
+                    <button class="btn-close-detail" onclick="goBack()">×</button>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="detail-tabs">
+                <div class="detail-tab active" data-tab="overview" onclick="switchTab('overview', this)">Overview</div>
+                <div class="detail-tab" data-tab="comments" onclick="switchTab('comments', this)">Comments</div>
+                <div class="detail-tab" data-tab="transactions" onclick="switchTab('transactions', this)">Transactions
+                </div>
+                <div class="detail-tab" data-tab="mails" onclick="switchTab('mails', this)">Mails</div>
+                <div class="detail-tab" data-tab="statement" onclick="switchTab('statement', this)">Statement</div>
+            </div>
+
+            <!-- Main Content body -->
+            <div class="detail-body">
+                <!-- LEFT PANEL -->
+                <div class="detail-left">
+                    <!-- Vendor Info Card -->
+                    <div class="vendor-info-card">
+                        <div class="vendor-info-label" id="vendorInfoLabel"></div>
+                        <div class="vendor-contact-row">
+                            <div class="vendor-avatar" id="vendorAvatar">👤</div>
+                            <div class="vendor-contact-details" id="vendorContactDetails">
+                                <!-- Filled dynamically -->
+                            </div>
+                            <span class="vendor-settings-icon">⚙</span>
+                        </div>
+                    </div>
+
+                    <!-- ADDRESS Section -->
+                    <div class="section-header" onclick="toggleSection('address')">
+                        <span class="section-title">ADDRESS</span>
+                        <span class="section-toggle" id="addressToggle">▲</span>
+                    </div>
+                    <div class="section-content" id="addressContent">
+                        <div class="detail-row">
+                            <div class="detail-label">Billing Address</div>
+                            <div class="detail-value" id="billingAddressDisplay">No Billing Address</div>
+                            <div class="detail-value link" style="font-size: 12px; margin-top: 4px;"
+                                onclick="openAddressModal('billing')">+ New Address</div>
+                        </div>
+                        <div class="detail-row" style="margin-top: 14px;">
+                            <div class="detail-label">Shipping Address</div>
+                            <div class="detail-value" id="shippingAddressDisplay">No Shipping Address</div>
+                            <div class="detail-value link" style="font-size: 12px; margin-top: 4px;"
+                                onclick="openAddressModal('shipping')">+ New Address</div>
+                        </div>
+                    </div>
+
+                    <!-- OTHER DETAILS Section -->
+                    <div class="section-header" onclick="toggleSection('otherDetails')">
+                        <span class="section-title">OTHER DETAILS</span>
+                        <span class="section-toggle" id="otherDetailsToggle">▲</span>
+                    </div>
+                    <div class="section-content" id="otherDetailsContent">
+                        <div class="detail-row">
+                            <div class="detail-label">Default Currency</div>
+                            <div class="detail-value" id="currencyDisplay">PHP</div>
+                        </div>
+                    </div>
+
+                    <!-- CONTACT PERSONS Section -->
+                    <div class="contacts-header" onclick="toggleSection('contacts')">
+                        <span class="section-title">CONTACT PERSONS</span>
+                        <div class="contacts-actions">
+                            <button class="add-contact-icon" onclick="event.stopPropagation(); addContactPerson()"
+                                title="Add Contact Person">+</button>
+                            <span class="section-toggle" id="contactsToggle">▲</span>
+                        </div>
+                    </div>
+                    <div class="contacts-content" id="contactsContent">
+                        <div class="no-contacts" id="noContactsMessage">No contact persons found.</div>
+                        <div id="contactPersonsList"></div>
+                    </div>
+
+                    <!-- RECORD INFO Section -->
+                    <div class="section-header" onclick="toggleSection('recordInfo')">
+                        <span class="section-title">RECORD INFO</span>
+                        <span class="section-toggle" id="recordInfoToggle">▼</span>
+                    </div>
+                    <div class="section-content collapsed" id="recordInfoContent">
+                        <div class="detail-row">
+                            <div class="detail-label">Created</div>
+                            <div class="detail-value" id="createdAtDisplay">-</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Last Modified</div>
+                            <div class="detail-value" id="updatedAtDisplay">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT PANEL -->
+                <div class="detail-right">
+                    <!-- Overview Tab Content -->
+                    <div class="tab-content-area active" id="tab-overview">
+                        <!-- What's Next Card -->
+                        <div class="whats-next-card">
+                            <div class="whats-next-header">
+                                <span class="whats-next-icon">✦</span>
+                                <span class="whats-next-title">WHAT'S NEXT?</span>
+                            </div>
+                            <div class="whats-next-text">
+                                Create a <a href="#">purchase order</a> or record a <a href="#">bill</a> for your vendor
+                                purchases.
+                            </div>
+                            <div class="whats-next-actions">
+                                <button class="btn-wn btn-wn-primary">New Bill</button>
+                                <button class="btn-wn btn-wn-outline">New Purchase Order</button>
+                                <button class="btn-wn-more">⋮</button>
+                            </div>
+                        </div>
+
+                        <!-- Payment Info -->
+                        <div class="payment-info">
+                            <div class="payment-row">
+                                <div class="payment-label">Payment due period</div>
+                                <div class="payment-value" id="paymentTermsDisplay">Due on Receipt</div>
+                            </div>
+
+                            <div class="payables-title">Payables</div>
+                            <table class="payables-table">
+                                <thead>
+                                    <tr>
+                                        <th>CURRENCY</th>
+                                        <th>OUTSTANDING PAYABLES</th>
+                                        <th>UNUSED CREDITS</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td id="payableCurrency">PHP- Philippine Peso</td>
+                                        <td id="payableOutstanding">PHP0.00</td>
+                                        <td id="payableCredits">PHP0.00</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="items-summary">
+                                <div class="items-summary-item">
+                                    <span class="items-summary-label">Items to be received:</span>
+                                    <span class="items-summary-value" id="itemsToReceive">0</span>
+                                </div>
+                                <div class="items-summary-item">
+                                    <span class="items-summary-label">Total items ordered:</span>
+                                    <span class="items-summary-value" id="totalItemsOrdered">0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Timeline -->
+                        <div id="timelineContainer"></div>
+                    </div>
+
+                    <!-- Comments Tab Content -->
+                    <div class="tab-content-area" id="tab-comments">
+                        <!-- Comment Editor -->
+                        <div class="comment-editor-card">
+                            <div class="comment-toolbar">
+                                <button class="comment-toolbar-btn bold" title="Bold"
+                                    onclick="formatComment('bold')">B</button>
+                                <button class="comment-toolbar-btn italic" title="Italic"
+                                    onclick="formatComment('italic')">I</button>
+                                <button class="comment-toolbar-btn underline" title="Underline"
+                                    onclick="formatComment('underline')">U</button>
+                            </div>
+                            <textarea class="comment-input" id="commentInput" placeholder="Add Comment"></textarea>
+                        </div>
+
+                        <!-- All Comments Section -->
+                        <div class="all-comments-header">ALL COMMENTS</div>
+                        <div id="commentsListContainer">
+                            <div class="no-comments-msg" id="noCommentsMsg">No comments yet.</div>
+                        </div>
+                        <div id="commentsList"></div>
+                    </div>
+
+                    <!-- Transactions Tab Content -->
+                    <div class="tab-content-area" id="tab-transactions">
+                        <!-- Bills Section -->
+                        <div class="txn-section">
+                            <div class="txn-section-header" onclick="toggleTxnSection('bills')">
+                                <div class="txn-section-left">
+                                    <span class="txn-section-toggle" id="billsToggle">▼</span>
+                                    <span class="txn-section-title">Bills</span>
+                                </div>
+                                <div class="txn-section-actions">
+                                    <button class="txn-filter-btn">▼ Status: All ▾</button>
+                                    <button class="txn-new-btn">+ New</button>
+                                </div>
+                            </div>
+                            <div class="txn-section-body" id="billsBody">
+                                <table class="txn-table">
+                                    <thead>
+                                        <tr>
+                                            <th>DATE ⇅</th>
+                                            <th>BILL#</th>
+                                            <th>ORDER NUMBER</th>
+                                            <th>VENDOR NAME</th>
+                                            <th>AMOUNT</th>
+                                            <th>BALANCE DUE</th>
+                                            <th>STATUS</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                                <div class="txn-empty">There are no Bills -<a href="#">Add New</a></div>
+                            </div>
+                        </div>
+
+                        <!-- Bill Payments Section -->
+                        <div class="txn-section">
+                            <div class="txn-section-header" onclick="toggleTxnSection('billPayments')">
+                                <div class="txn-section-left">
+                                    <span class="txn-section-toggle" id="billPaymentsToggle">▼</span>
+                                    <span class="txn-section-title">Bill Payments</span>
+                                </div>
+                                <div class="txn-section-actions">
+                                    <button class="txn-new-btn">+ New</button>
+                                </div>
+                            </div>
+                            <div class="txn-section-body" id="billPaymentsBody">
+                                <table class="txn-table">
+                                    <thead>
+                                        <tr>
+                                            <th>DATE ⇅</th>
+                                            <th>PAYMENT NUMBER</th>
+                                            <th>REFERENCE NUMBER</th>
+                                            <th>PAYMENT MODE</th>
+                                            <th>AMOUNT PAID</th>
+                                            <th>UNUSED AMOUNT</th>
+                                            <th>STATUS</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                                <div class="txn-empty">No Payments Made yet. -<a href="#">Add New</a></div>
+                            </div>
+                        </div>
+
+                        <!-- Purchase Orders Section -->
+                        <div class="txn-section">
+                            <div class="txn-section-header" onclick="toggleTxnSection('purchaseOrders')">
+                                <div class="txn-section-left">
+                                    <span class="txn-section-toggle" id="purchaseOrdersToggle">▼</span>
+                                    <span class="txn-section-title">Purchase Orders</span>
+                                </div>
+                                <div class="txn-section-actions">
+                                    <button class="txn-filter-btn">▼ Status: All ▾</button>
+                                    <button class="txn-new-btn">+ New</button>
+                                </div>
+                            </div>
+                            <div class="txn-section-body" id="purchaseOrdersBody">
+                                <table class="txn-table">
+                                    <thead>
+                                        <tr>
+                                            <th>PURCHASE ORDER#</th>
+                                            <th>REFERENCE NUMBER</th>
+                                            <th>DATE</th>
+                                            <th>DELIVERY DATE ⇅</th>
+                                            <th>AMOUNT</th>
+                                            <th>STATUS</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                                <div class="txn-empty">There are no Purchase Orders -<a href="#">Add New</a></div>
+                            </div>
+                        </div>
+
+                        <!-- Purchase Receives Section -->
+                        <div class="txn-section">
+                            <div class="txn-section-header" onclick="toggleTxnSection('purchaseReceives')">
+                                <div class="txn-section-left">
+                                    <span class="txn-section-toggle" id="purchaseReceivesToggle">▼</span>
+                                    <span class="txn-section-title">Purchase Receives</span>
+                                </div>
+                                <div class="txn-section-actions">
+                                    <button class="txn-filter-btn">▼ Status: All ▾</button>
+                                    <button class="txn-new-btn">+ New</button>
+                                </div>
+                            </div>
+                            <div class="txn-section-body" id="purchaseReceivesBody">
+                                <table class="txn-table">
+                                    <thead>
+                                        <tr>
+                                            <th>PURCHASE RECEIVE#</th>
+                                            <th>DATE</th>
+                                            <th>PURCHASE ORDER#</th>
+                                            <th>QUANTITY</th>
+                                            <th>STATUS</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                                <div class="txn-empty">There are no Purchase Receives -<a href="#">Add New</a></div>
+                            </div>
+                        </div>
+
+                        <!-- Vendor Credits Section -->
+                        <div class="txn-section">
+                            <div class="txn-section-header" onclick="toggleTxnSection('vendorCredits')">
+                                <div class="txn-section-left">
+                                    <span class="txn-section-toggle" id="vendorCreditsToggle">▼</span>
+                                    <span class="txn-section-title">Vendor Credits</span>
+                                </div>
+                                <div class="txn-section-actions">
+                                    <button class="txn-filter-btn">▼ Status: All ▾</button>
+                                    <button class="txn-new-btn">+ New</button>
+                                </div>
+                            </div>
+                            <div class="txn-section-body" id="vendorCreditsBody">
+                                <table class="txn-table">
+                                    <thead>
+                                        <tr>
+                                            <th>DATE ⇅</th>
+                                            <th>CREDIT NOTE NUMBER</th>
+                                            <th>ORDER NUMBER</th>
+                                            <th>BALANCE</th>
+                                            <th>AMOUNT</th>
+                                            <th>STATUS</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                                <div class="txn-empty">No data to display -<a href="#">Add New</a></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mails Tab Content -->
+                    <div class="tab-content-area" id="tab-mails">
+                        <div class="mails-card">
+                            <div class="mails-header">
+                                <span class="mails-title">System Mails</span>
+                                <button class="link-email-btn">✉ Link Email account ▾</button>
+                            </div>
+                            <div class="mails-empty">
+                                <span class="warn-icon">⚠</span> No emails sent.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Statement Tab Content -->
+                    <div class="tab-content-area" id="tab-statement">
+                        <div class="statement-header-info">
+                            <h2 id="stmtTitle">Vendor Statement</h2>
+                            <div class="date-range" id="stmtDateRange"></div>
+                        </div>
+
+                        <div class="statement-document">
+                            <!-- Company Info (top right) -->
+                            <div class="stmt-company-info">
+                                <div class="stmt-company-name">GIHON</div>
+                                <div class="stmt-company-detail">Philippines</div>
+                                <div class="stmt-company-detail">bitembling413@gmail.com</div>
+                            </div>
+
+                            <!-- To Section -->
+                            <div class="stmt-to-section">
+                                <div class="stmt-to-label">To</div>
+                                <div class="stmt-to-name" id="stmtToName"></div>
+                            </div>
+
+                            <!-- Statement of Accounts Title -->
+                            <div class="stmt-title-section">
+                                <div class="stmt-title">Statement of Accounts</div>
+                                <div class="stmt-title-underline"></div>
+                                <div class="stmt-date-range" id="stmtAccountDateRange"></div>
+                            </div>
+
+                            <!-- Account Summary -->
+                            <div class="stmt-summary-box">
+                                <div class="stmt-summary-title">Account Summary</div>
+                                <div class="stmt-summary-row">
+                                    <span class="stmt-summary-label">Opening Balance</span>
+                                    <span class="stmt-summary-value" id="stmtOpeningBalance">PHP 0.00</span>
+                                </div>
+                                <div class="stmt-summary-row">
+                                    <span class="stmt-summary-label">Billed Amount</span>
+                                    <span class="stmt-summary-value orange" id="stmtBilledAmount">PHP 0.00</span>
+                                </div>
+                                <div class="stmt-summary-row">
+                                    <span class="stmt-summary-label">Amount Paid</span>
+                                    <span class="stmt-summary-value" id="stmtAmountPaid">PHP 0.00</span>
+                                </div>
+                                <div class="stmt-summary-row">
+                                    <span class="stmt-summary-label">Balance Due</span>
+                                    <span class="stmt-summary-value" id="stmtBalanceDue">PHP 0.00</span>
+                                </div>
+                            </div>
+
+                            <!-- Transactions Table -->
+                            <table class="stmt-transactions-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Transactions</th>
+                                        <th>Details</th>
+                                        <th>Amount</th>
+                                        <th>Payments</th>
+                                        <th>Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="stmtTransactionsBody">
+                                    <tr>
+                                        <td id="stmtOpeningDate"></td>
+                                        <td class="bold">***Opening Balance***</td>
+                                        <td></td>
+                                        <td>0.00</td>
+                                        <td></td>
+                                        <td>0.00</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Balance Due Footer -->
+                            <div class="stmt-balance-due">
+                                <span class="label">Balance Due</span>
+                                <span class="value" id="stmtFinalBalance">PHP 0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Address Modal -->
+    <div class="modal-overlay" id="addressModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span class="modal-title" id="addressModalTitle">Billing Address</span>
+                <button class="modal-close" onclick="closeAddressModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="addressType" value="billing">
+                <div class="modal-field">
+                    <label for="addrAttention">Attention</label>
+                    <input type="text" id="addrAttention" placeholder="">
+                </div>
+                <div class="modal-field">
+                    <label for="addrCountry">Country/Region</label>
+                    <select id="addrCountry" title="Country/Region">
+                        <option value="">Select or type to add</option>
+                        <option value="Philippines">Philippines</option>
+                        <option value="United States">United States</option>
+                        <option value="Japan">Japan</option>
+                        <option value="China">China</option>
+                        <option value="South Korea">South Korea</option>
+                        <option value="Singapore">Singapore</option>
+                        <option value="Australia">Australia</option>
+                        <option value="United Kingdom">United Kingdom</option>
+                        <option value="Canada">Canada</option>
+                        <option value="India">India</option>
+                    </select>
+                </div>
+                <div class="modal-field">
+                    <label for="addrStreet1">Address</label>
+                    <textarea id="addrStreet1" placeholder="Street 1" rows="2"></textarea>
+                </div>
+                <div class="modal-field">
+                    <textarea id="addrStreet2" placeholder="Street 2" rows="2"></textarea>
+                </div>
+                <div class="modal-field">
+                    <label for="addrCity">City</label>
+                    <input type="text" id="addrCity" placeholder="">
+                </div>
+                <div class="modal-field-row">
+                    <div class="modal-field">
+                        <label for="addrState">State</label>
+                        <select id="addrState" title="State">
+                            <option value="">Select or type to add</option>
+                        </select>
+                    </div>
+                    <div class="modal-field">
+                        <label for="addrZip">ZIP Code</label>
+                        <input type="text" id="addrZip" placeholder="">
+                    </div>
+                </div>
+                <div class="modal-field-row">
+                    <div class="modal-field">
+                        <label for="addrPhone">Phone</label>
+                        <input type="text" id="addrPhone" placeholder="">
+                    </div>
+                    <div class="modal-field">
+                        <label for="addrFax">Fax Number</label>
+                        <input type="text" id="addrFax" placeholder="">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-cancel" onclick="closeAddressModal()">Cancel</button>
+                <button class="modal-btn modal-btn-save" onclick="saveAddress()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Layout Script -->
+    <script src="/js/layout.js"></script>
+    <script>
+        let vendorData = null;
+        const vendorId = new URLSearchParams(window.location.search).get('id');
+
+        // Load vendor detail on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!vendorId) {
+                alert('No vendor ID provided');
+                window.location.href = '/vendors.html';
+                return;
+            }
+            loadVendorDetail();
+        });
+
+        async function loadVendorDetail() {
+            try {
+                const response = await fetch(`/api/suppliers/${vendorId}`);
+                if (!response.ok) {
+                    alert('Vendor not found');
+                    window.location.href = '/vendors.html';
+                    return;
+                }
+                vendorData = await response.json();
+                renderVendorDetail();
+            } catch (error) {
+                console.error('Error loading vendor:', error);
+                alert('Error loading vendor');
+            }
+        }
+
+        function renderVendorDetail() {
+            const v = vendorData;
+
+            // Title
+            document.getElementById('vendorTitle').textContent = v.display_name || v.name || 'Unnamed Vendor';
+            document.title = (v.display_name || v.name) + ' - Vendor Detail';
+
+            // Info label
+            document.getElementById('vendorInfoLabel').textContent = v.display_name || v.name || '';
+
+            // Contact details
+            const salutation = v.salutation ? (v.salutation.charAt(0).toUpperCase() + v.salutation.slice(1)) : '';
+            const fullName = [salutation ? salutation + '.' : '', v.first_name || '', v.last_name || ''].filter(Boolean).join(' ');
+            const workPhone = v.work_phone || v.phone || '';
+            const mobile = v.mobile || '';
+
+            let contactHtml = '';
+            if (fullName.trim()) {
+                contactHtml += `<div class="vendor-contact-name">${fullName}</div>`;
+            }
+            if (workPhone) {
+                contactHtml += `<div class="vendor-contact-item"><span class="icon">📞</span> ${workPhone}</div>`;
+            }
+            if (mobile) {
+                contactHtml += `<div class="vendor-contact-item"><span class="icon">📱</span> ${mobile}</div>`;
+            }
+            if (v.email) {
+                contactHtml += `<div class="vendor-contact-item"><span class="icon">✉</span> ${v.email}</div>`;
+            }
+            document.getElementById('vendorContactDetails').innerHTML = contactHtml || '<div class="vendor-contact-name">No contact information</div>';
+
+            // Address
+            const billingParts = [v.billing_address, v.billing_city, v.billing_state, v.billing_zip, v.billing_country].filter(Boolean);
+            document.getElementById('billingAddressDisplay').textContent = billingParts.length > 0 ? billingParts.join(', ') : 'No Billing Address';
+
+            const shippingParts = [v.shipping_address, v.shipping_city, v.shipping_state, v.shipping_zip, v.shipping_country].filter(Boolean);
+            document.getElementById('shippingAddressDisplay').textContent = shippingParts.length > 0 ? shippingParts.join(', ') : 'No Shipping Address';
+
+            // Other Details
+            const currencyMap = {
+                'php': 'PHP',
+                'usd': 'USD',
+                'PHP': 'PHP',
+                'USD': 'USD'
+            };
+            document.getElementById('currencyDisplay').textContent = currencyMap[v.currency] || v.currency || 'PHP';
+
+            // Payment Terms
+            const termsMap = {
+                'due-on-receipt': 'Due on Receipt',
+                'net-15': 'Net 15',
+                'net-30': 'Net 30',
+                'net-45': 'Net 45',
+                'net-60': 'Net 60'
+            };
+            document.getElementById('paymentTermsDisplay').textContent = termsMap[v.payment_terms] || v.payment_terms || 'Due on Receipt';
+
+            // Payables
+            const currencyLabel = v.currency === 'usd' || v.currency === 'USD' ? 'USD- US Dollar' : 'PHP- Philippine Peso';
+            const currencyPrefix = v.currency === 'usd' || v.currency === 'USD' ? 'USD' : 'PHP';
+            document.getElementById('payableCurrency').textContent = currencyLabel;
+            document.getElementById('payableOutstanding').textContent = currencyPrefix + parseFloat(v.total_spent || 0).toFixed(2);
+            document.getElementById('payableCredits').textContent = currencyPrefix + '0.00';
+
+            // Items
+            document.getElementById('itemsToReceive').textContent = v.total_quantity || 0;
+            document.getElementById('totalItemsOrdered').textContent = v.total_quantity || 0;
+
+            // Contact Persons
+            renderContactPersons();
+
+            // Record Info
+            document.getElementById('createdAtDisplay').textContent = v.created_at ? formatDateTime(v.created_at) : '-';
+            document.getElementById('updatedAtDisplay').textContent = v.updated_at ? formatDateTime(v.updated_at) : '-';
+
+            // Timeline
+            renderTimeline();
+
+            // Statement
+            renderStatement();
+        }
+
+        function renderContactPersons() {
+            const contacts = vendorData.contact_persons || [];
+            const noContactsMsg = document.getElementById('noContactsMessage');
+            const contactsList = document.getElementById('contactPersonsList');
+
+            if (contacts.length === 0) {
+                noContactsMsg.style.display = 'block';
+                contactsList.innerHTML = '';
+                return;
+            }
+
+            noContactsMsg.style.display = 'none';
+            contactsList.innerHTML = contacts.map(cp => {
+                const name = [cp.salutation ? cp.salutation + '.' : '', cp.first_name || '', cp.last_name || ''].filter(Boolean).join(' ') || 'Unnamed';
+                const detail = cp.email || cp.phone || '';
+                const initials = ((cp.first_name || '')[0] || '') + ((cp.last_name || '')[0] || '');
+                return `
+                    <div class="contact-person-item">
+                        <div class="contact-person-avatar">${initials.toUpperCase() || '?'}</div>
+                        <div class="contact-person-info">
+                            <div class="contact-person-name">${name}</div>
+                            ${detail ? `<div class="contact-person-detail">${detail}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderTimeline() {
+            const container = document.getElementById('timelineContainer');
+            const createdAt = vendorData.created_at ? new Date(vendorData.created_at) : new Date();
+            const dateStr = formatDate(createdAt);
+            const timeStr = formatTime(createdAt);
+            const vendorName = vendorData.display_name || vendorData.name || 'vendor';
+
+            // Build timeline events
+            const events = [];
+
+            // Contact persons added events
+            if (vendorData.contact_persons && vendorData.contact_persons.length > 0) {
+                vendorData.contact_persons.forEach(cp => {
+                    const cpName = [cp.first_name || '', cp.last_name || ''].filter(Boolean).join(' ') || 'contact';
+                    const cpDate = cp.created_at ? new Date(cp.created_at) : createdAt;
+                    events.push({
+                        date: cpDate,
+                        title: 'Contact person added',
+                        desc: `Contact person ${cpName} has been created`,
+                        user: 'by System'
+                    });
+                });
+            }
+
+            // Vendor created event
+            events.push({
+                date: createdAt,
+                title: 'Contact added',
+                desc: `Contact created`,
+                user: 'by System'
+            });
+
+            // Sort events by date descending
+            events.sort((a, b) => b.date - a.date);
+
+            let html = '<div class="timeline">';
+            events.forEach(ev => {
+                html += `
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-date-text">${formatDate(ev.date)}</div>
+                        <div class="timeline-time-text">${formatTime(ev.date)}</div>
+                        <div class="timeline-card">
+                            <div class="timeline-card-title">${ev.title}</div>
+                            <div class="timeline-card-desc">${ev.desc}</div>
+                            <div class="timeline-card-user">${ev.user}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function formatDateTime(dateStr) {
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+        }
+
+        function formatDate(date) {
+            return date.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
+        }
+
+        function formatTime(date) {
+            return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+        }
+
+        // Section toggling
+        function toggleSection(sectionName) {
+            const toggleMap = {
+                'address': { content: 'addressContent', toggle: 'addressToggle' },
+                'otherDetails': { content: 'otherDetailsContent', toggle: 'otherDetailsToggle' },
+                'contacts': { content: 'contactsContent', toggle: 'contactsToggle' },
+                'recordInfo': { content: 'recordInfoContent', toggle: 'recordInfoToggle' }
+            };
+
+            const section = toggleMap[sectionName];
+            if (!section) return;
+
+            const content = document.getElementById(section.content);
+            const toggle = document.getElementById(section.toggle);
+
+            if (content.classList.contains('collapsed')) {
+                content.classList.remove('collapsed');
+                toggle.textContent = '▲';
+                toggle.classList.remove('collapsed');
+            } else {
+                content.classList.add('collapsed');
+                toggle.textContent = '▼';
+                toggle.classList.add('collapsed');
+            }
+        }
+
+        // Tab switching
+        function switchTab(tabName, tabEl) {
+            document.querySelectorAll('.detail-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content-area').forEach(c => c.classList.remove('active'));
+
+            tabEl.classList.add('active');
+            document.getElementById('tab-' + tabName).classList.add('active');
+        }
+
+        // Navigation
+        function goBack() {
+            window.location.href = '/vendors.html';
+        }
+
+        function editVendor() {
+            alert('Edit vendor coming soon!');
+        }
+
+        // ====== New Transaction Dropdown ======
+        function toggleTxnDropdown(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('txnDropdownMenu');
+            menu.classList.toggle('open');
+        }
+
+        function handleTxnAction(type) {
+            document.getElementById('txnDropdownMenu').classList.remove('open');
+            if (type === 'purchase-order') {
+                window.location.href = `/new-purchase-order.html?vendorId=${vendorId}`;
+            } else {
+                alert(type.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) + ' - Coming soon!');
+            }
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (e) {
+            const menu = document.getElementById('txnDropdownMenu');
+            if (menu && !e.target.closest('.txn-dropdown-wrapper')) {
+                menu.classList.remove('open');
+            }
+        });
+
+        // ====== Address Modal ======
+        function openAddressModal(type) {
+            document.getElementById('addressType').value = type;
+            document.getElementById('addressModalTitle').textContent =
+                type === 'billing' ? 'Billing Address' : 'Shipping Address';
+
+            // Pre-fill if data exists
+            const v = vendorData || {};
+            const prefix = type === 'billing' ? 'billing' : 'shipping';
+            document.getElementById('addrAttention').value = v[prefix + '_attention'] || '';
+            document.getElementById('addrCountry').value = v[prefix + '_country'] || '';
+            document.getElementById('addrStreet1').value = v[prefix + '_address'] || '';
+            document.getElementById('addrStreet2').value = v[prefix + '_street2'] || '';
+            document.getElementById('addrCity').value = v[prefix + '_city'] || '';
+            document.getElementById('addrState').value = v[prefix + '_state'] || '';
+            document.getElementById('addrZip').value = v[prefix + '_zip'] || '';
+            document.getElementById('addrPhone').value = v[prefix + '_phone'] || '';
+            document.getElementById('addrFax').value = v[prefix + '_fax'] || '';
+
+            document.getElementById('addressModal').classList.add('active');
+        }
+
+        function closeAddressModal() {
+            document.getElementById('addressModal').classList.remove('active');
+        }
+
+        async function saveAddress() {
+            const type = document.getElementById('addressType').value;
+            const prefix = type === 'billing' ? 'billing' : 'shipping';
+
+            const updateData = {};
+            updateData[prefix + '_address'] = document.getElementById('addrStreet1').value;
+            updateData[prefix + '_city'] = document.getElementById('addrCity').value;
+            updateData[prefix + '_state'] = document.getElementById('addrState').value;
+            updateData[prefix + '_zip'] = document.getElementById('addrZip').value;
+            updateData[prefix + '_country'] = document.getElementById('addrCountry').value;
+
+            try {
+                const response = await fetch(`/api/suppliers/${vendorId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updateData)
+                });
+
+                if (response.ok) {
+                    closeAddressModal();
+                    await loadVendorDetail();
+                } else {
+                    alert('Failed to save address');
+                }
+            } catch (error) {
+                console.error('Error saving address:', error);
+                alert('Error saving address');
+            }
+        }
+
+        async function addContactPerson() {
+            const firstName = prompt('First Name:');
+            if (!firstName) return;
+            const lastName = prompt('Last Name:') || '';
+            const email = prompt('Email:') || '';
+            const phone = prompt('Phone:') || '';
+
+            try {
+                const response = await fetch(`/api/suppliers/${vendorId}/contacts`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ first_name: firstName, last_name: lastName, email, phone })
+                });
+
+                if (response.ok) {
+                    // Reload vendor data to get updated contacts
+                    await loadVendorDetail();
+                } else {
+                    alert('Failed to add contact person');
+                }
+            } catch (error) {
+                console.error('Error adding contact:', error);
+                alert('Error adding contact person');
+            }
+        }
+
+        // ====== Transaction Section Toggle ======
+        function toggleTxnSection(sectionId) {
+            const bodyMap = {
+                'bills': 'billsBody',
+                'billPayments': 'billPaymentsBody',
+                'purchaseOrders': 'purchaseOrdersBody',
+                'purchaseReceives': 'purchaseReceivesBody',
+                'vendorCredits': 'vendorCreditsBody'
+            };
+            const toggleMap = {
+                'bills': 'billsToggle',
+                'billPayments': 'billPaymentsToggle',
+                'purchaseOrders': 'purchaseOrdersToggle',
+                'purchaseReceives': 'purchaseReceivesToggle',
+                'vendorCredits': 'vendorCreditsToggle'
+            };
+
+            const body = document.getElementById(bodyMap[sectionId]);
+            const toggle = document.getElementById(toggleMap[sectionId]);
+            if (!body || !toggle) return;
+
+            if (body.classList.contains('collapsed')) {
+                body.classList.remove('collapsed');
+                toggle.textContent = '▼';
+                toggle.classList.remove('collapsed');
+            } else {
+                body.classList.add('collapsed');
+                toggle.textContent = '▶';
+                toggle.classList.add('collapsed');
+            }
+        }
+
+        // ====== Comment Formatting (placeholder) ======
+        function formatComment(type) {
+            const input = document.getElementById('commentInput');
+            input.focus();
+            // Basic placeholder logic; rich text not fully functional for textarea
+        }
+
+        // ====== Statement Rendering ======
+        function renderStatement() {
+            if (!vendorData) return;
+            const v = vendorData;
+            const vendorName = v.display_name || v.name || 'Vendor';
+
+            // Date range: first of current month to last of current month
+            const now = new Date();
+            const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+            const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+            const fmtDate = (d) => d.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
+
+            document.getElementById('stmtTitle').textContent = `Vendor Statement For ${vendorName}`;
+            document.getElementById('stmtDateRange').textContent = `From ${fmtDate(firstDay)} To ${fmtDate(lastDay)}`;
+            document.getElementById('stmtToName').textContent = vendorName;
+            document.getElementById('stmtAccountDateRange').textContent = `${fmtDate(firstDay)} To ${fmtDate(lastDay)}`;
+            document.getElementById('stmtOpeningDate').textContent = fmtDate(firstDay);
+        }
+    </script>
+</body>
+
+</html>

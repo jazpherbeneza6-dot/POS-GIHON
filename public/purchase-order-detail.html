@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase Order Detail - Inventory Management</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', 'Source Sans Pro', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .main-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .content {
+            flex: 1;
+            background: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Action Bar */
+        .action-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 24px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .action-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .po-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .action-buttons {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 7px 14px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .action-btn:hover {
+            background: #f5f5f5;
+            border-color: #ccc;
+        }
+
+        .close-btn {
+            width: 32px;
+            height: 32px;
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: #999;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .close-btn:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        /* Info Banner */
+        .info-banner {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 24px;
+            background: #eef4ff;
+            border-bottom: 1px solid #dce8ff;
+            font-size: 13px;
+            color: #444;
+        }
+
+        .info-banner .icon {
+            font-size: 16px;
+        }
+
+        .btn-send {
+            padding: 7px 16px;
+            background: #3366cc;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-send:hover {
+            background: #2d5bb9;
+        }
+
+        .btn-mark {
+            padding: 7px 14px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #555;
+            cursor: pointer;
+        }
+
+        .btn-mark:hover {
+            background: #f5f5f5;
+        }
+
+        /* Receives Section */
+        .receives-section {
+            padding: 14px 24px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+
+        .receives-section:hover {
+            background: #fafbfc;
+        }
+
+        .receives-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .receives-arrow {
+            color: #999;
+            font-size: 12px;
+        }
+
+        /* PO Detail Card */
+        .po-detail-card {
+            margin: 24px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 32px 40px;
+        }
+
+        .pdf-toggle {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 16px;
+            font-size: 12px;
+            color: #666;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* PO Header */
+        .po-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .po-header-left h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+            margin: 0 0 4px 0;
+        }
+
+        .po-header-left .po-number {
+            font-size: 13px;
+            color: #3366cc;
+            margin-bottom: 8px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-draft {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffc107;
+        }
+
+        .status-ordered {
+            background: #cfe2ff;
+            color: #084298;
+            border: 1px solid #b6d4fe;
+        }
+
+        .status-received {
+            background: #d1e7dd;
+            color: #0a3622;
+            border: 1px solid #a3cfbb;
+        }
+
+        .po-header-right {
+            text-align: left;
+        }
+
+        .po-header-right .label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #e67700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .po-header-right .value {
+            font-size: 13px;
+            color: #3366cc;
+            margin-bottom: 12px;
+        }
+
+        .po-header-right .addr-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #e67700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .po-header-right .addr-value {
+            font-size: 13px;
+            color: #333;
+        }
+
+        /* PO Info Grid */
+        .po-info-grid {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            gap: 8px 16px;
+            margin-bottom: 24px;
+        }
+
+        .po-info-grid .info-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #e67700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .po-info-grid .info-value {
+            font-size: 13px;
+            color: #333;
+        }
+
+        /* Items Table */
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .items-table th {
+            text-align: left;
+            padding: 10px 14px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #e0e0e0;
+            background: #fafbfc;
+        }
+
+        .items-table td {
+            padding: 12px 14px;
+            font-size: 13px;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: top;
+        }
+
+        .item-name-link {
+            color: #3366cc;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .item-name-link:hover {
+            text-decoration: underline;
+        }
+
+        .item-sku {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .item-description {
+            font-size: 12px;
+            color: #3366cc;
+            margin-top: 4px;
+        }
+
+        .status-col {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Totals */
+        .totals-section {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 16px;
+        }
+
+        .totals-box {
+            width: 350px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .total-row .label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .total-row .value {
+            font-weight: 500;
+        }
+
+        .total-row.sub-info {
+            font-size: 11px;
+            color: #999;
+            padding: 2px 0;
+        }
+
+        .total-row.discount {
+            color: #3366cc;
+        }
+
+        .total-row.adjustment-row {
+            color: #666;
+        }
+
+        .total-row.final {
+            border-top: 2px solid #333;
+            padding-top: 12px;
+            margin-top: 4px;
+        }
+
+        .total-row.final .label,
+        .total-row.final .value {
+            font-size: 15px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        /* Left Sidebar List */
+        .page-layout {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .sidebar-list {
+            width: 260px;
+            background: white;
+            border-right: 1px solid #e9ecef;
+            overflow-y: auto;
+        }
+
+        .sidebar-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+
+        .sidebar-list-item:hover {
+            background: #f5f8ff;
+        }
+
+        .sidebar-list-item.active {
+            background: #eef3ff;
+            border-left: 3px solid #3366cc;
+        }
+
+        .sidebar-vendor {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .sidebar-po-number {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .sidebar-date {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .sidebar-status {
+            font-size: 10px;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .sidebar-amount {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            text-align: right;
+        }
+
+        .detail-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer"></div>
+
+    <div class="main-layout">
+        <div class="content" id="content">
+            <div class="page-layout">
+                <!-- Left sidebar list of POs -->
+                <div class="sidebar-list" id="poSidebarList">
+                    <!-- Populated by JS -->
+                </div>
+
+                <!-- Right detail content -->
+                <div class="detail-content" id="detailContent">
+                    <!-- Action Bar -->
+                    <div class="action-bar">
+                        <div class="action-bar-left">
+                            <span class="po-title" id="poTitleBar">PO-00001</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="action-btn" id="editBtn" onclick="editPO()">✏️ Edit</button>
+                            <button class="action-btn" onclick="sendEmail()">📧 Send Email</button>
+                            <button class="action-btn">📄 PDF/Print ▾</button>
+                            <button class="action-btn" onclick="receivePO()">📦 Receive</button>
+                            <button class="action-btn">⋯</button>
+                            <button class="close-btn" onclick="goBack()">×</button>
+                        </div>
+                    </div>
+
+                    <!-- Info Banner -->
+                    <div class="info-banner" id="infoBanner">
+                        <span class="icon">✨</span>
+                        <span>WHAT'S NEXT? Send this purchase order to your vendor or mark it as issued.</span>
+                        <button class="btn-send" onclick="sendPO()">Send Purchase Order</button>
+                        <button class="btn-mark" onclick="markAsIssued()">Mark as Issued</button>
+                    </div>
+
+                    <!-- PO Detail Card -->
+                    <div class="po-detail-card" id="poDetailCard">
+                        <div class="pdf-toggle">
+                            <span>Show PDF View</span>
+                            <span>⬜</span>
+                        </div>
+
+                        <div class="po-header">
+                            <div class="po-header-left">
+                                <h2>PURCHASE ORDER</h2>
+                                <div class="po-number" id="detailPONumber">Purchase Order# PO-00001</div>
+                                <div id="detailStatusBadge">
+                                    <span class="status-badge status-draft">DRAFT</span>
+                                </div>
+                            </div>
+                            <div class="po-header-right">
+                                <div class="label">VENDOR ADDRESS</div>
+                                <div class="value" id="detailVendorName">-</div>
+                                <div class="addr-label" style="margin-top: 16px;">DELIVERY ADDRESS</div>
+                                <div class="addr-value" id="detailDeliveryAddress">-</div>
+                            </div>
+                        </div>
+
+                        <div class="po-info-grid" id="poInfoGrid">
+                            <span class="info-label">REFERENCE#</span>
+                            <span class="info-value" id="detailReference">-</span>
+
+                            <span class="info-label">ORDER DATE</span>
+                            <span class="info-value" id="detailOrderDate">-</span>
+
+                            <span class="info-label">DELIVERY DATE</span>
+                            <span class="info-value" id="detailDeliveryDate">-</span>
+
+                            <span class="info-label">PAYMENT TERMS</span>
+                            <span class="info-value" id="detailPaymentTerms">-</span>
+                        </div>
+
+                        <!-- Items Table -->
+                        <table class="items-table">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>ITEMS & DESCRIPTION</th>
+                                    <th>ORDERED</th>
+                                    <th>STATUS</th>
+                                    <th style="text-align: right;">RATE</th>
+                                    <th style="text-align: right;">AMOUNT</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detailItemsBody">
+                                <!-- Items populated by JS -->
+                            </tbody>
+                        </table>
+
+                        <!-- Totals -->
+                        <div class="totals-section">
+                            <div class="totals-box">
+                                <div class="total-row">
+                                    <span class="label">Sub Total</span>
+                                    <span class="value" id="detailSubTotal">PHP0.00</span>
+                                </div>
+                                <div class="total-row sub-info">
+                                    <span class="label">Total Quantity : <span id="detailTotalQty">0</span></span>
+                                    <span></span>
+                                </div>
+                                <div class="total-row discount" id="discountRow" style="display: none;">
+                                    <span class="label">Discount</span>
+                                    <span class="value" id="detailDiscountAmt">PHP0.00</span>
+                                </div>
+                                <div class="total-row adjustment-row" id="adjustmentRow" style="display: none;">
+                                    <span class="label" id="detailAdjustmentLabel">Adjustment</span>
+                                    <span class="value" id="detailAdjustmentAmt">PHP0.00</span>
+                                </div>
+                                <div class="total-row final">
+                                    <span class="label">Total</span>
+                                    <span class="value" id="detailTotal">PHP0.00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Layout Script -->
+    <script src="/js/layout.js"></script>
+    <script>
+        let currentPOId = null;
+        let currentPO = null;
+
+        // Get PO ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        currentPOId = urlParams.get('id');
+
+        // Load data on page ready
+        document.addEventListener('DOMContentLoaded', async function () {
+            await loadPOList();
+            if (currentPOId) {
+                await loadPODetail(currentPOId);
+            }
+        });
+
+        // Load sidebar list of POs
+        async function loadPOList() {
+            try {
+                const response = await fetch('/api/purchases?limit=50');
+                const purchases = await response.json();
+                const container = document.getElementById('poSidebarList');
+
+                if (purchases.length === 0) {
+                    container.innerHTML = '<div style="padding: 24px; text-align: center; color: #999; font-size: 13px;">No purchase orders yet</div>';
+                    return;
+                }
+
+                let html = '';
+                purchases.forEach(po => {
+                    const isActive = po.id == currentPOId;
+                    const date = po.date ? new Date(po.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+                    const statusClass = (po.status || 'draft').toLowerCase();
+                    const statusColors = {
+                        'draft': '#856404',
+                        'ordered': '#084298',
+                        'received': '#0a3622'
+                    };
+
+                    html += `<div class="sidebar-list-item ${isActive ? 'active' : ''}" onclick="navigateToPO(${po.id})">
+                        <div>
+                            <div class="sidebar-vendor">${po.supplier_name || 'Unknown Vendor'}</div>
+                            <div class="sidebar-po-number">${po.po_number || 'PO-' + po.id} • ${date}</div>
+                            <div class="sidebar-status" style="color: ${statusColors[statusClass] || '#666'}">${(po.status || 'DRAFT').toUpperCase()}</div>
+                        </div>
+                        <div>
+                            <div class="sidebar-amount">PHP${parseFloat(po.total_amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</div>
+                        </div>
+                    </div>`;
+                });
+
+                container.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading PO list:', error);
+            }
+        }
+
+        // Load PO detail
+        async function loadPODetail(poId) {
+            try {
+                const response = await fetch('/api/purchases/' + poId);
+                const po = await response.json();
+                if (!response.ok) {
+                    alert('Purchase order not found');
+                    return;
+                }
+
+                currentPO = po;
+                currentPOId = poId;
+
+                // Update action bar title
+                document.getElementById('poTitleBar').textContent = po.po_number || 'PO-' + po.id;
+
+                // Update PO header
+                document.getElementById('detailPONumber').textContent = 'Purchase Order# ' + (po.po_number || 'PO-' + po.id);
+
+                // Status badge
+                const status = (po.status || 'draft').toLowerCase();
+                const statusLabels = { 'draft': 'DRAFT', 'ordered': 'ORDERED', 'received': 'RECEIVED' };
+                document.getElementById('detailStatusBadge').innerHTML =
+                    `<span class="status-badge status-${status}">${statusLabels[status] || status.toUpperCase()}</span>`;
+
+                // Vendor and addresses
+                document.getElementById('detailVendorName').textContent = po.supplier_name || '-';
+                document.getElementById('detailDeliveryAddress').innerHTML = (po.delivery_address || '-').replace(/\n/g, '<br>');
+
+                // Info grid
+                document.getElementById('detailReference').textContent = po.reference_number || '-';
+                document.getElementById('detailOrderDate').textContent = po.date
+                    ? new Date(po.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+                    : '-';
+                document.getElementById('detailDeliveryDate').textContent = po.expected_date
+                    ? new Date(po.expected_date + 'T00:00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+                    : '-';
+
+                // Payment terms display
+                const ptLabels = {
+                    'due-end-next-month': 'Due end of next month',
+                    'due-end-month': 'Due end of the month',
+                    'due-on-receipt': 'Due on Receipt',
+                    'net-15': 'Net 15',
+                    'net-30': 'Net 30',
+                    'net-45': 'Net 45',
+                    'net-60': 'Net 60'
+                };
+                document.getElementById('detailPaymentTerms').textContent = ptLabels[po.payment_terms] || po.payment_terms || '-';
+
+                // Items table
+                const tbody = document.getElementById('detailItemsBody');
+                let itemsHtml = '';
+                let subtotal = 0;
+                let totalQty = 0;
+
+                if (po.items && po.items.length > 0) {
+                    po.items.forEach(item => {
+                        const qty = parseFloat(item.quantity) || 0;
+                        const rate = parseFloat(item.unit_price) || 0;
+                        const amount = qty * rate;
+                        subtotal += amount;
+                        totalQty += qty;
+
+                        itemsHtml += `<tr>
+                            <td><div style="width: 36px; height: 36px; background: #f0f0f0; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px;">🖼️</div></td>
+                            <td>
+                                <div class="item-name-link">${item.item_name || '-'}</div>
+                                ${item.sku ? '<div class="item-sku">SKU: ' + item.sku + '</div>' : ''}
+                            </td>
+                            <td>${qty}<br><span style="font-size: 11px; color: #999;">${item.unit || 'pcs'}</span></td>
+                            <td class="status-col">0 Received<br>0 Billed</td>
+                            <td style="text-align: right;">PHP${rate.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+                            <td style="text-align: right;">${amount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+                        </tr>`;
+                    });
+                }
+
+                tbody.innerHTML = itemsHtml;
+
+                // Totals
+                document.getElementById('detailSubTotal').textContent = 'PHP' + subtotal.toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                document.getElementById('detailTotalQty').textContent = totalQty;
+
+                const discPct = parseFloat(po.discount_percent) || 0;
+                const discAmt = subtotal * (discPct / 100);
+                if (discPct > 0) {
+                    document.getElementById('discountRow').style.display = 'flex';
+                    document.getElementById('detailDiscountAmt').textContent = 'PHP' + discAmt.toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                }
+
+                const adj = parseFloat(po.adjustment) || 0;
+                if (adj !== 0) {
+                    document.getElementById('adjustmentRow').style.display = 'flex';
+                    document.getElementById('detailAdjustmentAmt').textContent = 'PHP' + adj.toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                }
+
+                const total = subtotal - discAmt + adj;
+                document.getElementById('detailTotal').textContent = 'PHP' + total.toLocaleString('en-PH', { minimumFractionDigits: 2 });
+
+                // Update browser URL without reload
+                history.replaceState(null, '', '/purchase-order-detail.html?id=' + poId);
+
+                // Highlight active in sidebar
+                document.querySelectorAll('.sidebar-list-item').forEach(el => el.classList.remove('active'));
+                const activeItem = document.querySelector(`.sidebar-list-item[onclick="navigateToPO(${poId})"]`);
+                if (activeItem) activeItem.classList.add('active');
+
+            } catch (error) {
+                console.error('Error loading PO detail:', error);
+            }
+        }
+
+        function navigateToPO(poId) {
+            loadPODetail(poId);
+        }
+
+        function editPO() {
+            if (currentPOId) {
+                window.location.href = '/new-purchase-order.html?id=' + currentPOId;
+            }
+        }
+
+        function sendEmail() {
+            alert('Send email feature coming soon!');
+        }
+
+        function sendPO() {
+            alert('Purchase order sent to vendor!');
+        }
+
+        function markAsIssued() {
+            if (currentPOId) {
+                fetch('/api/purchases/' + currentPOId, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'ordered' })
+                }).then(() => {
+                    loadPODetail(currentPOId);
+                    loadPOList();
+                });
+            }
+        }
+
+        function receivePO() {
+            if (currentPOId) {
+                if (confirm('Mark this purchase order as received? This will update stock quantities.')) {
+                    fetch('/api/purchases/' + currentPOId, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status: 'received', received_date: new Date().toISOString().split('T')[0] })
+                    }).then(() => {
+                        loadPODetail(currentPOId);
+                        loadPOList();
+                    });
+                }
+            }
+        }
+
+        function goBack() {
+            window.location.href = '/purchase-orders.html';
+        }
+    </script>
+</body>
+
+</html>

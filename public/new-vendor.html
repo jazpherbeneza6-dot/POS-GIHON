@@ -712,7 +712,7 @@
             btn.closest('tr').remove();
         }
 
-        function saveVendor() {
+        async function saveVendor() {
             const displayNameValue = document.getElementById('displayName').value;
 
             if (!displayNameValue) {
@@ -720,8 +720,73 @@
                 return;
             }
 
-            alert('Vendor saved successfully!');
-            goBack();
+            // Collect contact persons
+            const contactPersons = [];
+            document.querySelectorAll('#contactPersonsBody tr').forEach(row => {
+                const inputs = row.querySelectorAll('input');
+                const select = row.querySelector('select');
+                if (inputs.length >= 4 && (inputs[0].value || inputs[1].value || inputs[2].value)) {
+                    contactPersons.push({
+                        salutation: select ? select.value : '',
+                        first_name: inputs[0].value,
+                        last_name: inputs[1].value,
+                        email: inputs[2].value,
+                        phone: inputs[3].value
+                    });
+                }
+            });
+
+            const vendorData = {
+                salutation: document.getElementById('salutation').value,
+                first_name: document.getElementById('firstName').value,
+                last_name: document.getElementById('lastName').value,
+                company_name: document.getElementById('companyName').value,
+                display_name: displayNameValue,
+                name: displayNameValue,
+                email: document.getElementById('email').value,
+                work_phone: document.getElementById('workPhone').value,
+                mobile: document.getElementById('mobile').value,
+                phone: document.getElementById('workPhone').value,
+                vendor_language: document.getElementById('vendorLanguage').value,
+                // Other Details tab
+                tax_rate: document.getElementById('taxRate').value,
+                company_id_number: document.getElementById('companyId').value,
+                currency: document.getElementById('currency').value,
+                payment_terms: document.getElementById('paymentTerms').value,
+                enable_portal: document.getElementById('enablePortal').checked,
+                // Address tab
+                billing_attention: document.getElementById('billingAttention') ? document.getElementById('billingAttention').value : '',
+                billing_country: document.getElementById('billingCountry') ? document.getElementById('billingCountry').value : '',
+                billing_address: document.getElementById('billingAddress') ? document.getElementById('billingAddress').value : '',
+                billing_city: document.getElementById('billingCity') ? document.getElementById('billingCity').value : '',
+                billing_state: document.getElementById('billingState') ? document.getElementById('billingState').value : '',
+                billing_zip: document.getElementById('billingZip') ? document.getElementById('billingZip').value : '',
+                billing_phone: document.getElementById('billingPhone') ? document.getElementById('billingPhone').value : '',
+                // Remarks tab
+                remarks: document.getElementById('remarks') ? document.getElementById('remarks').value : '',
+                // Contact persons
+                contact_persons: contactPersons
+            };
+
+            try {
+                const response = await fetch('/api/suppliers', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(vendorData)
+                });
+
+                if (!response.ok) {
+                    const err = await response.json();
+                    alert('Error: ' + (err.error || 'Failed to save vendor'));
+                    return;
+                }
+
+                const saved = await response.json();
+                window.location.href = '/vendor-detail.html?id=' + saved.id;
+            } catch (error) {
+                console.error('Error saving vendor:', error);
+                alert('Error saving vendor: ' + error.message);
+            }
         }
     </script>
 </body>
