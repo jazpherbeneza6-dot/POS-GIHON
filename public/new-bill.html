@@ -565,6 +565,497 @@
         .btn-cancel:hover {
             background: #444;
         }
+
+        /* ============================================= */
+        /* Custom Payment Terms Dropdown                 */
+        /* ============================================= */
+        .payment-terms-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 200px;
+        }
+
+        .pt-trigger {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 9px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            font-size: 13px;
+            color: #333;
+            user-select: none;
+            transition: border-color 0.15s;
+        }
+
+        .pt-trigger:hover {
+            border-color: #4285f4;
+        }
+
+        .pt-trigger.open {
+            border-color: #4285f4;
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.15);
+        }
+
+        .pt-trigger .arrow {
+            font-size: 10px;
+            color: #4285f4;
+            transition: transform 0.2s;
+        }
+
+        .pt-trigger.open .arrow {
+            transform: rotate(180deg);
+        }
+
+        .pt-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            width: 240px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+            z-index: 500;
+            overflow: hidden;
+        }
+
+        .pt-dropdown.show {
+            display: block;
+            animation: ptSlideDown 0.15s ease-out;
+        }
+
+        @keyframes ptSlideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .pt-search-box {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .pt-search-box input {
+            width: 100%;
+            padding: 8px 10px 8px 30px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            outline: none;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") no-repeat 8px center;
+        }
+
+        .pt-search-box input:focus {
+            border-color: #4285f4;
+        }
+
+        .pt-options {
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .pt-options::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .pt-options::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 4px;
+        }
+
+        .pt-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+
+        .pt-option:hover {
+            background: #f0f5ff;
+        }
+
+        .pt-option.selected {
+            background: #4285f4;
+            color: white;
+        }
+
+        .pt-option .check {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .pt-option.selected .check {
+            color: white;
+        }
+
+        .pt-configure {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #4285f4;
+            cursor: pointer;
+            border-top: 1px solid #f0f0f0;
+            transition: background 0.1s;
+        }
+
+        .pt-configure:hover {
+            background: #f0f5ff;
+        }
+
+        .pt-configure .gear-icon {
+            font-size: 14px;
+        }
+
+        /* ============================================= */
+        /* Configure Payment Terms Modal                 */
+        /* ============================================= */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 60px;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+            animation: fadeIn 0.2s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: 8px;
+            width: 540px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+            animation: modalSlide 0.2s ease-out;
+        }
+
+        @keyframes modalSlide {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .modal-header h2 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: #dc2626;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: #b91c1c;
+        }
+
+        .modal-body {
+            padding: 16px 24px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .terms-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .terms-table th {
+            text-align: left;
+            padding: 10px 12px;
+            font-size: 10px;
+            font-weight: 700;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .terms-table td {
+            padding: 12px 12px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .terms-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .terms-table td:last-child {
+            text-align: right;
+            color: #666;
+        }
+
+        .terms-table input {
+            padding: 6px 8px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            width: 100%;
+        }
+
+        .terms-table input:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+
+        .terms-table .days-input {
+            width: 70px;
+            text-align: right;
+        }
+
+        .add-new-term {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 0;
+            color: #4285f4;
+            font-size: 13px;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+
+        .add-new-term:hover {
+            text-decoration: underline;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            padding: 14px 24px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .modal-footer .btn-save-modal {
+            padding: 8px 24px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .modal-footer .btn-save-modal:hover {
+            background: #3367d6;
+        }
+
+        .modal-footer .btn-cancel-modal {
+            padding: 8px 24px;
+            background: white;
+            color: #333;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .modal-footer .btn-cancel-modal:hover {
+            background: #f5f5f5;
+        }
+
+        .delete-term-btn {
+            background: none;
+            border: none;
+            color: #dc2626;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .delete-term-btn:hover {
+            background: #fef2f2;
+        }
+
+        /* ============================================= */
+        /* Item Details Dropdown                          */
+        /* ============================================= */
+        .item-input-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .item-input-wrapper input {
+            width: 100%;
+        }
+
+        .item-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 2px);
+            left: 0;
+            width: 380px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+            z-index: 600;
+            overflow: hidden;
+        }
+
+        .item-dropdown.show {
+            display: block;
+            animation: ptSlideDown 0.15s ease-out;
+        }
+
+        .item-dropdown-list {
+            max-height: 260px;
+            overflow-y: auto;
+        }
+
+        .item-dropdown-list::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .item-dropdown-list::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 4px;
+        }
+
+        .item-dropdown-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 10px 14px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.1s;
+        }
+
+        .item-dropdown-item:hover {
+            background: #f0f5ff;
+        }
+
+        .item-dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-dropdown-item.selected {
+            background: #4285f4;
+            color: white;
+        }
+
+        .item-dropdown-item.selected .item-meta,
+        .item-dropdown-item.selected .item-stock-label,
+        .item-dropdown-item.selected .item-stock-qty {
+            color: white !important;
+        }
+
+        .item-info-left {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .item-name-main {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .item-dropdown-item.selected .item-name-main {
+            color: white;
+        }
+
+        .item-meta {
+            font-size: 11px;
+            color: #888;
+        }
+
+        .item-stock-right {
+            text-align: right;
+            flex-shrink: 0;
+            margin-left: 12px;
+        }
+
+        .item-stock-label {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 2px;
+        }
+
+        .item-stock-qty {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .item-dropdown-footer {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #4285f4;
+            cursor: pointer;
+            border-top: 1px solid #f0f0f0;
+            transition: background 0.1s;
+        }
+
+        .item-dropdown-footer:hover {
+            background: #f0f5ff;
+        }
     </style>
 </head>
 
@@ -612,23 +1103,37 @@
 
                     <div class="form-row">
                         <label class="form-label required">Bill Date*</label>
-                        <input type="text" class="form-input" id="billDate" placeholder="dd MMM yyyy">
+                        <input type="date" class="form-input" id="billDate">
                     </div>
 
                     <div class="form-row-inline">
                         <div class="form-group">
                             <label class="form-label">Due Date</label>
-                            <input type="text" class="form-input" id="dueDate" value="12 Jan 2026"
-                                style="width: 150px;">
+                            <input type="date" class="form-input" id="dueDate" style="width: 150px;">
                         </div>
                         <div class="form-group">
                             <label class="form-label">Payment Terms</label>
-                            <select class="form-select" id="paymentTerms" style="width: 150px;">
-                                <option value="due-on-receipt">Due on Receipt</option>
-                                <option value="net-15">Net 15</option>
-                                <option value="net-30">Net 30</option>
-                                <option value="net-45">Net 45</option>
-                            </select>
+                            <!-- Custom Payment Terms Dropdown -->
+                            <div class="payment-terms-wrapper" id="paymentTermsWrapper">
+                                <div class="pt-trigger" id="ptTrigger" onclick="togglePaymentTerms()">
+                                    <span id="ptSelectedText">Due on Receipt</span>
+                                    <span class="arrow">▼</span>
+                                </div>
+                                <div class="pt-dropdown" id="ptDropdown">
+                                    <div class="pt-search-box">
+                                        <input type="text" placeholder="Search" id="ptSearchInput"
+                                            oninput="filterPaymentTerms()">
+                                    </div>
+                                    <div class="pt-options" id="ptOptions">
+                                        <!-- Options rendered dynamically -->
+                                    </div>
+                                    <div class="pt-configure" onclick="openConfigureTerms()">
+                                        <span class="gear-icon">⚙</span>
+                                        Configure Terms
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="paymentTerms" value="Due on Receipt">
                         </div>
                     </div>
 
@@ -685,7 +1190,18 @@
                                     <div class="item-image">🖼️</div>
                                 </td>
                                 <td>
-                                    <input type="text" placeholder="Type or click to select an item.">
+                                    <div class="item-input-wrapper">
+                                        <input type="text" class="item-detail-input"
+                                            placeholder="Type or click to select an item."
+                                            onfocus="openItemDropdown(this)" oninput="filterItemDropdown(this)">
+                                        <div class="item-dropdown">
+                                            <div class="item-dropdown-list"></div>
+                                            <div class="item-dropdown-footer"
+                                                onclick="window.location.href='/items.html'">
+                                                ⊕ Add New Item
+                                            </div>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td>
                                     <select>
@@ -714,7 +1230,7 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <select>
+                                    <select class="customer-select">
                                         <option value="">Select Customer</option>
                                     </select>
                                 </td>
@@ -795,19 +1311,406 @@
         </div>
     </div>
 
+    <!-- Configure Payment Terms Modal -->
+    <div class="modal-overlay" id="configureTermsModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2>Configure Payment Terms</h2>
+                <button class="modal-close" onclick="closeConfigureTerms()">✕</button>
+            </div>
+            <div class="modal-body">
+                <table class="terms-table" id="termsTable">
+                    <thead>
+                        <tr>
+                            <th>TERM NAME</th>
+                            <th style="width: 140px; text-align: right;">NUMBER OF DAYS</th>
+                            <th style="width: 40px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="termsTableBody">
+                        <!-- Rows rendered dynamically -->
+                    </tbody>
+                </table>
+                <button class="add-new-term" onclick="addNewTerm()">
+                    ⊕ Add New
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-save-modal" onclick="saveConfiguredTerms()">Save</button>
+                <button class="btn-cancel-modal" onclick="closeConfigureTerms()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Layout Script -->
     <script src="/js/layout.js"></script>
     <script>
-        // Set current date
+        // ===========================
+        // Default Payment Terms
+        // ===========================
+        const DEFAULT_TERMS = [
+            { name: 'Due end of next month', days: 'N/A' },
+            { name: 'Due end of the month', days: 'N/A' },
+            { name: 'Due on Receipt', days: '0' },
+            { name: 'Net 15', days: '15' },
+            { name: 'Net 30', days: '30' },
+            { name: 'Net 45', days: '45' },
+            { name: 'Net 60', days: '60' }
+        ];
+
+        let paymentTermsList = [];
+        let selectedPaymentTerm = 'Due on Receipt';
+        let customersList = [];
+
+        // ===========================
+        // Initialize on page load
+        // ===========================
         document.addEventListener('DOMContentLoaded', function () {
+            // Set dates to today
             const today = new Date();
-            const options = { day: '2-digit', month: 'short', year: 'numeric' };
-            const dateStr = today.toLocaleDateString('en-GB', options);
-            document.getElementById('dueDate').value = dateStr;
+            const todayStr = today.toISOString().split('T')[0];
+            document.getElementById('billDate').value = todayStr;
+            document.getElementById('dueDate').value = todayStr;
+
+            // Load vendors
+            loadVendors();
+
+            // Load customers
+            loadCustomers();
+
+            // Load items
+            loadItems();
+
+            // Load payment terms
+            loadPaymentTerms();
+
+            // Close dropdown on outside click
+            document.addEventListener('click', function (e) {
+                const wrapper = document.getElementById('paymentTermsWrapper');
+                if (wrapper && !wrapper.contains(e.target)) {
+                    closePaymentTermsDropdown();
+                }
+            });
         });
 
-        function goBack() {
-            window.location.href = '/bills.html';
+        // ===========================
+        // Vendor Dropdown
+        // ===========================
+        async function loadVendors() {
+            try {
+                const res = await fetch('/api/suppliers');
+                const vendors = await res.json();
+                const select = document.getElementById('vendorName');
+                // Keep the first "Select a Vendor" option
+                select.innerHTML = '<option value="">Select a Vendor</option>';
+                vendors.forEach(v => {
+                    const opt = document.createElement('option');
+                    opt.value = v.id || v.name;
+                    opt.textContent = v.name || v.display_name;
+                    select.appendChild(opt);
+                });
+            } catch (err) {
+                console.error('Error loading vendors:', err);
+            }
+        }
+
+        // ===========================
+        // Customer Details Dropdown
+        // ===========================
+        async function loadCustomers() {
+            try {
+                const res = await fetch('/api/customers');
+                customersList = await res.json();
+                populateAllCustomerSelects();
+            } catch (err) {
+                console.error('Error loading customers:', err);
+            }
+        }
+
+        function populateAllCustomerSelects() {
+            const selects = document.querySelectorAll('.customer-select');
+            selects.forEach(sel => populateCustomerSelect(sel));
+        }
+
+        function populateCustomerSelect(selectEl) {
+            const currentVal = selectEl.value;
+            selectEl.innerHTML = '<option value="">Select Customer</option>';
+            customersList.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.id || c.display_name;
+                opt.textContent = c.display_name || (c.first_name + ' ' + c.last_name);
+                selectEl.appendChild(opt);
+            });
+            // Restore previous selection if any
+            if (currentVal) selectEl.value = currentVal;
+        }
+
+        // ===========================
+        // Payment Terms - Custom Dropdown
+        // ===========================
+        function loadPaymentTerms() {
+            const stored = localStorage.getItem('billPaymentTerms');
+            if (stored) {
+                try {
+                    paymentTermsList = JSON.parse(stored);
+                } catch (e) {
+                    paymentTermsList = [...DEFAULT_TERMS];
+                }
+            } else {
+                paymentTermsList = [...DEFAULT_TERMS];
+            }
+            renderPaymentTermsOptions();
+        }
+
+        function renderPaymentTermsOptions() {
+            const container = document.getElementById('ptOptions');
+            const searchVal = (document.getElementById('ptSearchInput')?.value || '').toLowerCase();
+            container.innerHTML = '';
+
+            const filtered = paymentTermsList.filter(t =>
+                t.name.toLowerCase().includes(searchVal)
+            );
+
+            filtered.forEach(term => {
+                const div = document.createElement('div');
+                div.className = 'pt-option' + (term.name === selectedPaymentTerm ? ' selected' : '');
+                div.innerHTML = `
+                    <span>${term.name}</span>
+                    ${term.name === selectedPaymentTerm ? '<span class="check">✓</span>' : ''}
+                `;
+                div.addEventListener('click', function () {
+                    selectPaymentTerm(term.name, term.days);
+                });
+                container.appendChild(div);
+            });
+        }
+
+        function togglePaymentTerms() {
+            const dropdown = document.getElementById('ptDropdown');
+            const trigger = document.getElementById('ptTrigger');
+            const isOpen = dropdown.classList.contains('show');
+
+            if (isOpen) {
+                closePaymentTermsDropdown();
+            } else {
+                dropdown.classList.add('show');
+                trigger.classList.add('open');
+                document.getElementById('ptSearchInput').value = '';
+                renderPaymentTermsOptions();
+                document.getElementById('ptSearchInput').focus();
+            }
+        }
+
+        function closePaymentTermsDropdown() {
+            document.getElementById('ptDropdown').classList.remove('show');
+            document.getElementById('ptTrigger').classList.remove('open');
+        }
+
+        function filterPaymentTerms() {
+            renderPaymentTermsOptions();
+        }
+
+        function selectPaymentTerm(termName, days) {
+            selectedPaymentTerm = termName;
+            document.getElementById('ptSelectedText').textContent = termName;
+            document.getElementById('paymentTerms').value = termName;
+            closePaymentTermsDropdown();
+
+            // Auto-calculate due date based on bill date
+            const billDateInput = document.getElementById('billDate');
+            if (billDateInput.value && days !== 'N/A') {
+                const billDate = new Date(billDateInput.value);
+                const numDays = parseInt(days) || 0;
+                const dueDate = new Date(billDate);
+                dueDate.setDate(dueDate.getDate() + numDays);
+                document.getElementById('dueDate').value = dueDate.toISOString().split('T')[0];
+            } else if (billDateInput.value && termName === 'Due end of the month') {
+                const billDate = new Date(billDateInput.value);
+                const endOfMonth = new Date(billDate.getFullYear(), billDate.getMonth() + 1, 0);
+                document.getElementById('dueDate').value = endOfMonth.toISOString().split('T')[0];
+            } else if (billDateInput.value && termName === 'Due end of next month') {
+                const billDate = new Date(billDateInput.value);
+                const endOfNextMonth = new Date(billDate.getFullYear(), billDate.getMonth() + 2, 0);
+                document.getElementById('dueDate').value = endOfNextMonth.toISOString().split('T')[0];
+            }
+        }
+
+        // ===========================
+        // Configure Terms Modal
+        // ===========================
+        function openConfigureTerms() {
+            closePaymentTermsDropdown();
+            const modal = document.getElementById('configureTermsModal');
+            modal.classList.add('show');
+            renderTermsTable();
+        }
+
+        function closeConfigureTerms() {
+            document.getElementById('configureTermsModal').classList.remove('show');
+        }
+
+        function renderTermsTable() {
+            const tbody = document.getElementById('termsTableBody');
+            tbody.innerHTML = '';
+            paymentTermsList.forEach((term, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${term.name}</td>
+                    <td style="text-align: right;">${term.days}</td>
+                    <td>
+                        ${index >= DEFAULT_TERMS.length ?
+                        `<button class="delete-term-btn" onclick="deleteConfiguredTerm(${index})" title="Delete">✕</button>` : ''}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function addNewTerm() {
+            const tbody = document.getElementById('termsTableBody');
+            const tr = document.createElement('tr');
+            tr.className = 'new-term-row';
+            tr.innerHTML = `
+                <td><input type="text" placeholder="Term name" class="new-term-name" style="padding:6px 8px;border:1px solid #e0e0e0;border-radius:4px;font-size:13px;width:100%;"></td>
+                <td style="text-align:right;"><input type="number" placeholder="Days" class="new-term-days days-input" min="0" style="padding:6px 8px;border:1px solid #e0e0e0;border-radius:4px;font-size:13px;width:70px;text-align:right;"></td>
+                <td>
+                    <button class="delete-term-btn" onclick="this.closest('tr').remove()" title="Remove">✕</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+            tr.querySelector('.new-term-name').focus();
+        }
+
+        function deleteConfiguredTerm(index) {
+            if (index < DEFAULT_TERMS.length) return; // Prevent deleting defaults
+            paymentTermsList.splice(index, 1);
+            renderTermsTable();
+        }
+
+        function saveConfiguredTerms() {
+            // Collect new rows
+            const newRows = document.querySelectorAll('.new-term-row');
+            newRows.forEach(row => {
+                const name = row.querySelector('.new-term-name')?.value?.trim();
+                const days = row.querySelector('.new-term-days')?.value?.trim();
+                if (name) {
+                    paymentTermsList.push({
+                        name: name,
+                        days: days || '0'
+                    });
+                }
+            });
+
+            // Save to localStorage
+            localStorage.setItem('billPaymentTerms', JSON.stringify(paymentTermsList));
+
+            // Re-render dropdown options
+            renderPaymentTermsOptions();
+
+            closeConfigureTerms();
+        }
+
+        // ===========================
+        // Item Details Dropdown
+        // ===========================
+        let itemsList = [];
+
+        async function loadItems() {
+            try {
+                const res = await fetch('/api/items');
+                itemsList = await res.json();
+            } catch (err) {
+                console.error('Error loading items:', err);
+            }
+        }
+
+        function openItemDropdown(inputEl) {
+            // Close any other open item dropdowns first
+            document.querySelectorAll('.item-dropdown.show').forEach(d => d.classList.remove('show'));
+            const wrapper = inputEl.closest('.item-input-wrapper');
+            const dropdown = wrapper.querySelector('.item-dropdown');
+            renderItemDropdownList(wrapper, inputEl.value);
+            dropdown.classList.add('show');
+        }
+
+        function filterItemDropdown(inputEl) {
+            const wrapper = inputEl.closest('.item-input-wrapper');
+            renderItemDropdownList(wrapper, inputEl.value);
+        }
+
+        function renderItemDropdownList(wrapper, searchVal) {
+            const list = wrapper.querySelector('.item-dropdown-list');
+            const query = (searchVal || '').toLowerCase();
+            list.innerHTML = '';
+
+            const filtered = itemsList.filter(item =>
+                (item.name || '').toLowerCase().includes(query) ||
+                (item.sku || '').toLowerCase().includes(query)
+            );
+
+            if (filtered.length === 0) {
+                list.innerHTML = '<div style="padding:12px 14px;font-size:13px;color:#999;">No items found</div>';
+                return;
+            }
+
+            filtered.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'item-dropdown-item';
+                const purchaseRate = parseFloat(item.purchase_cost || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                const stockQty = parseFloat(item.stock_quantity || 0).toLocaleString('en-PH', { maximumFractionDigits: 6 });
+                const unit = item.unit || 'pcs';
+                div.innerHTML = `
+                    <div class="item-info-left">
+                        <div class="item-name-main">${item.name}</div>
+                        <div class="item-meta">SKU: ${item.sku || 'N/A'}  Purchase Rate: PHP${purchaseRate}</div>
+                    </div>
+                    <div class="item-stock-right">
+                        <div class="item-stock-label">Stock on Hand</div>
+                        <div class="item-stock-qty">${stockQty} ${unit}</div>
+                    </div>
+                `;
+                div.addEventListener('click', function () {
+                    selectItem(wrapper, item);
+                });
+                list.appendChild(div);
+            });
+        }
+
+        function selectItem(wrapper, item) {
+            const input = wrapper.querySelector('.item-detail-input');
+            input.value = item.name;
+            input.dataset.itemId = item.id;
+
+            // Auto-fill rate in the same row
+            const row = wrapper.closest('tr');
+            if (row) {
+                const rateInput = row.querySelectorAll('input[type="number"]')[1]; // second number input = rate
+                if (rateInput && item.purchase_cost) {
+                    rateInput.value = parseFloat(item.purchase_cost).toFixed(2);
+                }
+            }
+
+            // Close dropdown
+            wrapper.querySelector('.item-dropdown').classList.remove('show');
+        }
+
+        // Close item dropdowns on outside click
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.item-input-wrapper')) {
+                document.querySelectorAll('.item-dropdown.show').forEach(d => d.classList.remove('show'));
+            }
+        });
+
+        // ===========================
+        // Row Management
+        // ===========================
+        function getCustomerOptionsHTML() {
+            let html = '<option value="">Select Customer</option>';
+            customersList.forEach(c => {
+                const displayName = c.display_name || (c.first_name + ' ' + c.last_name);
+                html += `<option value="${c.id || displayName}">${displayName}</option>`;
+            });
+            return html;
         }
 
         function addNewRow() {
@@ -818,7 +1721,15 @@
                     <div class="item-image">🖼️</div>
                 </td>
                 <td>
-                    <input type="text" placeholder="Type or click to select an item.">
+                    <div class="item-input-wrapper">
+                        <input type="text" class="item-detail-input" placeholder="Type or click to select an item." onfocus="openItemDropdown(this)" oninput="filterItemDropdown(this)">
+                        <div class="item-dropdown">
+                            <div class="item-dropdown-list"></div>
+                            <div class="item-dropdown-footer" onclick="window.location.href='/items.html'">
+                                ⊕ Add New Item
+                            </div>
+                        </div>
+                    </div>
                 </td>
                 <td>
                     <select>
@@ -847,8 +1758,8 @@
                     </select>
                 </td>
                 <td>
-                    <select>
-                        <option value="">Select Customer</option>
+                    <select class="customer-select">
+                        ${getCustomerOptionsHTML()}
                     </select>
                 </td>
                 <td>
@@ -866,6 +1777,13 @@
             if (tbody.rows.length > 1) {
                 btn.closest('tr').remove();
             }
+        }
+
+        // ===========================
+        // Utility Functions
+        // ===========================
+        function goBack() {
+            window.location.href = '/bills.html';
         }
 
         function attachFiles() {
