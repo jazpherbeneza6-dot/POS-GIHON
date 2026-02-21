@@ -35,31 +35,80 @@ function buildDateFilter(req, dateColumn = 'date') {
   }
 }
 
-// Top selling items
+// Top selling items - from POS sales, invoices, and sales receipts
 router.get('/top-selling', async (req, res) => {
   try {
     const db = database.getDb();
-    const dateFilter = buildDateFilter(req, 's.date');
+    const period = req.query.period || 'thisMonth';
+
+    // Build date filters for each source table
+    const salesDateFilter = buildDateFilter(req, 's.date');
+    const invoiceDateFilter = buildDateFilter(req, 'inv.invoice_date');
+    const receiptDateFilter = buildDateFilter(req, 'sr.receipt_date');
 
     const result = await db.query(`
       SELECT 
-        i.id,
-        i.name,
-        i.sku,
-        i.barcode,
-        SUM(si.quantity) as total_quantity_sold,
-        SUM(si.total_price) as total_revenue,
-        COUNT(DISTINCT si.sale_id) as sale_count
-      FROM sales_items si
-      JOIN items i ON si.item_id = i.id
-      JOIN sales s ON si.sale_id = s.id
-      WHERE s.status = 'completed' ${dateFilter}
-      GROUP BY i.id, i.name, i.sku, i.barcode
-      ORDER BY total_quantity_sold DESC
-      LIMIT 10
+        agg.name,
+        agg.total_quantity_sold,
+        agg.total_revenue,
+        agg.sale_count,
+        i.image_url,
+        COALESCE(i.unit, 'pcs') AS unit
+      FROM (
+        SELECT 
+          name,
+          SUM(qty_sold) as total_quantity_sold,
+          SUM(revenue) as total_revenue,
+          COUNT(*) as sale_count
+        FROM (
+          -- POS Sales
+          SELECT 
+            COALESCE(i.name, si.item_id::text) AS name,
+            si.quantity AS qty_sold,
+            COALESCE(si.total_price, 0) AS revenue
+          FROM sales_items si
+          JOIN sales s ON si.sale_id = s.id
+          LEFT JOIN items i ON si.item_id = i.id
+          WHERE s.status = 'completed' ${salesDateFilter}
+          
+          UNION ALL
+          
+          -- Invoice Items
+          SELECT 
+            COALESCE(ii.item_name, 'Unknown') AS name,
+            ii.quantity AS qty_sold,
+            COALESCE(ii.amount, ii.quantity * ii.rate, 0) AS revenue
+          FROM invoice_items ii
+          JOIN invoices inv ON ii.invoice_id = inv.id
+          WHERE inv.status NOT IN ('DRAFT', 'VOID', 'Void', 'draft') ${invoiceDateFilter}
+          
+          UNION ALL
+          
+          -- Sales Receipt Items
+          SELECT 
+            COALESCE(sri.item_name, 'Unknown') AS name,
+            sri.quantity AS qty_sold,
+            COALESCE(sri.amount, sri.quantity * sri.rate, 0) AS revenue
+          FROM sales_receipt_items sri
+          JOIN sales_receipts sr ON sri.sales_receipt_id = sr.id
+          WHERE 1=1 ${receiptDateFilter}
+        ) combined
+        GROUP BY name
+        ORDER BY total_quantity_sold DESC
+        LIMIT 5
+      ) agg
+      LEFT JOIN items i ON LOWER(i.name) = LOWER(agg.name)
+      ORDER BY agg.total_quantity_sold DESC
     `);
 
-    res.json(result.rows);
+    // Calculate total quantity for percentage
+    const totalQty = result.rows.reduce((sum, r) => sum + parseFloat(r.total_quantity_sold || 0), 0);
+    const rows = result.rows.map(r => ({
+      ...r,
+      percentage: totalQty > 0 ? ((parseFloat(r.total_quantity_sold) / totalQty) * 100).toFixed(2) : '0.00'
+    }));
+
+    res.json(rows);
   } catch (error) {
     console.error('Error fetching top selling items:', error);
     res.status(500).json({ error: 'Failed to fetch top selling items' });
@@ -335,6 +384,63 @@ router.get('/purchase-trend', async (req, res) => {
   } catch (error) {
     console.error('Error fetching purchase trend:', error);
     res.status(500).json({ error: 'Failed to fetch purchase trend' });
+  }
+});
+
+// Sales pending actions - real counts from database
+router.get('/sales-pending-actions', async (req, res) => {
+  try {
+    const db = database.getDb();
+
+    // To Be Packed: confirmed sales orders that have NO packages at all
+    let toBePacked = 0;
+    try {
+      const r = await db.query(`
+        SELECT COUNT(*) as count FROM sales_orders so
+        WHERE so.status = 'CONFIRMED'
+        AND NOT EXISTS (SELECT 1 FROM packages p WHERE p.sales_order_id = so.id)
+      `);
+      toBePacked = parseInt(r.rows[0].count) || 0;
+    } catch (e) { }
+
+    // To Be Shipped: packages with status 'NOT SHIPPED'
+    let toBeShipped = 0;
+    try {
+      const r = await db.query(`
+        SELECT COUNT(*) as count FROM packages WHERE status = 'NOT SHIPPED'
+      `);
+      toBeShipped = parseInt(r.rows[0].count) || 0;
+    } catch (e) { }
+
+    // To Be Delivered: shipments not yet delivered
+    let toBeDelivered = 0;
+    try {
+      const r = await db.query(`
+        SELECT COUNT(*) as count FROM shipments WHERE already_delivered = false
+      `);
+      toBeDelivered = parseInt(r.rows[0].count) || 0;
+    } catch (e) { }
+
+    // To Be Invoiced: confirmed sales orders that have no linked invoice
+    let toBeInvoiced = 0;
+    try {
+      const r = await db.query(`
+        SELECT COUNT(*) as count FROM sales_orders so
+        WHERE so.status = 'CONFIRMED'
+        AND NOT EXISTS (SELECT 1 FROM invoices inv WHERE inv.order_number = so.order_number)
+      `);
+      toBeInvoiced = parseInt(r.rows[0].count) || 0;
+    } catch (e) { }
+
+    res.json({
+      to_be_packed: toBePacked,
+      to_be_shipped: toBeShipped,
+      to_be_delivered: toBeDelivered,
+      to_be_invoiced: toBeInvoiced
+    });
+  } catch (error) {
+    console.error('Error fetching sales pending actions:', error);
+    res.status(500).json({ error: 'Failed to fetch sales pending actions' });
   }
 });
 
