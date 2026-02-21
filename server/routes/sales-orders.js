@@ -42,9 +42,13 @@ router.get('/', async (req, res) => {
 router.get('/next-number', async (req, res) => {
     try {
         const pool = database.getDb();
-        const result = await pool.query('SELECT COUNT(*) FROM sales_orders');
-        const count = parseInt(result.rows[0].count) + 1;
-        const order_number = 'SO-' + String(count).padStart(5, '0');
+        const maxResult = await pool.query(`SELECT order_number FROM sales_orders ORDER BY id DESC LIMIT 1`);
+        let nextNum = 1;
+        if (maxResult.rows.length > 0 && maxResult.rows[0].order_number) {
+            const match = maxResult.rows[0].order_number.match(/SO-(\d+)/);
+            if (match) nextNum = parseInt(match[1]) + 1;
+        }
+        const order_number = 'SO-' + String(nextNum).padStart(5, '0');
         res.json({ order_number });
     } catch (err) {
         console.error('Error getting next order number:', err);
@@ -105,10 +109,14 @@ router.post('/', async (req, res) => {
             items
         } = req.body;
 
-        // Generate order number: SO-XXXXX
-        const countResult = await pool.query('SELECT COUNT(*) FROM sales_orders');
-        const count = parseInt(countResult.rows[0].count) + 1;
-        const order_number = 'SO-' + String(count).padStart(5, '0');
+        // Generate order number: SO-XXXXX (use MAX to avoid collision after deletions)
+        const maxResult = await pool.query(`SELECT order_number FROM sales_orders ORDER BY id DESC LIMIT 1`);
+        let nextNum = 1;
+        if (maxResult.rows.length > 0 && maxResult.rows[0].order_number) {
+            const match = maxResult.rows[0].order_number.match(/SO-(\d+)/);
+            if (match) nextNum = parseInt(match[1]) + 1;
+        }
+        const order_number = 'SO-' + String(nextNum).padStart(5, '0');
 
         const result = await pool.query(
             `INSERT INTO sales_orders (order_number, order_date, reference_number, customer_id, customer_name, salesperson_name, payment_terms, delivery_method, expected_shipment_date, status, notes, sub_total, discount, discount_type, discount_value, shipping_charges, adjustment, total)
@@ -133,7 +141,7 @@ router.post('/', async (req, res) => {
         res.status(201).json(order);
     } catch (err) {
         console.error('Error creating sales order:', err);
-        res.status(500).json({ error: 'Failed to create sales order' });
+        res.status(500).json({ error: 'Failed to create sales order', details: err.message });
     }
 });
 

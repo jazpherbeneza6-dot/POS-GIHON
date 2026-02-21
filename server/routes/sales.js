@@ -297,6 +297,271 @@ router.get('/reports/sales-by-item', async (req, res) => {
   }
 });
 
+// Order Fulfillment By Item report
+router.get('/reports/order-fulfillment-by-item', async (req, res) => {
+  try {
+    const { from, to } = req.query;
+    const db = database.getDb();
+
+    let dateFilter = '';
+    const params = [];
+    if (from && to) {
+      dateFilter = 'AND so.order_date >= $1 AND so.order_date <= $2';
+      params.push(from, to);
+    }
+
+    // 1. Get ordered quantities per item (non-cancelled)
+    const orderedResult = await db.query(`
+      SELECT
+        soi.item_name,
+        COALESCE(i.sku, '') AS sku,
+        SUM(soi.quantity) AS quantity_ordered
+      FROM sales_order_items soi
+      JOIN sales_orders so ON soi.sales_order_id = so.id
+      LEFT JOIN items i ON LOWER(i.name) = LOWER(soi.item_name)
+      WHERE so.status NOT IN ('CANCELLED')
+      ${dateFilter}
+      GROUP BY soi.item_name, COALESCE(i.sku, '')
+    `, params);
+
+    // 2. Get cancelled quantities per item
+    const cancelledResult = await db.query(`
+      SELECT
+        soi.item_name,
+        SUM(soi.quantity) AS cancelled_qty
+      FROM sales_order_items soi
+      JOIN sales_orders so ON soi.sales_order_id = so.id
+      WHERE so.status = 'CANCELLED'
+      ${dateFilter}
+      GROUP BY soi.item_name
+    `, params);
+
+    // 3. Get packed quantities
+    let packedRows = [];
+    try {
+      const packedResult = await db.query(`
+        SELECT
+          pi2.item_name,
+          SUM(pi2.packed_quantity) AS packed_qty
+        FROM package_items pi2
+        JOIN packages pkg ON pi2.package_id = pkg.id
+        JOIN sales_orders so ON pkg.sales_order_id = so.id
+        WHERE so.status NOT IN ('CANCELLED')
+        ${dateFilter}
+        GROUP BY pi2.item_name
+      `, params);
+      packedRows = packedResult.rows;
+    } catch (e) { /* packages table may not exist or have different schema */ }
+
+    // 4. Get shipped quantities (packages that have shipments)
+    let shippedRows = [];
+    try {
+      const shippedResult = await db.query(`
+        SELECT
+          pi2.item_name,
+          SUM(pi2.packed_quantity) AS shipped_qty
+        FROM package_items pi2
+        JOIN packages pkg ON pi2.package_id = pkg.id
+        JOIN shipments sh ON sh.package_id = pkg.id
+        JOIN sales_orders so ON pkg.sales_order_id = so.id
+        WHERE so.status NOT IN ('CANCELLED')
+        ${dateFilter}
+        GROUP BY pi2.item_name
+      `, params);
+      shippedRows = shippedResult.rows;
+    } catch (e) { /* shipments table may not exist */ }
+
+    // 5. Get delivered quantities
+    let deliveredRows = [];
+    try {
+      const deliveredResult = await db.query(`
+        SELECT
+          pi2.item_name,
+          SUM(pi2.packed_quantity) AS delivered_qty
+        FROM package_items pi2
+        JOIN packages pkg ON pi2.package_id = pkg.id
+        JOIN shipments sh ON sh.package_id = pkg.id
+        JOIN sales_orders so ON pkg.sales_order_id = so.id
+        WHERE sh.status = 'DELIVERED' AND so.status NOT IN ('CANCELLED')
+        ${dateFilter}
+        GROUP BY pi2.item_name
+      `, params);
+      deliveredRows = deliveredResult.rows;
+    } catch (e) { /* shipments table may not exist */ }
+
+    // 6. Get invoiced quantities
+    let invoicedRows = [];
+    try {
+      let invDateFilter = '';
+      const invParams = [];
+      if (from && to) {
+        invDateFilter = 'AND inv.invoice_date >= $1 AND inv.invoice_date <= $2';
+        invParams.push(from, to);
+      }
+      const invoicedResult = await db.query(`
+        SELECT
+          ii.item_name,
+          SUM(ii.quantity) AS invoiced_qty
+        FROM invoice_items ii
+        JOIN invoices inv ON ii.invoice_id = inv.id
+        WHERE inv.status NOT IN ('VOID', 'Void', 'draft')
+        ${invDateFilter}
+        GROUP BY ii.item_name
+      `, invParams);
+      invoicedRows = invoicedResult.rows;
+    } catch (e) { /* invoice_items table may not exist */ }
+
+    // Build lookup maps
+    const cancelledMap = {};
+    for (const row of cancelledResult.rows) {
+      cancelledMap[row.item_name.toLowerCase()] = parseFloat(row.cancelled_qty) || 0;
+    }
+    const packedMap = {};
+    for (const row of packedRows) {
+      packedMap[row.item_name.toLowerCase()] = parseFloat(row.packed_qty) || 0;
+    }
+    const shippedMap = {};
+    for (const row of shippedRows) {
+      shippedMap[row.item_name.toLowerCase()] = parseFloat(row.shipped_qty) || 0;
+    }
+    const deliveredMap = {};
+    for (const row of deliveredRows) {
+      deliveredMap[row.item_name.toLowerCase()] = parseFloat(row.delivered_qty) || 0;
+    }
+    const invoicedMap = {};
+    for (const row of invoicedRows) {
+      invoicedMap[row.item_name.toLowerCase()] = parseFloat(row.invoiced_qty) || 0;
+    }
+
+    // Merge into final result
+    const final = orderedResult.rows.map(row => {
+      const key = row.item_name.toLowerCase();
+      const ordered = parseFloat(row.quantity_ordered) || 0;
+      const packed = packedMap[key] || 0;
+      const shipped = shippedMap[key] || 0;
+      const delivered = deliveredMap[key] || 0;
+      const invoiced = invoicedMap[key] || 0;
+
+      return {
+        item_name: row.item_name,
+        sku: row.sku || '',
+        quantity_ordered: ordered,
+        cancelled: cancelledMap[key] || 0,
+        dropshipped: 0,
+        force_fulfilled: 0,
+        to_be_packed: Math.max(ordered - packed, 0),
+        to_be_shipped: Math.max(packed - shipped, 0),
+        to_be_delivered: Math.max(shipped - delivered, 0),
+        to_be_invoiced: Math.max(ordered - invoiced, 0)
+      };
+    }).sort((a, b) => a.item_name.localeCompare(b.item_name));
+
+    res.json(final);
+  } catch (error) {
+    console.error('Error generating order fulfillment by item report:', error);
+    res.status(500).json({ error: 'Failed to generate report' });
+  }
+});
+
+// Sales by Customer report
+router.get('/reports/sales-by-customer', async (req, res) => {
+  try {
+    const { from, to } = req.query;
+    const db = database.getDb();
+
+    const merged = {};
+    const addToMerged = (rows) => {
+      for (const row of rows) {
+        const key = row.customer_name || 'Walk-in Customer';
+        if (merged[key]) {
+          merged[key].invoice_count += parseInt(row.invoice_count) || 0;
+          merged[key].sales += parseFloat(row.sales) || 0;
+          merged[key].sales_with_tax += parseFloat(row.sales_with_tax) || 0;
+        } else {
+          merged[key] = {
+            customer_name: key,
+            invoice_count: parseInt(row.invoice_count) || 0,
+            sales: parseFloat(row.sales) || 0,
+            sales_with_tax: parseFloat(row.sales_with_tax) || 0
+          };
+        }
+      }
+    };
+
+    // 1. From invoices
+    try {
+      let dateFilter = '';
+      const params = [];
+      if (from && to) {
+        dateFilter = 'AND inv.invoice_date >= $1 AND inv.invoice_date <= $2';
+        params.push(from, to + 'T23:59:59.999');
+      }
+      const result = await db.query(`
+        SELECT 
+          COALESCE(inv.customer_name, 'Walk-in Customer') AS customer_name,
+          COUNT(inv.id) AS invoice_count,
+          SUM(COALESCE(inv.sub_total, 0)) AS sales,
+          SUM(COALESCE(inv.total, 0)) AS sales_with_tax
+        FROM invoices inv
+        WHERE inv.status NOT IN ('DRAFT', 'VOID', 'Void', 'draft') ${dateFilter}
+        GROUP BY COALESCE(inv.customer_name, 'Walk-in Customer')
+      `, params);
+      addToMerged(result.rows);
+    } catch (e) { /* invoices table may not exist */ }
+
+    // 2. From sales_receipts
+    try {
+      let dateFilter = '';
+      const params = [];
+      if (from && to) {
+        dateFilter = 'AND sr.receipt_date >= $1 AND sr.receipt_date <= $2';
+        params.push(from, to + 'T23:59:59.999');
+      }
+      const result = await db.query(`
+        SELECT 
+          COALESCE(sr.customer_name, 'Walk-in Customer') AS customer_name,
+          COUNT(sr.id) AS invoice_count,
+          SUM(COALESCE(sr.sub_total, 0)) AS sales,
+          SUM(COALESCE(sr.total, 0)) AS sales_with_tax
+        FROM sales_receipts sr
+        WHERE 1=1 ${dateFilter}
+        GROUP BY COALESCE(sr.customer_name, 'Walk-in Customer')
+      `, params);
+      addToMerged(result.rows);
+    } catch (e) { /* sales_receipts table may not exist */ }
+
+    // 3. From POS sales
+    try {
+      let dateFilter = '';
+      const params = [];
+      if (from && to) {
+        dateFilter = 'AND s.date >= $1 AND s.date <= $2';
+        params.push(from, to + 'T23:59:59.999');
+      }
+      const result = await db.query(`
+        SELECT 
+          COALESCE(s.customer_name, 'Walk-in Customer') AS customer_name,
+          COUNT(s.id) AS invoice_count,
+          SUM(COALESCE(s.subtotal, s.total_amount, 0)) AS sales,
+          SUM(COALESCE(s.total_amount, 0)) AS sales_with_tax
+        FROM sales s
+        WHERE s.status != 'cancelled' ${dateFilter}
+        GROUP BY COALESCE(s.customer_name, 'Walk-in Customer')
+      `, params);
+      addToMerged(result.rows);
+    } catch (e) { /* sales table may not exist */ }
+
+    const final = Object.values(merged)
+      .sort((a, b) => a.customer_name.localeCompare(b.customer_name));
+
+    res.json(final);
+  } catch (error) {
+    console.error('Error generating sales by customer report:', error);
+    res.status(500).json({ error: 'Failed to generate report' });
+  }
+});
+
+
 // Sales by Item - Customer drill-down
 router.get('/reports/sales-by-item/:itemName/customers', async (req, res) => {
   try {

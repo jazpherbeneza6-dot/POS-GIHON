@@ -471,6 +471,63 @@
             flex: 1;
             overflow-y: auto;
         }
+
+        /* PDF/Print Dropdown */
+        .pdf-print-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .pdf-print-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 4px);
+            right: 0;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+            z-index: 500;
+            min-width: 160px;
+            overflow: hidden;
+        }
+
+        .pdf-print-menu.show {
+            display: block;
+            animation: menuSlide 0.12s ease-out;
+        }
+
+        @keyframes menuSlide {
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .pdf-print-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            transition: background 0.1s;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .pdf-print-menu-item:hover {
+            background: #f0f5ff;
+        }
+
+        .pdf-print-menu-item:first-child {
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .pdf-print-menu-item .menu-icon {
+            font-size: 16px;
+        }
     </style>
 </head>
 
@@ -496,7 +553,17 @@
                         <div class="action-buttons">
                             <button class="action-btn" id="editBtn" onclick="editPO()">✏️ Edit</button>
                             <button class="action-btn" onclick="sendEmail()">📧 Send Email</button>
-                            <button class="action-btn">📄 PDF/Print ▾</button>
+                            <div class="pdf-print-wrapper">
+                                <button class="action-btn" onclick="togglePdfPrintMenu(event)">📄 PDF/Print ▾</button>
+                                <div class="pdf-print-menu" id="pdfPrintMenu">
+                                    <button class="pdf-print-menu-item" onclick="downloadPDF()">
+                                        <span class="menu-icon">📄</span> PDF
+                                    </button>
+                                    <button class="pdf-print-menu-item" onclick="printPO()">
+                                        <span class="menu-icon">🖨️</span> Print
+                                    </button>
+                                </div>
+                            </div>
                             <button class="action-btn" id="receiveBtn" onclick="receivePO()">📦 Receive</button>
                             <button class="action-btn" id="convertBillBtn" onclick="convertToBill()">🔄 Convert to
                                 Bill</button>
@@ -863,6 +930,240 @@
 
         function goBack() {
             window.location.href = '/purchase-orders.html';
+        }
+
+        // ===========================
+        // PDF/Print Dropdown
+        // ===========================
+        function togglePdfPrintMenu(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('pdfPrintMenu');
+            menu.classList.toggle('show');
+        }
+
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.pdf-print-wrapper')) {
+                document.getElementById('pdfPrintMenu').classList.remove('show');
+            }
+        });
+
+        function generatePODocument() {
+            if (!currentPO) return '';
+            const po = currentPO;
+
+            const orderDate = po.date
+                ? new Date(po.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+                : '-';
+            const deliveryDate = po.expected_date
+                ? new Date(po.expected_date + 'T00:00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+                : '-';
+            const refNumber = po.reference_number || '-';
+            const vendorName = po.supplier_name || '-';
+            const deliveryAddr = (po.delivery_address || '-').replace(/\n/g, '<br>');
+            const poNumber = po.po_number || ('PO-' + po.id);
+
+            const ptLabels = {
+                'due-end-next-month': 'Due end of next month',
+                'due-end-month': 'Due end of the month',
+                'due-on-receipt': 'Due on Receipt',
+                'net-15': 'Net 15', 'net-30': 'Net 30',
+                'net-45': 'Net 45', 'net-60': 'Net 60'
+            };
+            const paymentTerms = ptLabels[po.payment_terms] || po.payment_terms || '-';
+
+            let itemsRows = '';
+            let subtotal = 0;
+            let totalQty = 0;
+
+            if (po.items && po.items.length > 0) {
+                po.items.forEach((item, index) => {
+                    const qty = parseFloat(item.quantity) || 0;
+                    const rate = parseFloat(item.unit_price) || 0;
+                    const amount = qty * rate;
+                    subtotal += amount;
+                    totalQty += qty;
+                    const unit = item.unit || 'pcs';
+                    const desc = item.description || item.purchase_description || '';
+
+                    itemsRows += `
+                        <tr>
+                            <td style="padding: 12px 10px; text-align: center; font-size: 13px; border-bottom: 1px solid #eee;">${index + 1}</td>
+                            <td style="padding: 12px 10px; font-size: 13px; border-bottom: 1px solid #eee;">
+                                <strong>${item.item_name || '-'}</strong>
+                                ${desc ? '<br><span style="color:#888;font-size:12px;">' + desc + '</span>' : ''}
+                            </td>
+                            <td style="padding: 12px 10px; text-align: right; font-size: 13px; border-bottom: 1px solid #eee;">${qty.toLocaleString('en-PH', {maximumFractionDigits:6})}<br><span style="color:#888;font-size:11px;">${unit}</span></td>
+                            <td style="padding: 12px 10px; text-align: right; font-size: 13px; border-bottom: 1px solid #eee;">${rate.toLocaleString('en-PH', {minimumFractionDigits:2})}</td>
+                            <td style="padding: 12px 10px; text-align: right; font-size: 13px; border-bottom: 1px solid #eee;">${amount.toLocaleString('en-PH', {minimumFractionDigits:2})}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            const discPct = parseFloat(po.discount_percent) || 0;
+            const discAmt = subtotal * (discPct / 100);
+            const adj = parseFloat(po.adjustment) || 0;
+            const total = subtotal - discAmt + adj;
+
+            let totalsHtml = `
+                <tr>
+                    <td colspan="3"></td>
+                    <td style="padding:8px 10px; text-align:right; font-weight:600; font-size:13px; color:#555;">Sub Total</td>
+                    <td style="padding:8px 10px; text-align:right; font-size:13px;">${subtotal.toLocaleString('en-PH', {minimumFractionDigits:2})}</td>
+                </tr>
+            `;
+
+            if (discPct > 0) {
+                totalsHtml += `
+                    <tr>
+                        <td colspan="3"></td>
+                        <td style="padding:6px 10px; text-align:right; font-size:13px; color:#555;">${po.discount_label || 'Discount'} (${discPct}%)</td>
+                        <td style="padding:6px 10px; text-align:right; font-size:13px;">${discAmt.toLocaleString('en-PH', {minimumFractionDigits:2})}</td>
+                    </tr>
+                `;
+            }
+
+            if (adj !== 0) {
+                totalsHtml += `
+                    <tr>
+                        <td colspan="3"></td>
+                        <td style="padding:6px 10px; text-align:right; font-size:13px; color:#555;">Adjustment</td>
+                        <td style="padding:6px 10px; text-align:right; font-size:13px;">${adj.toLocaleString('en-PH', {minimumFractionDigits:2})}</td>
+                    </tr>
+                `;
+            }
+
+            totalsHtml += `
+                <tr>
+                    <td colspan="3"></td>
+                    <td style="padding:12px 10px; text-align:right; font-weight:700; font-size:14px; border-top:2px solid #333;">Total</td>
+                    <td style="padding:12px 10px; text-align:right; font-weight:700; font-size:14px; border-top:2px solid #333;">PHP${total.toLocaleString('en-PH', {minimumFractionDigits:2})}</td>
+                </tr>
+            `;
+
+            return `
+            <div id="pdfContent" style="font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; max-width: 750px; margin: 0 auto; padding: 40px; color: #333; background: white;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px;">
+                    <div>
+                        <div style="font-size: 20px; font-weight: 800; color: #1a1a1a;">GIHON</div>
+                        <div style="font-size: 12px; color: #888; margin-top: 2px;">Philippines</div>
+                        <div style="font-size: 12px; color: #888;">btambling413@gmail.com</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 28px; font-weight: 800; color: #1a1a1a; letter-spacing: 1px;">PURCHASE ORDER</div>
+                        <div style="font-size: 13px; color: #555; margin-top: 4px;"># ${poNumber}</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px;">
+                    <div style="max-width: 55%;">
+                        <div style="font-size: 11px; color: #999; margin-bottom: 4px;">Vendor Address</div>
+                        <div style="font-size: 14px; font-weight: 600; color: #1a1a1a; margin-bottom: 16px;">${vendorName}</div>
+                        <div style="font-size: 11px; color: #999; margin-bottom: 4px;">Deliver To</div>
+                        <div style="font-size: 13px; color: #333;">${deliveryAddr}</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <table style="border-collapse: collapse; margin-left: auto;">
+                            <tr>
+                                <td style="padding: 4px 16px 4px 0; font-size: 12px; color: #888; text-align: right;">Date :</td>
+                                <td style="padding: 4px 0; font-size: 13px; font-weight: 500; text-align: right;">${orderDate}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 4px 16px 4px 0; font-size: 12px; color: #888; text-align: right;">Delivery Date :</td>
+                                <td style="padding: 4px 0; font-size: 13px; font-weight: 500; text-align: right;">${deliveryDate}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 4px 16px 4px 0; font-size: 12px; color: #888; text-align: right;">Ref# :</td>
+                                <td style="padding: 4px 0; font-size: 13px; font-weight: 500; text-align: right;">${refNumber}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 4px 16px 4px 0; font-size: 12px; color: #888; text-align: right;">Payment Terms :</td>
+                                <td style="padding: 4px 0; font-size: 13px; font-weight: 500; text-align: right;">${paymentTerms}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                    <thead>
+                        <tr style="background: #f8f0e8;">
+                            <th style="padding: 10px; text-align: center; font-size: 12px; font-weight: 600; color: #8b5e34; width: 40px;">#</th>
+                            <th style="padding: 10px; text-align: left; font-size: 12px; font-weight: 600; color: #8b5e34;">Item & Description</th>
+                            <th style="padding: 10px; text-align: right; font-size: 12px; font-weight: 600; color: #8b5e34; width: 90px;">Qty</th>
+                            <th style="padding: 10px; text-align: right; font-size: 12px; font-weight: 600; color: #8b5e34; width: 100px;">Rate</th>
+                            <th style="padding: 10px; text-align: right; font-size: 12px; font-weight: 600; color: #8b5e34; width: 100px;">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${itemsRows}
+                        ${totalsHtml}
+                    </tbody>
+                </table>
+
+                ${po.terms_conditions ? '<div style="margin-top:20px;font-size:12px;color:#666;"><strong>Terms & Conditions:</strong><br>' + po.terms_conditions + '</div>' : ''}
+            </div>
+            `;
+        }
+
+        async function downloadPDF() {
+            document.getElementById('pdfPrintMenu').classList.remove('show');
+            if (!currentPO) { alert('No purchase order loaded'); return; }
+
+            if (!window.html2pdf) {
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+                document.head.appendChild(script);
+                await new Promise((resolve, reject) => { script.onload = resolve; script.onerror = reject; });
+            }
+
+            const htmlContent = generatePODocument();
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = htmlContent;
+            document.body.appendChild(tempDiv);
+
+            const poNumber = currentPO.po_number || ('PO-' + currentPO.id);
+            const opt = {
+                margin: [10, 10, 10, 10],
+                filename: poNumber + '.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            try {
+                await html2pdf().set(opt).from(tempDiv.firstElementChild).save();
+            } catch (err) {
+                console.error('PDF generation error:', err);
+                alert('Error generating PDF');
+            } finally {
+                document.body.removeChild(tempDiv);
+            }
+        }
+
+        function printPO() {
+            document.getElementById('pdfPrintMenu').classList.remove('show');
+            if (!currentPO) { alert('No purchase order loaded'); return; }
+
+            const htmlContent = generatePODocument();
+            const printWindow = window.open('', '_blank', 'width=800,height=900');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Purchase Order - ${currentPO.po_number || ('PO-' + currentPO.id)}</title>
+                    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+                    <style>
+                        @media print { body { margin: 0; padding: 0; } @page { margin: 15mm; } }
+                        body { font-family: 'Inter', Arial, sans-serif; background: white; margin: 0; padding: 0; }
+                    </style>
+                </head>
+                <body>
+                    ${htmlContent}
+                    <script>setTimeout(function() { window.print(); }, 500);<\/script>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
         }
     </script>
 </body>
