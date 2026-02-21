@@ -91,6 +91,10 @@ function selectItemsFilter(filterKey, filterLabel) {
   event.stopPropagation();
   currentItemsFilter = filterKey;
 
+  // Clear advanced search when changing filters
+  isAdvancedSearchActive = false;
+  advancedSearchResults = null;
+
   // Update title
   document.getElementById('itemsFilterTitle').textContent = filterLabel;
 
@@ -521,8 +525,17 @@ function openAdjustStockModal() {
   document.getElementById('adjustStockReason').value = '';
   document.getElementById('adjustStockDescription').value = '';
 
-  // Set up quantity adjusted input event
-  document.getElementById('adjustQuantityAdjusted').addEventListener('input', calculateNewQuantity);
+  // Set up input events for bidirectional calculation
+  const qtyAdjustedEl = document.getElementById('adjustQuantityAdjusted');
+  const newQtyEl = document.getElementById('adjustNewQuantity');
+  // Remove old listeners by cloning
+  const newQtyAdjustedEl = qtyAdjustedEl.cloneNode(true);
+  qtyAdjustedEl.parentNode.replaceChild(newQtyAdjustedEl, qtyAdjustedEl);
+  const newNewQtyEl = newQtyEl.cloneNode(true);
+  newQtyEl.parentNode.replaceChild(newNewQtyEl, newQtyEl);
+  // Add fresh listeners
+  newQtyAdjustedEl.addEventListener('input', calculateNewQuantity);
+  newNewQtyEl.addEventListener('input', calculateQuantityAdjusted);
 
   // Close item detail view and show adjust stock overlay
   document.getElementById('itemDetailOverlay').classList.remove('active');
@@ -541,24 +554,23 @@ function calculateNewQuantity() {
   document.getElementById('adjustNewQuantity').value = newQty.toFixed(2);
 }
 
+function calculateQuantityAdjusted() {
+  const qtyAvailable = parseFloat(document.getElementById('adjustQuantityAvailable').value) || 0;
+  const newQty = parseFloat(document.getElementById('adjustNewQuantity').value) || 0;
+  const qtyAdjusted = newQty - qtyAvailable;
+  const sign = qtyAdjusted >= 0 ? '+' : '';
+  document.getElementById('adjustQuantityAdjusted').value = sign + qtyAdjusted.toFixed(2);
+}
+
 async function saveAdjustmentAsDraft() {
-  const reason = document.getElementById('adjustStockReason').value;
-  if (!reason) {
-    showToast('Please select a reason', 'error');
-    return;
-  }
-
-  const qtyAdjusted = parseFloat(document.getElementById('adjustQuantityAdjusted').value);
-  if (!qtyAdjusted || qtyAdjusted === 0) {
-    showToast('Please enter a quantity to adjust', 'error');
-    return;
-  }
-
-  showToast('Adjustment saved as draft', 'success');
-  closeAdjustStockModal();
+  await submitStockAdjustment('draft');
 }
 
 async function convertToAdjusted() {
+  await submitStockAdjustment('adjusted');
+}
+
+async function submitStockAdjustment(status) {
   const reason = document.getElementById('adjustStockReason').value;
   if (!reason) {
     showToast('Please select a reason', 'error');
@@ -578,31 +590,175 @@ async function convertToAdjusted() {
   }
 
   try {
-    // Calculate new quantity
-    const currentQty = parseFloat(item.stock_quantity) || 0;
-    const newQty = currentQty + qtyAdjusted;
+    const referenceNumber = document.getElementById('adjustStockReference').value || '';
+    const description = document.getElementById('adjustStockDescription').value || '';
+    const account = document.getElementById('adjustStockAccount').value || '';
+    const adjustmentType = document.querySelector('input[name="adjustmentType"]:checked')?.value || 'quantity';
 
-    // Update the item's stock quantity
-    const response = await fetch(`/api/items/${adjustStockItemId}`, {
-      method: 'PUT',
+    const response = await fetch('/api/inventory/adjustments', {
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        ...item,
-        stock_quantity: newQty,
-        quantity: newQty
+        reference_number: referenceNumber || undefined,
+        mode: adjustmentType,
+        reason: reason,
+        description: description,
+        account: account,
+        status: status,
+        items: [{
+          item_id: adjustStockItemId,
+          quantity_adjusted: qtyAdjusted
+        }]
       })
     });
 
-    if (!response.ok) throw new Error('Failed to update stock');
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to create adjustment');
+    }
 
-    showToast('Stock adjusted successfully', 'success');
+    if (status === 'adjusted') {
+      showToast('Inventory Adjustment Added', 'success');
+    } else {
+      showToast('Adjustment saved as draft', 'success');
+    }
+
     closeAdjustStockModal();
+
+    // Reload items and re-open detail view for the adjusted item
+    const adjustedItemId = adjustStockItemId;
     await loadItems();
+    if (typeof showItemDetail === 'function') {
+      showItemDetail(adjustedItemId);
+    }
   } catch (error) {
-    console.error('Error adjusting stock:', error);
-    showToast('Error adjusting stock', 'error');
+    console.error('Error creating adjustment:', error);
+    showToast(error.message || 'Error creating adjustment', 'error');
   }
 }
+
+// ========== ADVANCED SEARCH MODAL FUNCTIONS ==========
+function openAdvancedSearch() {
+  const overlay = document.getElementById('advSearchOverlay');
+  if (overlay) {
+    overlay.classList.add('active');
+
+    // Populate Brand dropdown from existing items
+    const brandSelect = document.getElementById('advSearchBrand');
+    if (brandSelect && brandSelect.options.length <= 1) {
+      const brands = [...new Set(items.filter(i => i.brand).map(i => i.brand))].sort();
+      brands.forEach(b => {
+        const opt = document.createElement('option');
+        opt.value = b;
+        opt.textContent = b;
+        brandSelect.appendChild(opt);
+      });
+    }
+
+    // Populate Manufacturer dropdown from existing items
+    const mfgSelect = document.getElementById('advSearchManufacturer');
+    if (mfgSelect && mfgSelect.options.length <= 1) {
+      const manufacturers = [...new Set(items.filter(i => i.manufacturer).map(i => i.manufacturer))].sort();
+      manufacturers.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m;
+        opt.textContent = m;
+        mfgSelect.appendChild(opt);
+      });
+    }
+  }
+}
+
+function closeAdvancedSearch() {
+  const overlay = document.getElementById('advSearchOverlay');
+  if (overlay) {
+    overlay.classList.remove('active');
+  }
+  // Reset all fields
+  const fieldIds = [
+    'advSearchName', 'advSearchDescription', 'advSearchBrand', 'advSearchUPC',
+    'advSearchISBN', 'advSearchPurchaseRate', 'advSearchSalesTax', 'advSearchPurchaseAccount',
+    'advSearchSKU', 'advSearchManufacturer', 'advSearchEAN', 'advSearchMPN',
+    'advSearchRate', 'advSearchStatus', 'advSearchSalesAccount', 'advSearchSerialNumber'
+  ];
+  fieldIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+}
+
+function executeAdvancedSearch() {
+  const criteria = {
+    name: document.getElementById('advSearchName')?.value?.trim().toLowerCase(),
+    description: document.getElementById('advSearchDescription')?.value?.trim().toLowerCase(),
+    brand: document.getElementById('advSearchBrand')?.value,
+    upc: document.getElementById('advSearchUPC')?.value?.trim().toLowerCase(),
+    isbn: document.getElementById('advSearchISBN')?.value?.trim().toLowerCase(),
+    purchase_rate: document.getElementById('advSearchPurchaseRate')?.value,
+    sales_tax: document.getElementById('advSearchSalesTax')?.value,
+    purchase_account: document.getElementById('advSearchPurchaseAccount')?.value,
+    sku: document.getElementById('advSearchSKU')?.value?.trim().toLowerCase(),
+    manufacturer: document.getElementById('advSearchManufacturer')?.value,
+    ean: document.getElementById('advSearchEAN')?.value?.trim().toLowerCase(),
+    mpn: document.getElementById('advSearchMPN')?.value?.trim().toLowerCase(),
+    rate: document.getElementById('advSearchRate')?.value,
+    status: document.getElementById('advSearchStatus')?.value,
+    sales_account: document.getElementById('advSearchSalesAccount')?.value,
+    serial_number: document.getElementById('advSearchSerialNumber')?.value?.trim().toLowerCase()
+  };
+
+  // Check if any criteria is set
+  const hasCriteria = Object.values(criteria).some(v => v !== '' && v !== undefined && v !== null);
+  if (!hasCriteria) {
+    showToast('Please enter at least one search criteria', 'info');
+    return;
+  }
+
+  // Filter items
+  const filtered = items.filter(item => {
+    if (criteria.name && !(item.name || '').toLowerCase().includes(criteria.name)) return false;
+    if (criteria.description && !(item.description || '').toLowerCase().includes(criteria.description)) return false;
+    if (criteria.brand && item.brand !== criteria.brand) return false;
+    if (criteria.upc && !(item.upc || '').toLowerCase().includes(criteria.upc)) return false;
+    if (criteria.isbn && !(item.isbn || '').toLowerCase().includes(criteria.isbn)) return false;
+    if (criteria.purchase_rate && parseFloat(item.purchase_cost || 0) !== parseFloat(criteria.purchase_rate)) return false;
+    if (criteria.sales_tax && item.sales_tax !== criteria.sales_tax) return false;
+    if (criteria.purchase_account && item.purchase_account !== criteria.purchase_account) return false;
+    if (criteria.sku && !(item.sku || '').toLowerCase().includes(criteria.sku)) return false;
+    if (criteria.manufacturer && item.manufacturer !== criteria.manufacturer) return false;
+    if (criteria.ean && !(item.ean || '').toLowerCase().includes(criteria.ean)) return false;
+    if (criteria.mpn && !(item.mpn || '').toLowerCase().includes(criteria.mpn)) return false;
+    if (criteria.rate && parseFloat(item.selling_price || 0) !== parseFloat(criteria.rate)) return false;
+    if (criteria.status && item.status !== criteria.status) return false;
+    if (criteria.sales_account && item.sales_account !== criteria.sales_account) return false;
+    if (criteria.serial_number && !(item.serial_number || '').toLowerCase().includes(criteria.serial_number)) return false;
+    return true;
+  });
+
+  // Close modal
+  const overlay = document.getElementById('advSearchOverlay');
+  if (overlay) overlay.classList.remove('active');
+
+  // Apply filtered results to the table
+  advancedSearchResults = filtered;
+  isAdvancedSearchActive = true;
+  renderItemsTable();
+  renderItemsGrid();
+
+  showToast(`Found ${filtered.length} item(s) matching your search`, 'success');
+}
+
+// Track advanced search state
+let advancedSearchResults = null;
+let isAdvancedSearchActive = false;
+
+// Close advanced search on backdrop click
+document.addEventListener('mousedown', function (e) {
+  const overlay = document.getElementById('advSearchOverlay');
+  if (overlay && overlay.classList.contains('active') && e.target === overlay) {
+    closeAdvancedSearch();
+  }
+});
 
 // ========== BULK ACTION TOOLBAR FUNCTIONS ==========
 function updateBulkActionToolbar() {
@@ -768,23 +924,377 @@ function openImportModal() {
 }
 
 function importItems() {
-  showToast('Import Items feature coming soon', 'info');
+  // Create a hidden file input for CSV
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept = '.csv';
+  fileInput.style.display = 'none';
+  document.body.appendChild(fileInput);
+
+  fileInput.addEventListener('change', async function () {
+    const file = this.files[0];
+    if (!file) return;
+
+    showToast('Reading CSV file...', 'info');
+
+    const reader = new FileReader();
+    reader.onload = async function (e) {
+      try {
+        const csvText = e.target.result;
+        const rows = parseCSV(csvText);
+
+        if (rows.length < 2) {
+          showToast('CSV file is empty or has no data rows', 'error');
+          return;
+        }
+
+        // First row is the header
+        const headers = rows[0].map(h => h.trim().toLowerCase().replace(/\s+/g, '_'));
+        const dataRows = rows.slice(1);
+
+        let imported = 0;
+        let failed = 0;
+
+        for (const row of dataRows) {
+          if (row.length === 0 || (row.length === 1 && row[0].trim() === '')) continue;
+
+          const rowData = {};
+          headers.forEach((header, idx) => {
+            rowData[header] = row[idx]?.trim() || '';
+          });
+
+          // Map CSV columns to API fields
+          const itemPayload = {
+            name: rowData['name'] || rowData['item_name'] || rowData['item'] || '',
+            sku: rowData['sku'] || '',
+            unit: rowData['unit'] || 'pcs',
+            quantity: parseInt(rowData['stock_on_hand'] || rowData['quantity'] || rowData['stock'] || '0') || 0,
+            reorder_point: parseInt(rowData['reorder_level'] || rowData['reorder_point'] || '10') || 10,
+            price: parseFloat(rowData['rate'] || rowData['price'] || rowData['selling_price'] || '0') || 0,
+            cost: parseFloat(rowData['purchase_rate'] || rowData['cost'] || rowData['purchase_cost'] || '0') || 0,
+            description: rowData['description'] || '',
+            brand: rowData['brand'] || '',
+            manufacturer: rowData['manufacturer'] || '',
+            upc: rowData['upc'] || '',
+            ean: rowData['ean'] || '',
+            isbn: rowData['isbn'] || '',
+            type: rowData['type'] || 'goods',
+            status: rowData['status'] || 'active'
+          };
+
+          if (!itemPayload.name) {
+            failed++;
+            continue;
+          }
+
+          try {
+            const response = await fetch('/api/items', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(itemPayload)
+            });
+
+            if (response.ok) {
+              imported++;
+            } else {
+              const errorData = await response.json();
+              console.warn(`Failed to import "${itemPayload.name}":`, errorData.error);
+              failed++;
+            }
+          } catch (err) {
+            console.error(`Error importing "${itemPayload.name}":`, err);
+            failed++;
+          }
+        }
+
+        // Reload items after import
+        await loadItems();
+        renderItemsTable();
+        renderItemsGrid();
+
+        if (failed > 0) {
+          showToast(`Imported ${imported} item(s). ${failed} failed.`, 'warning');
+        } else {
+          showToast(`Successfully imported ${imported} item(s)!`, 'success');
+        }
+      } catch (error) {
+        console.error('CSV parse error:', error);
+        showToast('Failed to parse CSV file', 'error');
+      }
+    };
+    reader.readAsText(file);
+
+    // Clean up
+    document.body.removeChild(fileInput);
+  });
+
+  fileInput.click();
+}
+
+// CSV parser that handles quoted fields with commas
+function parseCSV(text) {
+  const rows = [];
+  let currentRow = [];
+  let currentField = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    const nextChar = text[i + 1];
+
+    if (inQuotes) {
+      if (char === '"' && nextChar === '"') {
+        currentField += '"';
+        i++; // skip escaped quote
+      } else if (char === '"') {
+        inQuotes = false;
+      } else {
+        currentField += char;
+      }
+    } else {
+      if (char === '"') {
+        inQuotes = true;
+      } else if (char === ',') {
+        currentRow.push(currentField);
+        currentField = '';
+      } else if (char === '\n' || (char === '\r' && nextChar === '\n')) {
+        currentRow.push(currentField);
+        rows.push(currentRow);
+        currentRow = [];
+        currentField = '';
+        if (char === '\r') i++; // skip \n in \r\n
+      } else {
+        currentField += char;
+      }
+    }
+  }
+
+  // Push the last field and row
+  if (currentField || currentRow.length > 0) {
+    currentRow.push(currentField);
+    rows.push(currentRow);
+  }
+
+  return rows;
 }
 
 function importItemImages() {
-  showToast('Import Items Images feature coming soon', 'info');
+  // Create a hidden file input for multiple images
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept = 'image/jpeg,image/png,image/webp,image/gif';
+  fileInput.multiple = true;
+  fileInput.style.display = 'none';
+  document.body.appendChild(fileInput);
+
+  fileInput.addEventListener('change', async function () {
+    const files = Array.from(this.files);
+    if (files.length === 0) return;
+
+    showToast(`Processing ${files.length} image(s)...`, 'info');
+
+    let matched = 0;
+    let notFound = 0;
+
+    for (const file of files) {
+      // Extract SKU from filename (remove extension)
+      const fileName = file.name;
+      const skuFromFile = fileName.substring(0, fileName.lastIndexOf('.')).trim();
+
+      if (!skuFromFile) {
+        notFound++;
+        continue;
+      }
+
+      // Find matching item by SKU
+      const matchingItem = items.find(item =>
+        item.sku && item.sku.toLowerCase() === skuFromFile.toLowerCase()
+      );
+
+      if (!matchingItem) {
+        console.warn(`No item found with SKU: "${skuFromFile}" (file: ${fileName})`);
+        notFound++;
+        continue;
+      }
+
+      // Convert image to base64 data URI
+      try {
+        const dataUrl = await readFileAsDataURL(file);
+
+        const response = await fetch(`/api/items/${matchingItem.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image_url: dataUrl })
+        });
+
+        if (response.ok) {
+          matched++;
+        } else {
+          console.warn(`Failed to update image for item ${matchingItem.name}`);
+          notFound++;
+        }
+      } catch (err) {
+        console.error(`Error uploading image for SKU "${skuFromFile}":`, err);
+        notFound++;
+      }
+    }
+
+    // Reload items after image import
+    await loadItems();
+    renderItemsTable();
+    renderItemsGrid();
+
+    if (notFound > 0) {
+      showToast(`Updated ${matched} image(s). ${notFound} skipped (no SKU match or error).`, 'warning');
+    } else {
+      showToast(`Successfully updated ${matched} image(s)!`, 'success');
+    }
+
+    // Clean up
+    document.body.removeChild(fileInput);
+  });
+
+  fileInput.click();
+}
+
+// Helper: read a File as base64 data URL
+function readFileAsDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
 }
 
 function openExportModal() {
-  showToast('Export feature coming soon', 'info');
+  showToast('Use the Export submenu from the kebab menu', 'info');
 }
 
 function exportItems() {
-  showToast('Export Items feature coming soon', 'info');
+  if (!items || items.length === 0) {
+    showToast('No items to export', 'info');
+    return;
+  }
+
+  // CSV columns
+  const headers = ['Name', 'SKU', 'Type', 'Stock on Hand', 'Reorder Level', 'Rate', 'Purchase Rate', 'Brand', 'Manufacturer', 'Description', 'UPC', 'EAN', 'ISBN', 'Unit', 'Status'];
+
+  const csvRows = [headers.join(',')];
+
+  items.forEach(item => {
+    const row = [
+      escapeCSV(item.name || ''),
+      escapeCSV(item.sku || ''),
+      escapeCSV(item.type || 'goods'),
+      item.stock_quantity || 0,
+      item.reorder_point || 0,
+      item.selling_price || 0,
+      item.purchase_cost || 0,
+      escapeCSV(item.brand || ''),
+      escapeCSV(item.manufacturer || ''),
+      escapeCSV(item.description || ''),
+      escapeCSV(item.upc || ''),
+      escapeCSV(item.ean || ''),
+      escapeCSV(item.isbn || ''),
+      escapeCSV(item.unit || 'pcs'),
+      escapeCSV(item.status || 'active')
+    ];
+    csvRows.push(row.join(','));
+  });
+
+  downloadCSV(csvRows.join('\n'), 'GiHon_All_Items.csv');
+  showToast(`Exported ${items.length} item(s) to GiHon_All_Items.csv`, 'success');
 }
 
 function exportCurrentView() {
-  showToast('Export Current View feature coming soon', 'info');
+  // Get the visible items from the table DOM
+  const tbody = document.getElementById('itemsTableBody');
+  if (!tbody) {
+    showToast('No items table found', 'error');
+    return;
+  }
+
+  const rows = tbody.querySelectorAll('tr');
+  const visibleItemIds = [];
+
+  rows.forEach(row => {
+    const onclick = row.getAttribute('onclick') || '';
+    const match = onclick.match(/selectItem\((\d+)\)/);
+    if (match) {
+      visibleItemIds.push(parseInt(match[1]));
+    }
+    // Also check data attribute
+    const dataId = row.getAttribute('data-item-id');
+    if (dataId) {
+      visibleItemIds.push(parseInt(dataId));
+    }
+  });
+
+  // Get items matching visible rows, or fall back to filtered items
+  let filteredItems;
+  if (visibleItemIds.length > 0) {
+    filteredItems = items.filter(item => visibleItemIds.includes(item.id));
+  } else if (isAdvancedSearchActive && advancedSearchResults) {
+    filteredItems = advancedSearchResults;
+  } else {
+    filteredItems = items;
+  }
+
+  if (filteredItems.length === 0) {
+    showToast('No items in current view to export', 'info');
+    return;
+  }
+
+  const headers = ['Name', 'SKU', 'Type', 'Stock on Hand', 'Reorder Level', 'Rate', 'Purchase Rate', 'Brand', 'Manufacturer', 'Description', 'UPC', 'EAN', 'ISBN', 'Unit', 'Status'];
+
+  const csvRows = [headers.join(',')];
+
+  filteredItems.forEach(item => {
+    const row = [
+      escapeCSV(item.name || ''),
+      escapeCSV(item.sku || ''),
+      escapeCSV(item.type || 'goods'),
+      item.stock_quantity || 0,
+      item.reorder_point || 0,
+      item.selling_price || 0,
+      item.purchase_cost || 0,
+      escapeCSV(item.brand || ''),
+      escapeCSV(item.manufacturer || ''),
+      escapeCSV(item.description || ''),
+      escapeCSV(item.upc || ''),
+      escapeCSV(item.ean || ''),
+      escapeCSV(item.isbn || ''),
+      escapeCSV(item.unit || 'pcs'),
+      escapeCSV(item.status || 'active')
+    ];
+    csvRows.push(row.join(','));
+  });
+
+  downloadCSV(csvRows.join('\n'), 'GiHon_Filtered_Items.csv');
+  showToast(`Exported ${filteredItems.length} item(s) to GiHon_Filtered_Items.csv`, 'success');
+}
+
+// Helper: escape a value for CSV (wrap in quotes if it contains commas, quotes, or newlines)
+function escapeCSV(value) {
+  const str = String(value);
+  if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+    return '"' + str.replace(/"/g, '""') + '"';
+  }
+  return str;
+}
+
+// Helper: trigger a CSV file download
+function downloadCSV(csvContent, filename) {
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  link.style.display = 'none';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(link.href);
 }
 
 function openPreferences() {
@@ -2708,6 +3218,16 @@ function closeCustomizeColumns() {
   }
 }
 
+// Close modal when clicking outside the panel
+document.addEventListener('mousedown', function (e) {
+  const modal = document.getElementById('customizeColumnsModal');
+  if (modal && modal.classList.contains('active')) {
+    if (e.target === modal) {
+      closeCustomizeColumns();
+    }
+  }
+});
+
 // Render the columns list in the modal
 function renderColumnsList(filter = '') {
   const list = document.getElementById('columnsList');
@@ -2726,8 +3246,7 @@ function renderColumnsList(filter = '') {
       ? `<span class="column-lock-icon">🔒</span>`
       : `<input type="checkbox" class="column-checkbox" 
             ${col.visible ? 'checked' : ''} 
-            onclick="event.stopPropagation();"
-            onchange="toggleColumnVisibility('${col.id}')">`
+            style="pointer-events: none;">`
     }
       <span class="column-name">${col.label}</span>
     </div>
@@ -2847,7 +3366,7 @@ function renderTableHeader() {
   });
 
   headerHTML += `
-      <th class="zoho-th-search">🔍</th>
+      <th class="zoho-th-search" onclick="openAdvancedSearch()" style="cursor:pointer;" title="Advanced Search">🔍</th>
     </tr>
   `;
 
@@ -3113,34 +3632,33 @@ function setImagePreview(imageUrl) {
 let isShowingToast = false;
 
 function showToast(message, type = 'success') {
-  // Prevent infinite recursion
-  if (isShowingToast) {
+  const container = document.getElementById('toastContainer');
+  if (!container) {
     console.log(`[${type.toUpperCase()}] ${message}`);
     return;
   }
 
-  isShowingToast = true;
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
 
-  try {
-    // Use global showToast if available
-    if (typeof window.showToast === 'function') {
-      const globalToast = window.showToast;
-      // Only call if it's not this function (check by comparing function bodies or using a marker)
-      if (globalToast !== showToast) {
-        globalToast(message, type);
-        isShowingToast = false;
-        return;
-      }
-    }
+  const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
 
-    // Fallback: use console
-    console.log(`[${type.toUpperCase()}] ${message}`);
-    if (type === 'error') {
-      console.error(message);
+  toast.innerHTML = `
+    <span class="toast-icon">${icon}</span>
+    <span class="toast-message">${message}</span>
+    <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+  `;
+
+  container.appendChild(toast);
+
+  // Auto-remove after 3 seconds
+  setTimeout(() => {
+    if (toast.parentElement) {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(-20px)';
+      setTimeout(() => toast.remove(), 300);
     }
-  } finally {
-    isShowingToast = false;
-  }
+  }, 3000);
 }
 
 // Load items
@@ -3239,7 +3757,9 @@ function renderItemsTable() {
   }
 
   // Apply the items filter (All Items, Active Items, etc.) first
-  let filteredItems = [...items];
+  let filteredItems = isAdvancedSearchActive && advancedSearchResults
+    ? [...advancedSearchResults]
+    : [...items];
 
   // Apply currentItemsFilter
   switch (currentItemsFilter) {
@@ -3258,8 +3778,9 @@ function renderItemsTable() {
     case 'lowstock':
       filteredItems = filteredItems.filter(item => {
         const qty = parseFloat(item.stock_quantity) || 0;
-        const reorderPoint = item.reorder_point || 20;
-        return qty <= reorderPoint && qty > 0;
+        const reorderPoint = parseFloat(item.reorder_point);
+        // Only show items that have a reorder point set and stock is at or below it
+        return !isNaN(reorderPoint) && reorderPoint > 0 && qty <= reorderPoint;
       });
       break;
     case 'inventory':
@@ -3361,39 +3882,59 @@ function renderItemsTable() {
         </td>
       </tr>
     `;
+    var paginationEl = document.getElementById('itemsPaginationContainer');
+    if (paginationEl) paginationEl.innerHTML = '';
     return;
   }
 
-  tbody.innerHTML = filteredItems.map(item => {
-    const stock = parseInt(item.stock_quantity) || 0;
-    const isSelected = selectedItemId === item.id ? 'selected' : '';
-    const isInactive = item.status === 'inactive' ? 'item-inactive' : '';
+  function renderItemsPage(pageData) {
+    tbody.innerHTML = pageData.map(item => {
+      const stock = parseInt(item.stock_quantity) || 0;
+      const isSelected = selectedItemId === item.id ? 'selected' : '';
+      const isInactive = item.status === 'inactive' ? 'item-inactive' : '';
 
-    // Build dynamic columns based on visibility settings
-    let columnCells = '';
-    visibleCols.forEach(col => {
-      const value = getColumnValue(item, col.id);
-      const alignClass = ['stock_on_hand', 'reorder_level', 'rate', 'purchase_rate'].includes(col.id)
-        ? 'style="text-align: right;"'
-        : '';
-      columnCells += `<td class="zoho-td-${col.id}" ${alignClass}>${value}</td>`;
-    });
+      // Build dynamic columns based on visibility settings
+      let columnCells = '';
+      visibleCols.forEach(col => {
+        const value = getColumnValue(item, col.id);
+        const alignClass = ['stock_on_hand', 'reorder_level', 'rate', 'purchase_rate'].includes(col.id)
+          ? 'style="text-align: right;"'
+          : '';
+        columnCells += `<td class="zoho-td-${col.id}" ${alignClass}>${value}</td>`;
+      });
 
-    return `
-      <tr class="${isSelected} ${isInactive} ${selectedItems.includes(item.id) ? 'selected' : ''}" onclick="selectItem(${item.id})">
-        <td class="zoho-td-filter"></td>
-        <td class="zoho-td-checkbox" onclick="event.stopPropagation();">
-          <input type="checkbox" class="item-checkbox" data-item-id="${item.id}" ${selectedItems.includes(item.id) ? 'checked' : ''}>
-        </td>
-        ${columnCells}
-        <td class="zoho-td-search"></td>
-      </tr>
-    `;
-  }).join('');
+      return `
+        <tr class="${isSelected} ${isInactive} ${selectedItems.includes(item.id) ? 'selected' : ''}" onclick="selectItem(${item.id})">
+          <td class="zoho-td-filter"></td>
+          <td class="zoho-td-checkbox" onclick="event.stopPropagation();">
+            <input type="checkbox" class="item-checkbox" data-item-id="${item.id}" ${selectedItems.includes(item.id) ? 'checked' : ''}>
+          </td>
+          ${columnCells}
+          <td class="zoho-td-search"></td>
+        </tr>
+      `;
+    }).join('');
 
-  // Attach event listeners to checkboxes after rendering
-  attachCheckboxListeners();
-  updateBulkActionToolbar();
+    // Attach event listeners to checkboxes after rendering
+    attachCheckboxListeners();
+    updateBulkActionToolbar();
+  }
+
+  if (typeof Pagination !== 'undefined') {
+    if (!window.itemsPager) {
+      window.itemsPager = Pagination.create({
+        data: filteredItems,
+        perPage: 14,
+        containerId: 'itemsPaginationContainer',
+        onPageChange: function (pageData) { renderItemsPage(pageData); }
+      });
+    } else {
+      window.itemsPager.updateData(filteredItems);
+    }
+  } else {
+    // Fallback if pagination.js not loaded
+    renderItemsPage(filteredItems);
+  }
 }
 
 // Attach event listeners to all checkboxes

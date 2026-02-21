@@ -7,6 +7,8 @@
     <title>All Customers - Inventory Management</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/global-search.css">
+    <link rel="stylesheet" href="/css/pagination.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
         rel="stylesheet">
@@ -1762,6 +1764,347 @@
         .timeline-card-desc a:hover {
             text-decoration: underline;
         }
+
+        /* Tab content areas */
+        .tab-content-area {
+            display: none;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .tab-content-area.active {
+            display: flex;
+        }
+
+        /* Comments tab */
+        .comment-editor-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+
+        .comment-toolbar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+
+        .comment-toolbar-btn {
+            width: 28px;
+            height: 28px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .comment-toolbar-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .comment-input {
+            width: 100%;
+            min-height: 60px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 8px;
+            font-size: 13px;
+            resize: vertical;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        .comment-input:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+
+        .comment-add-btn {
+            margin-top: 8px;
+            padding: 6px 16px;
+            background: #f0f0f0;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            color: #555;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .comment-add-btn:hover {
+            background: #e8e8e8;
+        }
+
+        .all-comments-header {
+            font-size: 11px;
+            font-weight: 700;
+            color: #888;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        /* Transactions tab */
+        .txn-goto {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 16px;
+        }
+
+        .txn-goto a {
+            color: #4285f4;
+            text-decoration: none;
+        }
+
+        .txn-goto a:hover {
+            text-decoration: underline;
+        }
+
+        .txn-section {
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .txn-section:last-child {
+            border-bottom: none;
+        }
+
+        .txn-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 0;
+            cursor: pointer;
+        }
+
+        .txn-section-header:hover {
+            background: #fafbfc;
+        }
+
+        .txn-section-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .txn-section-toggle {
+            font-size: 10px;
+            color: #888;
+            transition: transform 0.2s;
+            display: inline-block;
+        }
+
+        .txn-section-toggle.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        .txn-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .txn-new-btn {
+            background: #e8f0fe;
+            color: #1a73e8;
+            border: none;
+            border-radius: 12px;
+            padding: 4px 14px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .txn-new-btn:hover {
+            background: #d2e3fc;
+        }
+
+        .txn-new-btn .dot {
+            width: 6px;
+            height: 6px;
+            background: #1a73e8;
+            border-radius: 50%;
+        }
+
+        .txn-body {
+            padding: 0 0 12px 24px;
+            overflow: hidden;
+            transition: max-height 0.2s;
+        }
+
+        .txn-body.collapsed {
+            display: none;
+        }
+
+        .txn-empty {
+            font-size: 13px;
+            color: #999;
+            padding: 8px 0;
+        }
+
+        /* Transaction data table */
+        .txn-table-container {
+            width: 100%;
+        }
+
+        .txn-table-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .txn-table-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .txn-table-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .txn-status-filter {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: #666;
+            cursor: pointer;
+            padding: 4px 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            background: white;
+        }
+
+        .txn-status-filter:hover {
+            background: #f5f5f5;
+        }
+
+        .txn-status-filter svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .txn-data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .txn-data-table thead th {
+            text-align: left;
+            font-size: 11px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 10px 16px;
+            border-bottom: 1px solid #e9ecef;
+            white-space: nowrap;
+        }
+
+        .txn-data-table thead th.sortable {
+            cursor: pointer;
+        }
+
+        .txn-data-table thead th.sortable:hover {
+            color: #333;
+        }
+
+        .txn-data-table tbody td {
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .txn-data-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .txn-link {
+            color: #1a73e8;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .txn-link:hover {
+            text-decoration: underline;
+        }
+
+        .txn-amount {
+            text-align: right;
+        }
+
+        .txn-status-badge {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .txn-status-badge.paid {
+            color: #34a853;
+        }
+
+        .txn-status-badge.overdue {
+            color: #ea4335;
+        }
+
+        .txn-status-badge.draft {
+            color: #888;
+        }
+
+        .txn-status-badge.sent {
+            color: #1a73e8;
+        }
+
+        .txn-status-badge.confirmed {
+            color: #34a853;
+        }
+
+        .txn-table-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            font-size: 12px;
+            color: #666;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .txn-pagination {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .txn-pagination button {
+            width: 24px;
+            height: 24px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            font-size: 11px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .txn-pagination button:hover {
+            background: #f5f5f5;
+        }
+
+        .txn-pagination span {
+            font-size: 12px;
+            color: #333;
+        }
     </style>
 </head>
 
@@ -1787,6 +2130,11 @@
                             <button class="title-dropdown-item" data-filter="all" onclick="setCustomerFilter('all')">All
                                 Customers</button>
                         </div>
+                    </div>
+                    <div class="global-search-container">
+                        <span class="global-search-icon">🔍</span>
+                        <input type="text" class="global-search-input" id="customerSearchInput"
+                            placeholder="Search customers..." oninput="searchCustomers()">
                     </div>
                     <div class="header-actions">
                         <button class="btn-new" onclick="createCustomer()"><span>+</span> New</button>
@@ -1917,6 +2265,7 @@
                         </thead>
                         <tbody id="customersBody"></tbody>
                     </table>
+                    <div id="custPaginationContainer"></div>
                 </div>
             </div>
 
@@ -2002,172 +2351,323 @@
 
                     <!-- Detail tabs -->
                     <div class="detail-tabs">
-                        <div class="detail-tab active" data-tab="overview">Overview</div>
-                        <div class="detail-tab" data-tab="comments">Comments</div>
-                        <div class="detail-tab" data-tab="transactions">Transactions</div>
-                        <div class="detail-tab" data-tab="mails">Mails</div>
-                        <div class="detail-tab" data-tab="statement">Statement</div>
+                        <div class="detail-tab active" data-tab="overview" onclick="switchDetailTab('overview', this)">
+                            Overview</div>
+                        <div class="detail-tab" data-tab="comments" onclick="switchDetailTab('comments', this)">Comments
+                        </div>
+                        <div class="detail-tab" data-tab="transactions" onclick="switchDetailTab('transactions', this)">
+                            Transactions</div>
+                        <div class="detail-tab" data-tab="mails" onclick="switchDetailTab('mails', this)">Mails</div>
+                        <div class="detail-tab" data-tab="statement" onclick="switchDetailTab('statement', this)">
+                            Statement</div>
                     </div>
 
                     <!-- Detail body - Overview -->
-                    <div class="detail-body" id="detailBody">
-                        <!-- LEFT COLUMN -->
-                        <div class="overview-left">
-                            <div class="overview-company" id="detailCompany"></div>
+                    <!-- Tab: Overview -->
+                    <div class="tab-content-area active" id="dtab-overview">
+                        <div class="detail-body" id="detailBody">
+                            <!-- LEFT COLUMN -->
+                            <div class="overview-left">
+                                <div class="overview-company" id="detailCompany"></div>
 
-                            <!-- Contact Card -->
-                            <div class="contact-card">
-                                <div class="contact-avatar">👤</div>
-                                <div class="contact-info">
-                                    <div class="contact-name" id="detailContactName"></div>
-                                    <div class="contact-email" id="detailContactEmail"></div>
-                                    <div class="contact-phone" id="detailContactPhone"></div>
-                                    <div class="contact-portal-link">Invite to Portal</div>
-                                </div>
-                            </div>
-
-                            <!-- GENERAL INFORMATION Section -->
-                            <div class="section-header" onclick="toggleSection('detailGeneralSection', this)">
-                                <span class="section-title">GENERAL INFORMATION</span>
-                                <span class="section-toggle" style="display: flex; align-items: center; gap: 6px;">
-                                    <span style="color: #4285f4; cursor: pointer;"
-                                        onclick="event.stopPropagation(); editCustomer();" title="Edit">✎</span> ⌃
-                                </span>
-                            </div>
-                            <div id="detailGeneralSection">
-                                <div class="detail-row">
-                                    <span class="detail-label">Salutation</span>
-                                    <span class="detail-value" id="detailSalutation">—</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">First Name</span>
-                                    <span class="detail-value" id="detailFirstName">—</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Last Name</span>
-                                    <span class="detail-value" id="detailLastName">—</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Company Name</span>
-                                    <span class="detail-value" id="detailCompanyName">—</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Display Name</span>
-                                    <span class="detail-value" id="detailDisplayName">—</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Email</span>
-                                    <span class="detail-value" id="detailEmailInfo">—</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Work Phone</span>
-                                    <span class="detail-value" id="detailWorkPhone">—</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Mobile</span>
-                                    <span class="detail-value" id="detailMobile">—</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Website</span>
-                                    <span class="detail-value" id="detailWebsite">—</span>
-                                </div>
-                            </div>
-
-                            <!-- ADDRESS Section -->
-                            <div class="section-header" onclick="toggleSection('detailAddressSection', this)">
-                                <span class="section-title">ADDRESS</span>
-                                <span class="section-toggle" style="display: flex; align-items: center; gap: 6px;">
-                                    <span style="color: #4285f4; cursor: pointer;"
-                                        onclick="event.stopPropagation(); editCustomer();" title="Edit">✎</span> ⌃
-                                </span>
-                            </div>
-                            <div id="detailAddressSection">
-                                <div class="address-block">
-                                    <div class="address-title">Billing Address <span class="address-edit-icon"
-                                            onclick="editCustomer()">✎</span>
+                                <!-- Contact Card -->
+                                <div class="contact-card">
+                                    <div class="contact-avatar">👤</div>
+                                    <div class="contact-info">
+                                        <div class="contact-name" id="detailContactName"></div>
+                                        <div class="contact-email" id="detailContactEmail"></div>
+                                        <div class="contact-phone" id="detailContactPhone"></div>
+                                        <div class="contact-portal-link">Invite to Portal</div>
                                     </div>
-                                    <div class="address-text" id="detailBillingAddress">—</div>
                                 </div>
-                                <div class="address-block">
-                                    <div class="address-title">Shipping Address <span class="address-edit-icon"
-                                            onclick="editCustomer()">✎</span>
+
+                                <!-- GENERAL INFORMATION Section -->
+                                <div class="section-header" onclick="toggleSection('detailGeneralSection', this)">
+                                    <span class="section-title">GENERAL INFORMATION</span>
+                                    <span class="section-toggle" style="display: flex; align-items: center; gap: 6px;">
+                                        <span style="color: #4285f4; cursor: pointer;"
+                                            onclick="event.stopPropagation(); editCustomer();" title="Edit">✎</span> ⌃
+                                    </span>
+                                </div>
+                                <div id="detailGeneralSection">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Salutation</span>
+                                        <span class="detail-value" id="detailSalutation">—</span>
                                     </div>
-                                    <div class="address-text" id="detailShippingAddress">—</div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">First Name</span>
+                                        <span class="detail-value" id="detailFirstName">—</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Last Name</span>
+                                        <span class="detail-value" id="detailLastName">—</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Company Name</span>
+                                        <span class="detail-value" id="detailCompanyName">—</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Display Name</span>
+                                        <span class="detail-value" id="detailDisplayName">—</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Email</span>
+                                        <span class="detail-value" id="detailEmailInfo">—</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Work Phone</span>
+                                        <span class="detail-value" id="detailWorkPhone">—</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Mobile</span>
+                                        <span class="detail-value" id="detailMobile">—</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Website</span>
+                                        <span class="detail-value" id="detailWebsite">—</span>
+                                    </div>
+                                </div>
+
+                                <!-- ADDRESS Section -->
+                                <div class="section-header" onclick="toggleSection('detailAddressSection', this)">
+                                    <span class="section-title">ADDRESS</span>
+                                    <span class="section-toggle" style="display: flex; align-items: center; gap: 6px;">
+                                        <span style="color: #4285f4; cursor: pointer;"
+                                            onclick="event.stopPropagation(); editCustomer();" title="Edit">✎</span> ⌃
+                                    </span>
+                                </div>
+                                <div id="detailAddressSection">
+                                    <div class="address-block">
+                                        <div class="address-title">Billing Address <span class="address-edit-icon"
+                                                onclick="editCustomer()">✎</span>
+                                        </div>
+                                        <div class="address-text" id="detailBillingAddress">—</div>
+                                    </div>
+                                    <div class="address-block">
+                                        <div class="address-title">Shipping Address <span class="address-edit-icon"
+                                                onclick="editCustomer()">✎</span>
+                                        </div>
+                                        <div class="address-text" id="detailShippingAddress">—</div>
+                                    </div>
+                                </div>
+
+                                <!-- OTHER DETAILS Section -->
+                                <div class="section-header" onclick="toggleSection('detailOtherSection', this)">
+                                    <span class="section-title">OTHER DETAILS</span>
+                                    <span class="section-toggle">⌃</span>
+                                </div>
+                                <div id="detailOtherSection">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Customer Type</span>
+                                        <span class="detail-value" id="detailCustType"></span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Default Currency</span>
+                                        <span class="detail-value" id="detailCurrency"></span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Portal Status</span>
+                                        <span class="detail-value status-disabled">Disabled</span>
+                                    </div>
+                                </div>
+
+                                <!-- CONTACT PERSONS Section -->
+                                <div class="section-header"
+                                    onclick="toggleSection('detailContactPersonsSection', this)">
+                                    <span class="section-title">CONTACT PERSONS</span>
+                                    <span class="section-toggle" style="display: flex; align-items: center; gap: 6px;">
+                                        <span style="color: #4285f4; cursor: pointer;"
+                                            onclick="event.stopPropagation(); editCustomer();"
+                                            title="Add Contact Person">⊕</span> ⌃
+                                    </span>
+                                </div>
+                                <div id="detailContactPersonsSection">
+                                    <div id="detailContactPersons" style="padding: 4px 0;">
+                                        <div class="no-contacts" style="color: #999; font-size: 13px; padding: 12px 0;">
+                                            No
+                                            contact persons found.</div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- OTHER DETAILS Section -->
-                            <div class="section-header" onclick="toggleSection('detailOtherSection', this)">
-                                <span class="section-title">OTHER DETAILS</span>
-                                <span class="section-toggle">⌃</span>
-                            </div>
-                            <div id="detailOtherSection">
-                                <div class="detail-row">
-                                    <span class="detail-label">Customer Type</span>
-                                    <span class="detail-value" id="detailCustType"></span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Default Currency</span>
-                                    <span class="detail-value" id="detailCurrency"></span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Portal Status</span>
-                                    <span class="detail-value status-disabled">Disabled</span>
-                                </div>
-                            </div>
+                            <!-- RIGHT COLUMN -->
+                            <div class="overview-right">
+                                <div class="payment-label">Payment due period</div>
+                                <div class="payment-value" id="detailPaymentDue">Due on Receipt</div>
 
-                            <!-- CONTACT PERSONS Section -->
-                            <div class="section-header" onclick="toggleSection('detailContactPersonsSection', this)">
-                                <span class="section-title">CONTACT PERSONS</span>
-                                <span class="section-toggle" style="display: flex; align-items: center; gap: 6px;">
-                                    <span style="color: #4285f4; cursor: pointer;"
-                                        onclick="event.stopPropagation(); editCustomer();"
-                                        title="Add Contact Person">⊕</span> ⌃
-                                </span>
+                                <div class="receivables-title">Receivables</div>
+                                <table class="receivables-table">
+                                    <thead>
+                                        <tr>
+                                            <th>CURRENCY</th>
+                                            <th>OUTSTANDING RECEIVABLES</th>
+                                            <th>UNUSED CREDITS</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>PHP- Philippine Peso</td>
+                                            <td>PHP0.00</td>
+                                            <td>PHP0.00</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <div class="items-status">
+                                    <div class="items-status-item">Items to be packed: <span>0.00</span></div>
+                                    <div class="items-status-item">Items to be shipped: <span>0.00</span></div>
+                                </div>
+
+                                <!-- Activity Timeline -->
+                                <div class="timeline-section">
+                                    <div class="timeline" id="detailTimeline">
+                                        <!-- Timeline items will be inserted here -->
+                                    </div>
+                                </div>
                             </div>
-                            <div id="detailContactPersonsSection">
-                                <div id="detailContactPersons" style="padding: 4px 0;">
-                                    <div class="no-contacts" style="color: #999; font-size: 13px; padding: 12px 0;">No
-                                        contact persons found.</div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Comments -->
+                    <div class="tab-content-area" id="dtab-comments" style="flex-direction:column;padding:20px 24px;">
+                        <div class="comment-editor-card">
+                            <div class="comment-toolbar">
+                                <button class="comment-toolbar-btn" style="font-weight:700;">B</button>
+                                <button class="comment-toolbar-btn" style="font-style:italic;">I</button>
+                                <button class="comment-toolbar-btn" style="text-decoration:underline;">U</button>
+                            </div>
+                            <textarea class="comment-input" placeholder=""></textarea>
+                            <button class="comment-add-btn">Add Comment</button>
+                        </div>
+                        <div class="all-comments-header">ALL COMMENTS</div>
+                        <div style="text-align:center;padding:20px;color:#888;font-size:13px;">No comments yet.</div>
+                    </div>
+
+                    <!-- Tab: Transactions -->
+                    <div class="tab-content-area" id="dtab-transactions"
+                        style="flex-direction:column;padding:20px 24px;">
+                        <div class="txn-goto">Go to transactions <a href="#">▾</a></div>
+
+                        <div class="txn-section" id="txnInvoices">
+                            <div class="txn-section-header" onclick="toggleTxnSection('txnInvoices')">
+                                <div class="txn-section-left">
+                                    <span class="txn-section-toggle">▸</span>
+                                    <span class="txn-section-title">Invoices</span>
+                                </div>
+                                <div class="txn-table-actions">
+                                    <button class="txn-status-filter" onclick="event.stopPropagation();">▿ Status:
+                                        All</button>
+                                    <button class="txn-new-btn"
+                                        onclick="event.stopPropagation(); newTransaction('invoice')"><span
+                                            class="dot"></span> New</button>
+                                </div>
+                            </div>
+                            <div class="txn-body collapsed" id="txnInvoicesBody">
+                                <div class="txn-table-container" id="invoiceTableContainer">
+                                    <div style="text-align:center;padding:20px;color:#888;font-size:13px;">Loading...
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- RIGHT COLUMN -->
-                        <div class="overview-right">
-                            <div class="payment-label">Payment due period</div>
-                            <div class="payment-value" id="detailPaymentDue">Due on Receipt</div>
-
-                            <div class="receivables-title">Receivables</div>
-                            <table class="receivables-table">
-                                <thead>
-                                    <tr>
-                                        <th>CURRENCY</th>
-                                        <th>OUTSTANDING RECEIVABLES</th>
-                                        <th>UNUSED CREDITS</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>PHP- Philippine Peso</td>
-                                        <td>PHP0.00</td>
-                                        <td>PHP0.00</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                            <div class="items-status">
-                                <div class="items-status-item">Items to be packed: <span>0.00</span></div>
-                                <div class="items-status-item">Items to be shipped: <span>0.00</span></div>
-                            </div>
-
-                            <!-- Activity Timeline -->
-                            <div class="timeline-section">
-                                <div class="timeline" id="detailTimeline">
-                                    <!-- Timeline items will be inserted here -->
+                        <div class="txn-section" id="txnPayments">
+                            <div class="txn-section-header" onclick="toggleTxnSection('txnPayments')">
+                                <div class="txn-section-left">
+                                    <span class="txn-section-toggle">▸</span>
+                                    <span class="txn-section-title">Customer Payments</span>
                                 </div>
+                                <button class="txn-new-btn"
+                                    onclick="event.stopPropagation(); newTransaction('paymentReceived')"><span
+                                        class="dot"></span> New</button>
+                            </div>
+                            <div class="txn-body collapsed" id="txnPaymentsBody">
+                                <div class="txn-empty">There are no Customer Payments.</div>
                             </div>
                         </div>
+
+                        <div class="txn-section" id="txnSalesOrders">
+                            <div class="txn-section-header" onclick="toggleTxnSection('txnSalesOrders')">
+                                <div class="txn-section-left">
+                                    <span class="txn-section-toggle">▸</span>
+                                    <span class="txn-section-title">Sales Orders</span>
+                                </div>
+                                <button class="txn-new-btn"
+                                    onclick="event.stopPropagation(); newTransaction('salesOrder')"><span
+                                        class="dot"></span> New</button>
+                            </div>
+                            <div class="txn-body collapsed" id="txnSalesOrdersBody">
+                                <div class="txn-empty">There are no Sales Orders.</div>
+                            </div>
+                        </div>
+
+                        <div class="txn-section" id="txnPackages">
+                            <div class="txn-section-header" onclick="toggleTxnSection('txnPackages')">
+                                <div class="txn-section-left">
+                                    <span class="txn-section-toggle">▸</span>
+                                    <span class="txn-section-title">Packages</span>
+                                </div>
+                                <button class="txn-new-btn"
+                                    onclick="event.stopPropagation(); newTransaction('package')"><span
+                                        class="dot"></span> New</button>
+                            </div>
+                            <div class="txn-body collapsed" id="txnPackagesBody">
+                                <div class="txn-empty">There are no Packages.</div>
+                            </div>
+                        </div>
+
+                        <div class="txn-section" id="txnBills">
+                            <div class="txn-section-header" onclick="toggleTxnSection('txnBills')">
+                                <div class="txn-section-left">
+                                    <span class="txn-section-toggle">▸</span>
+                                    <span class="txn-section-title">Bills</span>
+                                </div>
+                            </div>
+                            <div class="txn-body collapsed" id="txnBillsBody">
+                                <div class="txn-empty">There are no Bills.</div>
+                            </div>
+                        </div>
+
+                        <div class="txn-section" id="txnCreditNotes">
+                            <div class="txn-section-header" onclick="toggleTxnSection('txnCreditNotes')">
+                                <div class="txn-section-left">
+                                    <span class="txn-section-toggle">▸</span>
+                                    <span class="txn-section-title">Credit Notes</span>
+                                </div>
+                                <button class="txn-new-btn"
+                                    onclick="event.stopPropagation(); newTransaction('creditNote')"><span
+                                        class="dot"></span> New</button>
+                            </div>
+                            <div class="txn-body collapsed" id="txnCreditNotesBody">
+                                <div class="txn-empty">There are no Credit Notes.</div>
+                            </div>
+                        </div>
+
+                        <div class="txn-section" id="txnSalesReceipts">
+                            <div class="txn-section-header" onclick="toggleTxnSection('txnSalesReceipts')">
+                                <div class="txn-section-left">
+                                    <span class="txn-section-toggle">▸</span>
+                                    <span class="txn-section-title">Sales Receipts</span>
+                                </div>
+                                <button class="txn-new-btn"
+                                    onclick="event.stopPropagation(); newTransaction('salesReceipt')"><span
+                                        class="dot"></span> New</button>
+                            </div>
+                            <div class="txn-body collapsed" id="txnSalesReceiptsBody">
+                                <div class="txn-empty">There are no Sales Receipts.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Mails -->
+                    <div class="tab-content-area" id="dtab-mails" style="flex-direction:column;padding:20px 24px;">
+                        <div style="text-align:center;padding:60px 20px;color:#888;font-size:14px;">⚠ No email has been
+                            sent yet.</div>
+                    </div>
+
+                    <!-- Tab: Statement -->
+                    <div class="tab-content-area" id="dtab-statement" style="flex-direction:column;padding:20px 24px;">
+                        <div style="text-align:center;padding:60px 20px;color:#888;font-size:14px;">Statement will be
+                            available when transactions exist.</div>
                     </div>
                 </div>
             </div>
@@ -2262,6 +2762,7 @@
     </div>
 
     <!-- Layout Script -->
+    <script src="/js/pagination.js"></script>
     <script src="/js/layout.js"></script>
     <script>
         let allCustomers = [];
@@ -2285,6 +2786,58 @@
         }
 
         // ===== Load customers list =====
+        function searchCustomers() {
+            const query = (document.getElementById('customerSearchInput').value || '').toLowerCase();
+            if (!query) {
+                loadCustomers();
+                return;
+            }
+            const filtered = allCustomers.filter(c => {
+                const name = (c.display_name || c.first_name || '').toLowerCase();
+                const email = (c.email || '').toLowerCase();
+                const phone = (c.phone || '').toLowerCase();
+                const company = (c.company_name || '').toLowerCase();
+                return name.includes(query) || email.includes(query) || phone.includes(query) || company.includes(query);
+            });
+            const emptyState = document.getElementById('emptyState');
+            const container = document.getElementById('customersContainer');
+            if (filtered.length === 0) {
+                emptyState.style.display = 'flex';
+                container.style.display = 'none';
+                document.getElementById('custPaginationContainer').innerHTML = '';
+                return;
+            }
+            emptyState.style.display = 'none';
+            container.style.display = 'block';
+            renderCustTableHeader();
+            const visibleCols = custAllColumns.filter(col => col.visible);
+            const rightAlignCols = ['receivables', 'receivables_raw', 'unused_credits', 'unused_credits_bcy'];
+            function renderPage(pageData) {
+                const tbody = document.getElementById('customersBody');
+                tbody.innerHTML = '';
+                pageData.forEach(c => {
+                    const tr = document.createElement('tr');
+                    tr.style.cursor = 'pointer';
+                    tr.onclick = (e) => { if (e.target.type !== 'checkbox') openDetailView(c.id); };
+                    let rowHtml = '<td></td>';
+                    rowHtml += `<td><input type="checkbox" value="${c.id}" data-id="${c.id}" data-status="${c.status || 'active'}" onchange="updateBulkBar()"></td>`;
+                    visibleCols.forEach(col => {
+                        const isRight = rightAlignCols.includes(col.id);
+                        rowHtml += `<td${isRight ? ' class="td-right"' : ''}>${getCustColumnValue(c, col.id)}</td>`;
+                    });
+                    rowHtml += '<td></td>';
+                    tr.innerHTML = rowHtml;
+                    tbody.appendChild(tr);
+                });
+            }
+            window.custPager = Pagination.create({
+                data: filtered,
+                perPage: 14,
+                containerId: 'custPaginationContainer',
+                onPageChange: function (pageData) { renderPage(pageData); }
+            });
+        }
+
         async function loadCustomers() {
             try {
                 const res = await fetch('/api/customers');
@@ -2303,6 +2856,7 @@
                 if (allCustomers.length === 0) {
                     document.getElementById('emptyState').style.display = 'flex';
                     document.getElementById('customersContainer').style.display = 'none';
+                    document.getElementById('custPaginationContainer').innerHTML = '';
                     return;
                 }
 
@@ -2312,29 +2866,41 @@
                 // Render header dynamically
                 renderCustTableHeader();
 
-                const tbody = document.getElementById('customersBody');
-                tbody.innerHTML = '';
-
                 const visibleCols = custAllColumns.filter(col => col.visible);
                 const rightAlignCols = ['receivables', 'receivables_raw', 'unused_credits', 'unused_credits_bcy'];
 
-                allCustomers.forEach(c => {
-                    const tr = document.createElement('tr');
-                    tr.style.cursor = 'pointer';
-                    tr.onclick = (e) => { if (e.target.type !== 'checkbox') openDetailView(c.id); };
+                function renderCustPage(pageData) {
+                    const tbody = document.getElementById('customersBody');
+                    tbody.innerHTML = '';
+                    pageData.forEach(c => {
+                        const tr = document.createElement('tr');
+                        tr.style.cursor = 'pointer';
+                        tr.onclick = (e) => { if (e.target.type !== 'checkbox') openDetailView(c.id); };
 
-                    let rowHtml = '<td></td>';
-                    rowHtml += `<td><input type="checkbox" value="${c.id}" data-id="${c.id}" data-status="${c.status || 'active'}" onchange="updateBulkBar()"></td>`;
+                        let rowHtml = '<td></td>';
+                        rowHtml += `<td><input type="checkbox" value="${c.id}" data-id="${c.id}" data-status="${c.status || 'active'}" onchange="updateBulkBar()"></td>`;
 
-                    visibleCols.forEach(col => {
-                        const isRight = rightAlignCols.includes(col.id);
-                        rowHtml += `<td${isRight ? ' class="td-right"' : ''}>${getCustColumnValue(c, col.id)}</td>`;
+                        visibleCols.forEach(col => {
+                            const isRight = rightAlignCols.includes(col.id);
+                            rowHtml += `<td${isRight ? ' class="td-right"' : ''}>${getCustColumnValue(c, col.id)}</td>`;
+                        });
+
+                        rowHtml += '<td></td>';
+                        tr.innerHTML = rowHtml;
+                        tbody.appendChild(tr);
                     });
+                }
 
-                    rowHtml += '<td></td>';
-                    tr.innerHTML = rowHtml;
-                    tbody.appendChild(tr);
-                });
+                if (!window.custPager) {
+                    window.custPager = Pagination.create({
+                        data: allCustomers,
+                        perPage: 14,
+                        containerId: 'custPaginationContainer',
+                        onPageChange: function (pageData) { renderCustPage(pageData); }
+                    });
+                } else {
+                    window.custPager.updateData(allCustomers);
+                }
             } catch (error) {
                 console.error('Error loading customers:', error);
             }
@@ -2799,6 +3365,8 @@
 
         async function openDetailView(customerId) {
             currentCustomerId = customerId;
+            invoicesLoaded = false;
+            salesOrdersLoaded = false;
             const customer = allCustomers.find(c => c.id === customerId);
             if (!customer) return;
 
@@ -2934,12 +3502,123 @@
             renderTimeline(customer);
 
             // Wire tabs
-            document.querySelectorAll('.detail-tab').forEach(tab => {
-                tab.onclick = () => {
-                    document.querySelectorAll('.detail-tab').forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                };
-            });
+            // Reset to overview tab
+            switchDetailTab('overview', document.querySelector('.detail-tab[data-tab="overview"]'));
+        }
+
+        let invoicesLoaded = false;
+        let salesOrdersLoaded = false;
+
+        function toggleTxnSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            const body = document.getElementById(sectionId + 'Body');
+            const toggle = section.querySelector('.txn-section-toggle');
+            if (body.classList.contains('collapsed')) {
+                body.classList.remove('collapsed');
+                toggle.textContent = '▾';
+                // Auto-load data on first expand
+                if (sectionId === 'txnInvoices' && !invoicesLoaded) {
+                    loadCustomerInvoices();
+                }
+                if (sectionId === 'txnSalesOrders' && !salesOrdersLoaded) {
+                    loadCustomerSalesOrders();
+                }
+            } else {
+                body.classList.add('collapsed');
+                toggle.textContent = '▸';
+            }
+        }
+
+        async function loadCustomerInvoices() {
+            if (!currentCustomerId) return;
+            const container = document.getElementById('invoiceTableContainer');
+            container.innerHTML = '<div style="text-align:center;padding:20px;color:#888;font-size:13px;">Loading...</div>';
+            try {
+                const res = await fetch('/api/invoices');
+                const allInvoices = await res.json();
+                const invoices = allInvoices.filter(inv => inv.customer_id == currentCustomerId);
+
+                if (invoices.length === 0) {
+                    container.innerHTML = '<div class="txn-empty">There are no Invoices - <a href="#" onclick="newTransaction(\'invoice\')">Add New</a></div>';
+                    return;
+                }
+
+                // Sort by date descending
+                invoices.sort((a, b) => new Date(b.invoice_date) - new Date(a.invoice_date));
+
+                let rows = '';
+                invoices.forEach(inv => {
+                    const date = inv.invoice_date ? new Date(inv.invoice_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+                    const invNum = inv.invoice_number || '-';
+                    const orderNum = inv.order_number || '-';
+                    const amount = 'PHP' + Number(inv.total || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    const balanceDue = 'PHP' + Number(inv.balance_due || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    const status = (inv.status || 'Draft').charAt(0).toUpperCase() + (inv.status || 'draft').slice(1).toLowerCase();
+                    const statusClass = status.toLowerCase();
+
+                    rows += `<tr>
+                        <td>${date}</td>
+                        <td>Head Office</td>
+                        <td><a class="txn-link" href="/sales-orders.html?invoiceId=${inv.id}">${invNum}</a></td>
+                        <td>${orderNum}</td>
+                        <td class="txn-amount">${amount}</td>
+                        <td class="txn-amount">${balanceDue}</td>
+                        <td><span class="txn-status-badge ${statusClass}">${status}</span></td>
+                    </tr>`;
+                });
+
+                container.innerHTML = `
+                    <table class="txn-data-table">
+                        <thead>
+                            <tr>
+                                <th class="sortable">DATE ⇅</th>
+                                <th>LOCATION</th>
+                                <th>INVOICE NUMBER</th>
+                                <th>ORDER NUMBER</th>
+                                <th class="txn-amount">AMOUNT</th>
+                                <th class="txn-amount">BALANCE DUE</th>
+                                <th>STATUS</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                    <div class="txn-table-footer">
+                        <div>Total Count: <a href="#" class="txn-link">${invoices.length}</a></div>
+                        <div class="txn-pagination">
+                            <button>‹</button>
+                            <span>1 - ${invoices.length}</span>
+                            <button>›</button>
+                        </div>
+                    </div>
+                `;
+                invoicesLoaded = true;
+            } catch (err) {
+                console.error('Error loading invoices:', err);
+                container.innerHTML = '<div class="txn-empty">Error loading invoices.</div>';
+            }
+        }
+
+        async function loadCustomerSalesOrders() {
+            // Placeholder for future implementation
+            salesOrdersLoaded = true;
+        }
+
+        function newTransaction(type) {
+            // Placeholder — navigate to the appropriate new transaction page
+            switch (type) {
+                case 'invoice': window.location.href = '/invoices.html'; break;
+                case 'salesOrder': window.location.href = '/new-sales-order.html?customerId=' + currentCustomerId; break;
+                case 'salesReceipt': window.location.href = '/new-sales-receipt.html?customerId=' + currentCustomerId; break;
+                default: alert('New ' + type + ' coming soon!');
+            }
+        }
+
+        function switchDetailTab(tabName, tabEl) {
+            document.querySelectorAll('.detail-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content-area').forEach(c => c.classList.remove('active'));
+            if (tabEl) tabEl.classList.add('active');
+            const area = document.getElementById('dtab-' + tabName);
+            if (area) area.classList.add('active');
         }
 
         function closeDetailView() {

@@ -7,6 +7,8 @@
     <title>Invoices - Inventory Management</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/pagination.css">
+    <link rel="stylesheet" href="/css/global-search.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
         rel="stylesheet">
@@ -37,7 +39,7 @@
             background: white;
         }
 
-        /* Page Header */
+        /* ===== TABLE LIST VIEW ===== */
         .page-header {
             display: flex;
             align-items: center;
@@ -134,11 +136,47 @@
             background: #f5f5f5;
         }
 
-        /* Invoices Table */
-        .invoices-container {
-            padding: 0;
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 120px 24px;
+            text-align: center;
         }
 
+        .empty-state-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 12px 0;
+        }
+
+        .empty-state-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin: 0 0 32px 0;
+            max-width: 400px;
+        }
+
+        .btn-create {
+            padding: 12px 24px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-create:hover {
+            background: #3367d6;
+        }
+
+        /* Invoices Table */
         .invoices-table {
             width: 100%;
             border-collapse: collapse;
@@ -150,24 +188,16 @@
             padding: 12px 16px;
             font-size: 11px;
             font-weight: 600;
-            color: #666;
+            color: #999;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            border-bottom: 1px solid #e9ecef;
+            border-bottom: 2px solid #e9ecef;
             background: #f9fafb;
-        }
-
-        .invoices-table th.center {
-            text-align: center;
+            white-space: nowrap;
         }
 
         .invoices-table th:first-child {
-            width: 40px;
-            padding-left: 16px;
-        }
-
-        .invoices-table th:last-child {
-            width: 40px;
+            width: 36px;
             text-align: center;
         }
 
@@ -178,24 +208,589 @@
             color: #333;
         }
 
+        .invoices-table td:first-child {
+            width: 36px;
+            text-align: center;
+        }
+
+        .invoices-table tr {
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .invoices-table tr:hover {
+            background: #f8f9ff;
+        }
+
+        .inv-number-link {
+            color: #4285f4;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .inv-number-link:hover {
+            text-decoration: underline;
+        }
+
+        .status-draft {
+            color: #555;
+            font-weight: 500;
+            font-size: 12px;
+        }
+
+        .status-confirmed {
+            color: #16a34a;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
         .th-checkbox {
             width: 16px;
             height: 16px;
             cursor: pointer;
         }
 
-        .search-icon {
-            color: #999;
-            font-size: 14px;
-            cursor: pointer;
+        /* ===== DETAIL VIEW ===== */
+        .detail-wrapper {
+            display: none;
+            height: calc(100vh);
+            overflow: hidden;
         }
 
-        /* Empty Message */
-        .empty-message {
-            text-align: center;
-            padding: 60px 24px;
+        .detail-wrapper.active {
+            display: flex;
+        }
+
+        .inv-left-panel {
+            width: 260px;
+            min-width: 260px;
+            border-right: 1px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+        }
+
+        .inv-left-header {
+            padding: 12px 14px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .inv-left-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .inv-left-title:hover {
+            color: #4285f4;
+        }
+
+        .inv-left-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .inv-left-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .inv-left-btn.add {
+            background: #16a34a;
+            color: white;
+        }
+
+        .inv-left-btn.more {
+            background: transparent;
             color: #666;
+            font-size: 18px;
+        }
+
+        .inv-left-btn:hover {
+            opacity: 0.85;
+        }
+
+        .inv-left-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .inv-left-item {
+            padding: 12px 14px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .inv-left-item:hover {
+            background: #f8f9ff;
+        }
+
+        .inv-left-item.active {
+            background: #eef2ff;
+            border-left: 3px solid #4285f4;
+        }
+
+        .inv-left-item-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .inv-left-item-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .inv-left-item-amount {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .inv-left-item-bottom {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: #888;
+        }
+
+        .inv-left-item-status {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .inv-left-item-status.draft {
+            color: #555;
+        }
+
+        .inv-left-item-status.confirmed {
+            color: #16a34a;
+        }
+
+        /* Right Panel */
+        .inv-right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f9fafb;
+            overflow: hidden;
+        }
+
+        .inv-right-header {
+            padding: 10px 20px;
+            background: #fff;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .inv-right-header-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .inv-right-location {
+            font-size: 11px;
+            color: #888;
+        }
+
+        .inv-right-inv-num {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .inv-right-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .inv-right-header-actions button {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #666;
+            font-size: 16px;
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .inv-right-header-actions button:hover {
+            background: #f0f0f0;
+        }
+
+        .inv-action-bar {
+            padding: 8px 20px;
+            background: #fff;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+        }
+
+        .inv-action-btn {
+            padding: 6px 12px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        .inv-action-btn:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .inv-action-separator {
+            width: 1px;
+            height: 20px;
+            background: #e0e0e0;
+            margin: 0 4px;
+        }
+
+        .inv-pdf-toggle {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .inv-detail-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .inv-detail-card {
+            background: #fff;
+            border-radius: 4px;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+            padding: 0;
+            max-width: 850px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Paid / Draft Ribbon */
+        .inv-ribbon {
+            position: absolute;
+            top: 22px;
+            left: -34px;
+            width: 140px;
+            text-align: center;
+            padding: 6px 0;
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transform: rotate(-45deg);
+            z-index: 2;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        }
+
+        .inv-ribbon.paid {
+            background: linear-gradient(135deg, #16a34a, #22c55e);
+        }
+
+        .inv-ribbon.draft {
+            background: linear-gradient(135deg, #888, #aaa);
+        }
+
+        .inv-ribbon.confirmed {
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+        }
+
+        .inv-card-inner {
+            padding: 48px 48px 40px 48px;
+        }
+
+        /* Company + Title Header */
+        .inv-doc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .inv-company-info {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.7;
+        }
+
+        .inv-company-name {
+            font-size: 18px;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 2px;
+        }
+
+        .inv-doc-title-block {
+            text-align: right;
+        }
+
+        .inv-doc-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: #1a1a1a;
+            letter-spacing: 2px;
+            margin: 0;
+        }
+
+        .inv-doc-number {
             font-size: 14px;
+            color: #555;
+            margin-top: 4px;
+        }
+
+        /* Balance Due Box */
+        .inv-balance-box {
+            text-align: right;
+            margin: 20px 0 32px 0;
+            padding: 12px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .inv-balance-label {
+            font-size: 13px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .inv-balance-amount {
+            font-size: 22px;
+            font-weight: 800;
+            color: #dc2626;
+            margin-top: 2px;
+        }
+
+        /* Bill To + Invoice Fields Row */
+        .inv-bill-fields-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 32px;
+        }
+
+        .inv-bill-to {
+            flex: 1;
+        }
+
+        .inv-bill-to-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 6px;
+        }
+
+        .inv-bill-to-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #e74c3c;
+            margin-bottom: 4px;
+        }
+
+        .inv-bill-to-addr {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.7;
+        }
+
+        .inv-fields-right {
+            text-align: right;
+        }
+
+        .inv-fields-table {
+            border-collapse: collapse;
+            margin-left: auto;
+        }
+
+        .inv-fields-table td {
+            padding: 5px 0;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .inv-fields-table .f-label {
+            color: #555;
+            font-weight: 600;
+            text-align: right;
+            padding-right: 20px;
+        }
+
+        .inv-fields-table .f-value {
+            color: #333;
+            text-align: right;
+        }
+
+        /* Items Table - Blue Header */
+        .inv-doc-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 0;
+        }
+
+        .inv-doc-table thead th {
+            background: #3b82f6;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 10px 14px;
+            text-align: left;
+            border: none;
+        }
+
+        .inv-doc-table thead th:first-child {
+            border-radius: 4px 0 0 0;
+            width: 50px;
+            text-align: center;
+        }
+
+        .inv-doc-table thead th:last-child {
+            border-radius: 0 4px 0 0;
+        }
+
+        .inv-doc-table tbody td {
+            padding: 12px 14px;
+            font-size: 13px;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: top;
+        }
+
+        .inv-doc-table tbody td:first-child {
+            text-align: center;
+            color: #888;
+        }
+
+        .inv-doc-table .qty-cell {
+            text-align: center;
+        }
+
+        .inv-doc-table .qty-unit {
+            display: block;
+            font-size: 11px;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        .inv-doc-table .rate-cell,
+        .inv-doc-table .amount-cell {
+            text-align: right;
+        }
+
+        /* Totals Section */
+        .inv-doc-totals {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 0;
+        }
+
+        .inv-doc-totals-table {
+            border-collapse: collapse;
+            min-width: 320px;
+        }
+
+        .inv-doc-totals-table td {
+            padding: 10px 14px;
+            font-size: 13px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .inv-doc-totals-table .t-label {
+            text-align: right;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .inv-doc-totals-table .t-value {
+            text-align: right;
+            color: #333;
+            font-weight: 600;
+            min-width: 120px;
+        }
+
+        .inv-doc-totals-table .t-total td {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a1a1a;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .inv-doc-totals-table .t-payment td {
+            color: #dc2626;
+        }
+
+        .inv-doc-totals-table .t-balance-due td {
+            background: #fef3e2;
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a1a1a;
+            border-bottom: none;
+        }
+
+        .inv-doc-totals-table .t-negative {
+            color: #dc2626 !important;
+        }
+
+        /* Notes Section */
+        .inv-doc-notes {
+            margin-top: 40px;
+            padding-top: 0;
+        }
+
+        .inv-doc-notes-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #333;
+            margin: 0 0 8px 0;
+        }
+
+        .inv-doc-notes-text {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.6;
+            font-style: italic;
         }
     </style>
 </head>
@@ -206,62 +801,442 @@
 
     <div class="main-layout">
         <div class="content" id="content">
-            <!-- Page Header -->
-            <div class="page-header">
-                <div class="page-title-wrapper">
-                    <h1 class="page-title">
-                        Unpaid Invoices
-                        <span class="dropdown-arrow">▼</span>
-                    </h1>
-                </div>
-                <div class="header-actions">
-                    <div class="btn-new-group">
-                        <button class="btn-new" onclick="createInvoice()">
-                            <span>+</span> New
-                        </button>
-                        <button class="btn-new-dropdown">▼</button>
+
+            <!-- ===== TABLE LIST VIEW ===== -->
+            <div id="listView">
+                <div class="page-header">
+                    <div class="page-title-wrapper">
+                        <h1 class="page-title">
+                            All Invoices
+                            <span class="dropdown-arrow">▼</span>
+                        </h1>
                     </div>
-                    <button class="btn-more">⋯</button>
+                    <div class="global-search-container">
+                        <span class="global-search-icon">🔍</span>
+                        <input type="text" class="global-search-input" id="invSearchInput"
+                            placeholder="Search invoices..." oninput="searchInvoices()">
+                    </div>
+                    <div class="header-actions">
+                        <div class="btn-new-group">
+                            <button class="btn-new" onclick="createInvoice()">
+                                <span>+</span> New
+                            </button>
+                            <button class="btn-new-dropdown">▼</button>
+                        </div>
+                        <button class="btn-more">⋯</button>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div class="empty-state" id="emptyState">
+                    <h2 class="empty-state-title">Start Managing Your Invoices!</h2>
+                    <p class="empty-state-subtitle">Create, customize and send professional Invoices to your customers.
+                    </p>
+                    <button class="btn-create" onclick="createInvoice()">CREATE INVOICE</button>
+                </div>
+
+                <!-- Invoices Table -->
+                <div id="invoicesContainer" style="display: none;">
+                    <table class="invoices-table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" class="th-checkbox" id="selectAll"
+                                        onchange="toggleSelectAll(this)"></th>
+                                <th>DATE</th>
+                                <th>INVOICE#</th>
+                                <th>ORDER NUMBER</th>
+                                <th>CUSTOMER NAME</th>
+                                <th>STATUS</th>
+                                <th>DUE DATE</th>
+                                <th style="text-align:right;">AMOUNT</th>
+                                <th style="text-align:right;">BALANCE DUE</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoicesBody"></tbody>
+                    </table>
+                    <div id="invPaginationContainer"></div>
                 </div>
             </div>
 
-            <!-- Invoices Container -->
-            <div class="invoices-container">
-                <table class="invoices-table">
-                    <thead>
-                        <tr>
-                            <th><input type="checkbox" class="th-checkbox"></th>
-                            <th>DATE</th>
-                            <th>INVOICE#</th>
-                            <th>ORDER NUMBER</th>
-                            <th>CUSTOMER NAME</th>
-                            <th>STATUS</th>
-                            <th>DUE DATE</th>
-                            <th>AMOUNT</th>
-                            <th>BALANCE DUE</th>
-                            <th><span class="search-icon">🔍</span></th>
-                        </tr>
-                    </thead>
-                    <tbody id="invoicesBody">
-                        <!-- Invoices will be added here -->
-                    </tbody>
-                </table>
-
-                <!-- Empty Message -->
-                <div class="empty-message" id="emptyMessage">
-                    There are no unpaid Invoices
+            <!-- ===== DETAIL VIEW (hidden by default) ===== -->
+            <div class="detail-wrapper" id="detailView">
+                <div class="inv-left-panel">
+                    <div class="inv-left-header">
+                        <div class="inv-left-title" onclick="backToList()">← All Invoices</div>
+                        <div class="inv-left-actions">
+                            <button class="inv-left-btn add" onclick="createInvoice()" title="New Invoice">+</button>
+                            <button class="inv-left-btn more" title="More">⋯</button>
+                        </div>
+                    </div>
+                    <div class="inv-left-list" id="invLeftList"></div>
                 </div>
+                <div class="inv-right-panel" id="invRightPanel"></div>
             </div>
+
         </div>
     </div>
 
     <!-- Layout Script -->
+    <script src="/js/pagination.js"></script>
     <script src="/js/layout.js"></script>
     <script>
-        // Create new invoice
+        let allInvoices = [];
+        let selectedInvoiceId = null;
+
         function createInvoice() {
             window.location.href = '/new-invoice.html';
         }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const d = new Date(dateStr);
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            return `${String(d.getDate()).padStart(2, '0')} ${months[d.getMonth()]} ${d.getFullYear()}`;
+        }
+
+        function getStatusClass(status) {
+            const s = (status || '').toUpperCase();
+            if (s === 'DRAFT') return 'draft';
+            return 'confirmed';
+        }
+
+        function formatCurrency(val) {
+            return 'PHP' + parseFloat(val || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function toggleSelectAll(checkbox) {
+            document.querySelectorAll('.inv-checkbox').forEach(cb => cb.checked = checkbox.checked);
+        }
+
+        function searchInvoices() {
+            const query = (document.getElementById('invSearchInput').value || '').toLowerCase();
+            if (!query) { loadInvoices(); return; }
+            const filtered = allInvoices.filter(inv => {
+                return (inv.invoice_number || '').toLowerCase().includes(query) ||
+                    (inv.customer_name || '').toLowerCase().includes(query) ||
+                    (inv.order_number || '').toLowerCase().includes(query) ||
+                    (inv.status || '').toLowerCase().includes(query);
+            });
+            if (filtered.length === 0) {
+                document.getElementById('emptyState').style.display = 'flex';
+                document.getElementById('invoicesContainer').style.display = 'none';
+                document.getElementById('invPaginationContainer').innerHTML = '';
+                return;
+            }
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('invoicesContainer').style.display = 'block';
+            function renderPage(pageData) {
+                document.getElementById('invoicesBody').innerHTML = pageData.map(inv => {
+                    const statusCls = 'status-' + getStatusClass(inv.status);
+                    return `<tr onclick="openInvoiceDetail(${inv.id})" style="cursor:pointer;">
+                        <td><input type="checkbox" class="inv-checkbox" value="${inv.id}" onclick="event.stopPropagation()"></td>
+                        <td>${formatDate(inv.invoice_date)}</td>
+                        <td><span class="inv-number-link">${inv.invoice_number}</span></td>
+                        <td>${inv.order_number || ''}</td>
+                        <td>${inv.customer_name || ''}</td>
+                        <td><span class="${statusCls}">${(inv.status || 'DRAFT').toUpperCase()}</span></td>
+                        <td>${formatDate(inv.due_date)}</td>
+                        <td style="text-align:right;">${formatCurrency(inv.total)}</td>
+                        <td style="text-align:right;">${formatCurrency(inv.total)}</td>
+                    </tr>`;
+                }).join('');
+            }
+            window.invPager = Pagination.create({
+                data: filtered, perPage: 14, containerId: 'invPaginationContainer',
+                onPageChange: function (pageData) { renderPage(pageData); }
+            });
+        }
+
+        // ===== LOAD TABLE LIST =====
+        async function loadInvoices() {
+            try {
+                const res = await fetch('/api/invoices');
+                if (!res.ok) return;
+                allInvoices = await res.json();
+
+                if (allInvoices.length === 0) {
+                    document.getElementById('emptyState').style.display = 'flex';
+                    document.getElementById('invoicesContainer').style.display = 'none';
+                    document.getElementById('invPaginationContainer').innerHTML = '';
+                    return;
+                }
+
+                document.getElementById('emptyState').style.display = 'none';
+                document.getElementById('invoicesContainer').style.display = 'block';
+
+                function renderInvPage(pageData) {
+                    const tbody = document.getElementById('invoicesBody');
+                    tbody.innerHTML = pageData.map(inv => {
+                        const statusCls = 'status-' + getStatusClass(inv.status);
+                        return `<tr onclick="openInvoiceDetail(${inv.id})" style="cursor:pointer;">
+                            <td><input type="checkbox" class="inv-checkbox" value="${inv.id}" onclick="event.stopPropagation()"></td>
+                            <td>${formatDate(inv.invoice_date)}</td>
+                            <td><span class="inv-number-link">${inv.invoice_number}</span></td>
+                            <td>${inv.order_number || ''}</td>
+                            <td>${inv.customer_name || ''}</td>
+                            <td><span class="${statusCls}">${(inv.status || 'DRAFT').toUpperCase()}</span></td>
+                            <td>${formatDate(inv.due_date)}</td>
+                            <td style="text-align:right;">${formatCurrency(inv.total)}</td>
+                            <td style="text-align:right;">${formatCurrency(inv.total)}</td>
+                        </tr>`;
+                    }).join('');
+                }
+
+                if (!window.invPager) {
+                    window.invPager = Pagination.create({
+                        data: allInvoices,
+                        perPage: 14,
+                        containerId: 'invPaginationContainer',
+                        onPageChange: function (pageData) { renderInvPage(pageData); }
+                    });
+                } else {
+                    window.invPager.updateData(allInvoices);
+                }
+            } catch (err) {
+                console.error('Error loading invoices:', err);
+            }
+        }
+
+        // ===== OPEN DETAIL VIEW =====
+        function openInvoiceDetail(invoiceId) {
+            document.getElementById('listView').style.display = 'none';
+            document.getElementById('detailView').classList.add('active');
+
+            // Build left sidebar list
+            const list = document.getElementById('invLeftList');
+            list.innerHTML = allInvoices.map(inv => {
+                const statusCls = getStatusClass(inv.status);
+                return `<div class="inv-left-item ${inv.id === invoiceId ? 'active' : ''}" data-id="${inv.id}" onclick="selectInvoice(${inv.id})">
+                    <div class="inv-left-item-top">
+                        <span class="inv-left-item-name">${inv.customer_name || 'No Customer'}</span>
+                        <span class="inv-left-item-amount">${formatCurrency(inv.total)}</span>
+                    </div>
+                    <div class="inv-left-item-bottom">
+                        <span>${inv.invoice_number}</span>
+                        <span>·</span>
+                        <span>${formatDate(inv.invoice_date)}</span>
+                    </div>
+                    <div class="inv-left-item-status ${statusCls}">${(inv.status || 'DRAFT').toUpperCase()}</div>
+                </div>`;
+            }).join('');
+
+            selectInvoice(invoiceId);
+        }
+
+        async function selectInvoice(invoiceId) {
+            selectedInvoiceId = invoiceId;
+
+            document.querySelectorAll('.inv-left-item').forEach(el => {
+                el.classList.toggle('active', parseInt(el.dataset.id) === invoiceId);
+            });
+
+            try {
+                const res = await fetch(`/api/invoices/${invoiceId}`);
+                if (!res.ok) return;
+                const invoice = await res.json();
+                renderDetail(invoice);
+            } catch (err) {
+                console.error('Error loading invoice detail:', err);
+            }
+        }
+
+        function renderDetail(invoice) {
+            const panel = document.getElementById('invRightPanel');
+            const statusCls = getStatusClass(invoice.status);
+            const statusLabel = (invoice.status || 'DRAFT').toUpperCase();
+            const items = invoice.items || [];
+            const subTotal = items.reduce((sum, i) => sum + parseFloat(i.amount || 0), 0);
+            const total = parseFloat(invoice.total || subTotal);
+            const discountAmount = parseFloat(invoice.discount || 0);
+            const shippingCharges = parseFloat(invoice.shipping_charges || 0);
+            const adjustment = parseFloat(invoice.adjustment || 0);
+            const balanceDue = total; // No payments tracked yet
+
+            // Build address
+            function buildAddress(street, city, state, zip, country) {
+                const lines = [];
+                if (street) lines.push(street);
+                if (city) lines.push(city);
+                if (state) lines.push(state);
+                if (country) lines.push(country);
+                if (zip) lines.push(zip);
+                return lines.join('<br>');
+            }
+
+            const billingAddr = buildAddress(invoice.billing_street, invoice.billing_city, invoice.billing_state, invoice.billing_zip, invoice.billing_country);
+
+            // Ribbon class
+            let ribbonClass = 'draft';
+            let ribbonText = 'Draft';
+            if (statusLabel === 'CONFIRMED') {
+                ribbonClass = 'confirmed';
+                ribbonText = 'Confirmed';
+            }
+            // Paid status (for future: if balanceDue === 0, show "Paid")
+            if (balanceDue <= 0 && statusLabel !== 'DRAFT') {
+                ribbonClass = 'paid';
+                ribbonText = 'Paid';
+            }
+
+            // Format payment terms
+            function formatTerms(val) {
+                const map = {
+                    'due_on_receipt': 'Due on Receipt',
+                    'net_15': 'Net 15',
+                    'net_30': 'Net 30',
+                    'net_45': 'Net 45',
+                    'net_60': 'Net 60',
+                    'due_end_of_next_month': 'Due end of next month',
+                    'end_of_month': 'Due end of the month'
+                };
+                return map[val] || val || 'Due on Receipt';
+            }
+
+            // Build items rows
+            const itemsHtml = items.length > 0 ? items.map((item, idx) => `
+                <tr>
+                    <td>${idx + 1}</td>
+                    <td>${item.item_name || ''}</td>
+                    <td class="qty-cell">${parseFloat(item.quantity || 0).toFixed(2)}<span class="qty-unit">pcs</span></td>
+                    <td class="rate-cell">${parseFloat(item.rate || 0).toFixed(2)}</td>
+                    <td class="amount-cell">${parseFloat(item.amount || 0).toFixed(2)}</td>
+                </tr>`).join('') : '<tr><td colspan="5" style="text-align:center;padding:24px;color:#999;">No items</td></tr>';
+
+            // Build totals rows
+            let totalsRows = '';
+            totalsRows += `<tr><td class="t-label">Sub Total</td><td class="t-value">${subTotal.toFixed(2)}</td></tr>`;
+            if (discountAmount > 0) {
+                totalsRows += `<tr><td class="t-label">Discount</td><td class="t-value t-negative">(-) ${discountAmount.toFixed(2)}</td></tr>`;
+            }
+            if (shippingCharges > 0) {
+                totalsRows += `<tr><td class="t-label">Shipping Charges</td><td class="t-value">${shippingCharges.toFixed(2)}</td></tr>`;
+            }
+            if (adjustment !== 0) {
+                totalsRows += `<tr><td class="t-label">Adjustment</td><td class="t-value">${adjustment >= 0 ? '' : '(-) '}${Math.abs(adjustment).toFixed(2)}</td></tr>`;
+            }
+
+            totalsRows += `<tr class="t-total"><td class="t-label"><strong>Total</strong></td><td class="t-value"><strong>${formatCurrency(total)}</strong></td></tr>`;
+            totalsRows += `<tr class="t-payment"><td class="t-label">Payment Made</td><td class="t-value t-negative">(-) ${total.toFixed(2)}</td></tr>`;
+            totalsRows += `<tr class="t-balance-due"><td class="t-label"><strong>Balance Due</strong></td><td class="t-value"><strong>${formatCurrency(balanceDue)}</strong></td></tr>`;
+
+            panel.innerHTML = `
+                <div class="inv-right-header">
+                    <div class="inv-right-header-left">
+                        <span class="inv-right-location">Location: Head Office</span>
+                        <span class="inv-right-inv-num">${invoice.invoice_number}</span>
+                    </div>
+                    <div class="inv-right-header-actions">
+                        <button title="Print" onclick="window.print()">🖨</button>
+                        <button title="Fullscreen">⛶</button>
+                        <button title="Close" style="font-size:20px;" onclick="backToList()">✕</button>
+                    </div>
+                </div>
+
+                <div class="inv-action-bar">
+                    <button class="inv-action-btn">✏️ Edit</button>
+                    <button class="inv-action-btn">📄 PDF/Print ▾</button>
+                    <div class="inv-action-separator"></div>
+                    <button class="inv-action-btn" onclick="recordPayment()">💳 Record Payment</button>
+                    <div class="inv-action-separator"></div>
+                    <button class="inv-action-btn">📧 Send ▾</button>
+                    <div class="inv-action-separator"></div>
+                    <button class="inv-action-btn">⋯</button>
+                    <div class="inv-pdf-toggle">
+                        <span>⚙ Customize</span>
+                    </div>
+                </div>
+
+                <div class="inv-detail-scroll">
+                    <div class="inv-detail-card">
+                        <div class="inv-ribbon ${ribbonClass}">${ribbonText}</div>
+                        <div class="inv-card-inner">
+
+                            <div class="inv-doc-header">
+                                <div class="inv-company-info">
+                                    <div class="inv-company-name">GIHON</div>
+                                    <div>Philippines</div>
+                                    <div>gihon@business.com</div>
+                                </div>
+                                <div class="inv-doc-title-block">
+                                    <h1 class="inv-doc-title">INVOICE</h1>
+                                    <div class="inv-doc-number"># ${invoice.invoice_number}</div>
+                                </div>
+                            </div>
+
+                            <div class="inv-balance-box">
+                                <div class="inv-balance-label">Balance Due</div>
+                                <div class="inv-balance-amount">${formatCurrency(balanceDue)}</div>
+                            </div>
+
+                            <div class="inv-bill-fields-row">
+                                <div class="inv-bill-to">
+                                    <div class="inv-bill-to-label">Bill To</div>
+                                    <div class="inv-bill-to-name">${invoice.customer_name || 'N/A'}</div>
+                                    <div class="inv-bill-to-addr">${billingAddr || '<span style="color:#999;">No address</span>'}</div>
+                                </div>
+                                <div class="inv-fields-right">
+                                    <table class="inv-fields-table">
+                                        <tr><td class="f-label">Invoice Date :</td><td class="f-value">${formatDate(invoice.invoice_date)}</td></tr>
+                                        <tr><td class="f-label">Terms :</td><td class="f-value">${formatTerms(invoice.payment_terms)}</td></tr>
+                                        <tr><td class="f-label">Due Date :</td><td class="f-value">${invoice.due_date ? formatDate(invoice.due_date) : 'N/A'}</td></tr>
+                                        <tr><td class="f-label">P.O.# :</td><td class="f-value">${invoice.order_number || 'N/A'}</td></tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <table class="inv-doc-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Item & Description</th>
+                                        <th style="text-align:center;width:80px;">Qty</th>
+                                        <th style="text-align:right;width:100px;">Rate</th>
+                                        <th style="text-align:right;width:110px;">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${itemsHtml}
+                                </tbody>
+                            </table>
+
+                            <div class="inv-doc-totals">
+                                <table class="inv-doc-totals-table">
+                                    ${totalsRows}
+                                </table>
+                            </div>
+
+                            ${invoice.notes ? `
+                            <div class="inv-doc-notes">
+                                <div class="inv-doc-notes-title">Notes</div>
+                                <div class="inv-doc-notes-text">${invoice.notes}</div>
+                            </div>` : ''}
+
+                            ${invoice.terms_conditions ? `
+                            <div class="inv-doc-notes" style="margin-top: 20px;">
+                                <div class="inv-doc-notes-title">Terms & Conditions</div>
+                                <div class="inv-doc-notes-text">${invoice.terms_conditions}</div>
+                            </div>` : ''}
+
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ===== BACK TO LIST =====
+        // Record Payment - navigate to payment form for this invoice
+        function recordPayment() {
+            if (!selectedInvoiceId) return;
+            window.location.href = `/record-invoice-payment.html?invoice_id=${selectedInvoiceId}`;
+        }
+
+        function backToList() {
+            document.getElementById('detailView').classList.remove('active');
+            document.getElementById('listView').style.display = 'block';
+            selectedInvoiceId = null;
+        }
+
+        loadInvoices();
     </script>
 </body>
 

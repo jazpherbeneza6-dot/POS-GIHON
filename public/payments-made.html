@@ -263,6 +263,7 @@
                             <th>VENDOR NAME</th>
                             <th>BILL#</th>
                             <th>MODE</th>
+                            <th>STATUS</th>
                             <th>AMOUNT</th>
                         </tr>
                     </thead>
@@ -279,12 +280,66 @@
     <script>
         // Record new payment
         function recordPayment() {
-            window.location.href = '/record-payment.html';
+            window.location.href = '/bills.html';
         }
 
         // Go to unpaid bills
         function goToUnpaidBills() {
-            window.location.href = '/unpaid-bills.html';
+            window.location.href = '/bills.html';
+        }
+
+        document.addEventListener('DOMContentLoaded', loadPayments);
+
+        async function loadPayments() {
+            try {
+                const res = await fetch('/api/payments-made');
+                if (!res.ok) return;
+                const payments = await res.json();
+
+                if (payments.length === 0) {
+                    document.getElementById('emptyState').style.display = 'flex';
+                    document.getElementById('paymentsContainer').style.display = 'none';
+                    return;
+                }
+
+                document.getElementById('emptyState').style.display = 'none';
+                document.getElementById('paymentsContainer').style.display = 'block';
+
+                const tbody = document.getElementById('paymentsBody');
+                tbody.innerHTML = '';
+
+                payments.forEach(p => {
+                    const tr = document.createElement('tr');
+                    tr.style.cursor = 'pointer';
+                    tr.onclick = () => { window.location.href = '/payment-made-detail.html?id=' + p.id; };
+
+                    const pDate = p.payment_date ? new Date(p.payment_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+                    const amount = parseFloat(p.amount_paid || 0);
+                    const status = (p.status || 'DRAFT').toUpperCase();
+
+                    let statusColor = '#6b7280';
+                    let statusBg = '#f3f4f6';
+                    if (status === 'PAID') { statusColor = '#16a34a'; statusBg = '#dcfce7'; }
+                    else if (status === 'DRAFT') { statusColor = '#92400e'; statusBg = '#fef3c7'; }
+
+                    tr.innerHTML = `
+                        <td>${pDate}</td>
+                        <td style="color:#4285f4;font-weight:500;">${p.payment_number || '-'}</td>
+                        <td>${p.reference_number || '-'}</td>
+                        <td>${p.supplier_name || '-'}</td>
+                        <td style="color:#4285f4;">${p.bill_number || '-'}</td>
+                        <td>${p.payment_mode || '-'}</td>
+                        <td><span style="padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;color:${statusColor};background:${statusBg};">${status}</span></td>
+                        <td style="font-weight:500;">₱${amount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+                    `;
+
+                    tr.addEventListener('mouseenter', () => { tr.style.background = '#f5f8ff'; });
+                    tr.addEventListener('mouseleave', () => { tr.style.background = ''; });
+                    tbody.appendChild(tr);
+                });
+            } catch (e) {
+                console.error('Error loading payments:', e);
+            }
         }
     </script>
 </body>

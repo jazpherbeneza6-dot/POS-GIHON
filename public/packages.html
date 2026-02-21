@@ -4,9 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Packages - Inventory Management</title>
+    <title>Packages - Inventory Management</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/global-search.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
         rel="stylesheet">
@@ -16,6 +17,7 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             text-rendering: optimizeLegibility;
+            box-sizing: border-box;
         }
 
         body {
@@ -25,7 +27,6 @@
             font-size: 13px;
         }
 
-        /* Main Content */
         .main-layout {
             display: flex;
             min-height: 100vh;
@@ -35,177 +36,1605 @@
             flex: 1;
             margin-left: 260px;
             padding: 0;
-            background: #f5f6fa;
+            background: #f0f1f5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
-        /* Page Header */
+        /* ===== Page Header ===== */
         .page-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 16px 24px;
+            padding: 18px 28px;
             background: white;
-            border-bottom: 1px solid #e9ecef;
+            border-bottom: 1px solid #e2e5ea;
+            flex-shrink: 0;
         }
 
         .page-title {
             font-size: 18px;
-            font-weight: 600;
-            color: #333;
+            font-weight: 700;
+            color: #1a1a1a;
             margin: 0;
         }
 
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 12px;
-        }
-
-        .view-toggle {
-            display: flex;
-            border: 1px solid #e9ecef;
-            border-radius: 6px;
-            overflow: hidden;
-        }
-
-        .view-btn {
-            padding: 8px 12px;
-            background: white;
-            border: none;
-            cursor: pointer;
-            color: #666;
-            font-size: 14px;
-        }
-
-        .view-btn.active {
-            background: #f0f0f0;
-        }
-
-        .view-btn:hover {
-            background: #f5f5f5;
-        }
-
-        .btn-new {
-            padding: 8px 16px;
-            background: #4ade80;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
             gap: 6px;
         }
 
-        .btn-new:hover {
-            background: #22c55e;
+        /* View toggle buttons */
+        .view-toggle {
+            display: flex;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            overflow: hidden;
         }
 
-        /* Kanban Container */
-        .kanban-container {
+        .view-toggle-btn {
+            padding: 6px 10px;
+            background: white;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            line-height: 1;
+        }
+
+        .view-toggle-btn:first-child {
+            border-right: 1px solid #d9d9d9;
+        }
+
+        .view-toggle-btn.active {
+            background: #e8f0fe;
+            color: #4285f4;
+        }
+
+        .view-toggle-btn:hover:not(.active) {
+            background: #f5f5f5;
+        }
+
+        /* + New button */
+        .btn-new {
+            padding: 7px 16px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-new:hover {
+            background: #3367d6;
+        }
+
+        /* ===== Kanban Board ===== */
+        .kanban-board {
             display: flex;
             gap: 16px;
-            padding: 24px;
+            padding: 20px 28px;
+            flex: 1;
             overflow-x: auto;
-            min-height: calc(100vh - 80px);
+            align-items: flex-start;
         }
 
-        /* Kanban Column */
         .kanban-column {
             flex: 1;
             min-width: 280px;
-            max-width: 350px;
+            max-width: 380px;
             background: white;
             border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e5ea;
             display: flex;
             flex-direction: column;
+            max-height: calc(100vh - 100px);
         }
 
-        .column-header {
+        /* Column Headers */
+        .kanban-column-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 12px 16px;
             border-radius: 8px 8px 0 0;
             font-size: 13px;
+            font-weight: 700;
+            color: #333;
+            flex-shrink: 0;
+        }
+
+        .kanban-column-header .col-menu {
+            background: none;
+            border: none;
+            font-size: 16px;
+            color: rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            padding: 2px 4px;
+        }
+
+        .kanban-column-header .col-menu:hover {
+            color: rgba(0, 0, 0, 0.6);
+        }
+
+        /* Not Shipped - Light Blue */
+        .kanban-column.not-shipped .kanban-column-header {
+            background: #d6e9fb;
+            color: #1a5276;
+        }
+
+        /* Shipped - Light Green */
+        .kanban-column.shipped .kanban-column-header {
+            background: #d4edda;
+            color: #1e7e34;
+        }
+
+        /* Delivered - Light Yellow-Green */
+        .kanban-column.delivered .kanban-column-header {
+            background: #e8f5c5;
+            color: #5a7a1a;
+        }
+
+        /* Column body */
+        .kanban-column-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+
+        /* ===== Package Card ===== */
+        .pkg-card {
+            background: white;
+            border: 1px solid #e8eaed;
+            border-radius: 8px;
+            padding: 14px 16px 12px 16px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: box-shadow 0.2s, border-color 0.2s;
+            position: relative;
+        }
+
+        .pkg-card:hover {
+            border-color: #c8d6e5;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .pkg-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .pkg-card-row1 {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .pkg-card-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pkg-card-checkbox {
+            width: 15px;
+            height: 15px;
+            border: 1.5px solid #c0c0c0;
+            border-radius: 3px;
+            cursor: pointer;
+            flex-shrink: 0;
+            appearance: none;
+            -webkit-appearance: none;
+            background: white;
+        }
+
+        .pkg-card-checkbox:checked {
+            background: #4285f4;
+            border-color: #4285f4;
+        }
+
+        .pkg-card-customer {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .pkg-card-qty {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .pkg-card-row2 {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin-bottom: 4px;
+            padding-left: 25px;
+        }
+
+        .pkg-card-number {
+            font-size: 12px;
+            color: #4285f4;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .pkg-card-number:hover {
+            text-decoration: underline;
+        }
+
+        .pkg-card-divider {
+            width: 1px;
+            height: 12px;
+            background: #ccc;
+            margin: 0 8px;
+        }
+
+        .pkg-card-so {
+            font-size: 12px;
+            color: #555;
+        }
+
+        .pkg-card-row3 {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-left: 25px;
+        }
+
+        .pkg-card-date {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .pkg-card-more {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #bbb;
+            cursor: pointer;
+            padding: 2px 4px;
+            line-height: 1;
+            letter-spacing: 1px;
+        }
+
+        .pkg-card-more:hover {
+            color: #666;
+        }
+
+        /* ===== Three-Dot Dropdown Menu ===== */
+        .pkg-card-menu-wrap {
+            position: relative;
+        }
+
+        .pkg-card-dropdown {
+            display: none;
+            position: fixed;
+            min-width: 220px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+            z-index: 9999;
+            padding: 6px 0;
+        }
+
+        .pkg-card-dropdown.open {
+            display: block;
+        }
+
+        .pkg-menu-item {
+            display: block;
+            width: 100%;
+            padding: 13px 20px;
+            text-align: left;
+            background: none;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .pkg-menu-item:hover {
+            background: #f5f7ff;
+        }
+
+        .pkg-menu-separator {
+            height: 1px;
+            background: #e9ecef;
+            margin: 0;
+        }
+
+        .pkg-menu-item.delete {
+            background: #4285f4;
+            color: white;
+            font-weight: 600;
+            margin: 6px 8px;
+            width: calc(100% - 16px);
+            border-radius: 8px;
+            text-align: center;
+            padding: 12px 20px;
+        }
+
+        .pkg-menu-item.delete:hover {
+            background: #3367d6;
+        }
+
+        .pkg-menu-item.mark-delivered {
+            background: #4285f4;
+            color: white;
+            font-weight: 600;
+            margin: 6px 8px;
+            width: calc(100% - 16px);
+            border-radius: 8px;
+            text-align: center;
+            padding: 12px 20px;
+        }
+
+        .pkg-menu-item.mark-delivered:hover {
+            background: #3367d6;
+        }
+
+        /* Empty column */
+        .kanban-empty {
+            text-align: center;
+            padding: 40px 16px;
+            color: #bbb;
+            font-size: 12px;
+        }
+
+        /* ===== Package Detail View Overlay ===== */
+        .pkg-detail-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 260px;
+            right: 0;
+            bottom: 0;
+            background: #f5f6fa;
+            z-index: 4000;
+        }
+
+        .pkg-detail-overlay.open {
+            display: flex;
+        }
+
+        /* Detail Left Sidebar */
+        .pkg-detail-left {
+            width: 260px;
+            min-width: 260px;
+            background: #fff;
+            border-right: 1px solid #e2e5ea;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .pkg-detail-left-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            border-bottom: 1px solid #e2e5ea;
+            flex-shrink: 0;
+        }
+
+        .pkg-detail-left-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .pkg-detail-left-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .pkg-detail-left-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pkg-detail-left-btn.plus {
+            background: #4285f4;
+            color: white;
+        }
+
+        .pkg-detail-left-btn.dots {
+            background: #f0f1f5;
+            color: #666;
+        }
+
+        .pkg-detail-left-body {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .pkg-detail-left-item {
+            padding: 10px 16px;
+            border-bottom: 1px solid #f0f1f5;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .pkg-detail-left-item:hover {
+            background: #f8f9ff;
+        }
+
+        .pkg-detail-left-item.active {
+            background: #eef3ff;
+            border-left: 3px solid #4285f4;
+        }
+
+        .pkg-detail-left-row1 {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 3px;
+        }
+
+        .pkg-detail-left-check {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pkg-detail-left-customer {
+            font-size: 13px;
             font-weight: 600;
             color: #333;
         }
 
-        .column-header.not-shipped {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        .column-header.shipped {
-            background: #fef9c3;
-            color: #854d0e;
-        }
-
-        .column-header.delivered {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .column-menu {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            color: inherit;
-            opacity: 0.7;
-        }
-
-        .column-menu:hover {
-            opacity: 1;
-        }
-
-        .column-content {
-            flex: 1;
-            padding: 16px;
-            min-height: 400px;
-        }
-
-        .no-records {
-            text-align: center;
-            color: #999;
+        .pkg-detail-left-qty {
             font-size: 13px;
-            padding: 24px 0;
-        }
-
-        /* Package Card */
-        .package-card {
-            background: white;
-            border: 1px solid #e9ecef;
-            border-radius: 6px;
-            padding: 12px;
-            margin-bottom: 12px;
-            cursor: pointer;
-            transition: box-shadow 0.2s ease;
-        }
-
-        .package-card:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .package-id {
             font-weight: 600;
+            color: #333;
+        }
+
+        .pkg-detail-left-row2 {
+            font-size: 11px;
+            color: #555;
+            padding-left: 22px;
+            margin-bottom: 3px;
+        }
+
+        .pkg-detail-left-row2 .pkg-num {
             color: #4285f4;
+            font-weight: 500;
+        }
+
+        .pkg-detail-left-row3 {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-left: 22px;
+        }
+
+        .pkg-detail-left-status {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .pkg-detail-left-status.not-shipped {
+            color: #e74c3c;
+        }
+
+        .pkg-detail-left-status.shipped {
+            color: #4285f4;
+        }
+
+        .pkg-detail-left-status.delivered {
+            color: #27ae60;
+        }
+
+        .pkg-detail-left-so {
+            font-size: 11px;
+            color: #888;
+        }
+
+        /* Detail Right Panel */
+        .pkg-detail-right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        /* Detail right top header */
+        .pkg-detail-top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 24px;
+            background: white;
+            border-bottom: 1px solid #e2e5ea;
+            flex-shrink: 0;
+        }
+
+        .pkg-detail-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .pkg-detail-top-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pkg-detail-icon-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .pkg-detail-icon-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .pkg-detail-close-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 4px;
+            background: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #e74c3c;
+            font-weight: 700;
+        }
+
+        .pkg-detail-close-btn:hover {
+            background: #fee;
+        }
+
+        /* Action bar under top header */
+        .pkg-detail-action-bar {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 10px 24px;
+            background: white;
+            border-bottom: 1px solid #e2e5ea;
+            flex-shrink: 0;
+        }
+
+        .pkg-action-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 14px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            font-size: 13px;
+            color: #333;
+            font-family: inherit;
+        }
+
+        .pkg-action-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .pkg-action-btn .icon {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .pkg-action-btn .arrow {
+            font-size: 9px;
+            color: #999;
+            margin-left: 2px;
+        }
+
+        /* Associated sales orders bar */
+        .associated-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 24px;
+            background: #f0f5ff;
+            border-bottom: 1px solid #d6e4f0;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .associated-bar:hover {
+            background: #e8effc;
+        }
+
+        .associated-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .associated-count {
+            background: #4285f4;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 1px 8px;
+            border-radius: 10px;
+            margin-left: 8px;
+        }
+
+        .associated-arrow {
+            font-size: 14px;
+            color: #4285f4;
+        }
+
+        /* Package document card */
+        .pkg-doc-area {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        .pkg-doc-card {
+            width: 720px;
+            max-width: 100%;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Not Shipped ribbon */
+        .pkg-doc-ribbon {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 120px;
+            height: 120px;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .pkg-doc-ribbon span {
+            position: absolute;
+            display: block;
+            width: 180px;
+            padding: 6px 0;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            text-align: center;
+            text-transform: uppercase;
+            transform: rotate(-45deg);
+            top: 28px;
+            left: -38px;
+            letter-spacing: 0.5px;
+        }
+
+        .pkg-doc-ribbon.not-shipped span {
+            background: linear-gradient(135deg, #7a8a8f 0%, #95a5a6 100%);
+        }
+
+        .pkg-doc-ribbon.shipped span {
+            background: linear-gradient(135deg, #3367d6 0%, #4285f4 100%);
+        }
+
+        .pkg-doc-ribbon.delivered span {
+            background: linear-gradient(135deg, #1e8449 0%, #27ae60 100%);
+        }
+
+        .pkg-doc-inner {
+            padding: 40px 40px 32px 40px;
+        }
+
+        .pkg-doc-company-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 28px;
+            margin-top: 20px;
+        }
+
+        .pkg-doc-company-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .pkg-doc-company-detail {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.8;
+        }
+
+        .pkg-doc-type-label {
+            text-align: right;
+        }
+
+        .pkg-doc-type-label h2 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #333;
+            margin: 0 0 4px 0;
+            letter-spacing: 1px;
+        }
+
+        .pkg-doc-type-label .pkg-num-label {
+            font-size: 12px;
+            color: #555;
+        }
+
+        /* Details row */
+        .pkg-doc-details-row {
+            display: flex;
+            gap: 0;
+            margin-bottom: 24px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .pkg-doc-detail-cell {
+            flex: 1;
+            padding: 12px 16px;
+            border-right: 1px solid #e0e0e0;
+        }
+
+        .pkg-doc-detail-cell:last-child {
+            border-right: none;
+        }
+
+        .pkg-doc-detail-cell.total-qty {
+            background: #f8f9fb;
+            text-align: center;
+        }
+
+        .pkg-doc-detail-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #888;
+            text-transform: capitalize;
             margin-bottom: 4px;
         }
 
-        .package-info {
+        .pkg-doc-detail-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .pkg-doc-detail-cell.total-qty .pkg-doc-detail-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #4285f4;
+        }
+
+        /* Bill To / Ship To */
+        .pkg-doc-address-row {
+            display: flex;
+            gap: 80px;
+            margin-bottom: 24px;
+        }
+
+        .pkg-doc-address-block {
+            flex: 1;
+        }
+
+        .pkg-doc-address-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 6px;
+        }
+
+        .pkg-doc-address-name {
+            font-size: 13px;
+            color: #4285f4;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .pkg-doc-address-line {
+            font-size: 12px;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        /* Items table */
+        .pkg-doc-items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+
+        .pkg-doc-items-table thead tr {
+            background: #555;
+        }
+
+        .pkg-doc-items-table th {
+            padding: 10px 14px;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        .pkg-doc-items-table th:last-child {
+            text-align: right;
+        }
+
+        .pkg-doc-items-table th:first-child {
+            width: 40px;
+            text-align: center;
+        }
+
+        .pkg-doc-items-table td {
+            padding: 12px 14px;
+            font-size: 13px;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .pkg-doc-items-table td:last-child {
+            text-align: right;
+        }
+
+        .pkg-doc-items-table td:first-child {
+            text-align: center;
+            color: #888;
+        }
+
+        .pkg-doc-item-unit {
+            display: block;
+            font-size: 11px;
+            color: #999;
+            text-align: right;
+        }
+
+        /* ===== New Package Form Overlay ===== */
+        .new-pkg-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 260px;
+            right: 0;
+            bottom: 0;
+            background: #f0f1f5;
+            z-index: 5000;
+            flex-direction: column;
+        }
+
+        .new-pkg-overlay.open {
+            display: flex;
+        }
+
+        .new-pkg-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 28px;
+            background: white;
+            border-bottom: 1px solid #e2e5ea;
+            flex-shrink: 0;
+        }
+
+        .new-pkg-header-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .new-pkg-header-title .icon {
+            font-size: 18px;
+        }
+
+        .new-pkg-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 20px;
+            color: #888;
+            border-radius: 4px;
+        }
+
+        .new-pkg-close:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .new-pkg-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        .new-pkg-form-section {
+            background: white;
+            padding: 20px 28px;
+            border-bottom: 1px solid #e2e5ea;
+        }
+
+        .new-pkg-form-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .new-pkg-form-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .new-pkg-form-label {
+            width: 140px;
+            min-width: 140px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .new-pkg-form-label.required {
+            color: #e74c3c;
+        }
+
+        .new-pkg-form-select {
+            width: 340px;
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+            background: white;
+            color: #333;
+            cursor: pointer;
+            appearance: auto;
+        }
+
+        .new-pkg-form-select:focus {
+            border-color: #4285f4;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.15);
+        }
+
+        /* Grey fields section */
+        .new-pkg-grey-section {
+            background: #f8f9fb;
+            padding: 20px 28px;
+            border-bottom: 1px solid #e2e5ea;
+        }
+
+        .new-pkg-grey-row {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .new-pkg-grey-field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .new-pkg-grey-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #e74c3c;
+            text-transform: capitalize;
+        }
+
+        .new-pkg-grey-label.normal {
+            color: #e74c3c;
+        }
+
+        .new-pkg-grey-input {
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+            background: white;
+            color: #333;
+            width: 220px;
+        }
+
+        .new-pkg-grey-input:focus {
+            border-color: #4285f4;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.15);
+        }
+
+        .new-pkg-grey-input::placeholder {
+            color: #bbb;
+        }
+
+        /* Info bar */
+        .new-pkg-info-bar {
+            padding: 12px 28px;
+            background: white;
+            border-bottom: 1px solid #e2e5ea;
+            font-size: 12px;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .new-pkg-info-bar .info-icon {
+            color: #4285f4;
+            font-size: 14px;
+        }
+
+        .new-pkg-info-bar a {
+            color: #4285f4;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .new-pkg-info-bar a:hover {
+            text-decoration: underline;
+        }
+
+        /* Items table */
+        .new-pkg-items-section {
+            background: white;
+            padding: 0 28px 20px;
+        }
+
+        .new-pkg-items-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .new-pkg-items-table th {
+            padding: 12px 14px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #e2e5ea;
+        }
+
+        .new-pkg-items-table th:nth-child(n+2) {
+            text-align: center;
+            width: 120px;
+        }
+
+        .new-pkg-items-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid #f0f1f5;
+            color: #333;
+        }
+
+        .new-pkg-items-table td:nth-child(n+2) {
+            text-align: center;
+        }
+
+        .new-pkg-items-table .qty-input {
+            width: 80px;
+            padding: 6px 8px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+            text-align: center;
+        }
+
+        .new-pkg-items-table .qty-input:focus {
+            border-color: #4285f4;
+            outline: none;
+        }
+
+        /* Notes section */
+        .new-pkg-notes-section {
+            background: white;
+            padding: 20px 28px;
+            border-top: 1px solid #e2e5ea;
+        }
+
+        .new-pkg-notes-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .new-pkg-notes-textarea {
+            width: 400px;
+            min-height: 60px;
+            padding: 10px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+            resize: vertical;
+            color: #333;
+        }
+
+        .new-pkg-notes-textarea:focus {
+            border-color: #4285f4;
+            outline: none;
+        }
+
+        /* Footer */
+        .new-pkg-footer {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 28px;
+            background: white;
+            border-top: 1px solid #e2e5ea;
+            flex-shrink: 0;
+        }
+
+        .new-pkg-btn-save {
+            padding: 8px 22px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .new-pkg-btn-save:hover {
+            background: #3367d6;
+        }
+
+        .new-pkg-btn-cancel {
+            padding: 8px 22px;
+            background: white;
+            color: #333;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .new-pkg-btn-cancel:hover {
+            background: #f5f5f5;
+        }
+
+        /* ===== Ship Manually Overlay ===== */
+        .ship-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 260px;
+            right: 0;
+            bottom: 0;
+            background: white;
+            z-index: 5000;
+        }
+
+        .ship-overlay.open {
+            display: flex;
+        }
+
+        /* Ship Left Sidebar */
+        .ship-left {
+            width: 260px;
+            min-width: 260px;
+            border-right: 1px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+        }
+
+        .ship-left-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .ship-left-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .ship-left-title .arrow {
+            font-size: 10px;
+            color: #888;
+        }
+
+        .ship-left-actions {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .ship-left-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ship-left-btn.plus {
+            background: #4285f4;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .ship-left-btn.dots {
+            background: #e9ecef;
+            color: #666;
+        }
+
+        .ship-left-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 4px 0;
+        }
+
+        .ship-pkg-card {
+            padding: 10px 14px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+        }
+
+        .ship-pkg-card.active {
+            background: #f0f4ff;
+        }
+
+        .ship-pkg-row1 {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 3px;
+        }
+
+        .ship-pkg-row1 .left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ship-pkg-row1 .left input[type=checkbox] {
+            width: 14px;
+            height: 14px;
+        }
+
+        .ship-pkg-customer {
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .ship-pkg-qty {
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .ship-pkg-row2 {
+            font-size: 11px;
+            color: #555;
+            padding-left: 22px;
+            margin-bottom: 2px;
+        }
+
+        .ship-pkg-row2 .pkg-num {
+            color: #4285f4;
+            font-weight: 500;
+        }
+
+        .ship-pkg-row3 {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-left: 22px;
+        }
+
+        .ship-pkg-status {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #e74c3c;
+        }
+
+        .ship-pkg-so {
+            font-size: 11px;
+            color: #888;
+        }
+
+        /* Ship Right Panel - Form */
+        .ship-right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .ship-form-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 28px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .ship-form-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .ship-form-close {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: #999;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+
+        .ship-form-close:hover {
+            color: #333;
+        }
+
+        .ship-form-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 28px 32px;
+        }
+
+        .ship-form-row {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            gap: 24px;
+        }
+
+        .ship-form-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .ship-form-label {
+            font-size: 13px;
+            color: #555;
+            min-width: 130px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .ship-form-label.required {
+            color: #e74c3c;
+        }
+
+        .ship-form-input {
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+            color: #333;
+            width: 220px;
+            outline: none;
+            position: relative;
+            z-index: 1;
+        }
+
+        .ship-form-input:focus {
+            border-color: #4285f4;
+            z-index: 2;
+        }
+
+        .ship-form-select {
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+            color: #333;
+            width: 220px;
+            outline: none;
+            background: white;
+            appearance: auto;
+        }
+
+        .ship-form-select:focus {
+            border-color: #4285f4;
+        }
+
+        .ship-form-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #f0f0f0;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            padding: 6px 10px;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .ship-form-tag .remove {
+            cursor: pointer;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .ship-form-tag .remove:hover {
+            color: #e74c3c;
+        }
+
+        .ship-form-input.currency {
+            padding-left: 48px;
+        }
+
+        .ship-currency-wrap {
+            position: relative;
+            display: inline-block;
+        }
+
+        .ship-currency-prefix {
+            position: absolute;
+            left: 1px;
+            top: 1px;
+            bottom: 1px;
+            display: flex;
+            pointer-events: none;
+            align-items: center;
+            padding: 0 10px;
+            background: #f5f5f5;
+            border-right: 1px solid #d9d9d9;
+            border-radius: 3px 0 0 3px;
             font-size: 12px;
             color: #666;
+        }
+
+        .ship-form-textarea {
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+            color: #333;
+            width: 420px;
+            height: 80px;
+            resize: vertical;
+            outline: none;
+        }
+
+        .ship-form-textarea:focus {
+            border-color: #4285f4;
+        }
+
+        .ship-separator {
+            height: 1px;
+            background: #e9ecef;
+            margin: 20px 0;
+        }
+
+        .ship-checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            padding-left: 142px;
+        }
+
+        .ship-checkbox-row input[type=checkbox] {
+            width: 15px;
+            height: 15px;
+        }
+
+        .ship-checkbox-label {
+            font-size: 13px;
+            color: #333;
+        }
+
+        .ship-checkbox-label .warn {
+            color: #e67e22;
+            font-size: 14px;
+        }
+
+        /* Ship Form Footer */
+        .ship-form-footer {
+            padding: 14px 28px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ship-btn-save {
+            padding: 8px 20px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .ship-btn-save:hover {
+            background: #3367d6;
+        }
+
+        .ship-btn-cancel {
+            padding: 8px 20px;
+            background: white;
+            color: #333;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .ship-btn-cancel:hover {
+            background: #f5f5f5;
         }
     </style>
 </head>
 
 <body>
-    <!-- Sidebar Container -->
     <div id="sidebarContainer"></div>
 
     <div class="main-layout">
@@ -213,492 +1642,1103 @@
             <!-- Page Header -->
             <div class="page-header">
                 <h1 class="page-title">All Packages</h1>
+                <div class="global-search-container">
+                    <span class="global-search-icon">🔍</span>
+                    <input type="text" class="global-search-input" id="pkgSearchInput" placeholder="Search packages..."
+                        oninput="searchPackages()">
+                </div>
                 <div class="header-actions">
                     <div class="view-toggle">
-                        <button class="view-btn" title="List View">☰</button>
-                        <button class="view-btn active" title="Kanban View">▤</button>
+                        <button class="view-toggle-btn" title="List View">☰</button>
+                        <button class="view-toggle-btn active" title="Board View">▦</button>
                     </div>
-                    <button class="btn-new" onclick="createNewPackage()">
-                        <span>+</span> New
-                    </button>
+                    <button class="btn-new" onclick="openNewPkgForm()">+ New</button>
                 </div>
             </div>
 
-            <!-- Kanban Container -->
-            <div class="kanban-container">
-                <!-- Packages, Not Shipped Column -->
-                <div class="kanban-column">
-                    <div class="column-header not-shipped">
+            <!-- Kanban Board -->
+            <div class="kanban-board" id="kanbanBoard">
+                <!-- Not Shipped Column -->
+                <div class="kanban-column not-shipped">
+                    <div class="kanban-column-header">
                         <span>Packages, Not Shipped</span>
-                        <button class="column-menu">☰</button>
+                        <button class="col-menu">☰</button>
                     </div>
-                    <div class="column-content" id="notShippedColumn">
-                        <div class="no-records">No Records Found</div>
+                    <div class="kanban-column-body" id="colNotShipped">
+                        <div class="kanban-empty">No packages</div>
                     </div>
                 </div>
 
-                <!-- Shipped Packages Column -->
-                <div class="kanban-column">
-                    <div class="column-header shipped">
+                <!-- Shipped Column -->
+                <div class="kanban-column shipped">
+                    <div class="kanban-column-header">
                         <span>Shipped Packages</span>
-                        <button class="column-menu">☰</button>
+                        <button class="col-menu">☰</button>
                     </div>
-                    <div class="column-content" id="shippedColumn">
-                        <div class="no-records">No Records Found</div>
+                    <div class="kanban-column-body" id="colShipped">
+                        <div class="kanban-empty">No packages</div>
                     </div>
                 </div>
 
-                <!-- Delivered Packages Column -->
-                <div class="kanban-column">
-                    <div class="column-header delivered">
+                <!-- Delivered Column -->
+                <div class="kanban-column delivered">
+                    <div class="kanban-column-header">
                         <span>Delivered Packages</span>
-                        <button class="column-menu">☰</button>
+                        <button class="col-menu">☰</button>
                     </div>
-                    <div class="column-content" id="deliveredColumn">
-                        <div class="no-records">No Records Found</div>
+                    <div class="kanban-column-body" id="colDelivered">
+                        <div class="kanban-empty">No packages</div>
                     </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- New Package Form Overlay -->
+        <div class="new-pkg-overlay" id="newPkgOverlay">
+            <div class="new-pkg-header">
+                <span class="new-pkg-header-title"><span class="icon">📦</span> New Package</span>
+                <button class="new-pkg-close" onclick="closeNewPkgForm()" title="Close">✕</button>
+            </div>
+            <div class="new-pkg-body">
+                <div class="new-pkg-form-section">
+                    <div class="new-pkg-form-row">
+                        <label class="new-pkg-form-label">Customer Name</label>
+                        <select class="new-pkg-form-select" id="newPkgCustomer" onchange="onNewPkgCustomerChange()">
+                            <option value="">Select Customer</option>
+                        </select>
+                    </div>
+                    <div class="new-pkg-form-row">
+                        <label class="new-pkg-form-label required">Sales Order#*</label>
+                        <select class="new-pkg-form-select" id="newPkgSalesOrder" onchange="onNewPkgSOChange()">
+                            <option value="">Select Sales Order</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="new-pkg-grey-section">
+                    <div class="new-pkg-grey-row">
+                        <div class="new-pkg-grey-field">
+                            <label class="new-pkg-grey-label">Package Slip#*</label>
+                            <input type="text" class="new-pkg-grey-input" id="newPkgSlipNum" readonly>
+                        </div>
+                        <div class="new-pkg-grey-field">
+                            <label class="new-pkg-grey-label">Date*</label>
+                            <input type="text" class="new-pkg-grey-input" id="newPkgDate" placeholder="dd MMM yyyy">
+                        </div>
+                    </div>
+                </div>
+                <div class="new-pkg-info-bar">
+                    <span class="info-icon">ℹ</span>
+                    You can also select or scan the items to be included from the sales order. <a href="#"
+                        onclick="event.preventDefault()">Select or Scan Items</a>
+                </div>
+                <div class="new-pkg-items-section">
+                    <table class="new-pkg-items-table">
+                        <thead>
+                            <tr>
+                                <th>Items & Description</th>
+                                <th>Ordered</th>
+                                <th>Packed</th>
+                                <th>Quantity to Pack</th>
+                            </tr>
+                        </thead>
+                        <tbody id="newPkgItemsBody">
+                            <!-- Populated when SO selected -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="new-pkg-notes-section">
+                    <div class="new-pkg-notes-label">Internal Notes</div>
+                    <textarea class="new-pkg-notes-textarea" id="newPkgNotes" placeholder=""></textarea>
+                </div>
+            </div>
+            <div class="new-pkg-footer">
+                <button class="new-pkg-btn-save" onclick="saveNewPackage()">Save</button>
+                <button class="new-pkg-btn-cancel" onclick="closeNewPkgForm()">Cancel</button>
+            </div>
+        </div>
+
+        <!-- Package Detail View Overlay -->
+        <div class="pkg-detail-overlay" id="pkgDetailOverlay">
+            <div class="pkg-detail-left">
+                <div class="pkg-detail-left-header">
+                    <span class="pkg-detail-left-title" id="pkgDetailLeftTitle">Packages, Not S... <span class="arrow"
+                            style="font-size:10px;color:#888">▾</span></span>
+                    <div class="pkg-detail-left-actions">
+                        <button class="pkg-detail-left-btn plus">+</button>
+                        <button class="pkg-detail-left-btn dots">⋯</button>
+                    </div>
+                </div>
+                <div class="pkg-detail-left-body" id="pkgDetailLeftList"></div>
+            </div>
+            <div class="pkg-detail-right">
+                <div class="pkg-detail-top-bar">
+                    <span class="pkg-detail-title" id="pkgDetailTitle">PKG-00001</span>
+                    <div class="pkg-detail-top-actions">
+                        <button class="pkg-detail-icon-btn" title="Fullscreen">⛶</button>
+                        <button class="pkg-detail-close-btn" onclick="closeDetailView()" title="Close">✕</button>
+                    </div>
+                </div>
+                <div class="pkg-detail-action-bar">
+                    <button class="pkg-action-btn"><span class="icon">✏</span> Edit</button>
+                    <button class="pkg-action-btn" id="detailShipBtn"><span class="icon">🚚</span> Ship <span
+                            class="arrow">▾</span></button>
+                    <button class="pkg-action-btn"><span class="icon">📄</span> PDF/Print <span
+                            class="arrow">▾</span></button>
+                    <button class="pkg-action-btn"><span class="icon">⋯</span></button>
+                </div>
+                <div class="associated-bar">
+                    <span><span class="associated-label">Associated sales orders</span> <span class="associated-count"
+                            id="detailSOCount">1</span></span>
+                    <span class="associated-arrow">►</span>
+                </div>
+                <div class="pkg-doc-area" id="pkgDocArea">
+                    <!-- Document card rendered here by JS -->
                 </div>
             </div>
         </div>
 
-        <!-- New Package Modal -->
-        <div class="modal-overlay" id="newPackageModal">
-            <div class="modal-container">
-                <div class="modal-header">
-                    <div class="modal-title">
-                        <span class="modal-icon">📦</span>
-                        New Package
+        <!-- Ship Manually Overlay -->
+        <div class="ship-overlay" id="shipOverlay">
+            <div class="ship-left">
+                <div class="ship-left-header">
+                    <span class="ship-left-title">Packages, Not S... <span class="arrow">▼</span></span>
+                    <div class="ship-left-actions">
+                        <button class="ship-left-btn plus">+</button>
+                        <button class="ship-left-btn dots">⋯</button>
                     </div>
-                    <button class="modal-close" onclick="closeNewPackageModal()">×</button>
                 </div>
-                <div class="modal-body">
-                    <!-- Top Form Section -->
-                    <div class="form-section-top">
-                        <div class="form-row">
-                            <label class="form-label">Customer Name</label>
-                            <div class="form-input-wrapper">
-                                <select class="form-select" id="customerName">
-                                    <option value="">Select Customer</option>
-                                </select>
+                <div class="ship-left-body" id="shipLeftList"></div>
+            </div>
+            <div class="ship-right">
+                <div class="ship-form-header">
+                    <span class="ship-form-title">New Shipment</span>
+                    <button class="ship-form-close" onclick="closeShipForm()">✕</button>
+                </div>
+                <div class="ship-form-body">
+                    <div class="ship-form-row">
+                        <div class="ship-form-group">
+                            <label class="ship-form-label required">Package#*</label>
+                            <div class="ship-form-tag" id="shipPkgTag">
+                                <span id="shipPkgTagText">PKG-00001</span>
+                                <span class="remove" onclick="clearShipPkg()">×</span>
                             </div>
                         </div>
-                        <div class="form-row">
-                            <label class="form-label required">Sales Order#*</label>
-                            <div class="form-input-wrapper">
-                                <select class="form-select" id="salesOrder">
-                                    <option value="">Select Sales Order</option>
-                                </select>
+                    </div>
+                    <div class="ship-form-row">
+                        <div class="ship-form-group">
+                            <label class="ship-form-label required">Shipment Order#*</label>
+                            <input type="text" class="ship-form-input" id="shipOrderNum" readonly>
+                        </div>
+                    </div>
+                    <div class="ship-form-row">
+                        <div class="ship-form-group">
+                            <label class="ship-form-label required">Ship Date*</label>
+                            <input type="date" class="ship-form-input" id="shipDate">
+                        </div>
+                    </div>
+                    <div class="ship-form-row">
+                        <div class="ship-form-group">
+                            <label class="ship-form-label required">Carrier*</label>
+                            <select class="ship-form-select" id="shipCarrier"></select>
+                        </div>
+                        <div class="ship-form-group">
+                            <label class="ship-form-label">Tracking#</label>
+                            <input type="text" class="ship-form-input" id="shipTrackingNum" style="width:160px">
+                        </div>
+                    </div>
+                    <div class="ship-form-row">
+                        <div class="ship-form-group">
+                            <label class="ship-form-label">Tracking URL</label>
+                            <input type="text" class="ship-form-input" id="shipTrackingUrl">
+                        </div>
+                    </div>
+                    <div class="ship-form-row">
+                        <div class="ship-form-group">
+                            <label class="ship-form-label">Shipping Charges (if any)</label>
+                            <div class="ship-currency-wrap">
+                                <span class="ship-currency-prefix">PHP</span>
+                                <input type="number" class="ship-form-input currency" id="shipCharges" step="0.01"
+                                    value="">
                             </div>
+                        </div>
+                    </div>
+                    <div class="ship-form-row">
+                        <div class="ship-form-group">
+                            <label class="ship-form-label">Notes</label>
+                            <textarea class="ship-form-textarea" id="shipNotes" placeholder=""></textarea>
                         </div>
                     </div>
 
-                    <!-- Middle Form Section -->
-                    <div class="form-section-middle">
-                        <div class="form-row-inline">
-                            <div class="form-group">
-                                <label class="form-label-small required">Package Slip#*</label>
-                                <div class="input-with-icon">
-                                    <input type="text" class="form-input" id="packageSlip" placeholder="">
-                                    <span class="input-icon">⏱</span>
+                    <div class="ship-separator"></div>
+
+                    <div class="ship-checkbox-row">
+                        <input type="checkbox" id="shipDelivered">
+                        <label class="ship-checkbox-label" for="shipDelivered">Shipment already delivered</label>
+                    </div>
+                    <div class="ship-checkbox-row">
+                        <input type="checkbox" id="shipNotify">
+                        <label class="ship-checkbox-label" for="shipNotify">Send Status Notification <span
+                                class="warn">⚠</span></label>
+                    </div>
+                </div>
+                <div class="ship-form-footer">
+                    <button class="ship-btn-save" onclick="saveShipment()">Save</button>
+                    <button class="ship-btn-cancel" onclick="closeShipForm()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/layout.js"></script>
+    <script>
+        function searchPackages() {
+            const query = (document.getElementById('pkgSearchInput').value || '').toLowerCase();
+            if (!query) { loadPackages(); return; }
+            // Filter kanban cards by hiding non-matching ones
+            document.querySelectorAll('.pkg-card').forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(query) ? '' : 'none';
+            });
+        }
+
+        let allPackages = [];
+
+        document.addEventListener('DOMContentLoaded', function () {
+            loadPackages();
+        });
+
+        function fmtDate(dateStr) {
+            if (!dateStr) return '';
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+        }
+
+        function getTotalQty(pkg) {
+            if (pkg.items && pkg.items.length > 0) {
+                return pkg.items.reduce((sum, item) => sum + parseFloat(item.quantity_to_pack || 0), 0);
+            }
+            return 0;
+        }
+
+        function buildCard(pkg, qty, shipmentInfo) {
+            const date = fmtDate(pkg.package_date);
+            const status = (pkg.status || 'NOT SHIPPED').toUpperCase();
+            const carrier = shipmentInfo ? shipmentInfo.carrier : '';
+
+            // Row 3: for shipped/delivered, show "carrier | date"; for not shipped just date
+            let row3Left = '';
+            if ((status === 'SHIPPED' || status === 'DELIVERED') && carrier) {
+                row3Left = `<span class="pkg-card-date">${carrier} | ${date}</span>`;
+            } else {
+                row3Left = `<span class="pkg-card-date">${date}</span>`;
+            }
+
+            // Build dropdown menu based on status
+            let menuItems = '';
+            if (status === 'SHIPPED') {
+                menuItems = `
+                    <button class="pkg-menu-item mark-delivered" onclick="event.stopPropagation(); markAsDelivered(${pkg.id})">Mark as Delivered</button>
+                    <div class="pkg-menu-separator"></div>
+                    <button class="pkg-menu-item" onclick="event.stopPropagation(); printShipmentOrder(${pkg.id})">Print Shipment Order</button>
+                    <button class="pkg-menu-item" onclick="event.stopPropagation(); downloadShipmentOrder(${pkg.id})">Download Shipment Order</button>
+                    <div class="pkg-menu-separator"></div>
+                    <button class="pkg-menu-item" onclick="event.stopPropagation(); printPackageSlip(${pkg.id})">Print Package Slip</button>
+                    <button class="pkg-menu-item" onclick="event.stopPropagation(); downloadPackageSlip(${pkg.id})">Download Package Slip</button>
+                    <div class="pkg-menu-separator"></div>
+                    <button class="pkg-menu-item" onclick="event.stopPropagation(); deleteShipment(${pkg.id})">Delete Shipment</button>
+                `;
+            } else if (status === 'DELIVERED') {
+                menuItems = `
+                    <button class="pkg-menu-item" onclick="event.stopPropagation(); printShipmentOrder(${pkg.id})">Print Shipment Order</button>
+                    <button class="pkg-menu-item" onclick="event.stopPropagation(); downloadShipmentOrder(${pkg.id})">Download Shipment Order</button>
+                    <div class="pkg-menu-separator"></div>
+                    <button class="pkg-menu-item" onclick="event.stopPropagation(); printPackageSlip(${pkg.id})">Print Package Slip</button>
+                    <button class="pkg-menu-item" onclick="event.stopPropagation(); downloadPackageSlip(${pkg.id})">Download Package Slip</button>
+                `;
+            } else {
+                // NOT SHIPPED
+                menuItems = `
+                    <button class="pkg-menu-item" onclick="event.stopPropagation(); shipManually(${pkg.id})">Ship Manually</button>
+                    <button class="pkg-menu-item" onclick="event.stopPropagation(); shipViaCarrier(${pkg.id})">Ship via Carrier</button>
+                    <div class="pkg-menu-separator"></div>
+                    <button class="pkg-menu-item" onclick="event.stopPropagation(); printPackageSlip(${pkg.id})">Print Package Slip</button>
+                    <button class="pkg-menu-item" onclick="event.stopPropagation(); downloadPackageSlip(${pkg.id})">Download Package Slip</button>
+                    <div class="pkg-menu-separator"></div>
+                    <button class="pkg-menu-item delete" onclick="event.stopPropagation(); deletePackageSlip(${pkg.id})">Delete Package Slip</button>
+                `;
+            }
+
+            return `
+                <div class="pkg-card" onclick="viewPackage(${pkg.id})">
+                    <div class="pkg-card-row1">
+                        <div class="pkg-card-left">
+                            <input type="checkbox" class="pkg-card-checkbox" onclick="event.stopPropagation()">
+                            <span class="pkg-card-customer">${pkg.customer_name || 'Unknown'}</span>
+                        </div>
+                        <span class="pkg-card-qty">${qty.toFixed(2)}</span>
+                    </div>
+                    <div class="pkg-card-row2">
+                        <a class="pkg-card-number" href="javascript:void(0)" onclick="event.stopPropagation(); viewPackage(${pkg.id})">${pkg.package_number || ''}</a>
+                        <div class="pkg-card-divider"></div>
+                        <span class="pkg-card-so">${pkg.sales_order_number || ''}</span>
+                    </div>
+                    <div class="pkg-card-row3">
+                        ${row3Left}
+                        <div class="pkg-card-menu-wrap">
+                            <button class="pkg-card-more" onclick="event.stopPropagation(); toggleCardMenu(event, ${pkg.id})" title="More">⋮</button>
+                            <div class="pkg-card-dropdown" id="cardMenu_${pkg.id}">
+                                ${menuItems}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function loadPackages() {
+            try {
+                const res = await fetch('/api/packages');
+                if (!res.ok) return;
+                allPackages = await res.json();
+
+                // Fetch items for each package to get totals
+                const packagesWithItems = [];
+                for (const pkg of allPackages) {
+                    try {
+                        const detailRes = await fetch(`/api/packages/${pkg.id}`);
+                        const detail = await detailRes.json();
+                        packagesWithItems.push(detail);
+                    } catch (e) {
+                        packagesWithItems.push(pkg);
+                    }
+                }
+
+                // Sort into columns and fetch shipment info for shipped/delivered
+                const notShipped = [];
+                const shipped = [];
+                const delivered = [];
+
+                for (const pkg of packagesWithItems) {
+                    const s = (pkg.status || 'NOT SHIPPED').toUpperCase();
+                    const qty = getTotalQty(pkg);
+                    let shipmentInfo = null;
+
+                    // Fetch shipment info for shipped and delivered packages
+                    if (s === 'SHIPPED' || s === 'DELIVERED') {
+                        try {
+                            const shipRes = await fetch('/api/shipments/by-package/' + pkg.id);
+                            if (shipRes.ok) {
+                                shipmentInfo = await shipRes.json();
+                            }
+                        } catch (e) { /* ignore */ }
+                    }
+
+                    if (s === 'SHIPPED') {
+                        shipped.push({ pkg, qty, shipmentInfo });
+                    } else if (s === 'DELIVERED') {
+                        delivered.push({ pkg, qty, shipmentInfo });
+                    } else {
+                        notShipped.push({ pkg, qty, shipmentInfo: null });
+                    }
+                }
+
+                // Render columns
+                renderColumn('colNotShipped', notShipped);
+                renderColumn('colShipped', shipped);
+                renderColumn('colDelivered', delivered);
+
+            } catch (err) {
+                console.error('Error loading packages:', err);
+            }
+        }
+
+        function renderColumn(containerId, items) {
+            const container = document.getElementById(containerId);
+            if (items.length === 0) {
+                container.innerHTML = '<div class="kanban-empty">No packages</div>';
+                return;
+            }
+            container.innerHTML = items.map(({ pkg, qty, shipmentInfo }) => buildCard(pkg, qty, shipmentInfo)).join('');
+        }
+
+        async function viewPackage(id) {
+            closeAllMenus();
+            try {
+                // Fetch package detail
+                const pkgRes = await fetch('/api/packages/' + id);
+                if (!pkgRes.ok) { alert('Package not found'); return; }
+                const pkg = await pkgRes.json();
+
+                // Fetch linked sales order for address info
+                let so = null;
+                if (pkg.sales_order_id) {
+                    try {
+                        const soRes = await fetch('/api/sales-orders/' + pkg.sales_order_id);
+                        if (soRes.ok) so = await soRes.json();
+                    } catch (e) { /* ignore */ }
+                }
+
+                // Set title
+                document.getElementById('pkgDetailTitle').textContent = pkg.package_number || '';
+
+                // Status for ribbon
+                const status = (pkg.status || 'NOT SHIPPED').toUpperCase();
+                let ribbonClass = 'not-shipped';
+                let ribbonText = 'Not Shipped';
+                if (status === 'SHIPPED') { ribbonClass = 'shipped'; ribbonText = 'Shipped'; }
+                else if (status === 'DELIVERED') { ribbonClass = 'delivered'; ribbonText = 'Delivered'; }
+
+                // Render left sidebar (filtered by same status)
+                renderDetailLeftList(id, status);
+
+                // Dates
+                const pkgDate = fmtDate(pkg.package_date);
+                const orderDate = so ? fmtDate(so.order_date) : pkgDate;
+
+                // Total qty
+                const totalQty = getTotalQty(pkg);
+
+                // Build address lines
+                const billStreet = so ? (so.billing_street || '') : '';
+                const billCity = so ? (so.billing_city || '') : '';
+                const billState = so ? (so.billing_state || '') : '';
+                const billZip = so ? (so.billing_zip || '') : '';
+                const billCountry = so ? (so.billing_country || '') : '';
+                const shipStreet = so ? (so.shipping_street || '') : '';
+                const shipCity = so ? (so.shipping_city || '') : '';
+                const shipState = so ? (so.shipping_state || '') : '';
+                const shipZip = so ? (so.shipping_zip || '') : '';
+                const shipCountry = so ? (so.shipping_country || '') : '';
+
+                function buildAddr(street, city, state, zip, country) {
+                    const lines = [];
+                    if (street) lines.push(street);
+                    if (city) lines.push(city);
+                    if (state) lines.push(state);
+                    if (zip) lines.push(zip);
+                    if (country) lines.push(country);
+                    return lines.map(l => `<div>${l}</div>`).join('');
+                }
+
+                // Items table rows
+                const itemRows = (pkg.items || []).map((item, idx) => `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td>${item.item_name || ''}</td>
+                        <td>${parseFloat(item.quantity_to_pack || 0).toFixed(2)}<span class="pkg-doc-item-unit">pcs</span></td>
+                    </tr>
+                `).join('');
+
+                // Render document card
+                document.getElementById('pkgDocArea').innerHTML = `
+                    <div class="pkg-doc-card">
+                        <div class="pkg-doc-ribbon ${ribbonClass}"><span>${ribbonText}</span></div>
+                        <div class="pkg-doc-inner">
+                            <div class="pkg-doc-company-row">
+                                <div>
+                                    <div class="pkg-doc-company-name">SOLO</div>
+                                    <div class="pkg-doc-company-detail">
+                                        Philippines<br>
+                                        ${so && so.salesperson_name ? so.salesperson_name : ''}
+                                    </div>
+                                </div>
+                                <div class="pkg-doc-type-label">
+                                    <h2>PACKAGE</h2>
+                                    <div class="pkg-num-label">Package# ${pkg.package_number || ''}</div>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label-small required">Date*</label>
-                                <input type="text" class="form-input" id="packageDate" placeholder="dd MMM yyyy">
+
+                            <div class="pkg-doc-details-row">
+                                <div class="pkg-doc-detail-cell">
+                                    <div class="pkg-doc-detail-label">Package#</div>
+                                    <div class="pkg-doc-detail-value">${pkg.package_number || ''}</div>
+                                </div>
+                                <div class="pkg-doc-detail-cell">
+                                    <div class="pkg-doc-detail-label">Order Date</div>
+                                    <div class="pkg-doc-detail-value">${orderDate}</div>
+                                </div>
+                                <div class="pkg-doc-detail-cell">
+                                    <div class="pkg-doc-detail-label">Package Date</div>
+                                    <div class="pkg-doc-detail-value">${pkgDate}</div>
+                                </div>
+                                <div class="pkg-doc-detail-cell">
+                                    <div class="pkg-doc-detail-label">Sales Order#</div>
+                                    <div class="pkg-doc-detail-value">${pkg.sales_order_number || ''}</div>
+                                </div>
+                                <div class="pkg-doc-detail-cell total-qty">
+                                    <div class="pkg-doc-detail-label">Total Qty</div>
+                                    <div class="pkg-doc-detail-value">${totalQty.toFixed(2)}</div>
+                                </div>
                             </div>
+
+                            <div class="pkg-doc-address-row">
+                                <div class="pkg-doc-address-block">
+                                    <div class="pkg-doc-address-title">Bill To</div>
+                                    <div class="pkg-doc-address-name">${pkg.customer_name || ''}</div>
+                                    <div class="pkg-doc-address-line">${buildAddr(billStreet, billCity, billState, billZip, billCountry)}</div>
+                                </div>
+                                <div class="pkg-doc-address-block">
+                                    <div class="pkg-doc-address-title">Ship To</div>
+                                    <div class="pkg-doc-address-line">${buildAddr(shipStreet, shipCity, shipState, shipZip, shipCountry)}</div>
+                                </div>
+                            </div>
+
+                            <table class="pkg-doc-items-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Item & Description</th>
+                                        <th>Qty</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${itemRows || '<tr><td colspan="3" style="text-align:center;color:#aaa;padding:20px">No items</td></tr>'}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
+                `;
 
-                    <!-- Info Message -->
-                    <div class="info-message">
-                        <span class="info-icon">ℹ</span>
-                        You can also select or scan the items to be included from the sales order.
-                        <a href="#" class="info-link">Select or Scan Items</a>
+                // Update associated SO count
+                document.getElementById('detailSOCount').textContent = pkg.sales_order_id ? '1' : '0';
+
+                // Show overlay
+                document.getElementById('pkgDetailOverlay').classList.add('open');
+            } catch (err) {
+                console.error('Error loading package detail:', err);
+                alert('Error loading package details.');
+            }
+        }
+
+        function closeDetailView() {
+            document.getElementById('pkgDetailOverlay').classList.remove('open');
+        }
+
+        function renderDetailLeftList(activeId, filterStatus) {
+            const container = document.getElementById('pkgDetailLeftList');
+            const titleEl = document.getElementById('pkgDetailLeftTitle');
+
+            // Update header title based on filter
+            if (filterStatus === 'SHIPPED') {
+                titleEl.innerHTML = 'Packages, Shipped <span class="arrow" style="font-size:10px;color:#888">▾</span>';
+            } else if (filterStatus === 'DELIVERED') {
+                titleEl.innerHTML = 'Packages, Delivered <span class="arrow" style="font-size:10px;color:#888">▾</span>';
+            } else {
+                titleEl.innerHTML = 'Packages, Not S... <span class="arrow" style="font-size:10px;color:#888">▾</span>';
+            }
+
+            // Filter packages by same status
+            const pkgs = allPackages.filter(p => {
+                const s = (p.status || 'NOT SHIPPED').toUpperCase();
+                return s === filterStatus;
+            });
+
+            if (!pkgs || pkgs.length === 0) {
+                container.innerHTML = '<div style="padding:20px;text-align:center;color:#aaa">No packages</div>';
+                return;
+            }
+            container.innerHTML = pkgs.map(p => {
+                const s = (p.status || 'NOT SHIPPED').toUpperCase();
+                let statusClass = 'not-shipped';
+                let statusText = 'NOT SHIPPED';
+                if (s === 'SHIPPED') { statusClass = 'shipped'; statusText = 'SHIPPED'; }
+                else if (s === 'DELIVERED') { statusClass = 'delivered'; statusText = 'DELIVERED'; }
+                const qty = getTotalQty(p);
+                const isActive = p.id === activeId ? 'active' : '';
+                const date = fmtDate(p.package_date);
+                return `
+                    <div class="pkg-detail-left-item ${isActive}" onclick="switchDetailPkg(${p.id})">
+                        <div class="pkg-detail-left-row1">
+                            <div class="pkg-detail-left-check">
+                                <input type="checkbox" onclick="event.stopPropagation()" style="width:14px;height:14px">
+                                <span class="pkg-detail-left-customer">${p.customer_name || 'Unknown'}</span>
+                            </div>
+                            <span class="pkg-detail-left-qty">${qty.toFixed(2)}</span>
+                        </div>
+                        <div class="pkg-detail-left-row2">
+                            <span class="pkg-num">${p.package_number || ''}</span> · ${date}
+                        </div>
+                        <div class="pkg-detail-left-row3">
+                            <span class="pkg-detail-left-status ${statusClass}">${statusText}</span>
+                            <span class="pkg-detail-left-so">${p.sales_order_number || ''}</span>
+                        </div>
                     </div>
+                `;
+            }).join('');
+        }
 
-                    <!-- Items Table -->
-                    <div class="items-table-section">
-                        <table class="items-table">
-                            <thead>
-                                <tr>
-                                    <th class="col-description">ITEMS & DESCRIPTION</th>
-                                    <th class="col-ordered">ORDERED</th>
-                                    <th class="col-packed">PACKED</th>
-                                    <th class="col-quantity">QUANTITY TO PACK</th>
-                                </tr>
-                            </thead>
-                            <tbody id="packageItemsBody">
-                                <!-- Items will be added here -->
-                            </tbody>
-                        </table>
-                    </div>
+        function switchDetailPkg(pkgId) {
+            viewPackage(pkgId);
+        }
 
-                    <!-- Internal Notes -->
-                    <div class="internal-notes-section">
-                        <label class="form-label-small">INTERNAL NOTES</label>
-                        <textarea class="form-textarea" id="internalNotes" rows="3" placeholder=""></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn-save" onclick="saveNewPackage()">Save</button>
-                    <button class="btn-cancel" onclick="closeNewPackageModal()">Cancel</button>
-                </div>
-            </div>
-        </div>
+        // ===== New Package Form Functions =====
+        let newPkgAllCustomers = [];
+        let newPkgAllSalesOrders = [];
+        let newPkgSelectedSOItems = [];
 
-        <style>
-            /* Modal Styles */
-            .modal-overlay {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0, 0, 0, 0.5);
-                z-index: 1000;
-                justify-content: center;
-                align-items: flex-start;
-                padding-top: 40px;
-                overflow-y: auto;
+        async function openNewPkgForm() {
+            closeAllMenus();
+            try {
+                // Fetch customers
+                const custRes = await fetch('/api/customers');
+                newPkgAllCustomers = custRes.ok ? await custRes.json() : [];
+
+                // Fetch sales orders (confirmed ones)
+                const soRes = await fetch('/api/sales-orders');
+                newPkgAllSalesOrders = soRes.ok ? await soRes.json() : [];
+
+                // Get next package number
+                const numRes = await fetch('/api/packages/next-number');
+                const numData = numRes.ok ? await numRes.json() : { package_number: 'PKG-00001' };
+
+                // Populate customer dropdown
+                const custSelect = document.getElementById('newPkgCustomer');
+                custSelect.innerHTML = '<option value="">Select Customer</option>';
+                newPkgAllCustomers.forEach(c => {
+                    custSelect.innerHTML += `<option value="${c.id}" data-name="${c.display_name || c.first_name || ''}">${c.display_name || c.first_name || 'Unknown'}</option>`;
+                });
+
+                // Populate sales order dropdown
+                const soSelect = document.getElementById('newPkgSalesOrder');
+                soSelect.innerHTML = '<option value="">Select Sales Order</option>';
+                newPkgAllSalesOrders.forEach(so => {
+                    soSelect.innerHTML += `<option value="${so.id}" data-number="${so.order_number}" data-customer="${so.customer_name || ''}">${so.order_number} - ${so.customer_name || ''}</option>`;
+                });
+
+                // Set package number
+                document.getElementById('newPkgSlipNum').value = numData.package_number;
+
+                // Set today's date
+                const today = new Date();
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                document.getElementById('newPkgDate').value = `${String(today.getDate()).padStart(2, '0')} ${months[today.getMonth()]} ${today.getFullYear()}`;
+
+                // Clear items and notes
+                document.getElementById('newPkgItemsBody').innerHTML = '';
+                document.getElementById('newPkgNotes').value = '';
+                newPkgSelectedSOItems = [];
+
+                // Show overlay
+                document.getElementById('newPkgOverlay').classList.add('open');
+            } catch (err) {
+                console.error('Error opening new package form:', err);
+                alert('Error opening form.');
+            }
+        }
+
+        function closeNewPkgForm() {
+            document.getElementById('newPkgOverlay').classList.remove('open');
+        }
+
+        function onNewPkgCustomerChange() {
+            const custSelect = document.getElementById('newPkgCustomer');
+            const soSelect = document.getElementById('newPkgSalesOrder');
+            const selectedCustId = custSelect.value;
+
+            // Filter SO dropdown by customer
+            soSelect.innerHTML = '<option value="">Select Sales Order</option>';
+            const filtered = selectedCustId
+                ? newPkgAllSalesOrders.filter(so => String(so.customer_id) === selectedCustId)
+                : newPkgAllSalesOrders;
+
+            filtered.forEach(so => {
+                soSelect.innerHTML += `<option value="${so.id}" data-number="${so.order_number}" data-customer="${so.customer_name || ''}">${so.order_number} - ${so.customer_name || ''}</option>`;
+            });
+
+            // Clear items
+            document.getElementById('newPkgItemsBody').innerHTML = '';
+            newPkgSelectedSOItems = [];
+        }
+
+        async function onNewPkgSOChange() {
+            const soSelect = document.getElementById('newPkgSalesOrder');
+            const soId = soSelect.value;
+
+            if (!soId) {
+                document.getElementById('newPkgItemsBody').innerHTML = '';
+                newPkgSelectedSOItems = [];
+                return;
             }
 
-            .modal-overlay.show {
-                display: flex;
+            // Also auto-select the customer if not already
+            const selectedOpt = soSelect.options[soSelect.selectedIndex];
+            const customerName = selectedOpt.getAttribute('data-customer') || '';
+            const custSelect = document.getElementById('newPkgCustomer');
+            // Try to match
+            for (let i = 0; i < custSelect.options.length; i++) {
+                if (custSelect.options[i].getAttribute('data-name') === customerName) {
+                    custSelect.selectedIndex = i;
+                    break;
+                }
             }
 
-            .modal-container {
-                background: white;
-                border-radius: 8px;
-                width: 90%;
-                max-width: 800px;
-                max-height: calc(100vh - 80px);
-                display: flex;
-                flex-direction: column;
-                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-            }
+            try {
+                // Fetch SO detail to get items
+                const res = await fetch('/api/sales-orders/' + soId);
+                if (!res.ok) return;
+                const so = await res.json();
+                newPkgSelectedSOItems = so.items || [];
 
-            .modal-header {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                padding: 16px 24px;
-                border-bottom: 1px solid #e9ecef;
-            }
-
-            .modal-title {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                font-size: 18px;
-                font-weight: 600;
-                color: #333;
-            }
-
-            .modal-icon {
-                font-size: 20px;
-            }
-
-            .modal-close {
-                background: none;
-                border: none;
-                font-size: 28px;
-                color: #999;
-                cursor: pointer;
-                line-height: 1;
-            }
-
-            .modal-close:hover {
-                color: #333;
-            }
-
-            .modal-body {
-                flex: 1;
-                overflow-y: auto;
-                padding: 24px;
-            }
-
-            .modal-footer {
-                display: flex;
-                gap: 12px;
-                padding: 16px 24px;
-                border-top: 1px solid #e9ecef;
-                background: #f9fafb;
-            }
-
-            /* Form Styles */
-            .form-section-top {
-                margin-bottom: 24px;
-            }
-
-            .form-row {
-                display: grid;
-                grid-template-columns: 120px 1fr;
-                align-items: center;
-                gap: 16px;
-                margin-bottom: 16px;
-            }
-
-            .form-label {
-                font-size: 13px;
-                color: #333;
-                font-weight: 500;
-            }
-
-            .form-label.required {
-                color: #dc2626;
-            }
-
-            .form-input-wrapper {
-                max-width: 350px;
-            }
-
-            .form-select {
-                width: 100%;
-                padding: 10px 12px;
-                border: 1px solid #e0e0e0;
-                border-radius: 6px;
-                font-size: 13px;
-                color: #666;
-                background: white;
-                cursor: pointer;
-            }
-
-            .form-select:focus {
-                outline: none;
-                border-color: #4285f4;
-            }
-
-            .form-section-middle {
-                background: #f9fafb;
-                padding: 20px;
-                margin: 0 -24px;
-                margin-bottom: 20px;
-            }
-
-            .form-row-inline {
-                display: flex;
-                gap: 40px;
-            }
-
-            .form-group {
-                display: flex;
-                flex-direction: column;
-                gap: 6px;
-            }
-
-            .form-label-small {
-                font-size: 11px;
-                color: #999;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-            }
-
-            .form-label-small.required {
-                color: #f87171;
-            }
-
-            .input-with-icon {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-            }
-
-            .form-input {
-                padding: 10px 12px;
-                border: 1px solid #e0e0e0;
-                border-radius: 6px;
-                font-size: 13px;
-                min-width: 200px;
-                background: white;
-            }
-
-            .form-input:focus {
-                outline: none;
-                border-color: #4285f4;
-            }
-
-            .input-icon {
-                color: #999;
-                font-size: 16px;
-            }
-
-            /* Info Message */
-            .info-message {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                color: #666;
-                font-size: 13px;
-                margin-bottom: 20px;
-            }
-
-            .info-icon {
-                color: #60a5fa;
-            }
-
-            .info-link {
-                color: #f87171;
-                text-decoration: none;
-            }
-
-            .info-link:hover {
-                text-decoration: underline;
-            }
-
-            /* Items Table */
-            .items-table-section {
-                margin-bottom: 24px;
-            }
-
-            .items-table {
-                width: 100%;
-                border-collapse: collapse;
-            }
-
-            .items-table th {
-                text-align: left;
-                padding: 12px 16px;
-                font-size: 11px;
-                font-weight: 600;
-                color: #999;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-                border-bottom: 2px solid #e9ecef;
-            }
-
-            .items-table .col-description {
-                width: 40%;
-            }
-
-            .items-table .col-ordered,
-            .items-table .col-packed,
-            .items-table .col-quantity {
-                width: 20%;
-                text-align: center;
-            }
-
-            .items-table td {
-                padding: 12px 16px;
-                border-bottom: 1px solid #f0f0f0;
-            }
-
-            /* Internal Notes */
-            .internal-notes-section {
-                margin-bottom: 16px;
-            }
-
-            .form-textarea {
-                width: 50%;
-                padding: 12px;
-                border: 1px solid #e0e0e0;
-                border-radius: 6px;
-                font-size: 13px;
-                resize: vertical;
-                font-family: inherit;
-            }
-
-            .form-textarea:focus {
-                outline: none;
-                border-color: #4285f4;
-            }
-
-            /* Buttons */
-            .btn-save {
-                padding: 10px 20px;
-                background: #4285f4;
-                color: white;
-                border: none;
-                border-radius: 6px;
-                font-size: 13px;
-                font-weight: 500;
-                cursor: pointer;
-            }
-
-            .btn-save:hover {
-                background: #3367d6;
-            }
-
-            .btn-cancel {
-                padding: 10px 20px;
-                background: #333;
-                color: white;
-                border: none;
-                border-radius: 6px;
-                font-size: 13px;
-                font-weight: 500;
-                cursor: pointer;
-            }
-
-            .btn-cancel:hover {
-                background: #444;
-            }
-        </style>
-
-        <!-- Layout Script -->
-        <script src="/js/layout.js"></script>
-        <script>
-            // Open New Package Page
-            function createNewPackage() {
-                window.location.href = '/new-package.html';
-            }
-
-            // Close New Package Modal
-            function closeNewPackageModal() {
-                document.getElementById('newPackageModal').classList.remove('show');
-            }
-
-            // Save New Package
-            function saveNewPackage() {
-                const customerName = document.getElementById('customerName').value;
-                const salesOrder = document.getElementById('salesOrder').value;
-                const packageSlip = document.getElementById('packageSlip').value;
-                const packageDate = document.getElementById('packageDate').value;
-                const internalNotes = document.getElementById('internalNotes').value;
-
-                if (!salesOrder) {
-                    alert('Please select a Sales Order');
+                // Render items table
+                const tbody = document.getElementById('newPkgItemsBody');
+                if (newPkgSelectedSOItems.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#aaa;padding:16px">No items in this order</td></tr>';
                     return;
                 }
 
-                if (!packageSlip) {
-                    alert('Please enter Package Slip#');
+                tbody.innerHTML = newPkgSelectedSOItems.map((item, idx) => {
+                    const ordered = parseFloat(item.quantity || 0).toFixed(2);
+                    return `
+                        <tr>
+                            <td>${item.item_name || item.name || ''}</td>
+                            <td>${ordered}</td>
+                            <td>0.00</td>
+                            <td><input type="number" class="qty-input" id="newPkgQty_${idx}" value="${ordered}" step="0.01" min="0"></td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error('Error loading SO items:', err);
+            }
+        }
+
+        async function saveNewPackage() {
+            const soSelect = document.getElementById('newPkgSalesOrder');
+            const soId = soSelect.value;
+            if (!soId) {
+                alert('Please select a Sales Order.');
+                return;
+            }
+
+            const selectedOpt = soSelect.options[soSelect.selectedIndex];
+            const soNumber = selectedOpt.getAttribute('data-number') || '';
+            const customerName = selectedOpt.getAttribute('data-customer') || '';
+            const pkgNumber = document.getElementById('newPkgSlipNum').value;
+            const dateStr = document.getElementById('newPkgDate').value;
+            const notes = document.getElementById('newPkgNotes').value;
+
+            // Build items
+            const items = newPkgSelectedSOItems.map((item, idx) => {
+                const qtyInput = document.getElementById('newPkgQty_' + idx);
+                const qtyToPack = qtyInput ? parseFloat(qtyInput.value) || 0 : 0;
+                return {
+                    item_name: item.item_name || item.name || '',
+                    item_id: item.item_id || null,
+                    ordered_quantity: parseFloat(item.quantity || 0),
+                    packed_quantity: 0,
+                    quantity_to_pack: qtyToPack
+                };
+            });
+
+            // Parse date
+            let packageDate = new Date();
+            if (dateStr) {
+                const parts = dateStr.split(' ');
+                if (parts.length === 3) {
+                    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    const mIdx = months.indexOf(parts[1]);
+                    if (mIdx !== -1) {
+                        packageDate = new Date(parseInt(parts[2]), mIdx, parseInt(parts[0]));
+                    }
+                }
+            }
+
+            try {
+                const res = await fetch('/api/packages', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        package_number: pkgNumber,
+                        sales_order_id: parseInt(soId),
+                        sales_order_number: soNumber,
+                        customer_name: customerName,
+                        package_date: packageDate.toISOString(),
+                        internal_notes: notes,
+                        items: items
+                    })
+                });
+
+                if (res.ok) {
+                    closeNewPkgForm();
+                    loadPackages();
+                } else {
+                    const errData = await res.json();
+                    alert('Failed to save package: ' + (errData.error || 'Unknown error'));
+                }
+            } catch (err) {
+                console.error('Error saving package:', err);
+                alert('Error saving package.');
+            }
+        }
+
+        // ===== Card Menu Functions =====
+        function toggleCardMenu(e, pkgId) {
+            // Close all other menus first
+            document.querySelectorAll('.pkg-card-dropdown.open').forEach(menu => {
+                menu.classList.remove('open');
+            });
+            const menu = document.getElementById('cardMenu_' + pkgId);
+            if (menu) {
+                // Position using the button's location
+                const btn = e.currentTarget;
+                const rect = btn.getBoundingClientRect();
+                menu.style.top = (rect.bottom + 4) + 'px';
+                menu.style.left = (rect.right - 220) + 'px';
+
+                // Make sure it doesn't go off-screen left
+                if (rect.right - 220 < 8) {
+                    menu.style.left = '8px';
+                }
+
+                menu.classList.toggle('open');
+            }
+        }
+
+        // Close menus when clicking outside
+        document.addEventListener('click', function () {
+            document.querySelectorAll('.pkg-card-dropdown.open').forEach(menu => {
+                menu.classList.remove('open');
+            });
+        });
+
+        let currentShipPkgId = null;
+        let currentShipPkg = null;
+
+        async function shipManually(pkgId) {
+            closeAllMenus();
+            currentShipPkgId = pkgId;
+
+            // Find package info
+            const pkg = allPackages.find(p => p.id === pkgId);
+
+            try {
+                // Fetch package detail
+                const pkgRes = await fetch('/api/packages/' + pkgId);
+                const pkgDetail = await pkgRes.json();
+                currentShipPkg = pkgDetail;
+
+                // Fetch next shipment number
+                const numRes = await fetch('/api/shipments/next-number');
+                const numData = await numRes.json();
+
+                // Fetch carriers
+                const carrierRes = await fetch('/api/delivery-methods');
+                const carriers = await carrierRes.json();
+
+                // Set form values
+                document.getElementById('shipPkgTagText').textContent = pkgDetail.package_number || '';
+                document.getElementById('shipOrderNum').value = numData.shipment_order_number || 'SHP-00001';
+                document.getElementById('shipDate').value = new Date().toISOString().split('T')[0];
+                document.getElementById('shipTrackingNum').value = '';
+                document.getElementById('shipTrackingUrl').value = '';
+                document.getElementById('shipCharges').value = '';
+                document.getElementById('shipNotes').value = '';
+                document.getElementById('shipDelivered').checked = false;
+                document.getElementById('shipNotify').checked = false;
+
+                // Populate carrier dropdown
+                const carrierSelect = document.getElementById('shipCarrier');
+                carrierSelect.innerHTML = '<option value="">Select carrier</option>';
+                carriers.forEach(c => {
+                    carrierSelect.innerHTML += '<option value="' + c.name + '">' + c.name + '</option>';
+                });
+
+                // Populate left sidebar with Not Shipped packages
+                renderShipLeftList(pkgId);
+
+                // Show overlay
+                document.getElementById('shipOverlay').classList.add('open');
+            } catch (err) {
+                console.error('Error opening ship form:', err);
+                alert('Error loading shipping form.');
+            }
+        }
+
+        function renderShipLeftList(activePkgId) {
+            const container = document.getElementById('shipLeftList');
+            // Filter not-shipped packages
+            const notShippedPkgs = allPackages.filter(p => {
+                const s = (p.status || 'NOT SHIPPED').toUpperCase();
+                return s === 'NOT SHIPPED';
+            });
+
+            if (notShippedPkgs.length === 0) {
+                container.innerHTML = '<div style="padding:20px;text-align:center;color:#bbb">No packages</div>';
+                return;
+            }
+
+            container.innerHTML = notShippedPkgs.map(p => {
+                const active = p.id === activePkgId ? 'active' : '';
+                const date = fmtDate(p.package_date);
+                return `
+                    <div class="ship-pkg-card ${active}" onclick="switchShipPkg(${p.id})">
+                        <div class="ship-pkg-row1">
+                            <div class="left">
+                                <input type="checkbox" onclick="event.stopPropagation()">
+                                <span class="ship-pkg-customer">${p.customer_name || 'Unknown'}</span>
+                            </div>
+                            <span class="ship-pkg-qty">5.00</span>
+                        </div>
+                        <div class="ship-pkg-row2">
+                            <span class="pkg-num">${p.package_number || ''}</span> · ${date}
+                        </div>
+                        <div class="ship-pkg-row3">
+                            <span class="ship-pkg-status">NOT SHIPPED</span>
+                            <span class="ship-pkg-so">${p.sales_order_number || ''}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function switchShipPkg(pkgId) {
+            shipManually(pkgId);
+        }
+
+        function clearShipPkg() {
+            currentShipPkgId = null;
+            currentShipPkg = null;
+            document.getElementById('shipPkgTagText').textContent = '';
+        }
+
+        function closeShipForm() {
+            document.getElementById('shipOverlay').classList.remove('open');
+            currentShipPkgId = null;
+            currentShipPkg = null;
+        }
+
+        async function saveShipment() {
+            if (!currentShipPkgId) {
+                alert('Please select a package.');
+                return;
+            }
+
+            const carrier = document.getElementById('shipCarrier').value;
+            if (!carrier) {
+                alert('Please select a carrier.');
+                return;
+            }
+
+            const shipDate = document.getElementById('shipDate').value;
+            if (!shipDate) {
+                alert('Please select a ship date.');
+                return;
+            }
+
+            const data = {
+                package_id: currentShipPkgId,
+                sales_order_id: currentShipPkg ? currentShipPkg.sales_order_id : null,
+                shipment_order_number: document.getElementById('shipOrderNum').value,
+                ship_date: shipDate,
+                carrier: carrier,
+                tracking_number: document.getElementById('shipTrackingNum').value,
+                tracking_url: document.getElementById('shipTrackingUrl').value,
+                shipping_charges: document.getElementById('shipCharges').value || 0,
+                notes: document.getElementById('shipNotes').value,
+                already_delivered: document.getElementById('shipDelivered').checked
+            };
+
+            try {
+                const res = await fetch('/api/shipments', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (!res.ok) {
+                    const err = await res.json();
+                    alert('Error: ' + (err.error || 'Failed to save shipment'));
                     return;
                 }
 
-                // Here you would save to the database
-                    customerName,
-                    salesOrder,
-                    packageSlip,
-                    packageDate,
-                    internalNotes
-                });
-
-                alert('Package saved successfully!');
-                closeNewPackageModal();
+                alert('Shipment saved successfully!');
+                closeShipForm();
+                loadPackages();
+            } catch (err) {
+                console.error('Error saving shipment:', err);
+                alert('Failed to save shipment.');
             }
+        }
 
-            // Close modal when clicking outside
-            document.getElementById('newPackageModal').addEventListener('click', function (e) {
-                if (e.target === this) {
-                    closeNewPackageModal();
+        function shipViaCarrier(pkgId) {
+            closeAllMenus();
+            alert('Ship via Carrier: Package #' + pkgId + ' (coming soon)');
+        }
+
+        async function markAsDelivered(pkgId) {
+            closeAllMenus();
+            try {
+                const res = await fetch('/api/shipments/mark-delivered/' + pkgId, { method: 'PATCH' });
+                if (res.ok) {
+                    loadPackages();
+                } else {
+                    alert('Failed to mark as delivered.');
                 }
-            });
-
-            // View toggle
-            document.querySelectorAll('.view-btn').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
-
-            // Check for new=true parameter
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('new') === 'true') {
-                createNewPackage();
+            } catch (err) {
+                console.error('Error marking as delivered:', err);
+                alert('Failed to mark as delivered.');
             }
-        </script>
+        }
+
+        async function deleteShipment(pkgId) {
+            closeAllMenus();
+            if (!confirm('Are you sure you want to delete this shipment? The package will return to Not Shipped.')) return;
+            try {
+                const res = await fetch('/api/shipments/by-package/' + pkgId, { method: 'DELETE' });
+                if (res.ok) {
+                    loadPackages();
+                } else {
+                    alert('Failed to delete shipment.');
+                }
+            } catch (err) {
+                console.error('Error deleting shipment:', err);
+                alert('Failed to delete shipment.');
+            }
+        }
+
+        function printShipmentOrder(pkgId) {
+            closeAllMenus();
+            alert('Print Shipment Order: Package #' + pkgId + ' (coming soon)');
+        }
+
+        function downloadShipmentOrder(pkgId) {
+            closeAllMenus();
+            alert('Download Shipment Order: Package #' + pkgId + ' (coming soon)');
+        }
+
+        function printPackageSlip(pkgId) {
+            closeAllMenus();
+            alert('Print Package Slip: Package #' + pkgId + ' (coming soon)');
+        }
+
+        function downloadPackageSlip(pkgId) {
+            closeAllMenus();
+            alert('Download Package Slip: Package #' + pkgId + ' (coming soon)');
+        }
+
+        async function deletePackageSlip(pkgId) {
+            closeAllMenus();
+            if (!confirm('Are you sure you want to delete this package?')) return;
+            try {
+                const res = await fetch('/api/packages/' + pkgId, { method: 'DELETE' });
+                if (res.ok) {
+                    loadPackages();
+                } else {
+                    alert('Failed to delete package.');
+                }
+            } catch (err) {
+                console.error('Error deleting package:', err);
+                alert('Failed to delete package.');
+            }
+        }
+
+        function closeAllMenus() {
+            document.querySelectorAll('.pkg-card-dropdown.open').forEach(menu => {
+                menu.classList.remove('open');
+            });
+        }
+    </script>
 </body>
 
 </html>

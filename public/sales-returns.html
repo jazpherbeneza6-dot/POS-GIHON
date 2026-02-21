@@ -7,6 +7,8 @@
     <title>Sales Returns - Inventory Management</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/global-search.css">
+    <link rel="stylesheet" href="/css/pagination.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
         rel="stylesheet">
@@ -37,7 +39,88 @@
             background: white;
         }
 
-        /* Empty State */
+        /* ===== LIST VIEW ===== */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .page-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .returns-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .returns-table th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e9ecef;
+            background: #f9fafb;
+            white-space: nowrap;
+        }
+
+        .returns-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .returns-table tr:hover td {
+            background: #f8f9ff;
+        }
+
+        .rma-link {
+            color: #4285f4;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .rma-link:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== STATUS BADGES ===== */
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-badge.draft {
+            background: #f0f0f0;
+            color: #555;
+        }
+
+        .status-badge.approved {
+            background: #16a34a;
+            color: #fff;
+        }
+
+        .status-badge.closed {
+            background: #dc2626;
+            color: #fff;
+        }
+
+        /* ===== EMPTY STATE ===== */
         .empty-state {
             display: flex;
             flex-direction: column;
@@ -79,6 +162,524 @@
         .btn-sales-orders:hover {
             background: #3367d6;
         }
+
+        /* ===== DETAIL VIEW (SPLIT LAYOUT) ===== */
+        .detail-view {
+            display: none;
+            height: 100vh;
+        }
+
+        .detail-view.active {
+            display: flex;
+        }
+
+        /* Left sidebar */
+        .sr-left-panel {
+            width: 260px;
+            border-right: 1px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            background: white;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sr-left-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .sr-left-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .sr-left-title:hover {
+            color: #4285f4;
+        }
+
+        .sr-left-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sr-left-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sr-left-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .sr-left-btn.primary {
+            background: #4285f4;
+            color: white;
+        }
+
+        .sr-left-btn.primary:hover {
+            background: #3367d6;
+        }
+
+        .sr-left-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .sr-left-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .sr-left-item:hover {
+            background: #f8f9ff;
+        }
+
+        .sr-left-item.active {
+            background: #e8f0fe;
+            border-left: 3px solid #4285f4;
+        }
+
+        .sr-left-item-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .sr-left-item-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .sr-left-item-amount {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .sr-left-item-bottom {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: #888;
+        }
+
+        .sr-left-item-status {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .sr-left-item-status.approved {
+            color: #16a34a;
+        }
+
+        .sr-left-item-status.draft {
+            color: #888;
+        }
+
+        .sr-left-item-status.closed {
+            color: #dc2626;
+        }
+
+        /* Right panel */
+        .sr-right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: #f9fafb;
+        }
+
+        .sr-right-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 24px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            flex-shrink: 0;
+        }
+
+        .sr-right-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sr-right-rma {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .sr-right-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sr-right-header-actions button {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sr-right-header-actions button:hover {
+            background: #f0f0f0;
+        }
+
+        /* Action bar */
+        .sr-action-bar {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 24px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            flex-shrink: 0;
+        }
+
+        .sr-action-btn {
+            padding: 6px 12px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 12px;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        .sr-action-btn:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .sr-action-separator {
+            width: 1px;
+            height: 20px;
+            background: #e0e0e0;
+            margin: 0 4px;
+        }
+
+        /* Tabs */
+        .sr-tabs {
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            flex-shrink: 0;
+        }
+
+        .sr-tab {
+            padding: 10px 16px;
+            font-size: 13px;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .sr-tab:hover {
+            color: #333;
+        }
+
+        .sr-tab.active {
+            color: #4285f4;
+            border-bottom-color: #4285f4;
+            font-weight: 500;
+        }
+
+        .sr-tab-count {
+            display: inline-block;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 5px;
+            border-radius: 9px;
+            background: #4285f4;
+            color: white;
+            font-size: 10px;
+            font-weight: 600;
+            text-align: center;
+            line-height: 18px;
+            margin-left: 4px;
+        }
+
+        /* PDF toggle */
+        .sr-pdf-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+            padding: 8px 24px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .sr-pdf-toggle input[type="checkbox"] {
+            width: 36px;
+            height: 18px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #ccc;
+            border-radius: 9px;
+            position: relative;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .sr-pdf-toggle input[type="checkbox"]::before {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: white;
+            top: 2px;
+            left: 2px;
+            transition: 0.2s;
+        }
+
+        .sr-pdf-toggle input[type="checkbox"]:checked {
+            background: #4285f4;
+        }
+
+        .sr-pdf-toggle input[type="checkbox"]:checked::before {
+            left: 20px;
+        }
+
+        /* Detail scroll area */
+        .sr-detail-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        /* Document card */
+        .sr-document-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 40px 48px;
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+
+        .sr-doc-top {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .sr-doc-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #333;
+            margin: 0 0 4px 0;
+        }
+
+        .sr-doc-subtitle {
+            font-size: 13px;
+            color: #666;
+            margin: 0;
+        }
+
+        .sr-doc-subtitle strong {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .sr-bill-to-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .sr-bill-to-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #4285f4;
+        }
+
+        /* Status section */
+        .sr-status-section {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 24px;
+            padding: 16px 0;
+            border-left: 3px solid #ffc107;
+            padding-left: 16px;
+        }
+
+        .sr-status-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .sr-status-label {
+            font-size: 13px;
+            color: #666;
+            min-width: 100px;
+        }
+
+        .sr-status-value {
+            font-size: 13px;
+        }
+
+        .sr-receive-status {
+            color: #16a34a;
+            font-weight: 500;
+        }
+
+        /* Date section */
+        .sr-date-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 30px;
+            padding-top: 16px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .sr-date-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            min-width: 80px;
+        }
+
+        .sr-date-value {
+            font-size: 13px;
+            color: #333;
+        }
+
+        /* Items table in detail */
+        .sr-doc-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .sr-doc-table th {
+            text-align: left;
+            font-size: 11px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 10px 12px;
+            border-bottom: 2px solid #e9ecef;
+            background: #f9fafb;
+        }
+
+        .sr-doc-table td {
+            padding: 14px 12px;
+            font-size: 13px;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: top;
+        }
+
+        .sr-doc-table th:first-child {
+            width: 40px;
+            text-align: center;
+        }
+
+        .sr-doc-table td:first-child {
+            text-align: center;
+            color: #888;
+        }
+
+        .sr-doc-table th:nth-child(3),
+        .sr-doc-table td:nth-child(3) {
+            width: 180px;
+        }
+
+        .sr-doc-table th:nth-child(4),
+        .sr-doc-table td:nth-child(4),
+        .sr-doc-table th:nth-child(5),
+        .sr-doc-table td:nth-child(5) {
+            text-align: right;
+            width: 100px;
+        }
+
+        .sr-qty-returned {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .sr-qty-received {
+            color: #888;
+            font-size: 12px;
+            margin-top: 2px;
+        }
+
+        .sr-item-img {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #ccc;
+            font-size: 16px;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        /* Footer */
+        .sr-left-footer {
+            padding: 10px 16px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #888;
+            flex-shrink: 0;
+        }
     </style>
 </head>
 
@@ -88,23 +689,368 @@
 
     <div class="main-layout">
         <div class="content" id="content">
-            <!-- Empty State -->
-            <div class="empty-state" id="emptyState">
-                <h2 class="empty-state-title">Sales Returns</h2>
-                <p class="empty-state-subtitle">Process your product returns in few simple steps and get your inventory
-                    automatically sorted out.<br>Start creating sales returns from sales orders</p>
-                <button class="btn-sales-orders" onclick="goToSalesOrders()">GO TO SALES ORDERS</button>
+
+            <!-- LIST VIEW -->
+            <div id="listView">
+                <div class="page-header" id="pageHeader" style="display:none;">
+                    <span class="page-title">All Sales Returns</span>
+                    <div class="global-search-container">
+                        <span class="global-search-icon">🔍</span>
+                        <input type="text" class="global-search-input" id="retSearchInput"
+                            placeholder="Search returns..." oninput="searchReturns()">
+                    </div>
+                </div>
+
+                <table class="returns-table" id="returnsTable" style="display:none;">
+                    <thead>
+                        <tr>
+                            <th>DATE</th>
+                            <th>RMA#</th>
+                            <th>SALES ORDER#</th>
+                            <th>CUSTOMER NAME</th>
+                            <th>STATUS</th>
+                            <th>WAREHOUSE</th>
+                        </tr>
+                    </thead>
+                    <tbody id="returnsBody">
+                    </tbody>
+                </table>
+                <div id="retPaginationContainer"></div>
+
+                <div class="empty-state" id="emptyState">
+                    <h2 class="empty-state-title">Sales Returns</h2>
+                    <p class="empty-state-subtitle">Process your product returns in few simple steps and get your
+                        inventory automatically sorted out.<br>Start creating sales returns from sales orders</p>
+                    <button class="btn-sales-orders" onclick="goToSalesOrders()">GO TO SALES ORDERS</button>
+                </div>
+            </div>
+
+            <!-- DETAIL VIEW -->
+            <div class="detail-view" id="detailView">
+                <!-- Left panel -->
+                <div class="sr-left-panel">
+                    <div class="sr-left-header">
+                        <span class="sr-left-title" onclick="backToList()">All Sales Returns ▾</span>
+                        <div class="sr-left-actions">
+                            <button class="sr-left-btn primary">+</button>
+                            <button class="sr-left-btn">⋯</button>
+                        </div>
+                    </div>
+                    <div class="sr-left-list" id="srLeftList">
+                        <!-- Populated by JS -->
+                    </div>
+                    <div class="sr-left-footer">
+                        <span>Total Count: <a href="#" style="color:#4285f4;text-decoration:none;">View</a></span>
+                    </div>
+                </div>
+                <!-- Right panel -->
+                <div class="sr-right-panel" id="srRightPanel">
+                    <!-- Populated by JS -->
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Layout Script -->
+    <script src="/js/pagination.js"></script>
     <script src="/js/layout.js"></script>
     <script>
-        // Go to sales orders
+        let allReturns = [];
+        let selectedReturnId = null;
+        let currentDetail = null;
+
         function goToSalesOrders() {
             window.location.href = '/sales-orders.html';
         }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return 'N/A';
+            const d = new Date(dateStr);
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            return `${String(d.getDate()).padStart(2, '0')} ${months[d.getMonth()]} ${d.getFullYear()}`;
+        }
+
+        function formatCurrency(val) {
+            const num = parseFloat(val || 0);
+            return 'PHP' + num.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function searchReturns() {
+            const query = (document.getElementById('retSearchInput').value || '').toLowerCase();
+            if (!query) { loadReturns(); return; }
+            const filtered = allReturns.filter(r => {
+                return (r.rma_number || '').toLowerCase().includes(query) ||
+                    (r.customer_name || '').toLowerCase().includes(query) ||
+                    (r.sales_order_number || '').toLowerCase().includes(query) ||
+                    (r.status || '').toLowerCase().includes(query);
+            });
+            if (filtered.length === 0) {
+                document.getElementById('returnsTable').style.display = 'none';
+                document.getElementById('retPaginationContainer').innerHTML = '';
+                return;
+            }
+            document.getElementById('returnsTable').style.display = 'table';
+            function renderPage(pageData) {
+                document.getElementById('returnsBody').innerHTML = pageData.map(ret => `
+                    <tr onclick="viewReturn(${ret.id})">
+                        <td>${formatDate(ret.return_date)}</td>
+                        <td><a class="rma-link" href="#" onclick="event.preventDefault();viewReturn(${ret.id})">${ret.rma_number}</a></td>
+                        <td>${ret.sales_order_number || 'N/A'}</td>
+                        <td>${ret.customer_name || 'N/A'}</td>
+                        <td><span class="status-badge ${(ret.status || '').toLowerCase()}">${ret.status || 'DRAFT'}</span></td>
+                        <td>${ret.warehouse_location || 'Head Office'}</td>
+                    </tr>
+                `).join('');
+            }
+            window.retPager = Pagination.create({
+                data: filtered, perPage: 14, containerId: 'retPaginationContainer',
+                onPageChange: function (pageData) { renderPage(pageData); }
+            });
+        }
+
+        async function loadReturns() {
+            try {
+                const res = await fetch('/api/sales-returns');
+                if (!res.ok) return;
+                allReturns = await res.json();
+
+                if (allReturns.length === 0) {
+                    document.getElementById('emptyState').style.display = 'flex';
+                    document.getElementById('returnsTable').style.display = 'none';
+                    document.getElementById('pageHeader').style.display = 'none';
+                    document.getElementById('retPaginationContainer').innerHTML = '';
+                    return;
+                }
+
+                document.getElementById('emptyState').style.display = 'none';
+                document.getElementById('returnsTable').style.display = 'table';
+                document.getElementById('pageHeader').style.display = 'flex';
+
+                function renderRetPage(pageData) {
+                    const tbody = document.getElementById('returnsBody');
+                    tbody.innerHTML = pageData.map(ret => `
+                        <tr onclick="viewReturn(${ret.id})">
+                            <td>${formatDate(ret.return_date)}</td>
+                            <td><a class="rma-link" href="#" onclick="event.preventDefault();viewReturn(${ret.id})">${ret.rma_number}</a></td>
+                            <td>${ret.sales_order_number || 'N/A'}</td>
+                            <td>${ret.customer_name || 'N/A'}</td>
+                            <td><span class="status-badge ${(ret.status || '').toLowerCase()}">${ret.status || 'DRAFT'}</span></td>
+                            <td>${ret.warehouse_location || 'Head Office'}</td>
+                        </tr>
+                    `).join('');
+                }
+
+                if (!window.retPager) {
+                    window.retPager = Pagination.create({
+                        data: allReturns,
+                        perPage: 14,
+                        containerId: 'retPaginationContainer',
+                        onPageChange: function (pageData) { renderRetPage(pageData); }
+                    });
+                } else {
+                    window.retPager.updateData(allReturns);
+                }
+            } catch (err) {
+                console.error('Error loading sales returns:', err);
+            }
+        }
+
+        async function viewReturn(returnId) {
+            selectedReturnId = returnId;
+
+            // Switch to detail view
+            document.getElementById('listView').style.display = 'none';
+            document.getElementById('detailView').classList.add('active');
+
+            // Fill left sidebar
+            renderLeftList();
+
+            // Load and render detail
+            try {
+                const res = await fetch(`/api/sales-returns/${returnId}`);
+                if (!res.ok) return;
+                const ret = await res.json();
+                currentDetail = ret;
+                renderDetail(ret);
+            } catch (err) {
+                console.error('Error loading return detail:', err);
+            }
+        }
+
+        function renderLeftList() {
+            const list = document.getElementById('srLeftList');
+            list.innerHTML = allReturns.map(ret => {
+                const isActive = ret.id === selectedReturnId;
+                const statusCls = (ret.status || 'draft').toLowerCase();
+                // Calculate total qty from return items (we'll use a simple approach)
+                const totalQty = parseFloat(ret.total_return_qty || 0);
+                return `
+                    <div class="sr-left-item ${isActive ? 'active' : ''}" onclick="viewReturn(${ret.id})">
+                        <div class="sr-left-item-top">
+                            <span class="sr-left-item-name">${ret.customer_name || 'N/A'}</span>
+                            <span class="sr-left-item-amount">${totalQty > 0 ? totalQty.toFixed(2) : ''}</span>
+                        </div>
+                        <div class="sr-left-item-bottom">
+                            <span>${ret.rma_number}</span>
+                            <span>·</span>
+                            <span>${formatDate(ret.return_date)}</span>
+                            <span>·</span>
+                            <span>${ret.sales_order_number || ''}</span>
+                        </div>
+                        <div class="sr-left-item-status ${statusCls}">${(ret.status || 'DRAFT').toUpperCase()}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderDetail(ret) {
+            const panel = document.getElementById('srRightPanel');
+            const items = ret.items || [];
+            const status = (ret.status || 'DRAFT').toUpperCase();
+            const statusCls = status.toLowerCase();
+
+            // Build items rows
+            const itemRows = items.map((item, idx) => {
+                const returnQty = parseFloat(item.return_quantity || 0);
+                const rate = parseFloat(item.rate || 0);
+                const amount = rate * returnQty;
+                return `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td>
+                            <span class="sr-item-img">🖼</span>
+                            ${item.item_name}
+                        </td>
+                        <td>
+                            <div class="sr-qty-returned">${returnQty} g  Returned</div>
+                            <div class="sr-qty-received">${returnQty} g  Received</div>
+                        </td>
+                        <td style="text-align:right;">${formatCurrency(rate)}</td>
+                        <td style="text-align:right;">${formatCurrency(amount)}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            const receiveCount = status === 'APPROVED' ? 1 : 0;
+            const receiveStatus = status === 'APPROVED' ? '<span class="sr-receive-status">Received</span>' : '<span style="color:#888;">Pending</span>';
+
+            panel.innerHTML = `
+                <div class="sr-right-header">
+                    <div class="sr-right-header-left">
+                        <span class="sr-right-rma">${ret.rma_number}</span>
+                        <span class="status-badge ${statusCls}">${status}</span>
+                    </div>
+                    <div class="sr-right-header-actions">
+                        <button title="Comments">💬</button>
+                        <button title="Close" style="font-size:20px;" onclick="backToList()">✕</button>
+                    </div>
+                </div>
+
+                <div class="sr-action-bar">
+                    <button class="sr-action-btn">✏️ Edit</button>
+                    <button class="sr-action-btn" onclick="createCreditNote()">📋 Create Credit Note</button>
+                    <button class="sr-action-btn">📄 PDF/Print ▾</button>
+                    <div class="sr-action-separator"></div>
+                    <button class="sr-action-btn">⋯</button>
+                </div>
+
+                <div class="sr-tabs">
+                    <div class="sr-tab active">Receives <span class="sr-tab-count">${receiveCount}</span></div>
+                    <div class="sr-tab">Sales Orders <span class="sr-tab-count">1</span></div>
+                    <div style="flex:1;"></div>
+                    <div class="sr-tab" style="margin-left:auto; display:flex; align-items:center; gap:4px; border-bottom:none; cursor:default;font-size:12px;color:#666;">
+                        ▶
+                    </div>
+                </div>
+
+                <div style="display:flex;align-items:center;justify-content:flex-end;padding:8px 24px;background:white;">
+                    <div class="sr-pdf-toggle">
+                        <span>Show PDF View</span>
+                        <input type="checkbox">
+                    </div>
+                </div>
+
+                <div class="sr-detail-scroll">
+                    <div class="sr-document-card">
+                        <div class="sr-doc-top">
+                            <div>
+                                <h2 class="sr-doc-title">SALES RETURN</h2>
+                                <p class="sr-doc-subtitle">RMA# <strong>${ret.rma_number}</strong></p>
+                            </div>
+                            <div style="text-align:right;">
+                                <div class="sr-bill-to-label">BILL TO</div>
+                                <div class="sr-bill-to-name">${ret.customer_name || 'N/A'}</div>
+                            </div>
+                        </div>
+
+                        <div class="sr-status-section">
+                            <div>
+                                <div class="sr-status-row" style="margin-bottom:8px;">
+                                    <span class="sr-status-label">Return Status</span>
+                                    <span class="status-badge ${statusCls}">${status}</span>
+                                </div>
+                                <div class="sr-status-row">
+                                    <span class="sr-status-label">Receive Status</span>
+                                    ${receiveStatus}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sr-date-row">
+                            <span class="sr-date-label">DATE</span>
+                            <span class="sr-date-value">${formatDate(ret.return_date)}</span>
+                        </div>
+
+                        <table class="sr-doc-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>ITEMS & DESCRIPTION</th>
+                                    <th>QUANTITY</th>
+                                    <th>RATE</th>
+                                    <th>AMOUNT</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${itemRows || '<tr><td colspan="5" style="text-align:center;color:#888;padding:24px;">No items</td></tr>'}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        function backToList() {
+            document.getElementById('detailView').classList.remove('active');
+            document.getElementById('listView').style.display = 'block';
+            selectedReturnId = null;
+        }
+
+        // Create Credit Note from Sales Return
+        function createCreditNote() {
+            if (!currentDetail) {
+                alert('Please select a sales return first');
+                return;
+            }
+            // Store data for credit note form
+            const creditData = {
+                customer_name: currentDetail.customer_name || '',
+                rma_number: currentDetail.rma_number || '',
+                sales_return_id: currentDetail.id,
+                return_date: currentDetail.return_date || '',
+                items: (currentDetail.items || []).map(item => ({
+                    item_name: item.item_name || '',
+                    item_id: item.item_id || null,
+                    quantity: parseFloat(item.return_quantity || 0),
+                    rate: parseFloat(item.rate || 0),
+                    amount: parseFloat(item.rate || 0) * parseFloat(item.return_quantity || 0)
+                }))
+            };
+            sessionStorage.setItem('creditNoteFromReturn', JSON.stringify(creditData));
+            window.location.href = '/new-credit-note.html?from=sales-return';
+        }
+
+        loadReturns();
     </script>
 </body>
 

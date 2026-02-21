@@ -93,6 +93,22 @@
         /* Main Form Area */
         .form-main {
             flex: 1;
+            display: grid;
+            grid-template-columns: 0.6fr 1fr;
+            gap: 0;
+            overflow: hidden;
+        }
+
+        /* Left Column */
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #e9ecef;
+            overflow-y: auto;
+        }
+
+        /* Right Column */
+        .right-column {
             display: flex;
             flex-direction: column;
             overflow-y: auto;
@@ -220,9 +236,8 @@
 
         /* Item Table */
         .item-table-section {
-            padding: 12px 20px;
-            background: #f9fafb;
-            border-bottom: 1px solid #e9ecef;
+            padding: 12px 16px;
+            flex: 1;
         }
 
         .item-table-header {
@@ -256,7 +271,6 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 11px;
-            background: white;
         }
 
         .item-table th {
@@ -267,6 +281,7 @@
             color: #999;
             text-transform: uppercase;
             border-bottom: 1px solid #e9ecef;
+            background: #f9fafb;
         }
 
         .item-table th.center {
@@ -282,12 +297,32 @@
             text-align: center;
         }
 
-        .item-table input,
-        .item-table select {
-            padding: 6px 8px;
+        .item-table input {
+            padding: 5px 8px;
             border: 1px solid #e0e0e0;
             border-radius: 3px;
             font-size: 11px;
+            width: 100%;
+        }
+
+        .item-table input[type="number"]::-webkit-inner-spin-button,
+        .item-table input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            appearance: none;
+            margin: 0;
+        }
+
+        .item-table input[type="number"] {
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+
+        .item-table select {
+            padding: 5px 8px;
+            border: 1px solid #e0e0e0;
+            border-radius: 3px;
+            font-size: 11px;
+            background: white;
             width: 100%;
         }
 
@@ -302,11 +337,12 @@
             color: #dc2626;
             font-size: 14px;
             cursor: pointer;
+            padding: 0;
         }
 
         .add-row-buttons {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             margin-top: 10px;
         }
 
@@ -314,52 +350,25 @@
             display: flex;
             align-items: center;
             gap: 4px;
-            padding: 6px 12px;
-            background: #4285f4;
-            color: white;
-            border: none;
+            padding: 5px 10px;
+            background: white;
+            border: 1px solid #e0e0e0;
             border-radius: 3px;
             font-size: 11px;
+            color: #333;
             cursor: pointer;
         }
 
-        .add-row-btn.secondary {
-            background: white;
-            color: #333;
-            border: 1px solid #e0e0e0;
+        .add-row-btn.primary {
+            background: #4285f4;
+            color: white;
+            border-color: #4285f4;
         }
 
-        /* Totals and Notes Row */
-        .totals-notes-row {
-            display: grid;
-            grid-template-columns: 1fr 280px;
-            gap: 20px;
-            padding: 12px 20px;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .notes-column {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .notes-label {
-            font-size: 11px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 6px;
-        }
-
-        .notes-sublabel {
-            font-size: 10px;
-            color: #999;
-            margin-top: 4px;
-        }
-
-        .totals-column {
-            background: white;
-            padding: 10px;
-            border-radius: 4px;
+        /* Totals Section */
+        .totals-section {
+            padding: 12px 16px;
+            background: #f9fafb;
         }
 
         .totals-row {
@@ -368,6 +377,19 @@
             align-items: center;
             padding: 4px 0;
             font-size: 11px;
+        }
+
+        .notes-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .notes-sublabel {
+            font-size: 10px;
+            color: #999;
+            margin-bottom: 6px;
         }
 
         .totals-label {
@@ -381,16 +403,28 @@
         .totals-input {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
         }
 
         .totals-input input {
-            padding: 4px 6px;
+            padding: 4px 8px;
             border: 1px solid #e0e0e0;
             border-radius: 3px;
             font-size: 11px;
-            width: 50px;
+            width: 60px;
             text-align: right;
+        }
+
+        .totals-input input[type="number"]::-webkit-inner-spin-button,
+        .totals-input input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            appearance: none;
+            margin: 0;
+        }
+
+        .totals-input input[type="number"] {
+            -moz-appearance: textfield;
+            appearance: textfield;
         }
 
         .totals-row.total {
@@ -401,19 +435,21 @@
             font-size: 12px;
         }
 
-        /* Terms Section */
-        .terms-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            padding: 12px 20px;
-            background: #f9fafb;
-            border-bottom: 1px solid #e9ecef;
+        /* Notes Section */
+        .notes-section {
+            padding: 12px 16px;
+            flex: 1;
         }
 
-        .terms-box {
-            display: flex;
-            flex-direction: column;
+        .notes-row {
+            margin-bottom: 12px;
+        }
+
+        /* Terms / Attach Section */
+        .attach-section {
+            background: #f9fafb;
+            padding: 12px 16px;
+            border-radius: 6px;
         }
 
         .attach-box {
@@ -555,9 +591,12 @@
         }
 
         .footer-right {
-            text-align: right;
-            font-size: 11px;
-            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+            color: #666;
+            font-size: 13px;
         }
 
         .footer-right .label {
@@ -567,6 +606,131 @@
         .footer-right .amount {
             font-weight: 600;
             font-size: 12px;
+        }
+
+        /* Discount Column */
+        .disc-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+        }
+
+        .disc-cell input {
+            width: 50px !important;
+            text-align: right;
+            padding: 5px 4px !important;
+        }
+
+        .disc-deduct {
+            font-size: 9px;
+            color: #dc2626;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .disc-toggle {
+            background: #f0f0f0;
+            border: 1px solid #d0d5dd;
+            border-radius: 3px;
+            font-size: 9px;
+            padding: 4px 4px;
+            cursor: pointer;
+            color: #555;
+            font-weight: 600;
+            min-width: 22px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .disc-toggle:hover {
+            background: #e0e0e0;
+        }
+
+        .disc-th {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            justify-content: center;
+        }
+
+        .add-disc-btn {
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            font-size: 10px;
+            cursor: pointer;
+            padding: 1px 5px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .add-disc-btn:hover {
+            background: #3367d6;
+        }
+
+        .disc-remove-btn {
+            background: none;
+            border: none;
+            color: #dc2626;
+            cursor: pointer;
+            font-size: 12px;
+            padding: 0 2px;
+            line-height: 1;
+            opacity: 0.5;
+            font-weight: 600;
+        }
+
+        .disc-remove-btn:hover {
+            opacity: 1;
+        }
+
+        .totals-disc-cell {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .totals-disc-cell input {
+            width: 60px;
+            padding: 4px 8px;
+            border: 1px solid #e0e0e0;
+            border-radius: 3px;
+            font-size: 11px;
+            text-align: right;
+        }
+
+        .totals-disc-cell input[type="number"]::-webkit-inner-spin-button,
+        .totals-disc-cell input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            appearance: none;
+            margin: 0;
+        }
+
+        .totals-disc-cell input[type="number"] {
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+
+        .totals-disc-toggle {
+            background: #f0f0f0;
+            border: 1px solid #d0d5dd;
+            border-radius: 3px;
+            font-size: 10px;
+            padding: 3px 6px;
+            cursor: pointer;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .totals-disc-toggle:hover {
+            background: #e0e0e0;
+        }
+
+        .totals-disc-value {
+            font-size: 11px;
+            color: #333;
         }
 
         /* Custom Dropdown */
@@ -1209,228 +1373,234 @@
 
             <!-- Main Form Area -->
             <div class="form-main">
-                <!-- Customer Section -->
-                <div class="form-section">
-                    <div class="form-row">
-                        <label class="form-label required">Customer Name*</label>
-                        <div class="custom-dd-wrap" id="custDdWrap" style="max-width:350px;">
-                            <input type="hidden" id="customerName" value="">
-                            <div class="custom-dd-trigger" id="custDdTrigger" onclick="toggleCustDd()"
-                                style="border-color: #4285f4;">
-                                <span id="custDdLabel" style="color: #999;">Select or add a customer</span>
-                                <span class="dd-arrow">▼</span>
+                <!-- Left Column -->
+                <div class="left-column">
+                    <!-- Customer Section -->
+                    <div class="form-section">
+                        <div class="form-row">
+                            <label class="form-label required">Customer Name*</label>
+                            <div class="custom-dd-wrap" id="custDdWrap" style="max-width:350px;">
+                                <input type="hidden" id="customerName" value="">
+                                <div class="custom-dd-trigger" id="custDdTrigger" onclick="toggleCustDd()"
+                                    style="border-color: #4285f4;">
+                                    <span id="custDdLabel" style="color: #999;">Select or add a customer</span>
+                                    <span class="dd-arrow">▼</span>
+                                </div>
+                                <div class="custom-dd-panel" id="custDdPanel">
+                                    <div class="custom-dd-search">
+                                        <div class="custom-dd-search-inner">
+                                            <span style="color: #999;">🔍</span>
+                                            <input type="text" id="custDdSearch" placeholder="Search"
+                                                oninput="filterCustDd()">
+                                        </div>
+                                    </div>
+                                    <div class="custom-dd-options" id="custDdOptions"></div>
+                                </div>
                             </div>
-                            <div class="custom-dd-panel" id="custDdPanel">
-                                <div class="custom-dd-search">
-                                    <div class="custom-dd-search-inner">
-                                        <span style="color: #999;">🔍</span>
-                                        <input type="text" id="custDdSearch" placeholder="Search"
-                                            oninput="filterCustDd()">
+                        </div>
+                    </div>
+
+                    <!-- Invoice Details Section -->
+                    <div class="form-section form-section-gray">
+                        <div class="form-row">
+                            <label class="form-label required">Invoice#*</label>
+                            <div class="input-with-icon">
+                                <input type="text" class="form-input" id="invoiceNumber" value="INV-000001">
+                                <span class="input-icon">⚙</span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label">Order Number</label>
+                            <input type="text" class="form-input" id="orderNumber">
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label required">Invoice Date*</label>
+                            <input type="date" class="form-input" id="invoiceDate" style="max-width: 150px;">
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label">Due Date</label>
+                            <input type="date" class="form-input" id="dueDate" style="max-width: 150px;">
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label">Payment Terms</label>
+                            <div class="custom-dd-wrap" id="termsDdWrap" style="max-width:200px;min-width:160px;">
+                                <input type="hidden" id="terms" value="due_on_receipt">
+                                <div class="custom-dd-trigger" id="termsDdTrigger" onclick="toggleTermsDd()">
+                                    <span id="termsDdLabel">Due on Receipt</span>
+                                    <span class="dd-arrow">▼</span>
+                                </div>
+                                <div class="custom-dd-panel" id="termsDdPanel">
+                                    <div class="custom-dd-search">
+                                        <div class="custom-dd-search-inner">
+                                            <span style="color: #999;">🔍</span>
+                                            <input type="text" id="termsDdSearch" placeholder="Search"
+                                                oninput="filterTermsDd()">
+                                        </div>
+                                    </div>
+                                    <div class="custom-dd-options" id="termsDdOptions"></div>
+                                    <div style="border-top:1px solid #e9ecef;padding:10px 14px;">
+                                        <a href="#" onclick="event.preventDefault(); openConfigureTerms();"
+                                            style="color:#4285f4;text-decoration:none;font-size:13px;display:flex;align-items:center;gap:6px;"><span
+                                                style="font-size:14px;">⚙</span>
+                                            Configure Terms</a>
                                     </div>
                                 </div>
-                                <div class="custom-dd-options" id="custDdOptions"></div>
                             </div>
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label">Salesperson</label>
+                            <div class="custom-dd-wrap" id="spDdWrap" style="max-width: 200px;">
+                                <input type="hidden" id="salesperson" value="">
+                                <div class="custom-dd-trigger" id="spDdTrigger" onclick="toggleSpDd()">
+                                    <span id="spDdLabel" style="color: #999;">Select or Add Salesperson</span>
+                                    <span class="dd-arrow">▼</span>
+                                </div>
+                                <div class="custom-dd-panel" id="spDdPanel">
+                                    <div class="custom-dd-search">
+                                        <div class="custom-dd-search-inner">
+                                            <span style="color: #999;">🔍</span>
+                                            <input type="text" id="spDdSearch" placeholder="Search"
+                                                oninput="filterSpDd()">
+                                        </div>
+                                    </div>
+                                    <div class="custom-dd-options" id="spDdOptions"></div>
+                                    <div class="custom-dd-footer">
+                                        <a href="#" onclick="event.preventDefault(); openManageSalespersons();">
+                                            <span>⚙</span> Manage Salespersons
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label">Subject <span style="color: #999;">ⓘ</span></label>
+                            <textarea class="form-textarea" id="subject" style="max-width: 350px;"
+                                placeholder="Let your customer know what this Invoice is for"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Notes Section -->
+                    <div class="notes-section">
+                        <div class="notes-row">
+                            <div class="notes-label">Customer Notes</div>
+                            <div class="notes-sublabel">Enter any notes to be displayed in your transaction</div>
+                            <textarea class="form-textarea" id="customerNotes"></textarea>
+                        </div>
+                        <div class="notes-row">
+                            <div class="notes-label">Terms & Conditions</div>
+                            <div class="notes-sublabel">Enter the terms and conditions of your business</div>
+                            <textarea class="form-textarea" id="termsConditions"></textarea>
+                        </div>
+                        <!-- Attach Files -->
+                        <div class="attach-section">
+                            <div class="attach-title">Attach File(s) to Invoice</div>
+                            <button class="upload-btn" type="button">📤 Upload File ▼</button>
+                            <p class="upload-help">Max 10 files, 10MB each</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Invoice Details Section -->
-                <div class="form-section form-section-gray">
-                    <div class="form-row">
-                        <label class="form-label required">Invoice#*</label>
-                        <div class="input-with-icon">
-                            <input type="text" class="form-input" id="invoiceNumber" value="INV-000001">
-                            <span class="input-icon">⚙</span>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <label class="form-label">Order Number</label>
-                        <input type="text" class="form-input" id="orderNumber">
-                    </div>
-                    <div class="form-row-inline">
-                        <label class="form-label required">Invoice Date*</label>
-                        <input type="date" class="form-input" id="invoiceDate" style="max-width: 150px;">
-                        <span class="inline-label">Terms</span>
-                        <div class="custom-dd-wrap" id="termsDdWrap" style="max-width:180px;min-width:160px;">
-                            <input type="hidden" id="terms" value="due_on_receipt">
-                            <div class="custom-dd-trigger" id="termsDdTrigger" onclick="toggleTermsDd()">
-                                <span id="termsDdLabel">Due on Receipt</span>
-                                <span class="dd-arrow">▼</span>
-                            </div>
-                            <div class="custom-dd-panel" id="termsDdPanel">
-                                <div class="custom-dd-search">
-                                    <div class="custom-dd-search-inner">
-                                        <span style="color: #999;">🔍</span>
-                                        <input type="text" id="termsDdSearch" placeholder="Search"
-                                            oninput="filterTermsDd()">
-                                    </div>
-                                </div>
-                                <div class="custom-dd-options" id="termsDdOptions"></div>
-                                <div style="border-top:1px solid #e9ecef;padding:10px 14px;">
-                                    <a href="#" onclick="event.preventDefault(); openConfigureTerms();"
-                                        style="color:#4285f4;text-decoration:none;font-size:13px;display:flex;align-items:center;gap:6px;"><span
-                                            style="font-size:14px;">⚙</span>
-                                        Configure Terms</a>
-                                </div>
-                            </div>
-                        </div>
-                        <span class="inline-label">Due Date</span>
-                        <input type="date" class="form-input" id="dueDate" style="max-width: 150px;">
-                    </div>
-                    <div class="form-row">
-                        <label class="form-label">Salesperson</label>
-                        <div class="custom-dd-wrap" id="spDdWrap" style="max-width: 200px;">
-                            <input type="hidden" id="salesperson" value="">
-                            <div class="custom-dd-trigger" id="spDdTrigger" onclick="toggleSpDd()">
-                                <span id="spDdLabel" style="color: #999;">Select or Add Salesperson</span>
-                                <span class="dd-arrow">▼</span>
-                            </div>
-                            <div class="custom-dd-panel" id="spDdPanel">
-                                <div class="custom-dd-search">
-                                    <div class="custom-dd-search-inner">
-                                        <span style="color: #999;">🔍</span>
-                                        <input type="text" id="spDdSearch" placeholder="Search" oninput="filterSpDd()">
-                                    </div>
-                                </div>
-                                <div class="custom-dd-options" id="spDdOptions"></div>
-                                <div class="custom-dd-footer">
-                                    <a href="#" onclick="event.preventDefault(); openManageSalespersons();">
-                                        <span>⚙</span> Manage Salespersons
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <label class="form-label">Subject <span style="color: #999;">ⓘ</span></label>
-                        <textarea class="form-textarea" id="subject" style="max-width: 350px;"
-                            placeholder="Let your customer know what this Invoice is for"></textarea>
-                    </div>
-                </div>
+                <!-- Right Column -->
+                <div class="right-column">
 
-                <!-- Item Table Section -->
-                <div class="item-table-section">
-                    <div class="item-table-header">
-                        <span class="item-table-title">Item Table</span>
-                        <div class="table-actions">
+                    <!-- Item Table Section -->
+                    <div class="item-table-section">
+                        <div class="item-table-header">
+                            <span class="item-table-title">Item Table</span>
+                            <div class="table-actions">
 
-                            <a href="#" class="action-link">⚡ Bulk Actions</a>
+                                <a href="#" class="action-link">⚡ Bulk Actions</a>
+                            </div>
+                        </div>
+
+                        <table class="item-table">
+                            <thead>
+                                <tr>
+                                    <th>ITEM DETAILS</th>
+                                    <th class="center" style="width: 70px;">QTY</th>
+                                    <th class="center" style="width: 80px;">RATE ₱</th>
+                                    <th class="center disc-col-th" style="width:100px" data-disc-col="1">
+                                        <div class="disc-th">DISCOUNT <button class="add-disc-btn"
+                                                onclick="addDiscountColumn()" title="Add Discount Column">+</button>
+                                        </div>
+                                    </th>
+                                    <th style="width: 90px;">TAX</th>
+                                    <th class="center" style="width: 80px;">AMOUNT</th>
+                                    <th style="width: 30px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="itemsBody">
+                                <tr>
+                                    <td class="item-picker-cell">
+                                        <input type="text" class="item-picker-input"
+                                            placeholder="Type or click to select an item."
+                                            onfocus="openItemPicker(this)" oninput="filterItemPicker(this)">
+                                        <input type="hidden" class="item-id-hidden" value="">
+                                        <div class="item-picker-dropdown"></div>
+                                    </td>
+                                    <td class="center"><input type="number" value="1" style="text-align: center;"
+                                            class="qty-input" onchange="recalcRow(this)"></td>
+                                    <td class="center"><input type="number" value="0" style="text-align: right;"
+                                            class="rate-input" onchange="recalcRow(this)"></td>
+                                    <td class="disc-col-td" data-disc-col="1">
+                                        <div class="disc-cell"><input type="number" value="0" class="disc-input"
+                                                onchange="recalcRow(this)"><button class="disc-toggle"
+                                                onclick="toggleDiscType(this)" data-type="%">%</button><span
+                                                class="disc-deduct"></span></div>
+                                    </td>
+                                    <td>
+                                        <select>
+                                            <option value="">Select Tax</option>
+                                        </select>
+                                    </td>
+                                    <td class="center amount-cell">0</td>
+                                    <td class="center"><button class="delete-row-btn"
+                                            onclick="deleteItemRow(this)">×</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="add-row-buttons">
+                            <button class="add-row-btn primary">+ Add New Row</button>
+                            <button class="add-row-btn">+ Add Items in Bulk</button>
                         </div>
                     </div>
 
-                    <table class="item-table">
-                        <thead>
-                            <tr>
-                                <th>ITEM DETAILS</th>
-                                <th class="center" style="width: 70px;">QTY</th>
-                                <th class="center" style="width: 80px;">RATE ₱</th>
-                                <th style="width: 90px;">TAX</th>
-                                <th class="center" style="width: 80px;">AMOUNT</th>
-                                <th style="width: 30px;"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="itemsBody">
-                            <tr>
-                                <td class="item-picker-cell">
-                                    <input type="text" class="item-picker-input"
-                                        placeholder="Type or click to select an item." onfocus="openItemPicker(this)"
-                                        oninput="filterItemPicker(this)">
-                                    <input type="hidden" class="item-id-hidden" value="">
-                                    <div class="item-picker-dropdown"></div>
-                                </td>
-                                <td class="center"><input type="number" value="1.00" style="text-align: center;"
-                                        class="qty-input" onchange="recalcRow(this)"></td>
-                                <td class="center"><input type="number" value="0.00" style="text-align: right;"
-                                        class="rate-input" onchange="recalcRow(this)"></td>
-                                <td>
-                                    <select>
-                                        <option value="">Select Tax</option>
-                                    </select>
-                                </td>
-                                <td class="center amount-cell">0.00</td>
-                                <td class="center"><button class="delete-row-btn"
-                                        onclick="deleteItemRow(this)">×</button></td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <div class="add-row-buttons">
-                        <button class="add-row-btn primary">+ Add New Row</button>
-                        <button class="add-row-btn">+ Add Items in Bulk</button>
-                    </div>
-                </div>
-
-                <!-- Totals and Notes Row -->
-                <div class="totals-notes-row">
-                    <div class="notes-column">
-                        <div class="notes-label">Customer Notes</div>
-                        <textarea class="form-textarea" id="customerNotes"
-                            placeholder="Thanks for your business."></textarea>
-                        <div class="notes-sublabel">Will be displayed on the invoice</div>
-                    </div>
-                    <div class="totals-column">
+                    <!-- Totals Section -->
+                    <div class="totals-section">
                         <div class="totals-row">
                             <span class="totals-label">Sub Total</span>
-                            <span class="totals-value">0.00</span>
+                            <span class="totals-value" id="subTotalValue">0</span>
                         </div>
                         <div class="totals-row">
-                            <span class="totals-label">Discount</span>
-                            <div class="totals-input">
-                                <input type="text" value="0"> %
-                                <span class="totals-value">0.00</span>
+                            <span class="totals-label">Discount <span id="totalDiscDisplay"
+                                    style="color:#dc2626; font-weight:600;"></span></span>
+                            <div class="totals-disc-cell">
+                                <input type="number" value="0" id="totalDiscInput" oninput="recalcTotals()">
+                                <button class="totals-disc-toggle" id="totalDiscToggle" onclick="toggleTotalsDiscType()"
+                                    data-type="%">%</button>
+                                <span class="totals-disc-value" id="totalDiscValue">0</span>
                             </div>
                         </div>
                         <div class="totals-row">
                             <span class="totals-label">Shipping Charges</span>
                             <div class="totals-input">
-                                <input type="text" value=""> ⓘ
-                                <span class="totals-value">0.00</span>
+                                <input type="number" value="" id="shippingInput" oninput="recalcTotals()">
+                                <span class="totals-value" id="shippingValue">0</span>
                             </div>
                         </div>
                         <div class="totals-row">
                             <span class="totals-label">Adjustment</span>
                             <div class="totals-input">
-                                <input type="text" value=""> ⓘ
-                                <span class="totals-value">0.00</span>
+                                <input type="number" value="" id="adjustmentInput" oninput="recalcTotals()">
+                                <span class="totals-value" id="adjustmentValue">0</span>
                             </div>
                         </div>
                         <div class="totals-row total">
                             <span class="totals-label">Total ( PHP )</span>
-                            <span class="totals-value">0.00</span>
+                            <span class="totals-value" id="totalValue">0</span>
                         </div>
                     </div>
-                </div>
-
-                <!-- Terms Section -->
-                <div class="terms-section">
-                    <div class="terms-box">
-                        <div class="notes-label">Terms & Conditions</div>
-                        <textarea class="form-textarea" id="termsConditions"
-                            placeholder="Enter the terms and conditions of your business to be displayed in your transaction"></textarea>
-                    </div>
-                    <div class="attach-box">
-                        <div class="attach-title">Attach File(s) to Invoice</div>
-                        <button class="upload-btn" type="button">📤 Upload File ▼</button>
-                        <p class="upload-help">You can upload a maximum of 10 files, 10MB each</p>
-                    </div>
-                </div>
-
-                <!-- Payment Gateway Section -->
-                <div class="payment-section">
-                    <div class="payment-title">
-                        Want to get paid faster? 💳 <span style="color: #1a56db;">VISA</span>
-                    </div>
-                    <p class="payment-text">
-                        Configure payment gateways and receive payments online. <a href="#">Set up Payment Gateway</a>
-                    </p>
-                </div>
-
-                <!-- Additional Fields -->
-                <div class="additional-link">
-                    <span style="color: #999;">Additional Fields:</span>
-                    <span style="color: #999;">Start adding custom fields for your invoices by going to <a href="#"
-                            style="color: #999;">Settings</a> >> <a href="#" style="color: #999;">Sales</a> >> <a
-                            href="#" style="color: #999;">Invoices</a>.</span>
                 </div>
             </div>
 
@@ -1438,15 +1608,18 @@
             <div class="form-footer">
                 <div class="footer-left">
                     <button class="btn-draft" onclick="saveAsDraft()">Save as Draft</button>
-                    <div class="btn-save-group">
-                        <button class="btn-save" onclick="saveAndPrint()">Save and Print</button>
-                        <button class="btn-save-dropdown">▼</button>
-                    </div>
+                    <button class="btn-save" onclick="saveAndPrint()">Save and Print</button>
                     <button class="btn-cancel" onclick="goBack()">Cancel</button>
                 </div>
                 <div class="footer-right">
-                    <div><span class="label">Total Amount:</span> <span class="amount">PHP 0.00</span></div>
-                    <div><span class="label">Total Quantity:</span> 0</div>
+                    <div>
+                        <span>Total Amount:</span>
+                        <span class="amount" id="footerTotalAmount">PHP 0.00</span>
+                    </div>
+                    <div style="font-size:12px;color:#999;">
+                        <span>Total Quantity:</span>
+                        <span id="footerTotalQty">0</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1518,19 +1691,134 @@
             window.location.href = '/invoices.html';
         }
 
-        function saveAsDraft() {
-            alert('Invoice saved as draft!');
-            goBack();
+        function collectInvoiceData() {
+            const customerName = document.getElementById('customerName').value;
+            const customerId = document.getElementById('customerId') ? document.getElementById('customerId').value : selectedCustomerId;
+            const invoiceNumber = document.getElementById('invoiceNumber').value;
+            const orderNumber = document.getElementById('orderNumber').value;
+            const invoiceDate = document.getElementById('invoiceDate').value;
+            const dueDate = document.getElementById('dueDate').value;
+            const paymentTerms = document.getElementById('terms').value;
+            const salesperson = document.getElementById('salesperson').value;
+            const subject = document.getElementById('subject') ? document.getElementById('subject').value : '';
+            const notes = document.getElementById('customerNotes') ? document.getElementById('customerNotes').value : '';
+            const termsConditions = document.getElementById('termsConditions') ? document.getElementById('termsConditions').value : '';
+
+            // Collect items
+            const items = [];
+            document.querySelectorAll('#itemsBody tr').forEach(row => {
+                const itemName = row.querySelector('.item-picker-input') ? row.querySelector('.item-picker-input').value : '';
+                const qty = parseFloat(row.querySelector('.qty-input') ? row.querySelector('.qty-input').value : 0) || 0;
+                const rate = parseFloat(row.querySelector('.rate-input') ? row.querySelector('.rate-input').value : 0) || 0;
+                const amountCell = row.querySelector('.amount-cell');
+                const amount = amountCell ? parseFloat(amountCell.textContent.replace(/,/g, '')) || 0 : 0;
+                const taxSelect = row.querySelector('select');
+                const tax = taxSelect ? taxSelect.value : '';
+
+                // Collect discounts per row
+                const discounts = [];
+                row.querySelectorAll('.disc-col-td').forEach(td => {
+                    const discInput = td.querySelector('.disc-input');
+                    const discToggle = td.querySelector('.disc-toggle');
+                    if (discInput) {
+                        discounts.push({
+                            value: parseFloat(discInput.value) || 0,
+                            type: discToggle ? discToggle.dataset.type : '%'
+                        });
+                    }
+                });
+
+                if (itemName) {
+                    items.push({ item_name: itemName, quantity: qty, rate, tax, amount, discounts });
+                }
+            });
+
+            // Totals
+            const subTotal = parseFloat(document.getElementById('subTotalValue').textContent.replace(/,/g, '')) || 0;
+            const discInput = document.getElementById('totalDiscInput');
+            const discToggle = document.getElementById('totalDiscToggle');
+            const discountValue = parseFloat(discInput ? discInput.value : 0) || 0;
+            const discountType = discToggle ? discToggle.dataset.type : '%';
+            let discountAmount = 0;
+            if (discountType === '%') {
+                discountAmount = subTotal * (discountValue / 100);
+            } else {
+                discountAmount = discountValue;
+            }
+            const shippingCharges = parseFloat(document.getElementById('shippingInput') ? document.getElementById('shippingInput').value : 0) || 0;
+            const adjustment = parseFloat(document.getElementById('adjustmentInput') ? document.getElementById('adjustmentInput').value : 0) || 0;
+            const total = subTotal - discountAmount + shippingCharges + adjustment;
+
+            return {
+                invoice_date: invoiceDate,
+                due_date: dueDate,
+                order_number: orderNumber,
+                customer_id: customerId || null,
+                customer_name: customerName,
+                salesperson_name: salesperson,
+                payment_terms: paymentTerms,
+                subject,
+                notes,
+                terms_conditions: termsConditions,
+                sub_total: subTotal,
+                discount: discountAmount,
+                discount_type: discountType,
+                discount_value: discountValue,
+                shipping_charges: shippingCharges,
+                adjustment,
+                total,
+                items
+            };
         }
 
-        function saveAndPrint() {
+        async function saveInvoice(status) {
             const customerName = document.getElementById('customerName').value;
             if (!customerName) {
                 alert('Please select a customer');
                 return;
             }
-            alert('Invoice saved and printing!');
-            goBack();
+
+            const data = collectInvoiceData();
+            data.status = status;
+
+            try {
+                const res = await fetch('/api/invoices', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (res.ok) {
+                    const invoice = await res.json();
+                    return invoice;
+                } else {
+                    const err = await res.json();
+                    alert('Error saving invoice: ' + (err.error || 'Unknown error'));
+                    return null;
+                }
+            } catch (err) {
+                console.error('Error saving invoice:', err);
+                alert('Failed to save invoice. Please try again.');
+                return null;
+            }
+        }
+
+        async function saveAsDraft() {
+            if (!verifySalespersonPassword()) return;
+            const invoice = await saveInvoice('DRAFT');
+            if (invoice) {
+                alert('Invoice ' + invoice.invoice_number + ' saved as draft!');
+                goBack();
+            }
+        }
+
+        async function saveAndPrint() {
+            if (!verifySalespersonPassword()) return;
+            const invoice = await saveInvoice('CONFIRMED');
+            if (invoice) {
+                alert('Invoice ' + invoice.invoice_number + ' saved!');
+                goBack();
+            }
         }
 
         // ===== Customer Name Custom Dropdown =====
@@ -1545,7 +1833,20 @@
                     renderCustDdOptions();
                 }
             } catch (err) {
-                console.error('Error loading customers:', err);
+                console.error('Error loading customers:', err)  ;
+            }
+        })();
+
+        // Auto-fetch next invoice number
+        (async function loadNextInvoiceNumber() {
+            try {
+                const res = await fetch('/api/invoices/next-number');
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('invoiceNumber').value = data.invoice_number;
+                }
+            } catch (err) {
+                console.error('Error loading next invoice number:', err);
             }
         })();
 
@@ -1586,7 +1887,7 @@
 
         function selectCustDd(id, name) {
             selectedCustomerId = id;
-            document.getElementById('customerName').value = id;
+            document.getElementById('customerName').value = name;
             const label = document.getElementById('custDdLabel');
             label.textContent = name;
             label.style.color = '#333';
@@ -1769,7 +2070,7 @@
                 const imgHtml = item.image_url
                     ? `<img src="${item.image_url}" class="item-picker-img" onerror="this.outerHTML='<div class=\\'item-picker-placeholder-img\\'>\ud83d\udce6</div>'">`
                     : '<div class="item-picker-placeholder-img">\ud83d\udce6</div>';
-                const price = parseFloat(item.selling_price || 0).toFixed(2);
+                const price = formatNum(item.selling_price || 0);
                 const stock = item.stock_quantity || 0;
                 return `<div class="item-picker-option" onclick="selectItem(this, ${item.id}, '${item.name.replace(/'/g, "\\'")}', ${item.selling_price || 0}, '${(item.image_url || '').replace(/'/g, "\\'")}', '${(item.sku || '').replace(/'/g, "\\'")}')">
                     ${imgHtml}
@@ -1795,7 +2096,7 @@
             // Set rate
             const row = cell.closest('tr');
             const rateInput = row.querySelector('.rate-input');
-            rateInput.value = parseFloat(price).toFixed(2);
+            rateInput.value = parseFloat(price || 0).toFixed(2);
 
             // Set image display
             const imgHtml = imageUrl
@@ -1821,30 +2122,159 @@
             recalcRow(rateInput);
         }
 
+
+        function formatNum(n) {
+            return parseFloat(n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
         function recalcRow(inputEl) {
             const row = inputEl.closest('tr');
             const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
-            const rate = parseFloat(row.querySelector('.rate-input').value) || 0;
-            const amount = qty * rate;
-            row.querySelector('.amount-cell').textContent = amount.toFixed(2);
+            const rateRaw = row.querySelector('.rate-input').value.replace(/,/g, '');
+            const rate = parseFloat(rateRaw) || 0;
+            let lineTotal = qty * rate;
+
+            // Apply per-item discounts
+            row.querySelectorAll('.disc-col-td').forEach(td => {
+                const discInput = td.querySelector('.disc-input');
+                const discToggle = td.querySelector('.disc-toggle');
+                const discDeduct = td.querySelector('.disc-deduct');
+                if (!discInput) return;
+                const discVal = parseFloat(discInput.value) || 0;
+                const discType = discToggle ? discToggle.dataset.type : '%';
+                let deduction = 0;
+                if (discType === '%') {
+                    deduction = lineTotal * (discVal / 100);
+                } else {
+                    deduction = discVal;
+                }
+                lineTotal -= deduction;
+                if (discDeduct) {
+                    discDeduct.textContent = deduction > 0 ? '-' + formatNum(deduction) : '';
+                }
+            });
+
+            row.querySelector('.amount-cell').textContent = formatNum(lineTotal);
             recalcTotals();
         }
 
         function recalcTotals() {
             let subTotal = 0;
+            let totalQty = 0;
             document.querySelectorAll('#itemsBody tr').forEach(row => {
                 const amountCell = row.querySelector('.amount-cell');
+                const qtyInput = row.querySelector('.qty-input');
                 if (amountCell) {
-                    subTotal += parseFloat(amountCell.textContent) || 0;
+                    subTotal += parseFloat(amountCell.textContent.replace(/,/g, '')) || 0;
+                }
+                if (qtyInput) {
+                    totalQty += parseFloat(qtyInput.value) || 0;
                 }
             });
-            const totalsValues = document.querySelectorAll('.totals-value');
-            if (totalsValues.length > 0) {
-                totalsValues[0].textContent = subTotal.toFixed(2);
+
+            document.getElementById('subTotalValue').textContent = formatNum(subTotal);
+
+            // Discount
+            const discInput = document.getElementById('totalDiscInput');
+            const discToggle = document.getElementById('totalDiscToggle');
+            const discDisplay = document.getElementById('totalDiscDisplay');
+            const discVal = parseFloat(discInput.value) || 0;
+            const discType = discToggle.dataset.type;
+            let discountAmount = 0;
+            if (discType === '%') {
+                discountAmount = subTotal * (discVal / 100);
+                discDisplay.textContent = discVal > 0 ? '(' + formatNum(discVal) + '%)' : '';
+            } else {
+                discountAmount = discVal;
+                discDisplay.textContent = discVal > 0 ? '(-₱' + formatNum(discVal) + ')' : '';
             }
-            if (totalsValues.length > 2) {
-                totalsValues[totalsValues.length - 1].textContent = subTotal.toFixed(2);
-            }
+            document.getElementById('totalDiscValue').textContent = discountAmount > 0 ? '-' + formatNum(discountAmount) : '0';
+
+            // Shipping
+            const shippingVal = parseFloat(document.getElementById('shippingInput').value) || 0;
+            document.getElementById('shippingValue').textContent = formatNum(shippingVal);
+
+            // Adjustment
+            const adjustVal = parseFloat(document.getElementById('adjustmentInput').value) || 0;
+            document.getElementById('adjustmentValue').textContent = formatNum(adjustVal);
+
+            // Total
+            const total = subTotal - discountAmount + shippingVal + adjustVal;
+            document.getElementById('totalValue').textContent = formatNum(total);
+
+            // Footer
+            const footerAmount = document.getElementById('footerTotalAmount');
+            if (footerAmount) footerAmount.textContent = 'PHP ' + formatNum(total);
+            const footerQty = document.getElementById('footerTotalQty');
+            if (footerQty) footerQty.textContent = formatNum(totalQty);
+        }
+
+        function toggleDiscType(btn) {
+            const row = btn.closest('tr');
+            btn.dataset.type = btn.dataset.type === '%' ? '₱' : '%';
+            btn.textContent = btn.dataset.type;
+            recalcRow(row.querySelector('.qty-input'));
+        }
+
+        function toggleTotalsDiscType() {
+            const btn = document.getElementById('totalDiscToggle');
+            btn.dataset.type = btn.dataset.type === '%' ? '₱' : '%';
+            btn.textContent = btn.dataset.type;
+            recalcTotals();
+        }
+
+        let discColumnCount = 1;
+
+        function getNextDiscNumber() {
+            const existing = new Set();
+            document.querySelectorAll('th[data-disc-col]').forEach(th => {
+                existing.add(parseInt(th.getAttribute('data-disc-col')));
+            });
+            let num = 2;
+            while (existing.has(num)) num++;
+            return num;
+        }
+
+        function addDiscountColumn() {
+            const colIndex = getNextDiscNumber();
+            const label = 'DISC ' + colIndex;
+
+            // Add header with × remove button (insert before TAX column)
+            const headerRow = document.querySelector('.item-table thead tr');
+            const taxTh = headerRow.querySelector('th:nth-last-child(3)');
+            const newTh = document.createElement('th');
+            newTh.className = 'center disc-col-th disc-col-extra';
+            newTh.style.width = '100px';
+            newTh.setAttribute('data-disc-col', colIndex);
+            newTh.innerHTML = `<div class="disc-th">${label} <button class="disc-remove-btn" onclick="removeDiscountColumn(${colIndex})" title="Remove">×</button></div>`;
+            headerRow.insertBefore(newTh, taxTh);
+
+            // Add cell to each row (insert before TAX cell)
+            document.querySelectorAll('#itemsBody tr').forEach(row => {
+                const taxTd = row.querySelector('td:nth-last-child(3)');
+                const newTd = document.createElement('td');
+                newTd.className = 'disc-col-td disc-col-extra';
+                newTd.setAttribute('data-disc-col', colIndex);
+                newTd.innerHTML = `<div class="disc-cell"><input type="number" value="0" class="disc-input" onchange="recalcRow(this)"><button class="disc-toggle" onclick="toggleDiscType(this)" data-type="%">%</button><span class="disc-deduct"></span></div>`;
+                row.insertBefore(newTd, taxTd);
+            });
+
+            discColumnCount = document.querySelectorAll('.item-table thead th.disc-col-th').length;
+        }
+
+        function removeDiscountColumn(colIndex) {
+            const th = document.querySelector(`th[data-disc-col="${colIndex}"]`);
+            if (th) th.remove();
+
+            document.querySelectorAll(`td[data-disc-col="${colIndex}"]`).forEach(td => td.remove());
+
+            discColumnCount = document.querySelectorAll('.item-table thead th.disc-col-th').length;
+
+            // Recalc all rows
+            document.querySelectorAll('#itemsBody tr').forEach(row => {
+                const input = row.querySelector('.qty-input') || row.querySelector('.rate-input');
+                if (input) recalcRow(input);
+            });
         }
 
         function deleteItemRow(btn) {
@@ -1862,6 +2292,15 @@
             }
         });
 
+        function getDiscColumnsHTML() {
+            let html = '';
+            document.querySelectorAll('.item-table thead th.disc-col-th').forEach(th => {
+                const col = th.getAttribute('data-disc-col');
+                html += `<td class="disc-col-td${th.classList.contains('disc-col-extra') ? ' disc-col-extra' : ''}" data-disc-col="${col}"><div class="disc-cell"><input type="number" value="0" class="disc-input" onchange="recalcRow(this)"><button class="disc-toggle" onclick="toggleDiscType(this)" data-type="%">%</button><span class="disc-deduct"></span></div></td>`;
+            });
+            return html;
+        }
+
         document.querySelector('.add-row-btn.primary').addEventListener('click', function () {
             const tbody = document.getElementById('itemsBody');
             const newRow = document.createElement('tr');
@@ -1871,10 +2310,11 @@
                     <input type="hidden" class="item-id-hidden" value="">
                     <div class="item-picker-dropdown"></div>
                 </td>
-                <td class="center"><input type="number" value="1.00" style="text-align: center;" class="qty-input" onchange="recalcRow(this)"></td>
-                <td class="center"><input type="number" value="0.00" style="text-align: right;" class="rate-input" onchange="recalcRow(this)"></td>
+                <td class="center"><input type="number" value="1" style="text-align: center;" class="qty-input" onchange="recalcRow(this)"></td>
+                <td class="center"><input type="number" value="0" style="text-align: right;" class="rate-input" onchange="recalcRow(this)"></td>
+                ${getDiscColumnsHTML()}
                 <td><select><option value="">Select Tax</option></select></td>
-                <td class="center amount-cell">0.00</td>
+                <td class="center amount-cell">0</td>
                 <td class="center"><button class="delete-row-btn" onclick="deleteItemRow(this)">×</button></td>
             `;
             tbody.appendChild(newRow);
@@ -1940,11 +2380,32 @@
 
         function selectSpDd(id, name) {
             selectedSalesperson = id;
-            document.getElementById('salesperson').value = id;
+            document.getElementById('salesperson').value = name;
             const label = document.getElementById('spDdLabel');
             label.textContent = name;
             label.style.color = '#333';
             closeAllCustomDds();
+        }
+
+        function verifySalespersonPassword() {
+            if (!selectedSalesperson) {
+                alert('Please select a salesperson.');
+                return false;
+            }
+            const sp = salespersonsList.find(s => s.id == selectedSalesperson);
+            if (!sp) {
+                alert('Selected salesperson not found.');
+                return false;
+            }
+            if (sp.password) {
+                const enteredPw = prompt(`Enter password for "${sp.name}" to proceed:`);
+                if (enteredPw === null) return false;
+                if (enteredPw !== sp.password) {
+                    alert('Incorrect password. Only the salesperson can authorize this transaction.');
+                    return false;
+                }
+            }
+            return true;
         }
 
         function filterSpDd() {

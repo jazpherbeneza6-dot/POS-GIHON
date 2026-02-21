@@ -7,6 +7,8 @@
     <title>Inventory Adjustments - Inventory Management</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/pagination.css">
+    <link rel="stylesheet" href="/css/global-search.css">
     <link rel="stylesheet" href="/css/alert-dialog.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
@@ -1942,6 +1944,11 @@
             <!-- Page Header -->
             <div class="page-header">
                 <h1 class="page-title">Inventory Adjustments</h1>
+                <div class="global-search-container">
+                    <span class="global-search-icon">🔍</span>
+                    <input type="text" class="global-search-input" id="adjSearchInput"
+                        placeholder="Search adjustments..." oninput="searchAdjustments()">
+                </div>
                 <div class="page-header-actions">
                     <a href="/fifo-report.html" class="header-link">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -2132,6 +2139,7 @@
                         <!-- Adjustment rows will be inserted here -->
                     </tbody>
                 </table>
+                <div id="adjPaginationContainer"></div>
             </div>
         </div>
     </div>
@@ -2479,6 +2487,7 @@
     </div>
 
     <!-- Layout Script -->
+    <script src="/js/pagination.js"></script>
     <script src="/js/layout.js"></script>
     <script>
         // Set today's date as default
@@ -2992,6 +3001,18 @@
         }
 
         // Load adjustments list
+        function searchAdjustments() {
+            const query = (document.getElementById('adjSearchInput').value || '').toLowerCase();
+            if (!query) { applyFilters(); return; }
+            const filtered = allAdjustments.filter(a => {
+                return (a.reason || '').toLowerCase().includes(query) ||
+                    (a.description || '').toLowerCase().includes(query) ||
+                    (a.reference_number || '').toLowerCase().includes(query) ||
+                    (a.status || '').toLowerCase().includes(query);
+            });
+            displayAdjustments(filtered);
+        }
+
         let allAdjustments = [];
         let currentFilter = 'all';
         let currentPeriod = 'all';
@@ -3071,38 +3092,48 @@
             if (adjustments.length === 0) {
                 if (emptyState) emptyState.style.display = 'flex';
                 if (tableWrapper) tableWrapper.style.display = 'none';
+                document.getElementById('adjPaginationContainer').innerHTML = '';
                 return;
             }
 
             if (emptyState) emptyState.style.display = 'none';
             if (tableWrapper) tableWrapper.style.display = 'block';
 
-            tableBody.innerHTML = adjustments.map(adj => {
-                const adjDate = new Date(adj.adjustment_date);
-                const dateStr = adjDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-                const createdTime = adj.created_at ? formatDateTime(adj.created_at) : dateStr;
-                const modifiedTime = adj.updated_at ? formatDateTime(adj.updated_at) : createdTime;
-                const statusClass = adj.status === 'adjusted' ? 'status-adjusted' : 'status-draft';
-                const reasonDisplay = adj.reason ? adj.reason.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : '-';
-                const typeDisplay = adj.mode === 'value' ? 'Value' : 'Quantity';
+            function renderAdjPage(pageData) {
+                tableBody.innerHTML = pageData.map(adj => {
+                    const adjDate = new Date(adj.adjustment_date);
+                    const dateStr = adjDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+                    const createdTime = adj.created_at ? formatDateTime(adj.created_at) : dateStr;
+                    const modifiedTime = adj.updated_at ? formatDateTime(adj.updated_at) : createdTime;
+                    const statusClass = adj.status === 'adjusted' ? 'status-adjusted' : 'status-draft';
+                    const reasonDisplay = adj.reason ? adj.reason.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : '-';
+                    const typeDisplay = adj.mode === 'value' ? 'Value' : 'Quantity';
 
-                return `
-                    <tr onclick="viewAdjustment(${adj.id})" style="cursor: pointer;" data-adj-id="${adj.id}">
-                        <td><input type="checkbox" class="row-checkbox" data-id="${adj.id}" onclick="event.stopPropagation(); updateBulkActionBar()"></td>
-                        <td>${dateStr}</td>
-                        <td>${reasonDisplay}</td>
-                        <td>${adj.description || ''}</td>
-                        <td><span class="adj-status ${statusClass}">${adj.status?.toUpperCase() || 'ADJUSTED'}</span></td>
-                        <td>${adj.reference_number || ''}</td>
-                        <td>${typeDisplay}</td>
-                        <td>Admin</td>
-                        <td>${createdTime}</td>
-                        <td>Admin</td>
-                        <td>${modifiedTime}</td>
-                        <td><span class="adj-search-icon">🔍</span></td>
-                    </tr>
-                `;
-            }).join('');
+                    return `
+                        <tr onclick="viewAdjustment(${adj.id})" style="cursor: pointer;" data-adj-id="${adj.id}">
+                            <td><input type="checkbox" class="row-checkbox" data-id="${adj.id}" onclick="event.stopPropagation(); updateBulkActionBar()"></td>
+                            <td>${dateStr}</td>
+                            <td>${reasonDisplay}</td>
+                            <td>${adj.description || ''}</td>
+                            <td><span class="adj-status ${statusClass}">${adj.status?.toUpperCase() || 'ADJUSTED'}</span></td>
+                            <td>${adj.reference_number || ''}</td>
+                            <td>${typeDisplay}</td>
+                            <td>Admin</td>
+                            <td>${createdTime}</td>
+                            <td>Admin</td>
+                            <td>${modifiedTime}</td>
+                            <td><span class="adj-search-icon">🔍</span></td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            window.adjPager = Pagination.create({
+                data: adjustments,
+                perPage: 14,
+                containerId: 'adjPaginationContainer',
+                onPageChange: function (pageData) { renderAdjPage(pageData); }
+            });
         }
 
         function formatDateTime(dateStr) {

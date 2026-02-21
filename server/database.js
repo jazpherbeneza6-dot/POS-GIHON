@@ -434,7 +434,242 @@ async function init() {
       await pool.query(`CREATE INDEX IF NOT EXISTS idx_vendor_contact_persons_vendor_id ON vendor_contact_persons(vendor_id);`);
 
       console.log('Vendor schema expansion completed');
+
+      // ========== Payments Received table ==========
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS payments_received (
+          id SERIAL PRIMARY KEY,
+          payment_number VARCHAR(50),
+          invoice_id INTEGER,
+          invoice_number VARCHAR(50),
+          customer_id INTEGER,
+          customer_name VARCHAR(255),
+          amount_received DECIMAL(12,2) DEFAULT 0,
+          bank_charges DECIMAL(12,2) DEFAULT 0,
+          tax_deducted BOOLEAN DEFAULT FALSE,
+          payment_date DATE DEFAULT CURRENT_DATE,
+          payment_received_on DATE,
+          payment_mode VARCHAR(100) DEFAULT 'Cash',
+          deposit_to VARCHAR(255) DEFAULT 'Petty Cash',
+          location VARCHAR(255) DEFAULT 'Head Office',
+          reference_number VARCHAR(100),
+          notes TEXT,
+          status VARCHAR(50) DEFAULT 'DRAFT',
+          salesperson_name VARCHAR(255),
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+      await pool.query(`CREATE INDEX IF NOT EXISTS idx_payments_received_status ON payments_received(status);`);
+      await pool.query(`CREATE INDEX IF NOT EXISTS idx_payments_received_invoice ON payments_received(invoice_id);`);
+      // Migration: add salesperson_name if missing
+      await pool.query(`ALTER TABLE payments_received ADD COLUMN IF NOT EXISTS salesperson_name VARCHAR(255);`);
+      console.log('Payments received table created');
+
+      // Packages table
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS packages (
+          id SERIAL PRIMARY KEY,
+          package_number VARCHAR(50),
+          sales_order_id INTEGER REFERENCES sales_orders(id),
+          sales_order_number VARCHAR(50),
+          customer_name VARCHAR(255),
+          package_date DATE DEFAULT CURRENT_DATE,
+          internal_notes TEXT,
+          status VARCHAR(50) DEFAULT 'NOT SHIPPED',
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS package_items (
+          id SERIAL PRIMARY KEY,
+          package_id INTEGER REFERENCES packages(id),
+          item_name VARCHAR(255),
+          item_id INTEGER,
+          ordered_quantity DECIMAL(12,2) DEFAULT 0,
+          packed_quantity DECIMAL(12,2) DEFAULT 0,
+          quantity_to_pack DECIMAL(12,2) DEFAULT 0,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+      console.log('Packages table created');
+
+      // Create shipments table
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS shipments (
+          id SERIAL PRIMARY KEY,
+          package_id INTEGER REFERENCES packages(id),
+          sales_order_id INTEGER,
+          shipment_order_number VARCHAR(50),
+          ship_date DATE,
+          carrier VARCHAR(100),
+          tracking_number VARCHAR(255),
+          tracking_url VARCHAR(500),
+          shipping_charges DECIMAL(12,2) DEFAULT 0,
+          notes TEXT,
+          already_delivered BOOLEAN DEFAULT false,
+          status VARCHAR(50) DEFAULT 'SHIPPED',
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+      console.log('Shipments table created');
+
+      // Sales Returns table
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS sales_returns (
+          id SERIAL PRIMARY KEY,
+          rma_number VARCHAR(50) UNIQUE NOT NULL,
+          return_date DATE,
+          warehouse_location VARCHAR(100) DEFAULT 'Head Office',
+          reason TEXT,
+          credit_only BOOLEAN DEFAULT false,
+          sales_order_id INTEGER,
+          sales_order_number VARCHAR(50),
+          customer_name VARCHAR(255),
+          status VARCHAR(50) DEFAULT 'DRAFT',
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+      console.log('Sales Returns table created');
+
+      // Sales Return Items table
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS sales_return_items (
+          id SERIAL PRIMARY KEY,
+          sales_return_id INTEGER REFERENCES sales_returns(id),
+          item_name VARCHAR(255),
+          item_id INTEGER,
+          shipped_quantity DECIMAL(12,2) DEFAULT 0,
+          returned_quantity DECIMAL(12,2) DEFAULT 0,
+          return_quantity DECIMAL(12,2) DEFAULT 0,
+          rate DECIMAL(12,2) DEFAULT 0,
+          amount DECIMAL(12,2) DEFAULT 0,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+      console.log('Sales Return Items table created');
+
+      // Add rate/amount columns to sales_return_items if missing
+      try {
+        await pool.query('ALTER TABLE sales_return_items ADD COLUMN IF NOT EXISTS rate DECIMAL(12,2) DEFAULT 0');
+        await pool.query('ALTER TABLE sales_return_items ADD COLUMN IF NOT EXISTS amount DECIMAL(12,2) DEFAULT 0');
+      } catch (e) { /* columns may already exist */ }
+
       console.log('Database migration completed');
+
+      // ========== Bills tables ==========
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS bills (
+          id SERIAL PRIMARY KEY,
+          bill_number VARCHAR(100),
+          purchase_order_id INTEGER,
+          supplier_id INTEGER,
+          supplier_name VARCHAR(255),
+          order_number VARCHAR(100),
+          bill_date DATE DEFAULT CURRENT_DATE,
+          due_date DATE,
+          payment_terms VARCHAR(50) DEFAULT 'due-on-receipt',
+          subject TEXT,
+          notes TEXT,
+          discount_percent NUMERIC(10,2) DEFAULT 0,
+          adjustment NUMERIC(10,2) DEFAULT 0,
+          sub_total NUMERIC(38,10) DEFAULT 0,
+          total_amount NUMERIC(38,10) DEFAULT 0,
+          status VARCHAR(50) DEFAULT 'draft',
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS bill_items (
+          id SERIAL PRIMARY KEY,
+          bill_id INTEGER REFERENCES bills(id) ON DELETE CASCADE,
+          item_id INTEGER,
+          item_name VARCHAR(255),
+          account VARCHAR(100),
+          account_type VARCHAR(50) DEFAULT 'inventory',
+          quantity NUMERIC(38,10) DEFAULT 0,
+          rate NUMERIC(38,10) DEFAULT 0,
+          tax_percent NUMERIC(10,2) DEFAULT 0,
+          amount NUMERIC(38,10) DEFAULT 0,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+      await pool.query(`CREATE INDEX IF NOT EXISTS idx_bills_po_id ON bills(purchase_order_id);`);
+      await pool.query(`CREATE INDEX IF NOT EXISTS idx_bill_items_bill_id ON bill_items(bill_id);`);
+      console.log('Bills tables created');
+
+      // Migration: add account_type column to bill_items if missing
+      try {
+        await pool.query(`ALTER TABLE bill_items ADD COLUMN IF NOT EXISTS account_type VARCHAR(50) DEFAULT 'inventory'`);
+      } catch (e) { /* column may already exist */ }
+
+      // Payments Made table (for bill payments)
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS payments_made (
+          id SERIAL PRIMARY KEY,
+          payment_number VARCHAR(50),
+          bill_id INTEGER REFERENCES bills(id) ON DELETE SET NULL,
+          bill_number VARCHAR(50),
+          supplier_id INTEGER,
+          supplier_name VARCHAR(255),
+          amount_paid NUMERIC(38,10) DEFAULT 0,
+          bank_charges NUMERIC(38,10) DEFAULT 0,
+          tax_deducted BOOLEAN DEFAULT false,
+          payment_date DATE DEFAULT CURRENT_DATE,
+          payment_made_on DATE,
+          payment_mode VARCHAR(50) DEFAULT 'Cash',
+          paid_through VARCHAR(100) DEFAULT 'Petty Cash',
+          location VARCHAR(100) DEFAULT 'Head Office',
+          reference_number VARCHAR(100),
+          notes TEXT,
+          status VARCHAR(50) DEFAULT 'DRAFT',
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+      await pool.query(`CREATE INDEX IF NOT EXISTS idx_payments_made_bill_id ON payments_made(bill_id);`);
+      console.log('Payments Made table created');
+
+      // Vendor Credits tables
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS vendor_credits (
+          id SERIAL PRIMARY KEY,
+          credit_number VARCHAR(50),
+          bill_id INTEGER,
+          bill_number VARCHAR(50),
+          supplier_id INTEGER,
+          supplier_name VARCHAR(255),
+          credit_date DATE DEFAULT CURRENT_DATE,
+          reference VARCHAR(255),
+          reason TEXT,
+          discount_percent NUMERIC(10,2) DEFAULT 0,
+          adjustment NUMERIC(38,10) DEFAULT 0,
+          sub_total NUMERIC(38,10) DEFAULT 0,
+          total_amount NUMERIC(38,10) DEFAULT 0,
+          status VARCHAR(50) DEFAULT 'draft',
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS vendor_credit_items (
+          id SERIAL PRIMARY KEY,
+          vendor_credit_id INTEGER REFERENCES vendor_credits(id) ON DELETE CASCADE,
+          item_id INTEGER,
+          item_name VARCHAR(255),
+          account VARCHAR(100),
+          account_type VARCHAR(50) DEFAULT 'inventory',
+          quantity NUMERIC(38,10) DEFAULT 0,
+          rate NUMERIC(38,10) DEFAULT 0,
+          amount NUMERIC(38,10) DEFAULT 0,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+      console.log('Vendor Credits tables created');
     } catch (migrationError) {
       // Column might already exist, ignore error
       console.log('Migration note:', migrationError.message);

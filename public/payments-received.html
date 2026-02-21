@@ -7,6 +7,8 @@
     <title>Payments Received - Inventory Management</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/pagination.css">
+    <link rel="stylesheet" href="/css/global-search.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
         rel="stylesheet">
@@ -16,6 +18,7 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             text-rendering: optimizeLegibility;
+            box-sizing: border-box;
         }
 
         body {
@@ -35,9 +38,12 @@
             margin-left: 260px;
             padding: 0;
             background: white;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
-        /* Page Header */
+        /* ===== Page Header ===== */
         .page-header {
             display: flex;
             align-items: center;
@@ -45,6 +51,7 @@
             padding: 16px 24px;
             background: white;
             border-bottom: 1px solid #e9ecef;
+            flex-shrink: 0;
         }
 
         .page-title-wrapper {
@@ -134,7 +141,7 @@
             background: #f5f5f5;
         }
 
-        /* Empty State */
+        /* ===== Empty State ===== */
         .empty-state {
             display: flex;
             flex-direction: column;
@@ -176,21 +183,28 @@
             background: #3367d6;
         }
 
-        .import-link {
-            color: #4285f4;
-            text-decoration: none;
-            font-size: 14px;
+        /* ===== Main Content (List + Detail) ===== */
+        .main-content {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
         }
 
-        .import-link:hover {
-            text-decoration: underline;
+        /* ===== Left Panel - Table List ===== */
+        .list-panel {
+            width: 100%;
+            overflow-y: auto;
+            border-right: 1px solid #e9ecef;
+            transition: width 0.3s;
+            background: #fff;
         }
 
-        /* Payments Table */
-        .payments-container {
-            padding: 24px;
+        .list-panel.with-detail {
+            width: 300px;
+            min-width: 300px;
         }
 
+        /* ---- FULL TABLE (default, no detail selected) ---- */
         .payments-table {
             width: 100%;
             border-collapse: collapse;
@@ -199,21 +213,458 @@
 
         .payments-table th {
             text-align: left;
-            padding: 14px 16px;
+            padding: 10px 12px;
             font-size: 11px;
             font-weight: 600;
-            color: #999;
+            color: #888;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             border-bottom: 2px solid #e9ecef;
-            background: #f9fafb;
+            background: white;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        .payments-table th:first-child {
+            padding-left: 16px;
+            width: 36px;
         }
 
         .payments-table td {
-            padding: 14px 16px;
+            padding: 10px 12px;
             border-bottom: 1px solid #f0f0f0;
             font-size: 13px;
             color: #333;
+            white-space: nowrap;
+        }
+
+        .payments-table td:first-child {
+            padding-left: 16px;
+            width: 36px;
+        }
+
+        .payments-table tr {
+            cursor: pointer;
+        }
+
+        .payments-table tr:hover {
+            background: #f3f7ff;
+        }
+
+        .payments-table tr.active {
+            background: #e8f0fe;
+        }
+
+        .payments-table .col-amount,
+        .payments-table .col-unused {
+            text-align: right;
+        }
+
+        .payment-num-link {
+            color: #4285f4;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .payment-num-link:hover {
+            text-decoration: underline;
+        }
+
+        .th-search {
+            text-align: right !important;
+            padding-right: 16px !important;
+        }
+
+        .search-icon {
+            cursor: pointer;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .search-icon:hover {
+            color: #333;
+        }
+
+        /* ---- CARD LIST (compact, when detail is open) ---- */
+        .payments-cards {
+            display: none;
+        }
+
+        .list-panel.with-detail .payments-table-wrap {
+            display: none;
+        }
+
+        .list-panel.with-detail .payments-cards {
+            display: block;
+        }
+
+        .payment-card {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .payment-card:hover {
+            background: #f8f9ff;
+        }
+
+        .payment-card.active {
+            background: #e8f0fe;
+        }
+
+        .payment-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 4px;
+        }
+
+        .payment-card-customer {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 160px;
+        }
+
+        .payment-card-amount {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .payment-card-meta {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 6px;
+        }
+
+        .payment-card-bottom {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .payment-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .payment-badge.paid {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .payment-badge.draft {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .payment-card-mode {
+            font-size: 11px;
+            color: #888;
+        }
+
+        /* ===== Right Panel - Detail View ===== */
+        .detail-panel {
+            flex: 1;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .detail-panel.active {
+            display: flex;
+        }
+
+        /* Detail Top Info Bar */
+        .detail-info-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            flex-shrink: 0;
+        }
+
+        .detail-info-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .detail-info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-info-label {
+            font-size: 10px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-info-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Detail Action Bar */
+        .detail-action-bar {
+            display: flex;
+            align-items: center;
+            padding: 8px 20px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            gap: 2px;
+            flex-shrink: 0;
+        }
+
+        .detail-action-btn {
+            padding: 6px 12px;
+            background: none;
+            border: none;
+            font-size: 12px;
+            color: #555;
+            cursor: pointer;
+            border-radius: 3px;
+            white-space: nowrap;
+        }
+
+        .detail-action-btn:hover {
+            background: #e9ecef;
+            color: #333;
+        }
+
+        .detail-action-separator {
+            width: 1px;
+            height: 20px;
+            background: #d9d9d9;
+            margin: 0 4px;
+        }
+
+        /* Detail Content */
+        .detail-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            background: #f5f6fa;
+        }
+
+        /* ===== Payment Receipt Card ===== */
+        .receipt-card {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 2px;
+            position: relative;
+            padding: 40px 48px;
+        }
+
+        .receipt-ribbon {
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            width: 80px;
+            height: 80px;
+            overflow: hidden;
+        }
+
+        .receipt-ribbon span {
+            display: block;
+            position: absolute;
+            width: 120px;
+            padding: 6px 0;
+            background: #43a047;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            text-align: center;
+            text-transform: uppercase;
+            transform: rotate(-45deg);
+            top: 20px;
+            left: -28px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .receipt-ribbon.draft span {
+            background: #9e9e9e;
+        }
+
+        .company-info {
+            margin-bottom: 24px;
+        }
+
+        .company-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin: 0 0 4px 0;
+        }
+
+        .company-details {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .receipt-title {
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #555;
+            letter-spacing: 1px;
+            margin: 24px 0;
+            text-transform: uppercase;
+        }
+
+        .payment-info-grid {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 32px;
+        }
+
+        .payment-info-left {
+            display: grid;
+            grid-template-columns: 130px 1fr;
+            gap: 8px 16px;
+            font-size: 13px;
+        }
+
+        .info-label {
+            color: #666;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .amount-box {
+            background: #43a047;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 4px;
+            text-align: center;
+            min-width: 160px;
+        }
+
+        .amount-box .amount-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .amount-box .amount-value {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .received-from {
+            margin-bottom: 32px;
+        }
+
+        .received-from-label {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 6px;
+        }
+
+        .received-from-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4285f4;
+            margin-bottom: 4px;
+        }
+
+        .received-from-address {
+            font-size: 12px;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .payment-for-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .payment-for-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .payment-for-table th {
+            text-align: left;
+            padding: 10px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #555;
+            background: #f5f5f5;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .payment-for-table th:last-child,
+        .payment-for-table td:last-child {
+            text-align: right;
+        }
+
+        .payment-for-table th:nth-child(3),
+        .payment-for-table td:nth-child(3) {
+            text-align: right;
+        }
+
+        .payment-for-table td {
+            padding: 10px 12px;
+            font-size: 13px;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .invoice-link {
+            color: #4285f4;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .invoice-link:hover {
+            text-decoration: underline;
+        }
+
+        .btn-mark-paid {
+            padding: 8px 18px;
+            background: #43a047;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 16px;
+        }
+
+        .btn-mark-paid:hover {
+            background: #388e3c;
         }
     </style>
 </head>
@@ -232,9 +683,14 @@
                         <span class="dropdown-arrow">▼</span>
                     </h1>
                 </div>
+                <div class="global-search-container">
+                    <span class="global-search-icon">🔍</span>
+                    <input type="text" class="global-search-input" id="prSearchInput" placeholder="Search payments..."
+                        oninput="searchPayments()">
+                </div>
                 <div class="header-actions">
                     <div class="btn-new-group">
-                        <button class="btn-new" onclick="recordPayment()">
+                        <button class="btn-new" onclick="goToRecordPayment()">
                             <span>+</span> New
                         </button>
                         <button class="btn-new-dropdown">▼</button>
@@ -248,40 +704,353 @@
                 <h2 class="empty-state-title">No payments received, yet</h2>
                 <p class="empty-state-subtitle">Payments will be added once your customers pay for their invoices.</p>
                 <button class="btn-unpaid" onclick="goToUnpaidInvoices()">GO TO UNPAID INVOICES</button>
-                <a href="/import-payments.html" class="import-link">Import Payments</a>
             </div>
 
-            <!-- Payments Container (hidden when empty) -->
-            <div class="payments-container" id="paymentsContainer" style="display: none;">
-                <table class="payments-table">
-                    <thead>
-                        <tr>
-                            <th>DATE</th>
-                            <th>PAYMENT#</th>
-                            <th>REFERENCE#</th>
-                            <th>CUSTOMER NAME</th>
-                            <th>INVOICE#</th>
-                            <th>MODE</th>
-                            <th>AMOUNT</th>
-                        </tr>
-                    </thead>
-                    <tbody id="paymentsBody">
-                        <!-- Payments will be added here -->
-                    </tbody>
-                </table>
+            <!-- Main Content (List + Detail) -->
+            <div class="main-content" id="mainContent" style="display: none;">
+                <!-- Left Panel -->
+                <div class="list-panel" id="listPanel">
+
+                    <!-- FULL TABLE (shown when NO detail is selected) -->
+                    <div class="payments-table-wrap">
+                        <table class="payments-table">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)"></th>
+                                    <th>DATE</th>
+                                    <th>PAYMENT #</th>
+                                    <th>REFERENCE NUMBER</th>
+                                    <th>CUSTOMER NAME ↕</th>
+                                    <th>INVOICE#</th>
+                                    <th>MODE</th>
+                                    <th class="col-amount">AMOUNT</th>
+                                    <th class="col-unused">UNUSED AMOUNT</th>
+                                    <th class="th-search"><span class="search-icon">🔍</span></th>
+                                </tr>
+                            </thead>
+                            <tbody id="paymentsBody">
+                            </tbody>
+                        </table>
+                        <div id="prPaginationContainer"></div>
+                    </div>
+
+                    <!-- CARD LIST (shown when detail IS selected) -->
+                    <div class="payments-cards" id="paymentsCards">
+                    </div>
+
+                </div>
+
+                <!-- Right Panel - Detail -->
+                <div class="detail-panel" id="detailPanel">
+                    <!-- Info Bar -->
+                    <div class="detail-info-bar">
+                        <div class="detail-info-left">
+                            <div class="detail-info-item">
+                                <span class="detail-info-label">Location</span>
+                                <span class="detail-info-value" id="detailLocation">Head Office</span>
+                            </div>
+                            <div class="detail-info-item">
+                                <span class="detail-info-label">Payment #</span>
+                                <span class="detail-info-value" id="detailPaymentNum"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Bar -->
+                    <div class="detail-action-bar">
+                        <button class="detail-action-btn">✏️ Edit</button>
+                        <div class="detail-action-separator"></div>
+                        <button class="detail-action-btn">📧 Send Email</button>
+                        <div class="detail-action-separator"></div>
+                        <button class="detail-action-btn">📄 PDF/Print ▾</button>
+                        <div class="detail-action-separator"></div>
+                        <button class="detail-action-btn">↩️ Refund</button>
+                        <div class="detail-action-separator"></div>
+                        <button class="detail-action-btn" id="btnMarkPaid" style="display:none;"
+                            onclick="markAsPaid()">✅ Mark as Paid</button>
+                        <button class="detail-action-btn">⋯</button>
+                    </div>
+
+                    <!-- Detail Content -->
+                    <div class="detail-content" id="detailContent">
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Layout Script -->
+    <script src="/js/pagination.js"></script>
     <script src="/js/layout.js"></script>
     <script>
-        // Record new payment
-        function recordPayment() {
-            window.location.href = '/record-payment.html';
+        let payments = [];
+        let selectedPaymentId = null;
+
+        document.addEventListener('DOMContentLoaded', function () {
+            loadPayments();
+        });
+
+        function searchPayments() {
+            const query = (document.getElementById('prSearchInput').value || '').toLowerCase();
+            if (!query) { renderPaymentsList(); renderPaymentsCards(); return; }
+            const filtered = payments.filter(p => {
+                return (p.payment_number || '').toLowerCase().includes(query) ||
+                    (p.customer_name || '').toLowerCase().includes(query) ||
+                    (p.invoice_number || '').toLowerCase().includes(query) ||
+                    (p.reference_number || '').toLowerCase().includes(query) ||
+                    (p.payment_mode || '').toLowerCase().includes(query);
+            });
+            function renderPage(pageData) {
+                document.getElementById('paymentsBody').innerHTML = pageData.map(p => {
+                    const date = p.payment_date ? new Date(p.payment_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+                    const amount = parseFloat(p.amount_received).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                    const activeClass = p.id === selectedPaymentId ? 'active' : '';
+                    return `<tr onclick="selectPayment(${p.id})" class="${activeClass}">
+                        <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+                        <td>${date}</td>
+                        <td><a class="payment-num-link" href="javascript:void(0)" onclick="event.stopPropagation(); selectPayment(${p.id})">${p.payment_number || ''}</a></td>
+                        <td>${p.reference_number || ''}</td>
+                        <td>${p.customer_name || ''}</td>
+                        <td>${p.invoice_number || ''}</td>
+                        <td>${p.payment_mode || 'Cash'}</td>
+                        <td class="col-amount">PHP${amount}</td>
+                        <td class="col-unused">PHP0.00</td>
+                        <td></td>
+                    </tr>`;
+                }).join('');
+            }
+            window.prPager = Pagination.create({
+                data: filtered, perPage: 14, containerId: 'prPaginationContainer',
+                onPageChange: function(pageData) { renderPage(pageData); }
+            });
         }
 
-        // Go to unpaid invoices
+        async function loadPayments() {
+            try {
+                const res = await fetch('/api/payments-received');
+                if (!res.ok) return;
+                payments = await res.json();
+
+                if (payments.length === 0) {
+                    document.getElementById('emptyState').style.display = 'flex';
+                    document.getElementById('mainContent').style.display = 'none';
+                    return;
+                }
+
+                document.getElementById('emptyState').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'flex';
+                renderPaymentsList();
+                renderPaymentsCards();
+            } catch (err) {
+                console.error('Error loading payments:', err);
+            }
+        }
+
+        /* ===== Full Table View ===== */
+        function renderPaymentsList() {
+            function renderPRPage(pageData) {
+                const tbody = document.getElementById('paymentsBody');
+                tbody.innerHTML = pageData.map(p => {
+                    const date = p.payment_date ? new Date(p.payment_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+                    const amount = parseFloat(p.amount_received).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                    const activeClass = p.id === selectedPaymentId ? 'active' : '';
+
+                    return `
+                        <tr onclick="selectPayment(${p.id})" class="${activeClass}">
+                            <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+                            <td>${date}</td>
+                            <td><a class="payment-num-link" href="javascript:void(0)" onclick="event.stopPropagation(); selectPayment(${p.id})">${p.payment_number || ''}</a></td>
+                            <td>${p.reference_number || ''}</td>
+                            <td>${p.customer_name || ''}</td>
+                            <td>${p.invoice_number || ''}</td>
+                            <td>${p.payment_mode || 'Cash'}</td>
+                            <td class="col-amount">PHP${amount}</td>
+                            <td class="col-unused">PHP0.00</td>
+                            <td></td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            if (!window.prPager) {
+                window.prPager = Pagination.create({
+                    data: payments,
+                    perPage: 14,
+                    containerId: 'prPaginationContainer',
+                    onPageChange: function (pageData) { renderPRPage(pageData); }
+                });
+            } else {
+                window.prPager.updateData(payments);
+            }
+        }
+
+        /* ===== Card View (compact, for when detail panel is open) ===== */
+        function renderPaymentsCards() {
+            const container = document.getElementById('paymentsCards');
+            container.innerHTML = payments.map(p => {
+                const date = p.payment_date ? new Date(p.payment_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+                const amount = parseFloat(p.amount_received).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                const statusClass = p.status === 'PAID' ? 'paid' : 'draft';
+                const activeClass = p.id === selectedPaymentId ? 'active' : '';
+
+                return `
+                    <div class="payment-card ${activeClass}" onclick="selectPayment(${p.id})">
+                        <div class="payment-card-top">
+                            <span class="payment-card-customer">${p.customer_name || 'Unknown'}</span>
+                            <span class="payment-card-amount">PHP${amount}</span>
+                        </div>
+                        <div class="payment-card-meta">
+                            ${p.payment_number || ''} &middot; ${date}
+                        </div>
+                        <div class="payment-card-bottom">
+                            <span class="payment-badge ${statusClass}">${p.status}</span>
+                            <span class="payment-card-mode">${p.payment_mode || 'Cash'}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function selectPayment(id) {
+            selectedPaymentId = id;
+            renderPaymentsList();
+            renderPaymentsCards();
+
+            // Show detail panel
+            document.getElementById('listPanel').classList.add('with-detail');
+            document.getElementById('detailPanel').classList.add('active');
+
+            // Fetch full payment details
+            try {
+                const res = await fetch(`/api/payments-received/${id}`);
+                if (!res.ok) return;
+                const payment = await res.json();
+                renderDetail(payment);
+            } catch (err) {
+                console.error('Error loading payment detail:', err);
+            }
+        }
+
+        function renderDetail(payment) {
+            const date = payment.payment_date ? new Date(payment.payment_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+            const amount = parseFloat(payment.amount_received).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+            const ribbonClass = payment.status === 'PAID' ? '' : 'draft';
+            const ribbonText = payment.status === 'PAID' ? 'Paid' : 'Draft';
+
+            // Update info bar
+            document.getElementById('detailLocation').textContent = payment.location || 'Head Office';
+            document.getElementById('detailPaymentNum').textContent = payment.payment_number || '';
+
+            // Show/hide mark as paid button
+            document.getElementById('btnMarkPaid').style.display = payment.status === 'DRAFT' ? 'inline-block' : 'none';
+
+            // Address
+            let addressHTML = '';
+            if (payment.billing_street) addressHTML += payment.billing_street + '<br>';
+            if (payment.billing_city) addressHTML += payment.billing_city + '<br>';
+            if (payment.billing_state) addressHTML += ' ' + payment.billing_state;
+            if (payment.billing_zip) addressHTML += '<br>' + payment.billing_zip;
+            if (payment.billing_country) addressHTML += '<br>' + payment.billing_country;
+
+            // Invoice info
+            let invoiceDate = '';
+            let invoiceAmount = '';
+            if (payment.invoice) {
+                invoiceDate = payment.invoice.invoice_date ? new Date(payment.invoice.invoice_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+                invoiceAmount = parseFloat(payment.invoice.total).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+            }
+
+            document.getElementById('detailContent').innerHTML = `
+                <div class="receipt-card">
+                    <div class="receipt-ribbon ${ribbonClass}"><span>${ribbonText}</span></div>
+
+                    <div class="company-info">
+                        <div class="company-name">SOLO</div>
+                        <div class="company-details">
+                            Philippines<br>
+                            ${payment.salesperson_name || ''}
+                        </div>
+                    </div>
+
+                    <div class="receipt-title">PAYMENT RECEIPT</div>
+
+                    <div class="payment-info-grid">
+                        <div class="payment-info-left">
+                            <span class="info-label">Payment Date</span>
+                            <span class="info-value">${date}</span>
+                            <span class="info-label">Reference Number</span>
+                            <span class="info-value">${payment.reference_number || ''}</span>
+                            <span class="info-label">Payment Mode</span>
+                            <span class="info-value">${payment.payment_mode || 'Cash'}</span>
+                        </div>
+
+                        <div class="amount-box">
+                            <div class="amount-label">Amount Received</div>
+                            <div class="amount-value">PHP${amount}</div>
+                        </div>
+                    </div>
+
+                    <div class="received-from">
+                        <div class="received-from-label">Received From</div>
+                        <div class="received-from-name">${payment.customer_name || ''}</div>
+                        <div class="received-from-address">${addressHTML || ''}</div>
+                    </div>
+
+                    <div class="payment-for-title">Payment for</div>
+                    <table class="payment-for-table">
+                        <thead>
+                            <tr>
+                                <th>Invoice Number</th>
+                                <th>Invoice Date</th>
+                                <th>Invoice Amount</th>
+                                <th>Payment Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><a class="invoice-link" href="/invoices.html">${payment.invoice_number || ''}</a></td>
+                                <td>${invoiceDate}</td>
+                                <td>PHP${invoiceAmount || amount}</td>
+                                <td>PHP${amount}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    ${payment.status === 'DRAFT' ? '<button class="btn-mark-paid" onclick="markAsPaid()">✅ Mark as Paid</button>' : ''}
+                </div>
+            `;
+        }
+
+        async function markAsPaid() {
+            if (!selectedPaymentId) return;
+            if (!confirm('Mark this payment as Paid?')) return;
+
+            try {
+                const res = await fetch(`/api/payments-received/${selectedPaymentId}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'PAID' })
+                });
+
+                if (res.ok) {
+                    alert('Payment marked as Paid!');
+                    loadPayments();
+                    selectPayment(selectedPaymentId);
+                }
+            } catch (err) {
+                console.error('Error marking as paid:', err);
+            }
+        }
+
+        function toggleSelectAll(el) {
+            const checkboxes = document.querySelectorAll('#paymentsBody input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = el.checked);
+        }
+
+        function goToRecordPayment() {
+            window.location.href = '/record-invoice-payment.html';
+        }
+
         function goToUnpaidInvoices() {
             window.location.href = '/invoices.html';
         }

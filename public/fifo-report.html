@@ -913,13 +913,159 @@
             });
         }
 
+        // Calculate date range based on filter dropdown
+        function getDateRange() {
+            const sel = document.getElementById('dateRange').value;
+            const now = new Date();
+            let from, to;
+
+            switch (sel) {
+                case 'this-month':
+                    from = new Date(now.getFullYear(), now.getMonth(), 1);
+                    to = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+                    break;
+                case 'last-month':
+                    from = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+                    to = new Date(now.getFullYear(), now.getMonth(), 0);
+                    break;
+                case 'this-quarter':
+                    const q = Math.floor(now.getMonth() / 3);
+                    from = new Date(now.getFullYear(), q * 3, 1);
+                    to = new Date(now.getFullYear(), (q + 1) * 3, 0);
+                    break;
+                case 'this-year':
+                    from = new Date(now.getFullYear(), 0, 1);
+                    to = new Date(now.getFullYear(), 11, 31);
+                    break;
+                default:
+                    from = new Date(now.getFullYear(), now.getMonth(), 1);
+                    to = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            }
+
+            return {
+                from: from.toISOString().split('T')[0],
+                to: to.toISOString().split('T')[0],
+                fromDisplay: formatDate(from),
+                toDisplay: formatDate(to)
+            };
+        }
+
+        function formatDate(d) {
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            return `${String(d.getDate()).padStart(2, '0')} ${months[d.getMonth()]} ${d.getFullYear()}`;
+        }
+
+        function formatCurrency(n) {
+            const val = parseFloat(n) || 0;
+            return val.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function formatDateCell(dateStr) {
+            if (!dateStr) return '-';
+            const d = new Date(dateStr);
+            return formatDate(d);
+        }
+
+        // Load items for dropdown on page load
+        async function loadItemsDropdown() {
+            try {
+                const res = await fetch('/api/items');
+                if (res.ok) {
+                    const items = await res.json();
+                    const select = document.getElementById('itemName');
+                    items.forEach(item => {
+                        const opt = document.createElement('option');
+                        opt.value = item.name;
+                        opt.textContent = item.name;
+                        select.appendChild(opt);
+                    });
+                }
+            } catch (e) { console.error('Failed to load items:', e); }
+        }
+
         // Run Report function
-        function runReport() {
-            const dateRange = document.getElementById('dateRange').value;
+        async function runReport() {
+            const { from, to, fromDisplay, toDisplay } = getDateRange();
             const itemName = document.getElementById('itemName').value;
 
-            alert('Running FIFO Cost Lot Tracking Report...');
+            // Update header date range
+            document.querySelector('.report-date-range').textContent = `• From ${fromDisplay} To ${toDisplay}`;
+            document.querySelector('.report-date-info').innerHTML = `From <span>${fromDisplay}</span> To <span>${toDisplay}</span>`;
+
+            const tbody = document.getElementById('reportTableBody');
+            tbody.innerHTML = '<tr><td colspan="11" class="no-data">Loading...</td></tr>';
+
+            try {
+                let url = `/api/inventory/fifo-report?from=${from}&to=${to}`;
+                if (itemName && itemName !== 'all') {
+                    url += `&item_name=${encodeURIComponent(itemName)}`;
+                }
+
+                const res = await fetch(url);
+                if (!res.ok) throw new Error('Failed to fetch report data');
+
+                const data = await res.json();
+                const productIn = data.product_in || [];
+                const productOut = data.product_out || [];
+
+                if (productIn.length === 0 && productOut.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="11" class="no-data">No data to display</td></tr>';
+                    return;
+                }
+
+                // Build rows - pair PRODUCT IN and PRODUCT OUT side by side
+                const maxRows = Math.max(productIn.length, productOut.length);
+                let html = '';
+
+                for (let i = 0; i < maxRows; i++) {
+                    const pi = productIn[i];
+                    const po = productOut[i];
+
+                    html += '<tr>';
+
+                    // PRODUCT IN columns
+                    if (pi) {
+                        html += `
+                            <td>${formatDateCell(pi.date)}</td>
+                            <td style="color:#4285f4; font-weight:500;">${pi.transaction_ref || '-'}</td>
+                            <td>${pi.received_from || '-'}</td>
+                            <td style="font-weight:500;">${pi.item_name || '-'}</td>
+                            <td>${parseFloat(pi.quantity) || 0}</td>
+                            <td>₱${formatCurrency(pi.cost_per_unit)}</td>
+                            <td style="font-weight:600;">₱${formatCurrency(pi.total)}</td>
+                        `;
+                    } else {
+                        html += '<td></td><td></td><td></td><td></td><td></td><td></td><td></td>';
+                    }
+
+                    // PRODUCT OUT columns
+                    if (po) {
+                        html += `
+                            <td>${formatDateCell(po.date)}</td>
+                            <td style="color:#4285f4; font-weight:500;">${po.transaction_ref || '-'}</td>
+                            <td>${po.dispersed_to || '-'}</td>
+                            <td>${parseFloat(po.qty_dispersed) || 0}</td>
+                        `;
+                    } else {
+                        html += '<td></td><td></td><td></td><td></td>';
+                    }
+
+                    html += '</tr>';
+                }
+
+                tbody.innerHTML = html;
+            } catch (error) {
+                console.error('Error running FIFO report:', error);
+                tbody.innerHTML = '<tr><td colspan="11" class="no-data">Error loading report data</td></tr>';
+            }
         }
+
+        // Initialize - load items and auto-run report
+        document.addEventListener('DOMContentLoaded', function () {
+            loadItemsDropdown();
+            // Auto-run with default date range
+            setTimeout(() => runReport(), 800);
+        });
     </script>
 </body>
 

@@ -28,11 +28,9 @@
 
         // Remove all active classes first with animation
         document.querySelectorAll('.nav-item.active').forEach(item => {
-            item.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
             item.classList.remove('active');
         });
         document.querySelectorAll('.nav-submenu-item.active').forEach(item => {
-            item.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
             item.classList.remove('active');
         });
 
@@ -44,7 +42,6 @@
                 const itemPage = item.getAttribute('data-page');
                 if (itemPage === pageName || (pageName === '' && itemPage === 'index')) {
                     // Add animation class before adding active
-                    item.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
                     item.classList.add('active');
                 }
             });
@@ -55,7 +52,6 @@
                 const itemPage = item.getAttribute('data-page');
                 if (itemPage === pageName || (pageName === '' && itemPage === 'index')) {
                     // Add active class to the submenu item
-                    item.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
                     item.classList.add('active');
 
                     // Update localStorage to match the current page
@@ -91,8 +87,28 @@
                 }
             }
 
+            // Special handling for inventory pages (adjustments, packages, shipments)
+            if (pageName === 'inventory-adjustments' || pageName === 'packages' || pageName === 'shipments') {
+                const inventoryMenuToggle = document.getElementById('inventoryMenuToggle');
+                const inventorySubmenu = document.getElementById('inventorySubmenu');
+                const inventoryArrow = document.getElementById('inventoryArrow');
+
+                if (inventoryMenuToggle && inventorySubmenu) {
+                    inventoryMenuToggle.classList.add('expanded');
+                    inventorySubmenu.style.maxHeight = '500px';
+                    inventorySubmenu.style.opacity = '1';
+                    if (inventoryArrow) inventoryArrow.textContent = '⌄';
+                }
+
+                const subItem = document.querySelector(`.nav-submenu-item[data-page="${pageName}"]`);
+                if (subItem) {
+                    subItem.classList.add('active');
+                    localStorage.setItem('activeSubmenuItem', pageName);
+                }
+            }
+
             // Special handling for sales page
-            if (pageName === 'sales' || pageName === 'sales-orders' || pageName === 'new-sales-order' || pageName === 'invoices' || pageName === 'sales-receipts' || pageName === 'new-sales-receipt' || pageName === 'customers' || pageName === 'new-customer') {
+            if (pageName === 'sales' || pageName === 'sales-orders' || pageName === 'new-sales-order' || pageName === 'invoices' || pageName === 'sales-receipts' || pageName === 'new-sales-receipt' || pageName === 'customers' || pageName === 'new-customer' || pageName === 'credit-notes' || pageName === 'new-credit-note' || pageName === 'sales-returns') {
                 const salesMenuToggle = document.getElementById('salesMenuToggle');
                 const salesSubmenu = document.getElementById('salesSubmenu');
                 const salesArrow = document.getElementById('salesArrow');
@@ -105,7 +121,8 @@
                 }
 
                 // Highlight the correct submenu item
-                const targetPage = pageName === 'new-sales-order' ? 'sales-orders' : (pageName === 'new-customer' ? 'customers' : (pageName === 'new-sales-receipt' ? 'sales-receipts' : pageName));
+                const pageMap = { 'new-sales-order': 'sales-orders', 'new-customer': 'customers', 'new-sales-receipt': 'sales-receipts', 'new-credit-note': 'credit-notes' };
+                const targetPage = pageMap[pageName] || pageName;
                 const subItem = document.querySelector(`.nav-submenu-item[data-page="${targetPage}"]`);
                 if (subItem) {
                     subItem.classList.add('active');
@@ -389,57 +406,7 @@
         }
     }
 
-    // Add click animations to sidebar items
-    function addSidebarClickAnimations() {
-        const navItems = document.querySelectorAll('.nav-item, .nav-submenu-item');
 
-        navItems.forEach(item => {
-            item.addEventListener('click', function (e) {
-                // Add click animation
-                this.style.transform = 'translateX(2px) scale(0.98)';
-                this.style.transition = 'transform 0.1s ease';
-
-                setTimeout(() => {
-                    this.style.transform = '';
-                }, 100);
-
-                // If it's a link, add fade transition for page change
-                if (this.tagName === 'A' && this.href) {
-                    // Add page fade out effect
-                    const content = document.querySelector('.content') || document.body;
-                    content.style.transition = 'opacity 0.3s ease';
-                    content.style.opacity = '0.7';
-                }
-            });
-        });
-    }
-
-    // Setup nav-group hover to keep submenu open while cursor is inside
-    function setupNavGroupHover() {
-        const navGroups = document.querySelectorAll('.nav-group');
-
-        navGroups.forEach((group, index) => {
-            const navItem = group.querySelector('.nav-item');
-            const submenu = group.querySelector('.nav-submenu');
-            const arrow = group.querySelector('.nav-item-arrow');
-
-            if (!navItem || !submenu) return;
-
-            // Expand submenu on mouseenter
-            group.addEventListener('mouseenter', function () {
-                submenu.style.cssText = 'max-height: 500px !important; opacity: 1 !important; margin: 0 12px 8px 12px !important; padding: 8px 0 !important; overflow: visible !important;';
-                if (arrow) arrow.style.cssText = 'transform: rotate(90deg) !important;';
-            });
-
-            // Collapse submenu on mouseleave (only if not clicked to expand)
-            group.addEventListener('mouseleave', function () {
-                if (!navItem.classList.contains('expanded')) {
-                    submenu.style.cssText = 'max-height: 0 !important; opacity: 0 !important; margin: 0 12px !important; padding: 0 !important; overflow: hidden !important;';
-                    if (arrow) arrow.style.cssText = 'transform: rotate(0deg) !important;';
-                }
-            });
-        });
-    }
 
     // Initialize layout
     async function initLayout() {
@@ -452,20 +419,17 @@
         // Set active navigation
         setActiveNavItem();
 
-        // Add click animations
+        // Add submenu click handlers
         setTimeout(() => {
-            addSidebarClickAnimations();
             addSubmenuItemClickHandlers();
-            setupNavGroupHover();
         }, 100);
 
         // Configure header for current page
         configureHeader();
 
-        // Reset page fade on load
+        // Reset page on load
         const content = document.querySelector('.content') || document.body;
         content.style.opacity = '1';
-        content.style.transition = 'opacity 0.4s ease';
 
         // Dispatch event to notify that layout is ready
         document.dispatchEvent(new CustomEvent('layoutReady'));

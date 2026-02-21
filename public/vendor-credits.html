@@ -155,7 +155,7 @@
             font-size: 14px;
             color: #666;
             margin: 0 0 28px 0;
-            max-width: 450px;
+            max-width: 400px;
             line-height: 1.5;
         }
 
@@ -170,21 +170,10 @@
             cursor: pointer;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 16px;
         }
 
         .btn-create:hover {
             background: #3367d6;
-        }
-
-        .import-link {
-            color: #4285f4;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        .import-link:hover {
-            text-decoration: underline;
         }
 
         /* Credits Table */
@@ -216,11 +205,42 @@
             font-size: 13px;
             color: #333;
         }
+
+        .credits-table tr {
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .credits-table tbody tr:hover {
+            background: #f5f8ff;
+        }
+
+        .status-badge {
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-draft {
+            color: #92400e;
+            background: #fef3c7;
+        }
+
+        .status-open {
+            color: #1e40af;
+            background: #dbeafe;
+        }
+
+        .link-blue {
+            color: #4285f4;
+            font-weight: 500;
+        }
     </style>
 </head>
 
 <body>
-    <!-- Sidebar Container -->
     <div id="sidebarContainer"></div>
 
     <div class="main-layout">
@@ -235,7 +255,7 @@
                 </div>
                 <div class="header-actions">
                     <div class="btn-new-group">
-                        <button class="btn-new" onclick="createVendorCredit()">
+                        <button class="btn-new" onclick="window.location.href='/new-vendor-credit.html'">
                             <span>+</span> New
                         </button>
                         <button class="btn-new-dropdown">▼</button>
@@ -246,14 +266,12 @@
 
             <!-- Empty State -->
             <div class="empty-state" id="emptyState">
-                <h2 class="empty-state-title">You deserve some credit too.</h2>
-                <p class="empty-state-subtitle">Create vendor credits and apply them to multiple bills when buying stuff
-                    from your vendor.</p>
-                <button class="btn-create" onclick="createVendorCredit()">CREATE VENDOR CREDITS</button>
-                <a href="/import-vendor-credits.html" class="import-link">Import Vendor Credits</a>
+                <h2 class="empty-state-title">No Vendor Credits yet.</h2>
+                <p class="empty-state-subtitle">Vendor credits you create from your bills will appear here.</p>
+                <button class="btn-create" onclick="window.location.href='/bills.html'">GO TO BILLS</button>
             </div>
 
-            <!-- Credits Container (hidden when empty) -->
+            <!-- Credits Table -->
             <div class="credits-container" id="creditsContainer" style="display: none;">
                 <table class="credits-table">
                     <thead>
@@ -263,24 +281,69 @@
                             <th>REFERENCE#</th>
                             <th>VENDOR NAME</th>
                             <th>STATUS</th>
-                            <th>AMOUNT</th>
-                            <th>BALANCE</th>
+                            <th style="text-align:right;">AMOUNT</th>
                         </tr>
                     </thead>
                     <tbody id="creditsBody">
-                        <!-- Credits will be added here -->
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- Layout Script -->
     <script src="/js/layout.js"></script>
     <script>
-        // Create new vendor credit
-        function createVendorCredit() {
-            window.location.href = '/new-vendor-credit.html';
+        document.addEventListener('DOMContentLoaded', loadCredits);
+
+        async function loadCredits() {
+            try {
+                const res = await fetch('/api/vendor-credits');
+                if (!res.ok) return;
+                const credits = await res.json();
+
+                if (credits.length === 0) {
+                    document.getElementById('emptyState').style.display = 'flex';
+                    document.getElementById('creditsContainer').style.display = 'none';
+                    return;
+                }
+
+                document.getElementById('emptyState').style.display = 'none';
+                document.getElementById('creditsContainer').style.display = 'block';
+
+                const tbody = document.getElementById('creditsBody');
+                tbody.innerHTML = '';
+
+                credits.forEach(c => {
+                    const tr = document.createElement('tr');
+                    tr.onclick = () => { /* future: vendor credit detail page */ };
+
+                    const cDate = c.credit_date
+                        ? new Date(c.credit_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+                        : '-';
+                    const amount = parseFloat(c.total_amount || 0);
+                    const status = (c.status || 'draft').toLowerCase();
+
+                    let statusClass = 'status-draft';
+                    let statusLabel = 'DRAFT';
+                    if (status === 'open') {
+                        statusClass = 'status-open';
+                        statusLabel = 'OPEN';
+                    }
+
+                    tr.innerHTML = `
+                        <td>${cDate}</td>
+                        <td class="link-blue">${c.credit_number || '-'}</td>
+                        <td>${c.reference || '-'}</td>
+                        <td>${c.supplier_name || '-'}</td>
+                        <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
+                        <td style="text-align:right;font-weight:500;">₱${amount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+                    `;
+
+                    tbody.appendChild(tr);
+                });
+            } catch (e) {
+                console.error('Error loading vendor credits:', e);
+            }
         }
     </script>
 </body>

@@ -7,6 +7,8 @@
     <title>Vendors - Inventory Management</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/global-search.css">
+    <link rel="stylesheet" href="/css/pagination.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
         rel="stylesheet">
@@ -35,6 +37,7 @@
             margin-left: 260px;
             padding: 0;
             background: white;
+            overflow-x: hidden;
         }
 
         /* Page Header */
@@ -45,6 +48,9 @@
             padding: 16px 24px;
             background: white;
             border-bottom: 1px solid #e9ecef;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         .page-title-wrapper {
@@ -208,6 +214,156 @@
             background: #f5f5f5;
         }
 
+        /* ===== VENDOR KEBAB DROPDOWN ===== */
+        .vendor-kebab-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .vendor-kebab-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 4px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.15);
+            min-width: 220px;
+            z-index: 10001;
+            padding: 6px 0;
+            animation: kebabFadeIn 0.15s ease;
+        }
+
+        .vendor-kebab-menu.open {
+            display: block;
+        }
+
+        @keyframes kebabFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .vendor-kebab-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            transition: background 0.12s, color 0.12s;
+            position: relative;
+            white-space: nowrap;
+            gap: 10px;
+        }
+
+        .vendor-kebab-item:hover {
+            background: #f5f5f5;
+        }
+
+        /* Items with submenus get blue hover like Zoho */
+        .vendor-kebab-item.has-submenu:hover {
+            background: #4285f4;
+            color: #fff;
+        }
+
+        .vendor-kebab-item.has-submenu:hover .kebab-icon,
+        .vendor-kebab-item.has-submenu:hover .vendor-kebab-arrow {
+            color: #fff;
+        }
+
+        .kebab-icon {
+            font-size: 16px;
+            min-width: 22px;
+            text-align: center;
+            color: #555;
+            font-weight: 700;
+        }
+
+        .kebab-label {
+            flex: 1;
+        }
+
+        .vendor-kebab-arrow {
+            font-size: 12px;
+            color: #999;
+            margin-left: auto;
+        }
+
+        .vendor-kebab-divider {
+            height: 1px;
+            background: #e9ecef;
+            margin: 4px 0;
+        }
+
+        /* Sub-menu — opens to the LEFT */
+        .vendor-kebab-submenu {
+            display: none;
+            position: absolute;
+            right: 100%;
+            top: -6px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            padding: 6px 0;
+            z-index: 10002;
+        }
+
+        .vendor-kebab-item:hover>.vendor-kebab-submenu {
+            display: block;
+        }
+
+        .vendor-kebab-sub-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            transition: background 0.12s, color 0.12s;
+            gap: 10px;
+            white-space: nowrap;
+        }
+
+        .vendor-kebab-sub-item:hover {
+            background: #e8f0fe;
+            color: #1a73e8;
+        }
+
+        /* Active sort item — blue background, white text */
+        .vendor-kebab-sub-item.active {
+            background: #4285f4;
+            color: #fff;
+            border-radius: 4px;
+            margin: 2px 6px;
+            padding: 10px 12px;
+        }
+
+        .vendor-kebab-sub-item.active:hover {
+            background: #3367d6;
+        }
+
+        .vendor-kebab-sub-item.active .vendor-kebab-sort-dir {
+            color: #fff;
+        }
+
+        .vendor-kebab-sort-dir {
+            color: #1a73e8;
+            font-weight: 700;
+            font-size: 14px;
+            margin-left: auto;
+        }
+
         /* Empty State */
         .empty-state {
             display: flex;
@@ -334,6 +490,7 @@
         /* Vendors Table */
         .vendors-container {
             padding: 24px;
+            overflow-x: auto;
         }
 
         .vendors-table {
@@ -381,10 +538,10 @@
         .bulk-actions-bar {
             display: none;
             align-items: center;
-            padding: 12px 24px;
-            background: white;
-            border-bottom: 1px solid #e9ecef;
-            gap: 8px;
+            padding: 8px 24px;
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+            gap: 4px;
         }
 
         .bulk-actions-bar.active {
@@ -392,72 +549,256 @@
         }
 
         .bulk-btn {
-            padding: 8px 16px;
-            background: white;
-            border: 1px solid #e9ecef;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid #d0d0d0;
             border-radius: 4px;
-            font-size: 13px;
+            background: white;
             color: #333;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
+            white-space: nowrap;
+            transition: all 0.15s ease;
         }
 
         .bulk-btn:hover {
             background: #f5f5f5;
+            border-color: #bbb;
+        }
+
+        .bulk-btn-print {
+            padding: 6px 8px !important;
+            min-width: 32px;
+            justify-content: center;
+        }
+
+        .bulk-divider {
+            width: 1px;
+            height: 24px;
+            background: #e0e0e0;
+            margin: 0 6px;
         }
 
         .bulk-btn.delete {
             color: #333;
         }
 
-        .bulk-divider {
-            width: 1px;
-            height: 24px;
-            background: #e9ecef;
-            margin: 0 8px;
-        }
-
-        .selected-count {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-left: auto;
-        }
-
-        .count-badge {
-            background: #3b82f6;
-            color: white;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
+        .bulk-count {
+            font-size: 13px;
             font-weight: 600;
+            color: #4285f4;
+            margin-left: 4px;
+            white-space: nowrap;
         }
 
-        .count-text {
-            font-size: 13px;
-            color: #666;
+        .bulk-close {
+            margin-left: auto;
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #e53935;
+            cursor: pointer;
+            padding: 4px 8px;
+            line-height: 1;
         }
 
-        .close-selection {
+        .bulk-close:hover {
+            color: #c62828;
+        }
+
+        /* ===== VENDOR DELETE CONFIRMATION MODAL ===== */
+        .vendor-confirm-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 99999;
+            justify-content: center;
+            align-items: center;
+            animation: vendorOverlayIn 0.2s ease;
+        }
+
+        .vendor-confirm-overlay.active {
+            display: flex;
+        }
+
+        @keyframes vendorOverlayIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .vendor-confirm-dialog {
+            background: white;
+            border-radius: 12px;
+            padding: 32px 36px;
+            max-width: 440px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            text-align: center;
+            animation: vendorDialogSlide 0.25s ease;
+        }
+
+        @keyframes vendorDialogSlide {
+            from {
+                transform: translateY(-30px) scale(0.95);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .vendor-confirm-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #fef2f2;
             display: flex;
             align-items: center;
-            gap: 4px;
-            margin-left: 16px;
+            justify-content: center;
+            margin: 0 auto 18px;
+            font-size: 26px;
+        }
+
+        .vendor-confirm-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+
+        .vendor-confirm-message {
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.5;
+            margin-bottom: 28px;
+        }
+
+        .vendor-confirm-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .vendor-confirm-btn {
+            padding: 10px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 13px;
-            color: #999;
+            transition: all 0.2s ease;
         }
 
-        .close-selection:hover {
+        .vendor-confirm-btn.cancel {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .vendor-confirm-btn.cancel:hover {
+            background: #e5e7eb;
+        }
+
+        .vendor-confirm-btn.danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .vendor-confirm-btn.danger:hover {
+            background: #dc2626;
+        }
+
+        /* ===== VENDOR TOAST NOTIFICATION ===== */
+        .vendor-toast-container {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 999999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .vendor-toast {
+            pointer-events: auto;
+            padding: 18px 32px;
+            border-radius: 10px;
             color: #333;
+            font-weight: 500;
+            font-size: 15px;
+            background: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            border: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            animation: toastSlideDown 0.3s ease;
+            min-width: 340px;
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
 
-        .close-x {
-            color: #ef4444;
-            font-size: 16px;
-            font-weight: bold;
+        .vendor-toast.success {
+            background: white;
+            border-left: 4px solid #10b981;
+        }
+
+        .vendor-toast.error {
+            background: white;
+            border-left: 4px solid #ef4444;
+        }
+
+        .vendor-toast.warning {
+            background: white;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .vendor-toast.info {
+            background: white;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .vendor-toast.hide {
+            animation: toastSlideUp 0.3s ease forwards;
+        }
+
+        @keyframes toastSlideDown {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes toastSlideUp {
+            from {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            to {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
         }
 
         /* New Custom View Modal */
@@ -931,6 +1272,1264 @@
         .cv-btn-cancel:hover {
             background: #4b5563;
         }
+
+        /* ===== FILTER DROPDOWN (in table header) ===== */
+        .filter-dropdown-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .zoho-filter-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 6px;
+            border-radius: 4px;
+            background: #f0f5ff;
+            border: 1px solid #bfdbfe;
+        }
+
+        .zoho-filter-icon:hover {
+            background: #dbeafe;
+            border-color: #93c5fd;
+        }
+
+        .filter-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            min-width: 200px;
+            z-index: 9999;
+            padding: 8px 0;
+            overflow: visible;
+        }
+
+        .filter-dropdown-menu.active {
+            display: block;
+            animation: filterDropdownFadeIn 0.15s ease-out;
+        }
+
+        @keyframes filterDropdownFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .filter-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .filter-dropdown-item:first-child {
+            background: #3b82f6;
+            color: white;
+            margin: 4px 8px 8px 8px;
+            border-radius: 6px;
+            padding: 10px 16px;
+            font-weight: 600;
+        }
+
+        .filter-dropdown-item:first-child:hover {
+            background: #2563eb;
+            color: white;
+        }
+
+        .filter-dropdown-item:hover {
+            background: #f3f4f6;
+            color: #1a1f3a;
+        }
+
+        .filter-dropdown-icon {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .zoho-th-filter {
+            width: 40px;
+            min-width: 40px;
+            text-align: center !important;
+            padding: 8px !important;
+        }
+
+        .zoho-th-checkbox {
+            width: 40px;
+            min-width: 40px;
+            text-align: center !important;
+        }
+
+        /* ===== CUSTOMIZE COLUMNS MODAL ===== */
+        .customize-columns-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.15);
+            z-index: 3000;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 80px;
+        }
+
+        .customize-columns-modal.active {
+            display: flex;
+        }
+
+        .customize-columns-panel {
+            background: white;
+            width: 480px;
+            max-height: 85vh;
+            border-radius: 4px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .customize-columns-header {
+            display: flex;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .customize-columns-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 500;
+            color: #333;
+            flex: 1;
+        }
+
+        .customize-icon {
+            color: #666;
+            font-size: 18px;
+        }
+
+        .customize-columns-count {
+            font-size: 14px;
+            color: #666;
+            margin-right: 16px;
+        }
+
+        .customize-close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: #ef4444;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+            font-weight: 300;
+        }
+
+        .customize-close-btn:hover {
+            color: #dc2626;
+            transform: scale(1.1);
+        }
+
+        .customize-columns-search {
+            padding: 20px 24px;
+        }
+
+        .customize-columns-search input {
+            width: 100%;
+            padding: 14px 16px 14px 44px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 400;
+            outline: none;
+            background: #f9fafb url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 14px center;
+            transition: all 0.2s ease;
+        }
+
+        .customize-columns-search input::placeholder {
+            color: #9ca3af;
+        }
+
+        .customize-columns-search input:focus {
+            border-color: #3b82f6;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .customize-columns-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 16px 16px 16px;
+            max-height: 400px;
+        }
+
+        .cc-column-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            margin: 6px 0;
+            background: #f8fafc;
+            border-radius: 10px;
+            gap: 14px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .cc-column-item:hover {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+            transform: translateX(2px);
+        }
+
+        .cc-column-item.checked {
+            background: #e6f4ff;
+            border-color: #91caff;
+        }
+
+        .cc-column-item.locked {
+            cursor: default;
+            background: #f5f5f5;
+        }
+
+        .cc-drag-handle {
+            color: #bbb;
+            font-size: 14px;
+            cursor: grab;
+            user-select: none;
+            letter-spacing: 2px;
+        }
+
+        .cc-checkbox {
+            width: 20px;
+            height: 20px;
+            accent-color: #4096ff;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .cc-lock-icon {
+            color: #bbb;
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .cc-column-name {
+            font-size: 16px;
+            color: #333;
+            flex: 1;
+            font-weight: 400;
+        }
+
+        .customize-columns-footer {
+            display: flex;
+            gap: 12px;
+            padding: 20px 24px;
+            border-top: 1px solid #e8e8e8;
+            background: white;
+        }
+
+        .customize-save-btn {
+            padding: 10px 24px;
+            background: #4096ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .customize-save-btn:hover {
+            background: #1677ff;
+        }
+
+        .customize-cancel-btn {
+            padding: 10px 24px;
+            background: #f0f0f0;
+            color: #333;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .customize-cancel-btn:hover {
+            background: #e0e0e0;
+        }
+
+        /* ===== CLIP / WRAP TEXT MODE ===== */
+        .vendors-table.clip-text-mode td {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 180px;
+        }
+
+        .vendors-table.wrap-text-mode td {
+            white-space: normal;
+            word-wrap: break-word;
+        }
+
+        /* ===== DETAIL SPLIT VIEW ===== */
+        .detail-wrapper {
+            display: none;
+            height: calc(100vh - 0px);
+        }
+
+        .detail-wrapper.show {
+            display: flex;
+        }
+
+        /* Left sidebar */
+        .detail-left {
+            width: 240px;
+            min-width: 240px;
+            border-right: 1px solid #e9ecef;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .detail-left-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .detail-left-header-title {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .detail-left-header-title:hover {
+            color: #4285f4;
+        }
+
+        .detail-left-header-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .detail-left-header-actions button {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .detail-left-add {
+            background: #4285f4;
+            color: white;
+        }
+
+        .detail-left-add:hover {
+            background: #3367d6;
+        }
+
+        .detail-left-more {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .detail-left-more:hover {
+            background: #e0e0e0;
+        }
+
+        .detail-left-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .detail-left-item {
+            padding: 10px 16px;
+            border-bottom: 1px solid #f5f5f5;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .detail-left-item:hover {
+            background: #f8f9ff;
+        }
+
+        .detail-left-item.active {
+            background: #eef2ff;
+            border-left: 3px solid #4285f4;
+        }
+
+        .detail-left-item-checkbox {
+            width: 15px;
+            height: 15px;
+            accent-color: #4285f4;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .detail-left-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .detail-left-item-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .detail-left-item-sub {
+            font-size: 11px;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        /* Right detail */
+        .detail-right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .detail-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+        }
+
+        .detail-header-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .detail-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-edit {
+            padding: 7px 16px;
+            background: white;
+            color: #333;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-edit:hover {
+            background: #f5f5f5;
+        }
+
+        .btn-info {
+            width: 32px;
+            height: 32px;
+            background: white;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-info:hover {
+            background: #f5f5f5;
+        }
+
+        .txn-dropdown-wrapper {
+            position: relative;
+            display: flex;
+        }
+
+        .btn-new-transaction {
+            padding: 7px 12px;
+            background: #00b09b;
+            color: white;
+            border: none;
+            border-radius: 4px 0 0 4px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-new-transaction:hover {
+            background: #009688;
+        }
+
+        .btn-new-transaction-dropdown {
+            padding: 7px 8px;
+            background: #009688;
+            color: white;
+            border: none;
+            border-radius: 0 4px 4px 0;
+            font-size: 10px;
+            cursor: pointer;
+            border-left: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-new-transaction-dropdown:hover {
+            background: #00897b;
+        }
+
+        .txn-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            min-width: 180px;
+            z-index: 100;
+            padding: 6px 0;
+            margin-top: 4px;
+        }
+
+        .txn-dropdown-menu.open {
+            display: block;
+        }
+
+        .txn-dropdown-category {
+            font-size: 11px;
+            font-weight: 700;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 8px 16px 4px;
+        }
+
+        .txn-dropdown-item {
+            padding: 8px 16px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .txn-dropdown-item:hover {
+            background: #4285f4;
+            color: white;
+        }
+
+        .btn-more-detail {
+            padding: 7px 12px;
+            background: #555;
+            color: white;
+            border: none;
+            border-radius: 4px 0 0 4px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-more-detail:hover {
+            background: #444;
+        }
+
+        .btn-more-dropdown2 {
+            padding: 7px 8px;
+            background: #444;
+            color: white;
+            border: none;
+            border-radius: 0 4px 4px 0;
+            font-size: 10px;
+            cursor: pointer;
+            border-left: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-close-detail {
+            width: 32px;
+            height: 32px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            color: #888;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-close-detail:hover {
+            color: #333;
+        }
+
+        /* Detail tabs */
+        .detail-tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 2px solid #e9ecef;
+            padding: 0 24px;
+            background: white;
+        }
+
+        .detail-tab {
+            padding: 12px 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+
+        .detail-tab:hover {
+            color: #4285f4;
+        }
+
+        .detail-tab.active {
+            color: #4285f4;
+            border-bottom-color: #4285f4;
+        }
+
+        /* Detail body */
+        .detail-body {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+        }
+
+        .overview-left {
+            width: 320px;
+            min-width: 320px;
+            padding: 20px;
+            border-right: 1px solid #f0f0f0;
+            overflow-y: auto;
+        }
+
+        .overview-right {
+            flex: 1;
+            padding: 20px 24px;
+            overflow-y: auto;
+        }
+
+        /* Vendor info card */
+        .vendor-info-card {
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 16px;
+        }
+
+        .vendor-contact-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .vendor-avatar {
+            width: 44px;
+            height: 44px;
+            background: #e8eaed;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #999;
+            flex-shrink: 0;
+        }
+
+        .vendor-contact-details {
+            flex: 1;
+        }
+
+        .vendor-contact-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .vendor-contact-item {
+            font-size: 12px;
+            color: #666;
+            margin-top: 3px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .vendor-settings-icon {
+            font-size: 16px;
+            color: #999;
+            cursor: pointer;
+        }
+
+        .vendor-settings-icon:hover {
+            color: #4285f4;
+        }
+
+        /* Section headers */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            cursor: pointer;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .section-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: #888;
+            letter-spacing: 0.5px;
+        }
+
+        .section-toggle {
+            font-size: 10px;
+            color: #00b09b;
+            transition: transform 0.2s;
+        }
+
+        .section-content {
+            padding: 0 0 12px 0;
+        }
+
+        .section-content.collapsed {
+            display: none;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #888;
+            margin-bottom: 4px;
+        }
+
+        .detail-value {
+            font-size: 13px;
+            color: #333;
+        }
+
+        .detail-value.link {
+            color: #4285f4;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .detail-value.link:hover {
+            text-decoration: underline;
+        }
+
+        .detail-row {
+            margin-bottom: 10px;
+        }
+
+        /* Contact persons */
+        .contacts-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            cursor: pointer;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .contacts-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .add-contact-icon {
+            width: 22px;
+            height: 22px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .add-contact-icon:hover {
+            background: #3367d6;
+        }
+
+        .contact-person-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+        }
+
+        .contact-person-avatar {
+            width: 36px;
+            height: 36px;
+            background: #e8eaed;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            flex-shrink: 0;
+        }
+
+        .contact-person-info {
+            flex: 1;
+        }
+
+        .contact-person-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .contact-person-detail {
+            font-size: 11px;
+            color: #888;
+        }
+
+        /* Payment info & Payables */
+        .payment-info {
+            margin-bottom: 20px;
+        }
+
+        .payment-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+        }
+
+        .payment-label {
+            font-size: 13px;
+            color: #888;
+        }
+
+        .payment-value {
+            font-size: 13px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .payables-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin: 16px 0 10px 0;
+        }
+
+        .payables-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+        }
+
+        .payables-table th {
+            text-align: left;
+            padding: 8px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #e85d26;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .payables-table td {
+            padding: 10px 12px;
+            font-size: 13px;
+            color: #333;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .items-summary {
+            display: flex;
+            gap: 24px;
+            padding: 8px 0;
+            font-size: 13px;
+        }
+
+        .items-summary-label {
+            color: #888;
+        }
+
+        .items-summary-value {
+            color: #e85d26;
+            font-weight: 600;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 20px;
+            margin-top: 20px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 6px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e0e0e0;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 24px;
+            display: flex;
+            gap: 16px;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -20px;
+            top: 2px;
+            width: 14px;
+            height: 14px;
+            background: white;
+            border: 2px solid #4285f4;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .timeline-date-text {
+            font-size: 12px;
+            color: #888;
+            min-width: 80px;
+            line-height: 1.3;
+        }
+
+        .timeline-time-text {
+            font-size: 11px;
+            color: #bbb;
+        }
+
+        .timeline-card {
+            background: #f9fafb;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 12px 16px;
+            flex: 1;
+        }
+
+        .timeline-card-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .timeline-card-desc {
+            font-size: 12px;
+            color: #4285f4;
+        }
+
+        .timeline-card-user {
+            font-size: 11px;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        /* Tab content areas */
+        .tab-content-area {
+            display: none;
+        }
+
+        .tab-content-area.active {
+            display: flex;
+            flex: 1;
+        }
+
+        /* Comments tab */
+        .comment-editor-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+
+        .comment-toolbar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+
+        .comment-toolbar-btn {
+            width: 28px;
+            height: 28px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .comment-input {
+            width: 100%;
+            min-height: 60px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 8px;
+            font-size: 13px;
+            resize: vertical;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        .all-comments-header {
+            font-size: 11px;
+            font-weight: 700;
+            color: #888;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        /* Transactions tab */
+        .txn-section {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+
+        .txn-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            cursor: pointer;
+            background: #f9fafb;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .txn-section-header:hover {
+            background: #f0f2f5;
+        }
+
+        .txn-section-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .txn-section-toggle {
+            font-size: 10px;
+            color: #888;
+        }
+
+        .txn-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .txn-empty {
+            text-align: center;
+            padding: 20px;
+            font-size: 13px;
+            color: #888;
+        }
+
+        .txn-empty a {
+            color: #e85d26;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* Address Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 60px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: 6px;
+            width: 440px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .modal-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .modal-close {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: none;
+            font-size: 18px;
+            color: #888;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+
+        .modal-close:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-field {
+            margin-bottom: 16px;
+        }
+
+        .modal-field label {
+            display: block;
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 4px;
+        }
+
+        .modal-field input,
+        .modal-field select,
+        .modal-field textarea {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+            color: #333;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .modal-field input:focus,
+        .modal-field select:focus,
+        .modal-field textarea:focus {
+            border-color: #4285f4;
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.1);
+        }
+
+        .modal-field-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-field-row .modal-field {
+            flex: 1;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            padding: 14px 20px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .modal-btn {
+            padding: 8px 20px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .modal-btn-cancel {
+            background: white;
+            border: 1px solid #d1d5db;
+            color: #333;
+        }
+
+        .modal-btn-cancel:hover {
+            background: #f9fafb;
+        }
+
+        .modal-btn-save {
+            background: #4285f4;
+            border: none;
+            color: white;
+        }
+
+        .modal-btn-save:hover {
+            background: #3367d6;
+        }
     </style>
 </head>
 
@@ -957,25 +2556,17 @@
                                 <span>Active Vendors</span>
                                 <span class="star-icon">☆</span>
                             </div>
-                            <div class="views-dropdown-item" onclick="selectView('crm')">
-                                <span>CRM Vendors</span>
-                                <span class="star-icon">☆</span>
-                            </div>
-                            <div class="views-dropdown-item" onclick="selectView('duplicate')">
-                                <span>Duplicate Vendors</span>
-                                <span class="star-icon">☆</span>
-                            </div>
                             <div class="views-dropdown-item" onclick="selectView('inactive')">
                                 <span>Inactive Vendors</span>
                                 <span class="star-icon">☆</span>
                             </div>
-                            <div class="views-dropdown-divider"></div>
-                            <div class="views-dropdown-item new-custom" onclick="openNewCustomViewModal()">
-                                <span class="plus-icon">➕</span>
-                                <span>New Custom View</span>
-                            </div>
                         </div>
                     </div>
+                </div>
+                <div class="global-search-container">
+                    <span class="global-search-icon">🔍</span>
+                    <input type="text" class="global-search-input" id="vendorSearchInput"
+                        placeholder="Search vendors..." oninput="searchVendors()">
                 </div>
                 <div class="header-actions">
                     <div class="btn-new-group">
@@ -984,28 +2575,126 @@
                         </button>
                         <button class="btn-new-dropdown">▼</button>
                     </div>
-                    <button class="btn-more">⋯</button>
+                    <div class="vendor-kebab-wrapper">
+                        <button class="btn-more" onclick="toggleVendorKebab(event)">⋯</button>
+                        <div class="vendor-kebab-menu" id="vendorKebabMenu">
+                            <!-- Sort by -->
+                            <div class="vendor-kebab-item has-submenu">
+                                <span class="kebab-icon">⇅</span>
+                                <span class="kebab-label">Sort by</span>
+                                <span class="vendor-kebab-arrow">›</span>
+                                <div class="vendor-kebab-submenu" id="vendorSortSubmenu">
+                                    <div class="vendor-kebab-sub-item active" id="sortItem-name"
+                                        onclick="sortVendors('name', 'Name')">
+                                        <span>Name</span>
+                                        <span class="vendor-kebab-sort-dir" id="sortDir-name">↑</span>
+                                    </div>
+                                    <div class="vendor-kebab-sub-item" id="sortItem-company_name"
+                                        onclick="sortVendors('company_name', 'Company Name')">
+                                        <span>Company Name</span>
+                                        <span class="vendor-kebab-sort-dir" id="sortDir-company_name"></span>
+                                    </div>
+                                    <div class="vendor-kebab-sub-item" id="sortItem-payables_bcy"
+                                        onclick="sortVendors('payables_bcy', 'Payables (BCY)')">
+                                        <span>Payables (BCY)</span>
+                                        <span class="vendor-kebab-sort-dir" id="sortDir-payables_bcy"></span>
+                                    </div>
+                                    <div class="vendor-kebab-sub-item" id="sortItem-unused_credits_bcy"
+                                        onclick="sortVendors('unused_credits_bcy', 'Unused Credits (BCY)')">
+                                        <span>Unused Credits (BCY)</span>
+                                        <span class="vendor-kebab-sort-dir" id="sortDir-unused_credits_bcy"></span>
+                                    </div>
+                                    <div class="vendor-kebab-sub-item" id="sortItem-created_at"
+                                        onclick="sortVendors('created_at', 'Created Time')">
+                                        <span>Created Time</span>
+                                        <span class="vendor-kebab-sort-dir" id="sortDir-created_at"></span>
+                                    </div>
+                                    <div class="vendor-kebab-sub-item" id="sortItem-updated_at"
+                                        onclick="sortVendors('updated_at', 'Last Modified Time')">
+                                        <span>Last Modified Time</span>
+                                        <span class="vendor-kebab-sort-dir" id="sortDir-updated_at"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="vendor-kebab-divider"></div>
+                            <!-- Import -->
+                            <div class="vendor-kebab-item has-submenu">
+                                <span class="kebab-icon">⬇</span>
+                                <span class="kebab-label">Import</span>
+                                <span class="vendor-kebab-arrow">›</span>
+                                <div class="vendor-kebab-submenu">
+                                    <div class="vendor-kebab-sub-item" onclick="importVendors(); closeVendorKebab();">
+                                        <span>Import Vendors</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Export -->
+                            <div class="vendor-kebab-item has-submenu">
+                                <span class="kebab-icon">⬆</span>
+                                <span class="kebab-label">Export</span>
+                                <span class="vendor-kebab-arrow">›</span>
+                                <div class="vendor-kebab-submenu">
+                                    <div class="vendor-kebab-sub-item"
+                                        onclick="exportAllVendors(); closeVendorKebab();">
+                                        <span>Export Vendors</span>
+                                    </div>
+                                    <div class="vendor-kebab-sub-item"
+                                        onclick="exportCurrentVendorView(); closeVendorKebab();">
+                                        <span>Export Current View</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="vendor-kebab-divider"></div>
+                            <!-- Preferences -->
+                            <div class="vendor-kebab-item"
+                                onclick="showVendorToast('Preferences settings coming soon.', 'info'); closeVendorKebab();">
+                                <span class="kebab-icon">⚙</span>
+                                <span class="kebab-label">Preferences</span>
+                            </div>
+                            <!-- Refresh List -->
+                            <div class="vendor-kebab-item" onclick="refreshVendorList(); closeVendorKebab();">
+                                <span class="kebab-icon">🔃</span>
+                                <span class="kebab-label">Refresh List</span>
+                            </div>
+                            <!-- Reset Column Width -->
+                            <div class="vendor-kebab-item" onclick="resetVendorColumnWidths(); closeVendorKebab();">
+                                <span class="kebab-icon">↺</span>
+                                <span class="kebab-label">Reset Column Width</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- Bulk Actions Bar -->
             <div class="bulk-actions-bar" id="bulkActionsBar">
                 <button class="bulk-btn" onclick="bulkUpdate()">Bulk Update</button>
-                <button class="bulk-btn" onclick="printSelected()">🖨️</button>
+                <button class="bulk-btn bulk-btn-print" onclick="printSelected()" title="Print">🖨️</button>
                 <div class="bulk-divider"></div>
-                <button class="bulk-btn" onclick="markAsInactive()">Mark as Inactive</button>
-                <button class="bulk-btn" onclick="mergeVendors()">Merge</button>
-                <button class="bulk-btn" onclick="associateTemplates()">Associate Templates</button>
+                <button class="bulk-btn" id="btnMarkStatus" onclick="markAsActiveInactive()">Mark as Active</button>
                 <button class="bulk-btn delete" onclick="deleteSelected()">Delete</button>
-                <div class="selected-count">
-                    <span class="count-badge" id="selectedCount">0</span>
-                    <span class="count-text">Selected</span>
-                    <div class="close-selection" onclick="clearSelection()">
-                        <span>Esc</span>
-                        <span class="close-x">×</span>
+                <div class="bulk-divider"></div>
+                <span class="bulk-count" id="selectedCount">0 Vendors Selected</span>
+                <button class="bulk-close" onclick="clearSelection()" title="Close">✕</button>
+            </div>
+
+            <!-- Delete Confirmation Modal -->
+            <div class="vendor-confirm-overlay" id="vendorConfirmOverlay">
+                <div class="vendor-confirm-dialog">
+                    <div class="vendor-confirm-icon">⚠️</div>
+                    <div class="vendor-confirm-title">Delete Selected Vendors?</div>
+                    <div class="vendor-confirm-message" id="vendorConfirmMsg">
+                        Are you sure you want to delete the selected vendors?<br>This action cannot be undone.
+                    </div>
+                    <div class="vendor-confirm-actions">
+                        <button class="vendor-confirm-btn cancel" onclick="closeVendorConfirm()">No, Keep Them</button>
+                        <button class="vendor-confirm-btn danger" onclick="confirmBulkDelete()">Yes, Delete</button>
                     </div>
                 </div>
             </div>
+
+            <!-- Toast Container -->
+            <div class="vendor-toast-container" id="vendorToastContainer"></div>
 
             <!-- Empty State -->
             <div class="empty-state" id="emptyState">
@@ -1037,456 +2726,1546 @@
 
             <!-- Vendors Container (hidden when empty) -->
             <div class="vendors-container" id="vendorsContainer" style="display: none;">
-                <table class="vendors-table">
-                    <thead>
-                        <tr>
-                            <th style="width: 40px;"><input type="checkbox" class="vendor-checkbox"
-                                    id="selectAllCheckbox" onchange="toggleSelectAll()"></th>
-                            <th>NAME</th>
-                            <th>COMPANY NAME</th>
-                            <th>EMAIL</th>
-                            <th>WORK PHONE</th>
-                            <th>PAYABLES</th>
-                        </tr>
+                <table class="vendors-table" id="vendorsTable">
+                    <thead id="vendorsTableHead">
+                        <!-- Rendered by JS: renderVendorTableHeader() -->
                     </thead>
                     <tbody id="vendorsBody">
                         <!-- Vendors will be added here -->
                     </tbody>
                 </table>
+                <div id="paginationContainer"></div>
             </div>
-        </div>
-    </div>
 
-    <!-- New Custom View Modal -->
-    <div class="custom-view-modal" id="customViewModal">
-        <div class="custom-view-modal-content">
-            <div class="custom-view-modal-header">
-                <h2>New Custom View</h2>
-                <button class="modal-close-btn" onclick="closeNewCustomViewModal()">×</button>
-            </div>
-            <div class="custom-view-modal-body">
-                <!-- Name Section -->
-                <div class="cv-form-row">
-                    <label class="cv-label required">Name*</label>
-                    <div class="cv-name-row">
-                        <input type="text" class="cv-input" id="customViewName" placeholder="">
-                        <label class="cv-favorite-label">
-                            <span class="star-icon-empty">☆</span>
-                            Mark as Favorite
-                        </label>
+            <!-- ===== DETAIL SPLIT VIEW ===== -->
+            <div class="detail-wrapper" id="detailView">
+                <!-- Left sidebar vendor list -->
+                <div class="detail-left">
+                    <div class="detail-left-header">
+                        <div class="detail-left-header-title">
+                            <span id="detailViewTitle">Active Vendors</span>
+                            <span style="font-size:10px;color:#666;">▼</span>
+                        </div>
+                        <div class="detail-left-header-actions">
+                            <button class="detail-left-add" onclick="createNewVendor()" title="New Vendor">+</button>
+                            <button class="detail-left-more" title="More">⋯</button>
+                        </div>
                     </div>
+                    <div class="detail-left-list" id="detailLeftList"></div>
                 </div>
 
-                <!-- Define Criteria Section -->
-                <div class="cv-section">
-                    <h3 class="cv-section-title">Define the criteria ( if any )</h3>
-                    <div id="criteriaContainer">
-                        <div class="criteria-row" id="criteriaRow1">
-                            <span class="criteria-number">1</span>
-                            <div class="criteria-field-dropdown" id="criteriaFieldDropdown1">
-                                <div class="criteria-field-header" onclick="toggleCriteriaFieldDropdown(1)">
-                                    <span class="criteria-field-text" id="criteriaFieldText1">Select a field</span>
-                                    <span class="criteria-dropdown-arrow">▼</span>
+                <!-- Right detail panel -->
+                <div class="detail-right">
+                    <div class="detail-header">
+                        <div class="detail-header-name" id="detailVendorName">Vendor Name</div>
+                        <div class="detail-header-actions">
+                            <button class="btn-edit" onclick="editCurrentVendor()">Edit</button>
+                            <button class="btn-info" title="Info">ⓘ</button>
+                            <div class="txn-dropdown-wrapper">
+                                <button class="btn-new-transaction" onclick="toggleTxnDropdown(event)">New
+                                    Transaction</button>
+                                <button class="btn-new-transaction-dropdown"
+                                    onclick="toggleTxnDropdown(event)">▼</button>
+                                <div class="txn-dropdown-menu" id="txnDropdownMenu">
+                                    <div class="txn-dropdown-category">PURCHASES</div>
+                                    <div class="txn-dropdown-item">Bill</div>
+                                    <div class="txn-dropdown-item">Bill Payment</div>
+                                    <div class="txn-dropdown-item">Purchase Order</div>
+                                    <div class="txn-dropdown-item">Purchase Receive</div>
+                                    <div class="txn-dropdown-item">Vendor Credit</div>
                                 </div>
-                                <input type="hidden" id="criteriaFieldValue1" value="">
-                                <div class="criteria-field-menu" id="criteriaFieldMenu1">
-                                    <div class="criteria-field-search">
-                                        <span>🔍</span>
-                                        <input type="text" placeholder="Search" oninput="filterCriteriaFields(1)">
+                            </div>
+                            <div style="display:flex;">
+                                <button class="btn-more-detail">More</button>
+                                <button class="btn-more-dropdown2">▼</button>
+                            </div>
+                            <button class="btn-close-detail" onclick="closeDetailView()">×</button>
+                        </div>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="detail-tabs">
+                        <div class="detail-tab active" data-tab="overview" onclick="switchDetailTab('overview', this)">
+                            Overview</div>
+                        <div class="detail-tab" data-tab="comments" onclick="switchDetailTab('comments', this)">Comments
+                        </div>
+                        <div class="detail-tab" data-tab="transactions" onclick="switchDetailTab('transactions', this)">
+                            Transactions</div>
+                        <div class="detail-tab" data-tab="mails" onclick="switchDetailTab('mails', this)">Mails</div>
+                        <div class="detail-tab" data-tab="statement" onclick="switchDetailTab('statement', this)">
+                            Statement
+                        </div>
+                    </div>
+
+                    <!-- Tab: Overview -->
+                    <div class="tab-content-area active" id="dtab-overview">
+                        <div class="overview-left">
+                            <div class="vendor-info-card">
+                                <div class="vendor-contact-row">
+                                    <div class="vendor-avatar" id="dVendorAvatar">👤</div>
+                                    <div class="vendor-contact-details" id="dVendorContact"></div>
+                                    <span class="vendor-settings-icon">⚙</span>
+                                </div>
+                            </div>
+
+                            <!-- ADDRESS -->
+                            <div class="section-header" onclick="toggleDetailSection('address')">
+                                <span class="section-title">ADDRESS</span>
+                                <span class="section-toggle" id="dAddressToggle">▲</span>
+                            </div>
+                            <div class="section-content" id="dAddressContent">
+                                <div class="detail-row">
+                                    <div class="detail-label">Billing Address</div>
+                                    <div style="font-size:13px;color:#333;"><span id="dBillingAddress">No Billing
+                                            Address</span> - <span class="detail-value link"
+                                            onclick="openAddressModal('billing')">New Address</span></div>
+                                </div>
+                                <div class="detail-row" style="margin-top:14px;">
+                                    <div class="detail-label">Shipping Address</div>
+                                    <div style="font-size:13px;color:#333;"><span id="dShippingAddress">No Shipping
+                                            Address</span> - <span class="detail-value link"
+                                            onclick="openAddressModal('shipping')">New Address</span></div>
+                                </div>
+                            </div>
+
+                            <!-- OTHER DETAILS -->
+                            <div class="section-header" onclick="toggleDetailSection('otherDetails')">
+                                <span class="section-title">OTHER DETAILS</span>
+                                <span class="section-toggle" id="dOtherDetailsToggle">▲</span>
+                            </div>
+                            <div class="section-content" id="dOtherDetailsContent">
+                                <div class="detail-row">
+                                    <div class="detail-label">Default Currency</div>
+                                    <div class="detail-value" id="dCurrency">PHP</div>
+                                </div>
+                            </div>
+
+                            <!-- CONTACT PERSONS -->
+                            <div class="contacts-header" onclick="toggleDetailSection('contacts')">
+                                <span class="section-title">CONTACT PERSONS (<span id="dContactCount">0</span>)</span>
+                                <div class="contacts-actions">
+                                    <button class="add-contact-icon" onclick="event.stopPropagation();"
+                                        title="Add Contact">+</button>
+                                    <span class="section-toggle" id="dContactsToggle">▲</span>
+                                </div>
+                            </div>
+                            <div id="dContactsContent">
+                                <div id="dContactPersonsList"></div>
+                            </div>
+
+                            <!-- RECORD INFO -->
+                            <div class="section-header" onclick="toggleDetailSection('recordInfo')">
+                                <span class="section-title">RECORD INFO</span>
+                                <span class="section-toggle" id="dRecordInfoToggle">▼</span>
+                            </div>
+                            <div class="section-content collapsed" id="dRecordInfoContent">
+                                <div class="detail-row">
+                                    <div class="detail-label">Created</div>
+                                    <div class="detail-value" id="dCreatedAt">-</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Last Modified</div>
+                                    <div class="detail-value" id="dUpdatedAt">-</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Overview right: payables + timeline -->
+                        <div class="overview-right">
+                            <div class="payment-info">
+                                <div class="payment-row">
+                                    <div class="payment-label">Payment due period</div>
+                                    <div class="payment-value" id="dPayTerms">Due on Receipt</div>
+                                </div>
+                                <div class="payables-title">Payables</div>
+                                <table class="payables-table">
+                                    <thead>
+                                        <tr>
+                                            <th>CURRENCY</th>
+                                            <th>OUTSTANDING PAYABLES</th>
+                                            <th>UNUSED CREDITS</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td id="dPayCurrency">PHP- Philippine Peso</td>
+                                            <td id="dPayOutstanding">PHP0.00</td>
+                                            <td id="dPayCredits">PHP0.00</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div class="items-summary">
+                                    <div class="items-summary-item"><span class="items-summary-label">Items to be
+                                            received:</span> <span class="items-summary-value"
+                                            id="dItemsToReceive">0</span>
                                     </div>
-                                    <div class="criteria-field-list" id="criteriaFieldList1">
-                                        <div class="criteria-field-item"
-                                            onclick="selectCriteriaField(1, 'display_name', 'Display Name')">Display
-                                            Name</div>
-                                        <div class="criteria-field-item"
-                                            onclick="selectCriteriaField(1, 'company_name', 'Company Name')">Company
-                                            Name</div>
-                                        <div class="criteria-field-item"
-                                            onclick="selectCriteriaField(1, 'first_name', 'First Name')">First Name
-                                        </div>
-                                        <div class="criteria-field-item"
-                                            onclick="selectCriteriaField(1, 'last_name', 'Last Name')">Last Name</div>
-                                        <div class="criteria-field-item"
-                                            onclick="selectCriteriaField(1, 'address', 'Address')">Address</div>
-                                        <div class="criteria-field-item"
-                                            onclick="selectCriteriaField(1, 'postal_code', 'Postal Code')">Postal Code
-                                        </div>
-                                        <div class="criteria-field-item"
-                                            onclick="selectCriteriaField(1, 'billing_country', 'Billing Country')">
-                                            Billing Country</div>
-                                        <div class="criteria-field-item"
-                                            onclick="selectCriteriaField(1, 'shipping_country', 'Shipping Country')">
-                                            Shipping Country</div>
-                                        <div class="criteria-field-item"
-                                            onclick="selectCriteriaField(1, 'status', 'Status')">Status</div>
-                                        <div class="criteria-field-item"
-                                            onclick="selectCriteriaField(1, 'portal_status', 'Portal Status')">Portal
-                                            Status</div>
-                                        <div class="criteria-field-item"
-                                            onclick="selectCriteriaField(1, 'email', 'Email')">Email</div>
-                                        <div class="criteria-field-item"
-                                            onclick="selectCriteriaField(1, 'phone', 'Phone')">Phone</div>
-                                        <div class="criteria-field-item"
-                                            onclick="selectCriteriaField(1, 'notes', 'Notes')">Notes</div>
-                                        <div class="criteria-field-item"
-                                            onclick="selectCriteriaField(1, 'website', 'Website')">Website</div>
-                                        <div class="criteria-field-item"
-                                            onclick="selectCriteriaField(1, 'payables_bcy', 'Payables (BCY)')">Payables
-                                            (BCY)</div>
-                                        <div class="criteria-field-item"
-                                            onclick="selectCriteriaField(1, 'unused_credits_bcy', 'Unused Credits (BCY)')">
-                                            Unused Credits (BCY)</div>
-                                        <div class="criteria-field-item" onclick="selectCriteriaField(1, 'tax', 'Tax')">
-                                            Tax</div>
+                                    <div class="items-summary-item"><span class="items-summary-label">Total items
+                                            ordered:</span> <span class="items-summary-value"
+                                            id="dTotalOrdered">0</span>
                                     </div>
                                 </div>
                             </div>
-                            <select class="criteria-select" id="criteriaComparator1">
-                                <option value="">Select a comparator</option>
-                                <option value="equals">equals</option>
-                                <option value="not_equals">not equals</option>
-                                <option value="contains">contains</option>
-                                <option value="starts_with">starts with</option>
-                                <option value="ends_with">ends with</option>
-                            </select>
-                            <input type="text" class="criteria-value" placeholder="">
-                            <button class="criteria-action-btn" onclick="addCriterion()">+</button>
-                            <button class="criteria-action-btn delete-btn" onclick="removeCriterion(1)">🗑️</button>
+                            <div id="dTimelineContainer"></div>
                         </div>
                     </div>
-                    <button class="add-criterion-btn" onclick="addCriterion()">
-                        <span class="plus-icon">➕</span> Add Criterion
-                    </button>
-                </div>
 
-                <!-- Columns Preference Section -->
-                <div class="cv-section">
-                    <h3 class="cv-section-title">Columns Preference:</h3>
-                    <div class="columns-preference">
-                        <div class="columns-available">
-                            <div class="columns-header">AVAILABLE COLUMNS</div>
-                            <div class="columns-search">
-                                <input type="text" class="columns-search-input" placeholder="🔍 Search"
-                                    id="columnsSearch">
+                    <!-- Tab: Comments -->
+                    <div class="tab-content-area" id="dtab-comments" style="flex-direction:column;padding:20px 24px;">
+                        <div class="comment-editor-card">
+                            <div class="comment-toolbar">
+                                <button class="comment-toolbar-btn" style="font-weight:700;">B</button>
+                                <button class="comment-toolbar-btn" style="font-style:italic;">I</button>
+                                <button class="comment-toolbar-btn" style="text-decoration:underline;">U</button>
                             </div>
-                            <div class="columns-list" id="availableColumnsList">
-                                <div class="column-item" data-column="company"><span class="drag-icon">⋮⋮</span> Company
-                                    Name <button class="col-add-btn"
-                                        onclick="addColumn('company', 'Company Name')">+</button></div>
-                                <div class="column-item" data-column="email"><span class="drag-icon">⋮⋮</span> Email
-                                    <button class="col-add-btn" onclick="addColumn('email', 'Email')">+</button>
-                                </div>
-                                <div class="column-item" data-column="phone"><span class="drag-icon">⋮⋮</span> Phone
-                                    <button class="col-add-btn" onclick="addColumn('phone', 'Phone')">+</button>
-                                </div>
-                                <div class="column-item" data-column="payables"><span class="drag-icon">⋮⋮</span>
-                                    Payables <button class="col-add-btn"
-                                        onclick="addColumn('payables', 'Payables')">+</button></div>
-                                <div class="column-item" data-column="payables_bcy"><span class="drag-icon">⋮⋮</span>
-                                    Payables (BCY) <button class="col-add-btn"
-                                        onclick="addColumn('payables_bcy', 'Payables (BCY)')">+</button></div>
-                                <div class="column-item" data-column="unused_credits"><span class="drag-icon">⋮⋮</span>
-                                    Unused Credits <button class="col-add-btn"
-                                        onclick="addColumn('unused_credits', 'Unused Credits')">+</button></div>
-                                <div class="column-item" data-column="unused_credits_bcy"><span
-                                        class="drag-icon">⋮⋮</span> Unused Credits (BCY) <button class="col-add-btn"
-                                        onclick="addColumn('unused_credits_bcy', 'Unused Credits (BCY)')">+</button>
-                                </div>
-                                <div class="column-item" data-column="source"><span class="drag-icon">⋮⋮</span> Source
-                                    <button class="col-add-btn" onclick="addColumn('source', 'Source')">+</button>
-                                </div>
-                                <div class="column-item" data-column="first_name"><span class="drag-icon">⋮⋮</span>
-                                    First Name <button class="col-add-btn"
-                                        onclick="addColumn('first_name', 'First Name')">+</button></div>
-                                <div class="column-item" data-column="last_name"><span class="drag-icon">⋮⋮</span> Last
-                                    Name <button class="col-add-btn"
-                                        onclick="addColumn('last_name', 'Last Name')">+</button></div>
-                                <div class="column-item" data-column="mobile_phone"><span class="drag-icon">⋮⋮</span>
-                                    Mobile Phone <button class="col-add-btn"
-                                        onclick="addColumn('mobile_phone', 'Mobile Phone')">+</button></div>
-                                <div class="column-item" data-column="payment_terms"><span class="drag-icon">⋮⋮</span>
-                                    Payment Terms <button class="col-add-btn"
-                                        onclick="addColumn('payment_terms', 'Payment Terms')">+</button></div>
-                                <div class="column-item" data-column="status"><span class="drag-icon">⋮⋮</span> Status
-                                    <button class="col-add-btn" onclick="addColumn('status', 'Status')">+</button>
-                                </div>
-                                <div class="column-item" data-column="website"><span class="drag-icon">⋮⋮</span> Website
-                                    <button class="col-add-btn" onclick="addColumn('website', 'Website')">+</button>
-                                </div>
-                            </div>
+                            <textarea class="comment-input" placeholder="Add Comment"></textarea>
                         </div>
-                        <div class="columns-selected">
-                            <div class="columns-header"><span class="check-icon">✓</span> SELECTED COLUMNS</div>
-                            <div class="columns-list" id="selectedColumnsList">
-                                <div class="column-item selected" data-column="name"><span class="drag-icon">⋮⋮</span>
-                                    Name <span class="required-star">*</span></div>
+                        <div class="all-comments-header">ALL COMMENTS</div>
+                        <div style="text-align:center;padding:20px;color:#888;font-size:13px;">No comments yet.</div>
+                    </div>
+
+                    <!-- Tab: Transactions -->
+                    <div class="tab-content-area" id="dtab-transactions"
+                        style="flex-direction:column;padding:20px 24px;">
+                        <div class="txn-section">
+                            <div class="txn-section-header">
+                                <div class="txn-section-left"><span class="txn-section-toggle">▼</span><span
+                                        class="txn-section-title">Bills</span></div>
                             </div>
+                            <div class="txn-empty">There are no Bills - <a href="#">Add New</a></div>
+                        </div>
+                        <div class="txn-section">
+                            <div class="txn-section-header">
+                                <div class="txn-section-left"><span class="txn-section-toggle">▼</span><span
+                                        class="txn-section-title">Payments Made</span></div>
+                            </div>
+                            <div class="txn-empty">There are no Payments Made - <a href="#">Add New</a></div>
+                        </div>
+                        <div class="txn-section">
+                            <div class="txn-section-header">
+                                <div class="txn-section-left"><span class="txn-section-toggle">▼</span><span
+                                        class="txn-section-title">Vendor Credits</span></div>
+                            </div>
+                            <div class="txn-empty">There are no Vendor Credits - <a href="#">Add New</a></div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Visibility Preference Section -->
-                <div class="cv-section visibility-section">
-                    <h3 class="cv-section-title">Visibility Preference</h3>
-                    <div class="visibility-box">
-                        <div class="visibility-label">Share With</div>
-                        <div class="visibility-options">
-                            <label class="visibility-option">
-                                <input type="radio" name="visibility" value="only_me" checked>
-                                <span>Only Me 🔒</span>
-                            </label>
-                            <label class="visibility-option">
-                                <input type="radio" name="visibility" value="selected_users">
-                                <span>Only Selected Users & Roles ⓘ</span>
-                            </label>
-                            <label class="visibility-option">
-                                <input type="radio" name="visibility" value="everyone">
-                                <span>Everyone 📋</span>
-                            </label>
-                        </div>
+                    <!-- Tab: Mails -->
+                    <div class="tab-content-area" id="dtab-mails" style="flex-direction:column;padding:20px 24px;">
+                        <div style="text-align:center;padding:60px 20px;color:#888;font-size:14px;">⚠ No email has been
+                            sent
+                            yet.</div>
+                    </div>
+
+                    <!-- Tab: Statement -->
+                    <div class="tab-content-area" id="dtab-statement" style="flex-direction:column;padding:20px 24px;">
+                        <div style="text-align:center;padding:60px 20px;color:#888;font-size:14px;">Statement will be
+                            available when transactions exist.</div>
                     </div>
                 </div>
             </div>
-            <div class="custom-view-modal-footer">
-                <button class="cv-btn-save" onclick="saveCustomView()">Save</button>
-                <button class="cv-btn-cancel" onclick="closeNewCustomViewModal()">Cancel</button>
+
+            <!-- Address Modal -->
+            <div class="modal-overlay" id="addressModal">
+                <div class="modal-box">
+                    <div class="modal-header">
+                        <div class="modal-title" id="addressModalTitle">Billing Address</div>
+                        <button class="modal-close" onclick="closeAddressModal()">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="modal-field"><label>Attention</label><input type="text" id="addrAttention"></div>
+                        <div class="modal-field"><label>Country/Region</label><select id="addrCountry">
+                                <option value="Philippines">Philippines</option>
+                            </select></div>
+                        <div class="modal-field"><label>Address</label><textarea id="addrStreet" rows="2"></textarea>
+                        </div>
+                        <div class="modal-field-row">
+                            <div class="modal-field"><label>City</label><input type="text" id="addrCity"></div>
+                            <div class="modal-field"><label>State</label><input type="text" id="addrState"></div>
+                        </div>
+                        <div class="modal-field-row">
+                            <div class="modal-field"><label>ZIP Code</label><input type="text" id="addrZip"></div>
+                            <div class="modal-field"><label>Phone</label><input type="text" id="addrPhone"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="modal-btn modal-btn-cancel" onclick="closeAddressModal()">Cancel</button>
+                        <button class="modal-btn modal-btn-save" onclick="saveAddress()">Save</button>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-    <!-- Layout Script -->
-    <script src="/js/layout.js"></script>
-    <script>
-        let allVendors = [];
-        let selectedVendorIds = new Set();
 
-        // Create new vendor
-        function createNewVendor() {
-            window.location.href = '/new-vendor.html';
-        }
+            <!-- Customize Columns Modal -->
+            <div id="vendorCustomizeColumnsModal" class="customize-columns-modal">
+                <div class="customize-columns-panel">
+                    <div class="customize-columns-header">
+                        <div class="customize-columns-title">
+                            <span class="customize-icon">☰</span>
+                            <span>Customize Columns</span>
+                        </div>
+                        <div class="customize-columns-count">
+                            <span id="vendorSelectedColCount">6</span> of <span id="vendorTotalColCount">15</span>
+                            Selected
+                        </div>
+                        <button class="customize-close-btn" onclick="closeVendorCustomizeColumns()">×</button>
+                    </div>
+                    <div class="customize-columns-search">
+                        <input type="text" id="vendorColumnSearchInput" placeholder="Search"
+                            oninput="filterVendorColumns()">
+                    </div>
+                    <div class="customize-columns-list" id="vendorColumnsList">
+                        <!-- Columns populated by JS -->
+                    </div>
+                    <div class="customize-columns-footer">
+                        <button class="customize-save-btn" onclick="saveVendorColumnSettings()">Save</button>
+                        <button class="customize-cancel-btn" onclick="closeVendorCustomizeColumns()">Cancel</button>
+                    </div>
+                </div>
+            </div>
 
-        // Import vendors
-        function importVendors() {
-            window.location.href = '/import-vendors.html';
-        }
+            <!-- New Custom View Modal -->
+            <div class="custom-view-modal" id="customViewModal">
+                <div class="custom-view-modal-content">
+                    <div class="custom-view-modal-header">
+                        <h2>New Custom View</h2>
+                        <button class="modal-close-btn" onclick="closeNewCustomViewModal()">×</button>
+                    </div>
+                    <div class="custom-view-modal-body">
+                        <!-- Name Section -->
+                        <div class="cv-form-row">
+                            <label class="cv-label required">Name*</label>
+                            <div class="cv-name-row">
+                                <input type="text" class="cv-input" id="customViewName" placeholder="">
+                                <label class="cv-favorite-label">
+                                    <span class="star-icon-empty">☆</span>
+                                    Mark as Favorite
+                                </label>
+                            </div>
+                        </div>
 
-        // Fetch and display vendors
-        async function loadVendors() {
-            try {
-                const response = await fetch('/api/suppliers');
-                const vendors = await response.json();
-                allVendors = vendors;
-                renderVendors();
-            } catch (error) {
-                console.error('Error loading vendors:', error);
-            }
-        }
+                        <!-- Define Criteria Section -->
+                        <div class="cv-section">
+                            <h3 class="cv-section-title">Define the criteria ( if any )</h3>
+                            <div id="criteriaContainer">
+                                <div class="criteria-row" id="criteriaRow1">
+                                    <span class="criteria-number">1</span>
+                                    <div class="criteria-field-dropdown" id="criteriaFieldDropdown1">
+                                        <div class="criteria-field-header" onclick="toggleCriteriaFieldDropdown(1)">
+                                            <span class="criteria-field-text" id="criteriaFieldText1">Select a
+                                                field</span>
+                                            <span class="criteria-dropdown-arrow">▼</span>
+                                        </div>
+                                        <input type="hidden" id="criteriaFieldValue1" value="">
+                                        <div class="criteria-field-menu" id="criteriaFieldMenu1">
+                                            <div class="criteria-field-search">
+                                                <span>🔍</span>
+                                                <input type="text" placeholder="Search"
+                                                    oninput="filterCriteriaFields(1)">
+                                            </div>
+                                            <div class="criteria-field-list" id="criteriaFieldList1">
+                                                <div class="criteria-field-item"
+                                                    onclick="selectCriteriaField(1, 'display_name', 'Display Name')">
+                                                    Display
+                                                    Name</div>
+                                                <div class="criteria-field-item"
+                                                    onclick="selectCriteriaField(1, 'company_name', 'Company Name')">
+                                                    Company
+                                                    Name</div>
+                                                <div class="criteria-field-item"
+                                                    onclick="selectCriteriaField(1, 'first_name', 'First Name')">First
+                                                    Name
+                                                </div>
+                                                <div class="criteria-field-item"
+                                                    onclick="selectCriteriaField(1, 'last_name', 'Last Name')">Last Name
+                                                </div>
+                                                <div class="criteria-field-item"
+                                                    onclick="selectCriteriaField(1, 'address', 'Address')">Address</div>
+                                                <div class="criteria-field-item"
+                                                    onclick="selectCriteriaField(1, 'postal_code', 'Postal Code')">
+                                                    Postal
+                                                    Code
+                                                </div>
+                                                <div class="criteria-field-item"
+                                                    onclick="selectCriteriaField(1, 'billing_country', 'Billing Country')">
+                                                    Billing Country</div>
+                                                <div class="criteria-field-item"
+                                                    onclick="selectCriteriaField(1, 'shipping_country', 'Shipping Country')">
+                                                    Shipping Country</div>
+                                                <div class="criteria-field-item"
+                                                    onclick="selectCriteriaField(1, 'status', 'Status')">Status</div>
+                                                <div class="criteria-field-item"
+                                                    onclick="selectCriteriaField(1, 'portal_status', 'Portal Status')">
+                                                    Portal
+                                                    Status</div>
+                                                <div class="criteria-field-item"
+                                                    onclick="selectCriteriaField(1, 'email', 'Email')">Email</div>
+                                                <div class="criteria-field-item"
+                                                    onclick="selectCriteriaField(1, 'phone', 'Phone')">Phone</div>
+                                                <div class="criteria-field-item"
+                                                    onclick="selectCriteriaField(1, 'notes', 'Notes')">Notes</div>
+                                                <div class="criteria-field-item"
+                                                    onclick="selectCriteriaField(1, 'website', 'Website')">Website</div>
+                                                <div class="criteria-field-item"
+                                                    onclick="selectCriteriaField(1, 'payables_bcy', 'Payables (BCY)')">
+                                                    Payables
+                                                    (BCY)</div>
+                                                <div class="criteria-field-item"
+                                                    onclick="selectCriteriaField(1, 'unused_credits_bcy', 'Unused Credits (BCY)')">
+                                                    Unused Credits (BCY)</div>
+                                                <div class="criteria-field-item"
+                                                    onclick="selectCriteriaField(1, 'tax', 'Tax')">
+                                                    Tax</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <select class="criteria-select" id="criteriaComparator1">
+                                        <option value="">Select a comparator</option>
+                                        <option value="equals">equals</option>
+                                        <option value="not_equals">not equals</option>
+                                        <option value="contains">contains</option>
+                                        <option value="starts_with">starts with</option>
+                                        <option value="ends_with">ends with</option>
+                                    </select>
+                                    <input type="text" class="criteria-value" placeholder="">
+                                    <button class="criteria-action-btn" onclick="addCriterion()">+</button>
+                                    <button class="criteria-action-btn delete-btn"
+                                        onclick="removeCriterion(1)">🗑️</button>
+                                </div>
+                            </div>
+                            <button class="add-criterion-btn" onclick="addCriterion()">
+                                <span class="plus-icon">➕</span> Add Criterion
+                            </button>
+                        </div>
 
-        // Render vendors table
-        function renderVendors() {
-            const emptyState = document.getElementById('emptyState');
-            const vendorsContainer = document.getElementById('vendorsContainer');
-            const vendorsBody = document.getElementById('vendorsBody');
+                        <!-- Columns Preference Section -->
+                        <div class="cv-section">
+                            <h3 class="cv-section-title">Columns Preference:</h3>
+                            <div class="columns-preference">
+                                <div class="columns-available">
+                                    <div class="columns-header">AVAILABLE COLUMNS</div>
+                                    <div class="columns-search">
+                                        <input type="text" class="columns-search-input" placeholder="🔍 Search"
+                                            id="columnsSearch">
+                                    </div>
+                                    <div class="columns-list" id="availableColumnsList">
+                                        <div class="column-item" data-column="company"><span class="drag-icon">⋮⋮</span>
+                                            Company
+                                            Name <button class="col-add-btn"
+                                                onclick="addColumn('company', 'Company Name')">+</button></div>
+                                        <div class="column-item" data-column="email"><span class="drag-icon">⋮⋮</span>
+                                            Email
+                                            <button class="col-add-btn" onclick="addColumn('email', 'Email')">+</button>
+                                        </div>
+                                        <div class="column-item" data-column="phone"><span class="drag-icon">⋮⋮</span>
+                                            Phone
+                                            <button class="col-add-btn" onclick="addColumn('phone', 'Phone')">+</button>
+                                        </div>
+                                        <div class="column-item" data-column="payables"><span
+                                                class="drag-icon">⋮⋮</span>
+                                            Payables <button class="col-add-btn"
+                                                onclick="addColumn('payables', 'Payables')">+</button></div>
+                                        <div class="column-item" data-column="payables_bcy"><span
+                                                class="drag-icon">⋮⋮</span>
+                                            Payables (BCY) <button class="col-add-btn"
+                                                onclick="addColumn('payables_bcy', 'Payables (BCY)')">+</button></div>
+                                        <div class="column-item" data-column="unused_credits"><span
+                                                class="drag-icon">⋮⋮</span>
+                                            Unused Credits <button class="col-add-btn"
+                                                onclick="addColumn('unused_credits', 'Unused Credits')">+</button></div>
+                                        <div class="column-item" data-column="unused_credits_bcy"><span
+                                                class="drag-icon">⋮⋮</span> Unused Credits (BCY) <button
+                                                class="col-add-btn"
+                                                onclick="addColumn('unused_credits_bcy', 'Unused Credits (BCY)')">+</button>
+                                        </div>
+                                        <div class="column-item" data-column="source"><span class="drag-icon">⋮⋮</span>
+                                            Source
+                                            <button class="col-add-btn"
+                                                onclick="addColumn('source', 'Source')">+</button>
+                                        </div>
+                                        <div class="column-item" data-column="first_name"><span
+                                                class="drag-icon">⋮⋮</span>
+                                            First Name <button class="col-add-btn"
+                                                onclick="addColumn('first_name', 'First Name')">+</button></div>
+                                        <div class="column-item" data-column="last_name"><span
+                                                class="drag-icon">⋮⋮</span>
+                                            Last
+                                            Name <button class="col-add-btn"
+                                                onclick="addColumn('last_name', 'Last Name')">+</button></div>
+                                        <div class="column-item" data-column="mobile_phone"><span
+                                                class="drag-icon">⋮⋮</span>
+                                            Mobile Phone <button class="col-add-btn"
+                                                onclick="addColumn('mobile_phone', 'Mobile Phone')">+</button></div>
+                                        <div class="column-item" data-column="payment_terms"><span
+                                                class="drag-icon">⋮⋮</span>
+                                            Payment Terms <button class="col-add-btn"
+                                                onclick="addColumn('payment_terms', 'Payment Terms')">+</button></div>
+                                        <div class="column-item" data-column="status"><span class="drag-icon">⋮⋮</span>
+                                            Status
+                                            <button class="col-add-btn"
+                                                onclick="addColumn('status', 'Status')">+</button>
+                                        </div>
+                                        <div class="column-item" data-column="website"><span class="drag-icon">⋮⋮</span>
+                                            Website
+                                            <button class="col-add-btn"
+                                                onclick="addColumn('website', 'Website')">+</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="columns-selected">
+                                    <div class="columns-header"><span class="check-icon">✓</span> SELECTED COLUMNS</div>
+                                    <div class="columns-list" id="selectedColumnsList">
+                                        <div class="column-item selected" data-column="name"><span
+                                                class="drag-icon">⋮⋮</span>
+                                            Name <span class="required-star">*</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-            if (allVendors.length === 0) {
-                emptyState.style.display = 'flex';
-                vendorsContainer.style.display = 'none';
-                return;
-            }
+                        <!-- Visibility Preference Section -->
+                        <div class="cv-section visibility-section">
+                            <h3 class="cv-section-title">Visibility Preference</h3>
+                            <div class="visibility-box">
+                                <div class="visibility-label">Share With</div>
+                                <div class="visibility-options">
+                                    <label class="visibility-option">
+                                        <input type="radio" name="visibility" value="only_me" checked>
+                                        <span>Only Me 🔒</span>
+                                    </label>
+                                    <label class="visibility-option">
+                                        <input type="radio" name="visibility" value="selected_users">
+                                        <span>Only Selected Users & Roles ⓘ</span>
+                                    </label>
+                                    <label class="visibility-option">
+                                        <input type="radio" name="visibility" value="everyone">
+                                        <span>Everyone 📋</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="custom-view-modal-footer">
+                        <button class="cv-btn-save" onclick="saveCustomView()">Save</button>
+                        <button class="cv-btn-cancel" onclick="closeNewCustomViewModal()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Layout Script -->
+            <script src="/js/pagination.js"></script>
+            <script src="/js/layout.js"></script>
+            <script>
+                let allVendors = [];
+                let selectedVendorIds = new Set();
 
-            emptyState.style.display = 'none';
-            vendorsContainer.style.display = 'block';
+                // ===== COLUMN CONFIGURATION =====
+                const vendorAllColumns = [
+                    { id: 'name', label: 'Name', visible: true, locked: true },
+                    { id: 'company_name', label: 'Company Name', visible: true, locked: false },
+                    { id: 'email', label: 'Email', visible: true, locked: false },
+                    { id: 'phone', label: 'Phone', visible: true, locked: false },
+                    { id: 'payables_bcy', label: 'Payables (BCY)', visible: true, locked: false },
+                    { id: 'unused_credits_bcy', label: 'Unused Credits (BCY)', visible: true, locked: false },
+                    { id: 'payables', label: 'Payables', visible: false, locked: false },
+                    { id: 'unused_credits', label: 'Unused Credits', visible: false, locked: false },
+                    { id: 'source', label: 'Source', visible: false, locked: false },
+                    { id: 'first_name', label: 'First Name', visible: false, locked: false },
+                    { id: 'last_name', label: 'Last Name', visible: false, locked: false },
+                    { id: 'mobile_phone', label: 'Mobile Phone', visible: false, locked: false },
+                    { id: 'payment_terms', label: 'Payment Terms', visible: false, locked: false },
+                    { id: 'status', label: 'Status', visible: false, locked: false },
+                    { id: 'website', label: 'Website', visible: false, locked: false }
+                ];
+                let vendorColumnSettings = JSON.parse(JSON.stringify(vendorAllColumns));
 
-            vendorsBody.innerHTML = allVendors.map(vendor => `
-                <tr id="vendor-row-${vendor.id}" class="${selectedVendorIds.has(vendor.id) ? 'selected' : ''}">
-                    <td onclick="event.stopPropagation();">
-                        <input type="checkbox" class="vendor-checkbox" 
-                            ${selectedVendorIds.has(vendor.id) ? 'checked' : ''}
-                            onchange="toggleVendorSelection(${vendor.id})">
-                    </td>
-                    <td style="color: #4285f4; font-weight: 500; cursor: pointer;" onclick="viewVendor(${vendor.id})">${vendor.name || ''}</td>
-                    <td>${vendor.contact_person || ''}</td>
-                    <td>${vendor.email || ''}</td>
-                    <td>${vendor.phone || ''}</td>
-                    <td>PHP${parseFloat(vendor.total_spent || 0).toFixed(2)}</td>
-                </tr>
-            `).join('');
-        }
-
-        // Toggle individual vendor selection
-        function toggleVendorSelection(id) {
-            if (selectedVendorIds.has(id)) {
-                selectedVendorIds.delete(id);
-            } else {
-                selectedVendorIds.add(id);
-            }
-            updateSelectionUI();
-        }
-
-        // Toggle select all
-        function toggleSelectAll() {
-            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
-            if (selectAllCheckbox.checked) {
-                allVendors.forEach(v => selectedVendorIds.add(v.id));
-            } else {
-                selectedVendorIds.clear();
-            }
-            updateSelectionUI();
-        }
-
-        // Update selection UI
-        function updateSelectionUI() {
-            const bulkActionsBar = document.getElementById('bulkActionsBar');
-            const selectedCount = document.getElementById('selectedCount');
-            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
-
-            if (selectedVendorIds.size > 0) {
-                bulkActionsBar.classList.add('active');
-                selectedCount.textContent = selectedVendorIds.size;
-            } else {
-                bulkActionsBar.classList.remove('active');
-            }
-
-            // Update select all checkbox state
-            if (selectAllCheckbox) {
-                selectAllCheckbox.checked = selectedVendorIds.size === allVendors.length && allVendors.length > 0;
-            }
-
-            // Re-render to update row highlighting
-            renderVendors();
-        }
-
-        // Clear selection
-        function clearSelection() {
-            selectedVendorIds.clear();
-            updateSelectionUI();
-        }
-
-        // Bulk action functions
-        function bulkUpdate() {
-            alert('Bulk Update: ' + selectedVendorIds.size + ' vendors selected');
-        }
-
-        function printSelected() {
-            alert('Print: ' + selectedVendorIds.size + ' vendors selected');
-        }
-
-        function markAsInactive() {
-            alert('Mark as Inactive: ' + selectedVendorIds.size + ' vendors selected');
-        }
-
-        function mergeVendors() {
-            if (selectedVendorIds.size < 2) {
-                alert('Please select at least 2 vendors to merge');
-                return;
-            }
-            alert('Merge: ' + selectedVendorIds.size + ' vendors selected');
-        }
-
-        function associateTemplates() {
-            alert('Associate Templates: ' + selectedVendorIds.size + ' vendors selected');
-        }
-
-        async function deleteSelected() {
-            if (!confirm(`Delete ${selectedVendorIds.size} selected vendor(s)?`)) return;
-
-            try {
-                for (const id of selectedVendorIds) {
-                    await fetch(`/api/suppliers/${id}`, { method: 'DELETE' });
+                // Load saved column settings from localStorage
+                function loadVendorColumnSettings() {
+                    try {
+                        const saved = localStorage.getItem('vendorColumnSettings');
+                        if (saved) {
+                            const parsed = JSON.parse(saved);
+                            vendorAllColumns.length = 0;
+                            parsed.forEach(col => vendorAllColumns.push(col));
+                        }
+                    } catch (e) { /* ignore */ }
                 }
-                selectedVendorIds.clear();
-                await loadVendors();
-                updateSelectionUI();
-                alert('Vendors deleted successfully');
-            } catch (error) {
-                console.error('Error deleting vendors:', error);
-                alert('Error deleting vendors');
-            }
-        }
+                loadVendorColumnSettings();
 
-        // View vendor
-        function viewVendor(id) {
-            window.location.href = '/vendor-detail.html?id=' + id;
-        }
+                // ===== CLIP / WRAP TEXT =====
+                let vendorClipTextEnabled = false;
+                function toggleVendorClipText() {
+                    vendorClipTextEnabled = !vendorClipTextEnabled;
+                    const table = document.getElementById('vendorsTable');
+                    if (table) {
+                        if (vendorClipTextEnabled) {
+                            table.classList.add('clip-text-mode');
+                            table.classList.remove('wrap-text-mode');
+                        } else {
+                            table.classList.remove('clip-text-mode');
+                            table.classList.add('wrap-text-mode');
+                        }
+                    }
+                    renderVendorTableHeader();
+                }
 
-        // Keyboard shortcut (Esc to clear selection)
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') {
-                clearSelection();
-            }
-        });
+                // ===== FILTER DROPDOWN =====
+                function toggleVendorFilterDropdown(event) {
+                    event.stopPropagation();
+                    const menu = document.getElementById('vendorFilterDropdownMenu');
+                    if (menu) menu.classList.toggle('active');
+                }
+                function closeVendorFilterDropdown() {
+                    const menu = document.getElementById('vendorFilterDropdownMenu');
+                    if (menu) menu.classList.remove('active');
+                }
 
-        // ========== VIEWS DROPDOWN FUNCTIONS ==========
-        let currentView = 'active';
-        let customViews = [];
+                // ===== CUSTOMIZE COLUMNS MODAL =====
+                function openVendorCustomizeColumns() {
+                    const modal = document.getElementById('vendorCustomizeColumnsModal');
+                    if (modal) {
+                        modal.classList.add('active');
+                        vendorColumnSettings = JSON.parse(JSON.stringify(vendorAllColumns));
+                        renderVendorColumnsList();
+                        updateVendorColumnCount();
+                    }
+                }
 
-        function toggleViewsDropdown() {
-            const container = document.querySelector('.views-dropdown-container');
-            container.classList.toggle('open');
-        }
+                function closeVendorCustomizeColumns() {
+                    const modal = document.getElementById('vendorCustomizeColumnsModal');
+                    if (modal) modal.classList.remove('active');
+                }
 
-        function selectView(viewType) {
-            currentView = viewType;
+                function renderVendorColumnsList(filter = '') {
+                    const list = document.getElementById('vendorColumnsList');
+                    if (!list) return;
 
-            // Update active state
-            document.querySelectorAll('.views-dropdown-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            event.currentTarget.classList.add('active');
+                    const filtered = vendorColumnSettings.filter(col =>
+                        col.label.toLowerCase().includes(filter.toLowerCase())
+                    );
 
-            // Update title
-            const viewNames = {
-                'all': 'All Vendors',
-                'active': 'Active Vendors',
-                'crm': 'CRM Vendors',
-                'duplicate': 'Duplicate Vendors',
-                'inactive': 'Inactive Vendors'
-            };
-            document.getElementById('currentViewName').textContent = viewNames[viewType] || viewType;
+                    list.innerHTML = filtered.map(col => `
+                <div class="cc-column-item ${col.locked ? 'locked' : ''} ${col.visible ? 'checked' : ''}"
+                     data-column-id="${col.id}"
+                     onclick="${col.locked ? '' : `toggleVendorColumnVisibility('${col.id}')`}">
+                    <span class="cc-drag-handle">⋮⋮</span>
+                    ${col.locked
+                            ? `<span class="cc-lock-icon">🔒</span>`
+                            : `<input type="checkbox" class="cc-checkbox"
+                              ${col.visible ? 'checked' : ''}
+                              onclick="event.stopPropagation();"
+                              onchange="toggleVendorColumnVisibility('${col.id}')">`
+                        }
+                    <span class="cc-column-name">${col.label}</span>
+                </div>
+            `).join('');
+                }
 
-            // Close dropdown
-            document.querySelector('.views-dropdown-container').classList.remove('open');
+                function filterVendorColumns() {
+                    const searchInput = document.getElementById('vendorColumnSearchInput');
+                    renderVendorColumnsList(searchInput ? searchInput.value : '');
+                }
 
-            // Reload vendors with filter (placeholder - would filter based on view)
-            loadVendors();
-        }
+                function toggleVendorColumnVisibility(columnId) {
+                    const col = vendorColumnSettings.find(c => c.id === columnId);
+                    if (col && !col.locked) {
+                        col.visible = !col.visible;
+                        updateVendorColumnCount();
+                        renderVendorColumnsList(document.getElementById('vendorColumnSearchInput')?.value || '');
+                    }
+                }
 
-        // Click outside to close views dropdown
-        document.addEventListener('click', function (e) {
-            const viewsContainer = document.querySelector('.views-dropdown-container');
-            if (viewsContainer && !viewsContainer.contains(e.target)) {
-                viewsContainer.classList.remove('open');
-            }
-        });
+                function updateVendorColumnCount() {
+                    const selCount = document.getElementById('vendorSelectedColCount');
+                    const totCount = document.getElementById('vendorTotalColCount');
+                    if (selCount) selCount.textContent = vendorColumnSettings.filter(c => c.visible).length;
+                    if (totCount) totCount.textContent = vendorColumnSettings.length;
+                }
 
-        // ========== CUSTOM VIEW MODAL FUNCTIONS ==========
-        function openNewCustomViewModal() {
-            document.querySelector('.views-dropdown-container').classList.remove('open');
-            document.getElementById('customViewModal').classList.add('active');
-            document.getElementById('customViewName').value = '';
-            document.getElementById('customViewName').focus();
-        }
+                function saveVendorColumnSettings() {
+                    vendorAllColumns.length = 0;
+                    vendorColumnSettings.forEach(col => vendorAllColumns.push(JSON.parse(JSON.stringify(col))));
 
-        function closeNewCustomViewModal() {
-            document.getElementById('customViewModal').classList.remove('active');
-        }
+                    try {
+                        localStorage.setItem('vendorColumnSettings', JSON.stringify(vendorAllColumns));
+                    } catch (e) { /* ignore */ }
 
-        let criterionCount = 1;
-        function addCriterion() {
-            criterionCount++;
-            const container = document.getElementById('criteriaContainer');
+                    closeVendorCustomizeColumns();
+                    renderVendorTableHeader();
+                    renderVendors();
+                }
 
-            // Add AND separator
-            const andLabel = document.createElement('div');
-            andLabel.className = 'criteria-and-label';
-            andLabel.id = 'andLabel' + criterionCount;
-            andLabel.innerHTML = '<span>AND</span> <span class="and-arrow">▼</span>';
-            container.appendChild(andLabel);
+                // ===== DYNAMIC TABLE HEADER =====
+                function renderVendorTableHeader() {
+                    const thead = document.getElementById('vendorsTableHead');
+                    if (!thead) return;
 
-            // Add new criteria row with custom dropdown
-            const newRow = document.createElement('div');
-            newRow.className = 'criteria-row';
-            newRow.id = 'criteriaRow' + criterionCount;
-            newRow.innerHTML = `
+                    const visibleColumns = vendorAllColumns.filter(col => col.visible);
+                    const clipWrapText = vendorClipTextEnabled ? 'Wrap Text' : 'Clip Text';
+                    const clipWrapIcon = vendorClipTextEnabled ? '↩️' : '📋';
+
+                    let headerHTML = `
+                <tr>
+                    <th class="zoho-th-filter">
+                        <div class="filter-dropdown-container">
+                            <span class="zoho-filter-icon" onclick="toggleVendorFilterDropdown(event)">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="#3b82f6">
+                                    <path d="M3 5h2v2H3V5zm4 0h14v2H7V5zm-4 6h2v2H3v-2zm4 0h14v2H7v-2zm-4 6h2v2H3v-2zm4 0h14v2H7v-2z"/>
+                                </svg>
+                            </span>
+                            <div class="filter-dropdown-menu" id="vendorFilterDropdownMenu">
+                                <div class="filter-dropdown-item" onclick="openVendorCustomizeColumns(); closeVendorFilterDropdown();">
+                                    <span class="filter-dropdown-icon">⚙️</span>
+                                    <span>Customize Columns</span>
+                                </div>
+                                <div class="filter-dropdown-item" onclick="toggleVendorClipText(); closeVendorFilterDropdown();">
+                                    <span class="filter-dropdown-icon">${clipWrapIcon}</span>
+                                    <span>${clipWrapText}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </th>
+                    <th class="zoho-th-checkbox"><input type="checkbox" class="vendor-checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"></th>
+            `;
+
+                    visibleColumns.forEach(col => {
+                        headerHTML += `<th>${col.label.toUpperCase()}</th>`;
+                    });
+
+                    headerHTML += `</tr>`;
+                    thead.innerHTML = headerHTML;
+                }
+
+                // ===== GET VENDOR COLUMN VALUE =====
+                function getVendorColumnValue(vendor, columnId) {
+                    switch (columnId) {
+                        case 'name':
+                            return `<span style="color: #4285f4; font-weight: 500; cursor: pointer;" onclick="viewVendor(${vendor.id})">${vendor.name || ''}</span>`;
+                        case 'company_name':
+                            return vendor.contact_person || '';
+                        case 'email':
+                            return vendor.email || '';
+                        case 'phone':
+                            return vendor.phone || '';
+                        case 'payables_bcy':
+                            return 'PHP' + parseFloat(vendor.total_spent || 0).toFixed(2);
+                        case 'unused_credits_bcy':
+                            return 'PHP0.00';
+                        case 'payables':
+                            return 'PHP' + parseFloat(vendor.total_spent || 0).toFixed(2);
+                        case 'unused_credits':
+                            return 'PHP0.00';
+                        case 'source':
+                            return vendor.source || '';
+                        case 'first_name':
+                            return vendor.first_name || '';
+                        case 'last_name':
+                            return vendor.last_name || '';
+                        case 'mobile_phone':
+                            return vendor.mobile_phone || '';
+                        case 'payment_terms':
+                            return vendor.payment_terms || '';
+                        case 'status':
+                            return vendor.status || 'Active';
+                        case 'website':
+                            return vendor.website || '';
+                        default:
+                            return '';
+                    }
+                }
+
+                // Close filter dropdown when clicking outside
+                document.addEventListener('click', function (e) {
+                    const dropdown = document.getElementById('vendorFilterDropdownMenu');
+                    const filterIcon = document.querySelector('.zoho-filter-icon');
+                    if (dropdown && !dropdown.contains(e.target) && e.target !== filterIcon && !filterIcon?.contains(e.target)) {
+                        dropdown.classList.remove('active');
+                    }
+                });
+
+                // Create new vendor
+                function createNewVendor() {
+                    window.location.href = '/new-vendor.html';
+                }
+
+                // Import vendors
+                // ===== VENDOR KEBAB MENU FUNCTIONS =====
+                let vendorCurrentSort = 'name'; // default sort field
+                let vendorSortDirection = 'asc'; // 'asc' or 'desc'
+
+                function toggleVendorKebab(e) {
+                    e.stopPropagation();
+                    const menu = document.getElementById('vendorKebabMenu');
+                    menu.classList.toggle('open');
+                    updateSortCheckmarks();
+                }
+                function closeVendorKebab() {
+                    const menu = document.getElementById('vendorKebabMenu');
+                    if (menu) menu.classList.remove('open');
+                }
+
+                // Close on click outside
+                document.addEventListener('click', function (e) {
+                    const wrapper = document.querySelector('.vendor-kebab-wrapper');
+                    if (wrapper && !wrapper.contains(e.target)) {
+                        closeVendorKebab();
+                    }
+                });
+
+                function updateSortCheckmarks() {
+                    const fields = ['name', 'company_name', 'payables_bcy', 'unused_credits_bcy', 'created_at', 'updated_at'];
+                    fields.forEach(f => {
+                        const itemEl = document.getElementById('sortItem-' + f);
+                        const dirEl = document.getElementById('sortDir-' + f);
+                        if (itemEl) {
+                            if (f === vendorCurrentSort) {
+                                itemEl.classList.add('active');
+                            } else {
+                                itemEl.classList.remove('active');
+                            }
+                        }
+                        if (dirEl) dirEl.textContent = (f === vendorCurrentSort) ? (vendorSortDirection === 'asc' ? '↑' : '↓') : '';
+                    });
+                }
+
+                function sortVendors(field, label) {
+                    // Toggle direction if same field clicked again
+                    if (vendorCurrentSort === field) {
+                        vendorSortDirection = (vendorSortDirection === 'asc') ? 'desc' : 'asc';
+                    } else {
+                        vendorCurrentSort = field;
+                        vendorSortDirection = 'asc';
+                    }
+                    updateSortCheckmarks();
+                    closeVendorKebab();
+
+                    const numericFields = ['payables_bcy', 'unused_credits_bcy', 'payables', 'unused_credits'];
+                    const dateFields = ['created_at', 'updated_at'];
+                    const dir = vendorSortDirection === 'asc' ? 1 : -1;
+
+                    allVendors.sort((a, b) => {
+                        let valA = a[field];
+                        let valB = b[field];
+
+                        if (numericFields.includes(field)) {
+                            valA = parseFloat(valA) || 0;
+                            valB = parseFloat(valB) || 0;
+                            return (valA - valB) * dir;
+                        }
+                        if (dateFields.includes(field)) {
+                            valA = valA ? new Date(valA).getTime() : 0;
+                            valB = valB ? new Date(valB).getTime() : 0;
+                            return (valA - valB) * dir;
+                        }
+                        // String sort
+                        valA = (valA || '').toString().toLowerCase();
+                        valB = (valB || '').toString().toLowerCase();
+                        return valA.localeCompare(valB) * dir;
+                    });
+
+                    const dirLabel = vendorSortDirection === 'asc' ? 'ascending' : 'descending';
+                    renderVendors();
+                    showVendorToast(`Sorted by ${label} (${dirLabel}).`, 'info');
+                }
+
+                // ===== EXPORT VENDORS =====
+                function escapeVendorCSV(val) {
+                    if (val == null) return '';
+                    const str = String(val);
+                    if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+                        return '"' + str.replace(/"/g, '""') + '"';
+                    }
+                    return str;
+                }
+
+                function downloadVendorCSV(filename, csvContent) {
+                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = filename;
+                    link.click();
+                    URL.revokeObjectURL(link.href);
+                }
+
+                function exportAllVendors() {
+                    if (allVendors.length === 0) {
+                        showVendorToast('No vendors to export.', 'warning');
+                        return;
+                    }
+                    const headers = ['Name', 'Company Name', 'Email', 'Phone', 'Payables (BCY)', 'Unused Credits (BCY)', 'Status', 'Created At', 'Updated At'];
+                    const keys = ['name', 'company_name', 'email', 'phone', 'payables_bcy', 'unused_credits_bcy', 'status', 'created_at', 'updated_at'];
+
+                    let csv = headers.map(escapeVendorCSV).join(',') + '\n';
+                    allVendors.forEach(v => {
+                        csv += keys.map(k => escapeVendorCSV(v[k] || '')).join(',') + '\n';
+                    });
+                    downloadVendorCSV('GiHon_All_Vendors.csv', csv);
+                    showVendorToast(`Exported ${allVendors.length} vendor(s) successfully.`, 'success');
+                }
+
+                function exportCurrentVendorView() {
+                    // Get only filtered vendors based on currentView
+                    let filtered = [...allVendors];
+                    if (currentView === 'active') {
+                        filtered = allVendors.filter(v => !v.status || v.status === 'active');
+                    } else if (currentView === 'inactive') {
+                        filtered = allVendors.filter(v => v.status === 'inactive');
+                    }
+
+                    if (filtered.length === 0) {
+                        showVendorToast('No vendors in current view to export.', 'warning');
+                        return;
+                    }
+
+                    const visibleColumns = vendorAllColumns.filter(col => col.visible);
+                    const headers = visibleColumns.map(col => col.label);
+                    const keys = visibleColumns.map(col => col.id);
+
+                    let csv = headers.map(escapeVendorCSV).join(',') + '\n';
+                    filtered.forEach(v => {
+                        csv += keys.map(k => escapeVendorCSV(v[k] || '')).join(',') + '\n';
+                    });
+                    downloadVendorCSV('GiHon_Filtered_Vendors.csv', csv);
+                    showVendorToast(`Exported ${filtered.length} vendor(s) from current view.`, 'success');
+                }
+
+                // ===== REFRESH LIST =====
+                async function refreshVendorList() {
+                    await loadVendors();
+                    showVendorToast('Vendor list refreshed!', 'success');
+                }
+
+                // ===== RESET COLUMN WIDTHS =====
+                function resetVendorColumnWidths() {
+                    const table = document.querySelector('#vendorsContainer table');
+                    if (table) {
+                        table.querySelectorAll('th').forEach(th => {
+                            th.style.width = '';
+                            th.style.minWidth = '';
+                            th.style.maxWidth = '';
+                        });
+                        table.querySelectorAll('td').forEach(td => {
+                            td.style.width = '';
+                            td.style.minWidth = '';
+                            td.style.maxWidth = '';
+                        });
+                    }
+                    showVendorToast('Column widths reset to default.', 'success');
+                }
+
+                function importVendors() {
+                    window.location.href = '/import-vendors.html';
+                }
+
+                // Fetch and display vendors
+                async function loadVendors() {
+                    try {
+                        const response = await fetch('/api/suppliers');
+                        const vendors = await response.json();
+                        allVendors = vendors;
+                        renderVendorTableHeader();
+                        renderVendors();
+                    } catch (error) {
+                        console.error('Error loading vendors:', error);
+                    }
+                }
+
+                function searchVendors() {
+                    const query = (document.getElementById('vendorSearchInput').value || '').toLowerCase();
+                    if (!query) {
+                        renderVendors();
+                        return;
+                    }
+                    const filtered = allVendors.filter(v => {
+                        const name = (v.vendor_name || v.first_name || '').toLowerCase();
+                        const email = (v.email || '').toLowerCase();
+                        const phone = (v.phone || '').toLowerCase();
+                        const company = (v.company_name || '').toLowerCase();
+                        return name.includes(query) || email.includes(query) || phone.includes(query) || company.includes(query);
+                    });
+                    renderFilteredVendors(filtered);
+                }
+
+                function renderFilteredVendors(filtered) {
+                    const emptyState = document.getElementById('emptyState');
+                    const vendorsContainer = document.getElementById('vendorsContainer');
+                    const vendorsBody = document.getElementById('vendorsBody');
+                    if (filtered.length === 0) {
+                        emptyState.style.display = 'flex';
+                        vendorsContainer.style.display = 'none';
+                        document.getElementById('paginationContainer').innerHTML = '';
+                        return;
+                    }
+                    emptyState.style.display = 'none';
+                    vendorsContainer.style.display = 'block';
+                    const visibleColumns = vendorAllColumns.filter(col => col.visible);
+                    function renderPage(pageData) {
+                        vendorsBody.innerHTML = pageData.map(vendor => `
+                    <tr id="vendor-row-${vendor.id}" class="${selectedVendorIds.has(vendor.id) ? 'selected' : ''}" onclick="viewVendor(${vendor.id})" style="cursor:pointer;">
+                        <td style="width:40px;"></td>
+                        <td onclick="event.stopPropagation();">
+                            <input type="checkbox" class="vendor-checkbox" 
+                                ${selectedVendorIds.has(vendor.id) ? 'checked' : ''}
+                                onchange="toggleVendorSelection(${vendor.id})">
+                        </td>
+                        ${visibleColumns.map(col => `<td>${getVendorColumnValue(vendor, col.id)}</td>`).join('')}
+                    </tr>
+                `).join('');
+                    }
+                    window.vendorPager = Pagination.create({
+                        data: filtered,
+                        perPage: 14,
+                        containerId: 'paginationContainer',
+                        onPageChange: function (pageData) { renderPage(pageData); }
+                    });
+                }
+
+                // Render vendors table
+                function renderVendors() {
+                    const emptyState = document.getElementById('emptyState');
+                    const vendorsContainer = document.getElementById('vendorsContainer');
+                    const vendorsBody = document.getElementById('vendorsBody');
+
+                    // Apply status filter based on currentView
+                    let filteredVendors = [...allVendors];
+                    if (currentView === 'active') {
+                        filteredVendors = allVendors.filter(v => !v.status || v.status === 'active');
+                    } else if (currentView === 'inactive') {
+                        filteredVendors = allVendors.filter(v => v.status === 'inactive');
+                    }
+                    // 'all' shows everything — no filter needed
+
+                    if (filteredVendors.length === 0) {
+                        emptyState.style.display = 'flex';
+                        vendorsContainer.style.display = 'none';
+                        document.getElementById('paginationContainer').innerHTML = '';
+                        return;
+                    }
+
+                    emptyState.style.display = 'none';
+                    vendorsContainer.style.display = 'block';
+
+                    const visibleColumns = vendorAllColumns.filter(col => col.visible);
+
+                    function renderPage(pageData) {
+                        vendorsBody.innerHTML = pageData.map(vendor => `
+                    <tr id="vendor-row-${vendor.id}" class="${selectedVendorIds.has(vendor.id) ? 'selected' : ''}" onclick="viewVendor(${vendor.id})" style="cursor:pointer;">
+                        <td style="width:40px;"></td>
+                        <td onclick="event.stopPropagation();">
+                            <input type="checkbox" class="vendor-checkbox" 
+                                ${selectedVendorIds.has(vendor.id) ? 'checked' : ''}
+                                onchange="toggleVendorSelection(${vendor.id})">
+                        </td>
+                        ${visibleColumns.map(col => `<td>${getVendorColumnValue(vendor, col.id)}</td>`).join('')}
+                    </tr>
+                `).join('');
+                    }
+
+                    if (!window.vendorPager) {
+                        window.vendorPager = Pagination.create({
+                            data: filteredVendors,
+                            perPage: 14,
+                            containerId: 'paginationContainer',
+                            onPageChange: function (pageData) { renderPage(pageData); }
+                        });
+                    } else {
+                        window.vendorPager.updateData(filteredVendors);
+                    }
+                }
+
+                // Toggle individual vendor selection
+                function toggleVendorSelection(id) {
+                    if (selectedVendorIds.has(id)) {
+                        selectedVendorIds.delete(id);
+                    } else {
+                        selectedVendorIds.add(id);
+                    }
+                    updateSelectionUI();
+                }
+
+                // Toggle select all
+                function toggleSelectAll() {
+                    const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+                    if (selectAllCheckbox.checked) {
+                        allVendors.forEach(v => selectedVendorIds.add(v.id));
+                    } else {
+                        selectedVendorIds.clear();
+                    }
+                    updateSelectionUI();
+                }
+
+                // Update selection UI
+                function updateSelectionUI() {
+                    const bulkActionsBar = document.getElementById('bulkActionsBar');
+                    const selectedCountEl = document.getElementById('selectedCount');
+                    const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+
+                    if (selectedVendorIds.size > 0) {
+                        bulkActionsBar.classList.add('active');
+                        const label = selectedVendorIds.size === 1 ? 'Vendor' : 'Vendors';
+                        selectedCountEl.textContent = `${selectedVendorIds.size} ${label} Selected`;
+
+                        // Dynamic Mark Active/Inactive button
+                        const btnMark = document.getElementById('btnMarkStatus');
+                        if (btnMark) {
+                            const selectedVendors = allVendors.filter(v => selectedVendorIds.has(v.id));
+                            const allActive = selectedVendors.every(v => !v.status || v.status === 'active');
+                            const allInactive = selectedVendors.every(v => v.status === 'inactive');
+                            if (allInactive) {
+                                btnMark.textContent = 'Mark as Active';
+                            } else {
+                                btnMark.textContent = 'Mark as Inactive';
+                            }
+                        }
+                    } else {
+                        bulkActionsBar.classList.remove('active');
+                    }
+
+                    // Update select all checkbox state
+                    if (selectAllCheckbox) {
+                        selectAllCheckbox.checked = selectedVendorIds.size === allVendors.length && allVendors.length > 0;
+                    }
+
+                    // Re-render to update row highlighting
+                    renderVendors();
+                }
+
+                // Clear selection
+                function clearSelection() {
+                    selectedVendorIds.clear();
+                    document.querySelectorAll('.vendor-checkbox').forEach(cb => cb.checked = false);
+                    const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+                    if (selectAllCheckbox) selectAllCheckbox.checked = false;
+                    updateSelectionUI();
+                }
+
+                // ===== Bulk Update =====
+                function bulkUpdate() {
+                    showVendorToast(`Bulk Update for ${selectedVendorIds.size} vendor(s) — coming soon`, 'info');
+                }
+
+                // ===== Print Selected =====
+                function printSelected() {
+                    showVendorToast(`Printing ${selectedVendorIds.size} vendor(s)...`, 'info');
+                    // Open print dialog with selected vendor rows
+                    const selectedRows = [];
+                    selectedVendorIds.forEach(id => {
+                        const vendor = allVendors.find(v => v.id === id);
+                        if (vendor) selectedRows.push(vendor);
+                    });
+                    const printWin = window.open('', '_blank', 'width=800,height=600');
+                    const rows = selectedRows.map(v => `<tr><td>${v.display_name || v.vendor_name || v.first_name || ''}</td><td>${v.company_name || ''}</td><td>${v.email || ''}</td><td>${v.phone || v.work_phone || ''}</td><td>${v.status || 'active'}</td></tr>`).join('');
+                    printWin.document.write(`<html><head><title>Vendors</title><style>body{font-family:Arial,sans-serif;padding:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:8px 12px;text-align:left}th{background:#f3f4f6;font-weight:600}</style></head><body><h2>Selected Vendors</h2><table><thead><tr><th>Name</th><th>Company</th><th>Email</th><th>Phone</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></body></html>`);
+                    printWin.document.close();
+                    printWin.focus();
+                    setTimeout(() => { printWin.print(); }, 500);
+                }
+
+                // ===== Mark as Active / Inactive =====
+                async function markAsActiveInactive() {
+                    if (selectedVendorIds.size === 0) return;
+
+                    const selectedVendors = allVendors.filter(v => selectedVendorIds.has(v.id));
+                    const allInactive = selectedVendors.every(v => v.status === 'inactive');
+                    const newStatus = allInactive ? 'active' : 'inactive';
+                    const label = newStatus === 'active' ? 'Active' : 'Inactive';
+
+                    let updated = 0;
+                    let failed = 0;
+
+                    for (const id of selectedVendorIds) {
+                        try {
+                            const res = await fetch(`/api/suppliers/${id}`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ status: newStatus })
+                            });
+                            if (res.ok) updated++;
+                            else failed++;
+                        } catch (err) {
+                            failed++;
+                        }
+                    }
+
+                    selectedVendorIds.clear();
+                    await loadVendors();
+                    updateSelectionUI();
+
+                    if (failed === 0) {
+                        showVendorToast(`${updated} vendor(s) marked as ${label}`, 'success');
+                    } else {
+                        showVendorToast(`Updated: ${updated}, Failed: ${failed}`, 'warning');
+                    }
+                }
+
+                // ===== Delete (opens confirmation modal) =====
+                function deleteSelected() {
+                    if (selectedVendorIds.size === 0) return;
+                    const n = selectedVendorIds.size;
+                    const label = n === 1 ? 'vendor' : 'vendors';
+                    document.getElementById('vendorConfirmMsg').innerHTML =
+                        `Are you sure you want to delete <strong>${n}</strong> selected ${label}?<br>This action cannot be undone.`;
+                    document.getElementById('vendorConfirmOverlay').classList.add('active');
+                }
+
+                function closeVendorConfirm() {
+                    document.getElementById('vendorConfirmOverlay').classList.remove('active');
+                }
+
+                async function confirmBulkDelete() {
+                    closeVendorConfirm();
+
+                    let deleted = 0;
+                    let failed = 0;
+
+                    for (const id of selectedVendorIds) {
+                        if (!id) { failed++; continue; }
+                        try {
+                            const res = await fetch(`/api/suppliers/${id}`, { method: 'DELETE' });
+                            if (res.ok) {
+                                deleted++;
+                            } else {
+                                failed++;
+                            }
+                        } catch (error) {
+                            failed++;
+                        }
+                    }
+
+                    selectedVendorIds.clear();
+                    await loadVendors();
+                    updateSelectionUI();
+
+                    if (failed === 0) {
+                        showVendorToast(`${deleted} vendor(s) deleted successfully!`, 'success');
+                    } else {
+                        showVendorToast(`Deleted: ${deleted}, Failed: ${failed}`, 'warning');
+                    }
+                }
+
+                // ===== Toast Notification =====
+                function showVendorToast(message, type = 'info') {
+                    const container = document.getElementById('vendorToastContainer');
+                    const toast = document.createElement('div');
+                    toast.className = `vendor-toast ${type}`;
+                    toast.textContent = message;
+                    container.appendChild(toast);
+                    setTimeout(() => {
+                        toast.classList.add('hide');
+                        setTimeout(() => toast.remove(), 300);
+                    }, 3000);
+                }
+
+                // Close confirm on overlay click
+                document.getElementById('vendorConfirmOverlay').addEventListener('click', function (e) {
+                    if (e.target === this) closeVendorConfirm();
+                });
+                // Close confirm on ESC key
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape') {
+                        closeVendorConfirm();
+                    }
+                });
+
+                // View vendor - open inline detail view
+                let currentVendorData = null;
+                let currentVendorId = null;
+
+                async function viewVendor(id) {
+                    await openDetailView(id);
+                }
+
+                async function openDetailView(vendorId) {
+                    currentVendorId = vendorId;
+                    try {
+                        const res = await fetch('/api/suppliers/' + vendorId);
+                        if (!res.ok) { alert('Vendor not found'); return; }
+                        currentVendorData = await res.json();
+                    } catch (e) {
+                        console.error(e);
+                        alert('Error loading vendor');
+                        return;
+                    }
+
+                    // Hide list view, show detail view
+                    document.querySelector('.page-header').style.display = 'none';
+                    document.getElementById('bulkActionsBar').style.display = 'none';
+                    document.getElementById('emptyState').style.display = 'none';
+                    document.getElementById('vendorsContainer').style.display = 'none';
+                    document.getElementById('detailView').classList.add('show');
+
+                    // Populate left sidebar list
+                    const leftList = document.getElementById('detailLeftList');
+                    leftList.innerHTML = '';
+                    allVendors.forEach(v => {
+                        const div = document.createElement('div');
+                        div.className = 'detail-left-item' + (v.id === vendorId ? ' active' : '');
+                        div.onclick = () => openDetailView(v.id);
+                        const amt = 'PHP' + parseFloat(v.total_spent || 0).toFixed(2);
+                        div.innerHTML = `
+                    <input type="checkbox" class="detail-left-item-checkbox" onclick="event.stopPropagation();">
+                    <div class="detail-left-item-info">
+                        <div class="detail-left-item-name">${v.display_name || v.name || 'Unnamed'}</div>
+                        <div class="detail-left-item-sub">${amt}</div>
+                    </div>
+                `;
+                        leftList.appendChild(div);
+                    });
+
+                    // Render detail panel
+                    renderDetailPanel();
+
+                    // Reset to Overview tab
+                    switchDetailTab('overview', document.querySelector('.detail-tab[data-tab="overview"]'));
+                }
+
+                function closeDetailView() {
+                    document.getElementById('detailView').classList.remove('show');
+                    document.querySelector('.page-header').style.display = 'flex';
+                    // Re-show the correct content
+                    if (allVendors.length === 0) {
+                        document.getElementById('emptyState').style.display = 'flex';
+                    } else {
+                        document.getElementById('vendorsContainer').style.display = 'block';
+                    }
+                    currentVendorData = null;
+                    currentVendorId = null;
+                }
+
+                function renderDetailPanel() {
+                    const v = currentVendorData;
+                    if (!v) return;
+
+                    // Header name
+                    document.getElementById('detailVendorName').textContent = v.display_name || v.name || 'Unnamed Vendor';
+
+                    // Contact details
+                    const salutation = v.salutation ? (v.salutation.charAt(0).toUpperCase() + v.salutation.slice(1)) : '';
+                    const fullName = [salutation ? salutation + '.' : '', v.first_name || '', v.last_name || ''].filter(Boolean).join(' ');
+                    let contactHtml = '';
+                    if (fullName.trim()) contactHtml += `<div class="vendor-contact-name">${fullName}</div>`;
+                    if (v.display_name) contactHtml += `<div class="vendor-contact-name">${v.display_name}</div>`;
+                    if (v.work_phone || v.phone) contactHtml += `<div class="vendor-contact-item"><span>📞</span> ${v.work_phone || v.phone}</div>`;
+                    if (v.mobile) contactHtml += `<div class="vendor-contact-item"><span>📱</span> ${v.mobile}</div>`;
+                    if (v.email) contactHtml += `<div class="vendor-contact-item"><span>✉</span> ${v.email}</div>`;
+                    document.getElementById('dVendorContact').innerHTML = contactHtml || '<div class="vendor-contact-name">No contact info</div>';
+
+                    // Address
+                    const billing = [v.billing_address, v.billing_city, v.billing_state, v.billing_zip, v.billing_country].filter(Boolean);
+                    document.getElementById('dBillingAddress').textContent = billing.length > 0 ? billing.join(', ') : 'No Billing Address';
+                    const shipping = [v.shipping_address, v.shipping_city, v.shipping_state, v.shipping_zip, v.shipping_country].filter(Boolean);
+                    document.getElementById('dShippingAddress').textContent = shipping.length > 0 ? shipping.join(', ') : 'No Shipping Address';
+
+                    // Currency
+                    document.getElementById('dCurrency').textContent = (v.currency || 'PHP').toUpperCase();
+
+                    // Payment terms
+                    const termsMap = { 'due-on-receipt': 'Due on Receipt', 'net-15': 'Net 15', 'net-30': 'Net 30', 'net-45': 'Net 45', 'net-60': 'Net 60' };
+                    document.getElementById('dPayTerms').textContent = termsMap[v.payment_terms] || v.payment_terms || 'Due on Receipt';
+
+                    // Payables
+                    const cp = (v.currency || '').toUpperCase() === 'USD' ? 'USD' : 'PHP';
+                    document.getElementById('dPayCurrency').textContent = cp === 'USD' ? 'USD- US Dollar' : 'PHP- Philippine Peso';
+                    document.getElementById('dPayOutstanding').textContent = cp + parseFloat(v.total_spent || 0).toFixed(2);
+                    document.getElementById('dPayCredits').textContent = cp + '0.00';
+
+                    // Items
+                    document.getElementById('dItemsToReceive').textContent = v.total_quantity || 0;
+                    document.getElementById('dTotalOrdered').textContent = v.total_quantity || 0;
+
+                    // Contact persons
+                    const contacts = v.contact_persons || [];
+                    document.getElementById('dContactCount').textContent = contacts.length;
+                    const cpList = document.getElementById('dContactPersonsList');
+                    if (contacts.length === 0) {
+                        cpList.innerHTML = '<div style="font-size:12px;color:#999;padding:8px 0;">No contact persons found.</div>';
+                    } else {
+                        cpList.innerHTML = contacts.map(cp => {
+                            const n = [cp.salutation ? cp.salutation + '.' : '', cp.first_name || '', cp.last_name || ''].filter(Boolean).join(' ') || 'Unnamed';
+                            const d = cp.email || cp.phone || '';
+                            const ini = ((cp.first_name || '')[0] || '') + ((cp.last_name || '')[0] || '');
+                            return `<div class="contact-person-item">
+                        <div class="contact-person-avatar">${(ini || '?').toUpperCase()}</div>
+                        <div class="contact-person-info">
+                            <div class="contact-person-name">${n}</div>
+                            ${d ? `<div class="contact-person-detail">${d}</div>` : ''}
+                        </div>
+                    </div>`;
+                        }).join('');
+                    }
+
+                    // Record info
+                    document.getElementById('dCreatedAt').textContent = v.created_at ? formatDetailDateTime(v.created_at) : '-';
+                    document.getElementById('dUpdatedAt').textContent = v.updated_at ? formatDetailDateTime(v.updated_at) : '-';
+
+                    // Timeline
+                    renderDetailTimeline();
+                }
+
+                function renderDetailTimeline() {
+                    const container = document.getElementById('dTimelineContainer');
+                    const v = currentVendorData;
+                    if (!v) { container.innerHTML = ''; return; }
+                    const createdAt = v.created_at ? new Date(v.created_at) : new Date();
+                    const events = [];
+                    if (v.contact_persons) {
+                        v.contact_persons.forEach(cp => {
+                            const cpName = [cp.first_name || '', cp.last_name || ''].filter(Boolean).join(' ') || 'contact';
+                            events.push({ date: cp.created_at ? new Date(cp.created_at) : createdAt, title: 'Contact person added', desc: `Contact person ${cpName} has been created`, user: 'by project final' });
+                        });
+                    }
+                    events.push({ date: createdAt, title: 'Contact added', desc: 'Contact created', user: 'by project final' });
+                    events.sort((a, b) => b.date - a.date);
+                    let html = '<div class="timeline">';
+                    events.forEach(ev => {
+                        html += `<div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div style="min-width:80px;">
+                        <div class="timeline-date-text">${formatDetailDate(ev.date)}</div>
+                        <div class="timeline-time-text">${formatDetailTime(ev.date)}</div>
+                    </div>
+                    <div class="timeline-card">
+                        <div class="timeline-card-title">${ev.title}</div>
+                        <div class="timeline-card-desc">${ev.desc}</div>
+                        <div class="timeline-card-user">${ev.user}</div>
+                    </div>
+                </div>`;
+                    });
+                    html += '</div>';
+                    container.innerHTML = html;
+                }
+
+                function switchDetailTab(tabName, tabEl) {
+                    document.querySelectorAll('.detail-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content-area').forEach(c => c.classList.remove('active'));
+                    if (tabEl) tabEl.classList.add('active');
+                    const area = document.getElementById('dtab-' + tabName);
+                    if (area) area.classList.add('active');
+                }
+
+                function toggleDetailSection(name) {
+                    const map = {
+                        'address': { content: 'dAddressContent', toggle: 'dAddressToggle' },
+                        'otherDetails': { content: 'dOtherDetailsContent', toggle: 'dOtherDetailsToggle' },
+                        'contacts': { content: 'dContactsContent', toggle: 'dContactsToggle' },
+                        'recordInfo': { content: 'dRecordInfoContent', toggle: 'dRecordInfoToggle' }
+                    };
+                    const sec = map[name];
+                    if (!sec) return;
+                    const content = document.getElementById(sec.content);
+                    const toggle = document.getElementById(sec.toggle);
+                    if (!content) return;
+                    content.classList.toggle('collapsed');
+                    if (toggle) toggle.textContent = content.classList.contains('collapsed') ? '▼' : '▲';
+                }
+
+                function toggleTxnDropdown(e) {
+                    e.stopPropagation();
+                    const menu = document.getElementById('txnDropdownMenu');
+                    if (menu) menu.classList.toggle('open');
+                }
+
+                function editCurrentVendor() {
+                    if (currentVendorId) window.location.href = '/new-vendor.html?id=' + currentVendorId;
+                }
+
+                let addressModalType = 'billing';
+                function openAddressModal(type) {
+                    addressModalType = type;
+                    document.getElementById('addressModalTitle').textContent = type === 'billing' ? 'Billing Address' : 'Shipping Address';
+                    document.getElementById('addressModal').classList.add('active');
+                }
+                function closeAddressModal() { document.getElementById('addressModal').classList.remove('active'); }
+                function saveAddress() { alert('Address saved!'); closeAddressModal(); }
+
+                function formatDetailDateTime(ds) { const d = new Date(ds); return d.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); }
+                function formatDetailDate(d) { return d.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }); }
+                function formatDetailTime(d) { return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); }
+
+                // Keyboard shortcut (Esc)
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape') {
+                        if (document.getElementById('detailView').classList.contains('show')) {
+                            closeDetailView();
+                        } else {
+                            clearSelection();
+                        }
+                    }
+                });
+
+                // Close txn dropdown on click outside
+                document.addEventListener('click', function (e) {
+                    const txnMenu = document.getElementById('txnDropdownMenu');
+                    if (txnMenu && !e.target.closest('.txn-dropdown-wrapper')) txnMenu.classList.remove('open');
+                });
+
+                // ========== VIEWS DROPDOWN FUNCTIONS ==========
+                let currentView = 'active';
+                let customViews = [];
+
+                function toggleViewsDropdown() {
+                    const container = document.querySelector('.views-dropdown-container');
+                    container.classList.toggle('open');
+                }
+
+                function selectView(viewType) {
+                    currentView = viewType;
+
+                    // Update active state
+                    document.querySelectorAll('.views-dropdown-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    event.currentTarget.classList.add('active');
+
+                    // Update title
+                    const viewNames = {
+                        'all': 'All Vendors',
+                        'active': 'Active Vendors',
+                        'inactive': 'Inactive Vendors'
+                    };
+                    document.getElementById('currentViewName').textContent = viewNames[viewType] || viewType;
+
+                    // Close dropdown
+                    document.querySelector('.views-dropdown-container').classList.remove('open');
+
+                    // Re-render vendors with filter applied
+                    renderVendors();
+                }
+
+                // Click outside to close views dropdown
+                document.addEventListener('click', function (e) {
+                    const viewsContainer = document.querySelector('.views-dropdown-container');
+                    if (viewsContainer && !viewsContainer.contains(e.target)) {
+                        viewsContainer.classList.remove('open');
+                    }
+                });
+
+                // ========== CUSTOM VIEW MODAL FUNCTIONS ==========
+                function openNewCustomViewModal() {
+                    document.querySelector('.views-dropdown-container').classList.remove('open');
+                    document.getElementById('customViewModal').classList.add('active');
+                    document.getElementById('customViewName').value = '';
+                    document.getElementById('customViewName').focus();
+                }
+
+                function closeNewCustomViewModal() {
+                    document.getElementById('customViewModal').classList.remove('active');
+                }
+
+                let criterionCount = 1;
+                function addCriterion() {
+                    criterionCount++;
+                    const container = document.getElementById('criteriaContainer');
+
+                    // Add AND separator
+                    const andLabel = document.createElement('div');
+                    andLabel.className = 'criteria-and-label';
+                    andLabel.id = 'andLabel' + criterionCount;
+                    andLabel.innerHTML = '<span>AND</span> <span class="and-arrow">▼</span>';
+                    container.appendChild(andLabel);
+
+                    // Add new criteria row with custom dropdown
+                    const newRow = document.createElement('div');
+                    newRow.className = 'criteria-row';
+                    newRow.id = 'criteriaRow' + criterionCount;
+                    newRow.innerHTML = `
                 <span class="criteria-number">${criterionCount}</span>
                 <div class="criteria-field-dropdown" id="criteriaFieldDropdown${criterionCount}">
                     <div class="criteria-field-header" onclick="toggleCriteriaFieldDropdown(${criterionCount})">
@@ -1532,178 +4311,178 @@
                 <button class="criteria-action-btn" onclick="addCriterion()">+</button>
                 <button class="criteria-action-btn delete-btn" onclick="removeCriterion(${criterionCount})">🗑️</button>
             `;
-            container.appendChild(newRow);
-        }
-
-        function removeCriterion(id) {
-            const row = document.getElementById('criteriaRow' + id);
-            const andLabel = document.getElementById('andLabel' + id);
-            if (row) row.remove();
-            if (andLabel) andLabel.remove();
-
-            // Re-number remaining criteria
-            let count = 0;
-            document.querySelectorAll('.criteria-row').forEach((row, index) => {
-                count++;
-                row.querySelector('.criteria-number').textContent = count;
-            });
-            criterionCount = count;
-        }
-
-        function saveCustomView() {
-            const name = document.getElementById('customViewName').value.trim();
-            if (!name) {
-                alert('Please enter a view name');
-                return;
-            }
-
-            // Collect criteria
-            const criteria = [];
-            document.querySelectorAll('.criteria-row').forEach(row => {
-                const selects = row.querySelectorAll('.criteria-select');
-                const value = row.querySelector('.criteria-value').value;
-                if (selects[0].value && selects[1].value) {
-                    criteria.push({
-                        field: selects[0].value,
-                        comparator: selects[1].value,
-                        value: value
-                    });
+                    container.appendChild(newRow);
                 }
-            });
 
-            // Get selected columns
-            const selectedColumns = [];
-            document.querySelectorAll('#selectedColumnsList .column-item').forEach(item => {
-                selectedColumns.push(item.dataset.column);
-            });
+                function removeCriterion(id) {
+                    const row = document.getElementById('criteriaRow' + id);
+                    const andLabel = document.getElementById('andLabel' + id);
+                    if (row) row.remove();
+                    if (andLabel) andLabel.remove();
 
-            // Get visibility
-            const visibility = document.querySelector('input[name="visibility"]:checked').value;
+                    // Re-number remaining criteria
+                    let count = 0;
+                    document.querySelectorAll('.criteria-row').forEach((row, index) => {
+                        count++;
+                        row.querySelector('.criteria-number').textContent = count;
+                    });
+                    criterionCount = count;
+                }
 
-            const customView = {
-                name: name,
-                criteria: criteria,
-                columns: selectedColumns,
-                visibility: visibility
-            };
-            customViews.push(customView);
+                function saveCustomView() {
+                    const name = document.getElementById('customViewName').value.trim();
+                    if (!name) {
+                        alert('Please enter a view name');
+                        return;
+                    }
 
-            // Add to dropdown
-            addCustomViewToDropdown(customView);
+                    // Collect criteria
+                    const criteria = [];
+                    document.querySelectorAll('.criteria-row').forEach(row => {
+                        const selects = row.querySelectorAll('.criteria-select');
+                        const value = row.querySelector('.criteria-value').value;
+                        if (selects[0].value && selects[1].value) {
+                            criteria.push({
+                                field: selects[0].value,
+                                comparator: selects[1].value,
+                                value: value
+                            });
+                        }
+                    });
 
-            alert(`Custom view "${name}" saved successfully!`);
-            closeNewCustomViewModal();
-        }
+                    // Get selected columns
+                    const selectedColumns = [];
+                    document.querySelectorAll('#selectedColumnsList .column-item').forEach(item => {
+                        selectedColumns.push(item.dataset.column);
+                    });
 
-        // Add custom view to dropdown
-        function addCustomViewToDropdown(view) {
-            const dropdown = document.getElementById('viewsDropdownMenu');
-            const divider = dropdown.querySelector('.views-dropdown-divider');
-            const newItem = document.createElement('div');
-            newItem.className = 'views-dropdown-item';
-            newItem.setAttribute('onclick', `selectCustomView('${view.name}')`);
-            newItem.innerHTML = `
+                    // Get visibility
+                    const visibility = document.querySelector('input[name="visibility"]:checked').value;
+
+                    const customView = {
+                        name: name,
+                        criteria: criteria,
+                        columns: selectedColumns,
+                        visibility: visibility
+                    };
+                    customViews.push(customView);
+
+                    // Add to dropdown
+                    addCustomViewToDropdown(customView);
+
+                    alert(`Custom view "${name}" saved successfully!`);
+                    closeNewCustomViewModal();
+                }
+
+                // Add custom view to dropdown
+                function addCustomViewToDropdown(view) {
+                    const dropdown = document.getElementById('viewsDropdownMenu');
+                    const divider = dropdown.querySelector('.views-dropdown-divider');
+                    const newItem = document.createElement('div');
+                    newItem.className = 'views-dropdown-item';
+                    newItem.setAttribute('onclick', `selectCustomView('${view.name}')`);
+                    newItem.innerHTML = `
                 <span>${view.name}</span>
                 <span class="star-icon">☆</span>
             `;
-            divider.insertAdjacentElement('beforebegin', newItem);
-        }
+                    divider.insertAdjacentElement('beforebegin', newItem);
+                }
 
-        // Select custom view
-        function selectCustomView(viewName) {
-            document.querySelectorAll('.views-dropdown-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            event.currentTarget.classList.add('active');
-            document.getElementById('currentViewName').textContent = viewName;
-            document.querySelector('.views-dropdown-container').classList.remove('open');
-            // Apply custom view filter logic here if needed
-        }
+                // Select custom view
+                function selectCustomView(viewName) {
+                    document.querySelectorAll('.views-dropdown-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    event.currentTarget.classList.add('active');
+                    document.getElementById('currentViewName').textContent = viewName;
+                    document.querySelector('.views-dropdown-container').classList.remove('open');
+                    // Apply custom view filter logic here if needed
+                }
 
-        // Add column to selected
-        function addColumn(columnKey, columnName) {
-            // Check if already added
-            const existing = document.querySelector(`#selectedColumnsList .column-item[data-column="${columnKey}"]`);
-            if (existing) return;
+                // Add column to selected
+                function addColumn(columnKey, columnName) {
+                    // Check if already added
+                    const existing = document.querySelector(`#selectedColumnsList .column-item[data-column="${columnKey}"]`);
+                    if (existing) return;
 
-            // Hide from available
-            const availableItem = document.querySelector(`#availableColumnsList .column-item[data-column="${columnKey}"]`);
-            if (availableItem) {
-                availableItem.style.display = 'none';
-            }
+                    // Hide from available
+                    const availableItem = document.querySelector(`#availableColumnsList .column-item[data-column="${columnKey}"]`);
+                    if (availableItem) {
+                        availableItem.style.display = 'none';
+                    }
 
-            // Add to selected
-            const selectedList = document.getElementById('selectedColumnsList');
-            const newItem = document.createElement('div');
-            newItem.className = 'column-item selected';
-            newItem.setAttribute('data-column', columnKey);
-            newItem.innerHTML = `<span class="drag-icon">⋮⋮</span> ${columnName} <button class="col-remove-btn" onclick="removeColumn('${columnKey}', '${columnName}')">−</button>`;
-            selectedList.appendChild(newItem);
-        }
+                    // Add to selected
+                    const selectedList = document.getElementById('selectedColumnsList');
+                    const newItem = document.createElement('div');
+                    newItem.className = 'column-item selected';
+                    newItem.setAttribute('data-column', columnKey);
+                    newItem.innerHTML = `<span class="drag-icon">⋮⋮</span> ${columnName} <button class="col-remove-btn" onclick="removeColumn('${columnKey}', '${columnName}')">−</button>`;
+                    selectedList.appendChild(newItem);
+                }
 
-        // Remove column from selected
-        function removeColumn(columnKey, columnName) {
-            // Remove from selected
-            const selectedItem = document.querySelector(`#selectedColumnsList .column-item[data-column="${columnKey}"]`);
-            if (selectedItem && columnKey !== 'name') { // Don't allow removing Name
-                selectedItem.remove();
-            }
+                // Remove column from selected
+                function removeColumn(columnKey, columnName) {
+                    // Remove from selected
+                    const selectedItem = document.querySelector(`#selectedColumnsList .column-item[data-column="${columnKey}"]`);
+                    if (selectedItem && columnKey !== 'name') { // Don't allow removing Name
+                        selectedItem.remove();
+                    }
 
-            // Show in available again
-            const availableItem = document.querySelector(`#availableColumnsList .column-item[data-column="${columnKey}"]`);
-            if (availableItem) {
-                availableItem.style.display = 'flex';
-            }
-        }
+                    // Show in available again
+                    const availableItem = document.querySelector(`#availableColumnsList .column-item[data-column="${columnKey}"]`);
+                    if (availableItem) {
+                        availableItem.style.display = 'flex';
+                    }
+                }
 
-        // ========== CRITERIA FIELD SEARCHABLE DROPDOWN ==========
-        function toggleCriteriaFieldDropdown(id) {
-            const dropdown = document.getElementById('criteriaFieldDropdown' + id);
-            dropdown.classList.toggle('open');
-            if (dropdown.classList.contains('open')) {
-                dropdown.querySelector('.criteria-field-search input').focus();
-            }
-        }
+                // ========== CRITERIA FIELD SEARCHABLE DROPDOWN ==========
+                function toggleCriteriaFieldDropdown(id) {
+                    const dropdown = document.getElementById('criteriaFieldDropdown' + id);
+                    dropdown.classList.toggle('open');
+                    if (dropdown.classList.contains('open')) {
+                        dropdown.querySelector('.criteria-field-search input').focus();
+                    }
+                }
 
-        function filterCriteriaFields(id) {
-            const dropdown = document.getElementById('criteriaFieldDropdown' + id);
-            const searchInput = dropdown.querySelector('.criteria-field-search input');
-            const searchTerm = searchInput.value.toLowerCase();
-            const items = dropdown.querySelectorAll('.criteria-field-item');
+                function filterCriteriaFields(id) {
+                    const dropdown = document.getElementById('criteriaFieldDropdown' + id);
+                    const searchInput = dropdown.querySelector('.criteria-field-search input');
+                    const searchTerm = searchInput.value.toLowerCase();
+                    const items = dropdown.querySelectorAll('.criteria-field-item');
 
-            items.forEach(item => {
-                const text = item.textContent.toLowerCase();
-                item.style.display = text.includes(searchTerm) ? 'block' : 'none';
-            });
-        }
+                    items.forEach(item => {
+                        const text = item.textContent.toLowerCase();
+                        item.style.display = text.includes(searchTerm) ? 'block' : 'none';
+                    });
+                }
 
-        function selectCriteriaField(id, value, label) {
-            document.getElementById('criteriaFieldValue' + id).value = value;
-            document.getElementById('criteriaFieldText' + id).textContent = label;
-            document.getElementById('criteriaFieldText' + id).style.color = '#333';
+                function selectCriteriaField(id, value, label) {
+                    document.getElementById('criteriaFieldValue' + id).value = value;
+                    document.getElementById('criteriaFieldText' + id).textContent = label;
+                    document.getElementById('criteriaFieldText' + id).style.color = '#333';
 
-            // Update selected state
-            const dropdown = document.getElementById('criteriaFieldDropdown' + id);
-            dropdown.querySelectorAll('.criteria-field-item').forEach(item => {
-                item.classList.remove('selected');
-            });
-            event.currentTarget.classList.add('selected');
+                    // Update selected state
+                    const dropdown = document.getElementById('criteriaFieldDropdown' + id);
+                    dropdown.querySelectorAll('.criteria-field-item').forEach(item => {
+                        item.classList.remove('selected');
+                    });
+                    event.currentTarget.classList.add('selected');
 
-            dropdown.classList.remove('open');
-        }
-
-        // Close criteria dropdown on click outside
-        document.addEventListener('click', function (e) {
-            document.querySelectorAll('.criteria-field-dropdown').forEach(dropdown => {
-                if (!dropdown.contains(e.target)) {
                     dropdown.classList.remove('open');
                 }
-            });
-        });
 
-        // Load vendors on page load
-        document.addEventListener('DOMContentLoaded', loadVendors);
-    </script>
+                // Close criteria dropdown on click outside
+                document.addEventListener('click', function (e) {
+                    document.querySelectorAll('.criteria-field-dropdown').forEach(dropdown => {
+                        if (!dropdown.contains(e.target)) {
+                            dropdown.classList.remove('open');
+                        }
+                    });
+                });
+
+                // Load vendors on page load
+                document.addEventListener('DOMContentLoaded', loadVendors);
+            </script>
 </body>
 
 </html>

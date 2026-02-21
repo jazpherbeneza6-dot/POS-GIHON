@@ -223,10 +223,22 @@
             border: 1px solid #b6d4fe;
         }
 
+        .status-issued {
+            background: #e0cffc;
+            color: #3d0a91;
+            border: 1px solid #c8b6fe;
+        }
+
         .status-received {
             background: #d1e7dd;
             color: #0a3622;
             border: 1px solid #a3cfbb;
+        }
+
+        .status-partially_received {
+            background: #fff3cd;
+            color: #664d03;
+            border: 1px solid #ffda6a;
         }
 
         .po-header-right {
@@ -485,7 +497,9 @@
                             <button class="action-btn" id="editBtn" onclick="editPO()">✏️ Edit</button>
                             <button class="action-btn" onclick="sendEmail()">📧 Send Email</button>
                             <button class="action-btn">📄 PDF/Print ▾</button>
-                            <button class="action-btn" onclick="receivePO()">📦 Receive</button>
+                            <button class="action-btn" id="receiveBtn" onclick="receivePO()">📦 Receive</button>
+                            <button class="action-btn" id="convertBillBtn" onclick="convertToBill()">🔄 Convert to
+                                Bill</button>
                             <button class="action-btn">⋯</button>
                             <button class="close-btn" onclick="goBack()">×</button>
                         </div>
@@ -622,7 +636,9 @@
                     const statusColors = {
                         'draft': '#856404',
                         'ordered': '#084298',
-                        'received': '#0a3622'
+                        'received': '#0a3622',
+                        'partially_received': '#664d03',
+                        'issued': '#3d0a91'
                     };
 
                     html += `<div class="sidebar-list-item ${isActive ? 'active' : ''}" onclick="navigateToPO(${po.id})">
@@ -664,9 +680,38 @@
 
                 // Status badge
                 const status = (po.status || 'draft').toLowerCase();
-                const statusLabels = { 'draft': 'DRAFT', 'ordered': 'ORDERED', 'received': 'RECEIVED' };
+                const statusLabels = { 'draft': 'DRAFT', 'ordered': 'ORDERED', 'issued': 'ISSUED', 'received': 'RECEIVED', 'partially_received': 'PARTIALLY RECEIVED' };
                 document.getElementById('detailStatusBadge').innerHTML =
                     `<span class="status-badge status-${status}">${statusLabels[status] || status.toUpperCase()}</span>`;
+
+                // Show/hide Receive button based on status
+                const receiveBtn = document.getElementById('receiveBtn');
+                if (status === 'received') {
+                    receiveBtn.style.display = 'none';
+                } else {
+                    receiveBtn.style.display = 'flex';
+                }
+
+                // Show/hide "What's Next?" banner based on status
+                const infoBanner = document.getElementById('infoBanner');
+                if (status === 'issued' || status === 'received' || status === 'billed') {
+                    infoBanner.style.display = 'none';
+                } else {
+                    infoBanner.style.display = 'flex';
+                }
+
+                // Show/hide Convert to Bill button - check if bills exist
+                const convertBillBtn = document.getElementById('convertBillBtn');
+                try {
+                    const billsRes = await fetch('/api/bills');
+                    if (billsRes.ok) {
+                        const allBills = await billsRes.json();
+                        const hasBill = allBills.some(b => b.purchase_order_id === parseInt(poId));
+                        convertBillBtn.style.display = hasBill ? 'none' : 'inline-flex';
+                    }
+                } catch (e) {
+                    convertBillBtn.style.display = 'inline-flex';
+                }
 
                 // Vendor and addresses
                 document.getElementById('detailVendorName').textContent = po.supplier_name || '-';
@@ -693,6 +738,21 @@
                 };
                 document.getElementById('detailPaymentTerms').textContent = ptLabels[po.payment_terms] || po.payment_terms || '-';
 
+                // Fetch actual received data for this PO
+                let receivedByItem = {};
+                try {
+                    const recRes = await fetch('/api/purchase-receives/by-po/' + poId);
+                    if (recRes.ok) {
+                        const recData = await recRes.json();
+                        recData.forEach(r => {
+                            const key = r.item_id || ('name:' + (r.item_name || ''));
+                            receivedByItem[key] = (receivedByItem[key] || 0) + (parseFloat(r.total_received) || 0);
+                        });
+                    }
+                } catch (e) {
+                    console.error('Error fetching received data:', e);
+                }
+
                 // Items table
                 const tbody = document.getElementById('detailItemsBody');
                 let itemsHtml = '';
@@ -706,6 +766,8 @@
                         const amount = qty * rate;
                         subtotal += amount;
                         totalQty += qty;
+                        const itemKey = item.item_id || ('name:' + (item.item_name || ''));
+                        const itemReceived = receivedByItem[itemKey] || 0;
 
                         itemsHtml += `<tr>
                             <td><div style="width: 36px; height: 36px; background: #f0f0f0; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px;">🖼️</div></td>
@@ -714,7 +776,7 @@
                                 ${item.sku ? '<div class="item-sku">SKU: ' + item.sku + '</div>' : ''}
                             </td>
                             <td>${qty}<br><span style="font-size: 11px; color: #999;">${item.unit || 'pcs'}</span></td>
-                            <td class="status-col">0 Received<br>0 Billed</td>
+                            <td class="status-col">${itemReceived} Received<br>0 Billed</td>
                             <td style="text-align: right;">PHP${rate.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
                             <td style="text-align: right;">${amount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
                         </tr>`;
@@ -779,7 +841,7 @@
                 fetch('/api/purchases/' + currentPOId, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ status: 'ordered' })
+                    body: JSON.stringify({ status: 'issued' })
                 }).then(() => {
                     loadPODetail(currentPOId);
                     loadPOList();
@@ -789,16 +851,13 @@
 
         function receivePO() {
             if (currentPOId) {
-                if (confirm('Mark this purchase order as received? This will update stock quantities.')) {
-                    fetch('/api/purchases/' + currentPOId, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ status: 'received', received_date: new Date().toISOString().split('T')[0] })
-                    }).then(() => {
-                        loadPODetail(currentPOId);
-                        loadPOList();
-                    });
-                }
+                window.location.href = '/new-purchase-receive.html?poId=' + currentPOId;
+            }
+        }
+
+        function convertToBill() {
+            if (currentPOId) {
+                window.location.href = '/new-bill.html?poId=' + currentPOId;
             }
         }
 

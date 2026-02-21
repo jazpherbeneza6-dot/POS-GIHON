@@ -7,6 +7,8 @@
     <title>Purchase Orders - Inventory Management</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/pagination.css">
+    <link rel="stylesheet" href="/css/global-search.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
         rel="stylesheet">
@@ -240,6 +242,11 @@
                         <span class="dropdown-arrow">▼</span>
                     </h1>
                 </div>
+                <div class="global-search-container">
+                    <span class="global-search-icon">🔍</span>
+                    <input type="text" class="global-search-input" id="poSearchInput"
+                        placeholder="Search purchase orders..." oninput="searchPurchaseOrders()">
+                </div>
                 <div class="header-actions">
                     <button class="btn-transit" onclick="goToTransitReceives()">
                         📦 In Transit Receives
@@ -280,11 +287,13 @@
                         <!-- Orders will be added here -->
                     </tbody>
                 </table>
+                <div id="poPaginationContainer"></div>
             </div>
         </div>
     </div>
 
     <!-- Layout Script -->
+    <script src="/js/pagination.js"></script>
     <script src="/js/layout.js"></script>
     <script>
         // Create new purchase order
@@ -297,54 +306,173 @@
             window.location.href = '/purchase-receives.html';
         }
 
+        let allPurchasesList = [];
+
+        function searchPurchaseOrders() {
+            const query = (document.getElementById('poSearchInput').value || '').toLowerCase();
+            if (!query) { loadPurchaseOrders(); return; }
+            const filtered = allPurchasesList.filter(po => {
+                return (po.po_number || '').toLowerCase().includes(query) ||
+                    (po.supplier_name || '').toLowerCase().includes(query) ||
+                    (po.reference_number || '').toLowerCase().includes(query) ||
+                    (po.status || '').toLowerCase().includes(query);
+            });
+            if (filtered.length === 0) {
+                document.getElementById('emptyState').style.display = 'flex';
+                document.getElementById('ordersContainer').style.display = 'none';
+                document.getElementById('poPaginationContainer').innerHTML = '';
+                return;
+            }
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('ordersContainer').style.display = 'block';
+            function renderPage(pageData) {
+                const tbody = document.getElementById('ordersBody');
+                tbody.innerHTML = '';
+                pageData.forEach(po => {
+                    const date = po.date ? new Date(po.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+                    const rawStatus = (po.status || 'draft').toLowerCase();
+                    const amount = parseFloat(po.total_amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+
+                    let displayStatus = rawStatus.toUpperCase();
+                    const statusColors = {
+                        'draft': '#856404; background: #fff3cd',
+                        'ordered': '#084298; background: #cfe2ff',
+                        'issued': '#084298; background: #cfe2ff',
+                        'received': '#0a3622; background: #d1e7dd',
+                        'billed': '#5b21b6; background: #ede9fe',
+                        'partially_received': '#92400e; background: #fef3c7'
+                    };
+
+                    if (rawStatus === 'ordered' || rawStatus === 'billed') {
+                        displayStatus = 'ISSUED';
+                    } else if (rawStatus === 'received') {
+                        displayStatus = 'RECEIVED';
+                    } else if (rawStatus === 'partially_received') {
+                        displayStatus = 'PARTIALLY RECEIVED';
+                    }
+
+                    const isBilled = window._billedPOIds && window._billedPOIds.has(po.id);
+                    const billedCell = isBilled
+                        ? '<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#4285f4;"></span>'
+                        : '-';
+                    const statusColorStr = statusColors[rawStatus] || statusColors[displayStatus.toLowerCase()] || '#666; background: #f0f0f0';
+
+                    const row = document.createElement('tr');
+                    row.style.cursor = 'pointer';
+                    row.addEventListener('click', () => { window.location.href = '/purchase-order-detail.html?id=' + po.id; });
+                    row.addEventListener('mouseenter', () => { row.style.background = '#f5f8ff'; });
+                    row.addEventListener('mouseleave', () => { row.style.background = ''; });
+                    row.innerHTML = `
+                        <td>${date}</td>
+                        <td style="color: #3366cc; font-weight: 500;">${po.po_number || 'PO-' + po.id}</td>
+                        <td>${po.reference_number || '-'}</td>
+                        <td>${po.supplier_name || '-'}</td>
+                        <td><span style="padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; color: ${statusColorStr}">${displayStatus}</span></td>
+                        <td style="text-align:center;">${billedCell}</td>
+                        <td style="font-weight: 500;">PHP${amount}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+            window.poPager = Pagination.create({
+                data: filtered, perPage: 14, containerId: 'poPaginationContainer',
+                onPageChange: function (pageData) { renderPage(pageData); }
+            });
+        }
+
         // Load and display purchase orders
         async function loadPurchaseOrders() {
             try {
-                const response = await fetch('/api/purchases');
+                const [response, billsResponse] = await Promise.all([
+                    fetch('/api/purchases'),
+                    fetch('/api/bills')
+                ]);
                 const purchases = await response.json();
+                allPurchasesList = purchases;
+
+                // Build set of PO IDs that have bills
+                window._billedPOIds = new Set();
+                try {
+                    const bills = await billsResponse.json();
+                    bills.forEach(b => { if (b.purchase_order_id) window._billedPOIds.add(b.purchase_order_id); });
+                } catch (e) { }
 
                 if (purchases.length === 0) {
                     document.getElementById('emptyState').style.display = 'flex';
                     document.getElementById('ordersContainer').style.display = 'none';
+                    document.getElementById('poPaginationContainer').innerHTML = '';
                     return;
                 }
 
                 document.getElementById('emptyState').style.display = 'none';
                 document.getElementById('ordersContainer').style.display = 'block';
 
-                const tbody = document.getElementById('ordersBody');
-                tbody.innerHTML = '';
+                function renderPOPage(pageData) {
+                    const tbody = document.getElementById('ordersBody');
+                    tbody.innerHTML = '';
+                    pageData.forEach(po => {
+                        const date = po.date ? new Date(po.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+                        const rawStatus = (po.status || 'draft').toLowerCase();
+                        const amount = parseFloat(po.total_amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
 
-                purchases.forEach(po => {
-                    const date = po.date ? new Date(po.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
-                    const status = (po.status || 'draft').toUpperCase();
-                    const statusClass = (po.status || 'draft').toLowerCase();
-                    const statusColors = {
-                        'draft': '#856404; background: #fff3cd',
-                        'ordered': '#084298; background: #cfe2ff',
-                        'received': '#0a3622; background: #d1e7dd'
-                    };
-                    const amount = parseFloat(po.total_amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                        // Status label: "ISSUED" if ordered/billed (not received), "RECEIVED" if received
+                        let displayStatus = rawStatus.toUpperCase();
+                        const statusColors = {
+                            'draft': '#856404; background: #fff3cd',
+                            'ordered': '#084298; background: #cfe2ff',
+                            'issued': '#084298; background: #cfe2ff',
+                            'received': '#0a3622; background: #d1e7dd',
+                            'billed': '#5b21b6; background: #ede9fe',
+                            'partially_received': '#92400e; background: #fef3c7'
+                        };
 
-                    const row = document.createElement('tr');
-                    row.style.cursor = 'pointer';
-                    row.addEventListener('click', () => {
-                        window.location.href = '/purchase-order-detail.html?id=' + po.id;
+                        if (rawStatus === 'ordered' || rawStatus === 'billed') {
+                            displayStatus = 'ISSUED';
+                        } else if (rawStatus === 'received') {
+                            displayStatus = 'RECEIVED';
+                        } else if (rawStatus === 'partially_received') {
+                            displayStatus = 'PARTIALLY RECEIVED';
+                        }
+
+                        // Billed column: blue dot if PO has bills
+                        const isBilled = window._billedPOIds && window._billedPOIds.has(po.id);
+                        const billedCell = isBilled
+                            ? '<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#4285f4;"></span>'
+                            : '-';
+
+                        const statusColorStr = statusColors[rawStatus] || statusColors[displayStatus.toLowerCase()] || '#666; background: #f0f0f0';
+
+                        const row = document.createElement('tr');
+                        row.style.cursor = 'pointer';
+                        row.addEventListener('click', () => {
+                            window.location.href = '/purchase-order-detail.html?id=' + po.id;
+                        });
+                        row.addEventListener('mouseenter', () => { row.style.background = '#f5f8ff'; });
+                        row.addEventListener('mouseleave', () => { row.style.background = ''; });
+
+                        row.innerHTML = `
+                            <td>${date}</td>
+                            <td style="color: #3366cc; font-weight: 500;">${po.po_number || 'PO-' + po.id}</td>
+                            <td>${po.reference_number || '-'}</td>
+                            <td>${po.supplier_name || '-'}</td>
+                            <td><span style="padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; color: ${statusColorStr}">${displayStatus}</span></td>
+                            <td style="text-align:center;">${billedCell}</td>
+                            <td style="font-weight: 500;">PHP${amount}</td>
+                        `;
+                        tbody.appendChild(row);
                     });
-                    row.addEventListener('mouseenter', () => { row.style.background = '#f5f8ff'; });
-                    row.addEventListener('mouseleave', () => { row.style.background = ''; });
+                }
 
-                    row.innerHTML = `
-                        <td>${date}</td>
-                        <td style="color: #3366cc; font-weight: 500;">${po.po_number || 'PO-' + po.id}</td>
-                        <td>${po.reference_number || '-'}</td>
-                        <td>${po.supplier_name || '-'}</td>
-                        <td><span style="padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; color: ${statusColors[statusClass] || '#666; background: #f0f0f0'}">${status}</span></td>
-                        <td>-</td>
-                        <td style="font-weight: 500;">PHP${amount}</td>
-                    `;
-                    tbody.appendChild(row);
-                });
+                if (!window.poPager) {
+                    window.poPager = Pagination.create({
+                        data: purchases,
+                        perPage: 14,
+                        containerId: 'poPaginationContainer',
+                        onPageChange: function (pageData) { renderPOPage(pageData); }
+                    });
+                } else {
+                    window.poPager.updateData(purchases);
+                }
             } catch (error) {
                 console.error('Error loading purchase orders:', error);
             }

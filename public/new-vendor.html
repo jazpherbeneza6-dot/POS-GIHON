@@ -23,7 +23,8 @@
             margin: 0;
             padding: 0;
             background: #f5f6fa;
-            font-size: 12px;
+            font-size: 13px;
+            color: #333;
         }
 
         .main-layout {
@@ -42,21 +43,21 @@
             overflow: hidden;
         }
 
-        /* Page Header */
+        /* ===== Page Header ===== */
         .page-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 16px 24px;
+            padding: 18px 32px;
             background: white;
-            border-bottom: 1px solid #e9ecef;
+            border-bottom: 1px solid #e5e7eb;
             flex-shrink: 0;
         }
 
         .page-title {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 600;
-            color: #333;
+            color: #1a1a1a;
             margin: 0;
         }
 
@@ -66,13 +67,16 @@
             font-size: 24px;
             color: #999;
             cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
         }
 
         .close-btn:hover {
             color: #333;
+            background: #f3f4f6;
         }
 
-        /* Main Form Area */
+        /* ===== Main Form Area ===== */
         .form-main {
             flex: 1;
             display: flex;
@@ -81,18 +85,16 @@
             padding-bottom: 80px;
         }
 
-        /* Form Section */
+        /* ===== Form Section ===== */
         .form-section {
-            padding: 16px 24px;
-            border-bottom: 1px solid #e9ecef;
+            padding: 28px 32px 20px 32px;
         }
 
         .form-row {
             display: grid;
-            grid-template-columns: 140px 1fr;
-            align-items: flex-start;
-            gap: 16px;
-            margin-bottom: 16px;
+            grid-template-columns: 180px 1fr;
+            align-items: center;
+            margin-bottom: 22px;
         }
 
         .form-row:last-child {
@@ -100,12 +102,13 @@
         }
 
         .form-label {
-            font-size: 13px;
+            font-size: 13.5px;
+            font-weight: 400;
             color: #333;
-            padding-top: 8px;
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 5px;
+            white-space: nowrap;
         }
 
         .form-label.required {
@@ -113,41 +116,57 @@
         }
 
         .info-icon {
-            color: #999;
-            font-size: 12px;
+            color: #b0b0b0;
+            font-size: 13px;
             cursor: help;
         }
 
+        /* ===== Zoho-style Inputs ===== */
         .form-input {
-            padding: 10px 12px;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            font-size: 13px;
+            padding: 9px 12px;
+            border: 1px solid #d0d5dd;
+            border-radius: 6px;
+            font-size: 13.5px;
+            color: #333;
             width: 100%;
-            max-width: 250px;
+            max-width: 380px;
+            background: white;
+            transition: border-color 0.15s;
         }
 
         .form-input:focus {
             outline: none;
             border-color: #4285f4;
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.08);
         }
 
-        .form-input.highlight {
-            border-color: #4285f4;
-            background: #f0f7ff;
+        .form-input::placeholder {
+            color: #b0b0b0;
         }
 
+        /* ===== Zoho-style Selects ===== */
         .form-select {
-            padding: 10px 12px;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            font-size: 13px;
-            background: white;
+            padding: 9px 32px 9px 12px;
+            border: 1px solid #d0d5dd;
+            border-radius: 6px;
+            font-size: 13.5px;
+            color: #333;
+            background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999'/%3E%3C/svg%3E") no-repeat right 12px center;
+            -webkit-appearance: none;
+            appearance: none;
             cursor: pointer;
-            max-width: 250px;
+            max-width: 380px;
             width: 100%;
+            transition: border-color 0.15s;
         }
 
+        .form-select:focus {
+            outline: none;
+            border-color: #4285f4;
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.08);
+        }
+
+        /* ===== Name Group (Salutation + First + Last) ===== */
         .name-group {
             display: flex;
             gap: 8px;
@@ -155,45 +174,88 @@
         }
 
         .name-group .form-select {
-            max-width: 100px;
+            max-width: 120px;
+            min-width: 100px;
         }
 
         .name-group .form-input {
-            max-width: 150px;
+            max-width: 160px;
         }
 
+        /* ===== Phone Group ===== */
         .phone-group {
             display: flex;
-            gap: 8px;
+            gap: 16px;
             align-items: center;
         }
 
-        .phone-group .form-select {
-            max-width: 70px;
+        .phone-pair {
+            display: flex;
+            gap: 0;
+            align-items: center;
         }
 
-        .phone-group .form-input {
-            max-width: 120px;
+        .phone-pair .form-select {
+            max-width: 78px;
+            min-width: 70px;
+            border-radius: 6px 0 0 6px;
+            border-right: none;
         }
 
-        /* Tabs */
+        .phone-pair .form-input {
+            max-width: 155px;
+            border-radius: 0 6px 6px 0;
+        }
+
+        /* ===== Email with icon ===== */
+        .email-wrapper {
+            position: relative;
+            max-width: 380px;
+        }
+
+        .email-wrapper .form-input {
+            padding-left: 38px;
+            max-width: 100%;
+        }
+
+        .email-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #b0b0b0;
+            font-size: 15px;
+            pointer-events: none;
+        }
+
+        /* ===== Divider ===== */
+        .form-divider {
+            border: none;
+            border-top: 1px solid #e5e7eb;
+            margin: 0;
+        }
+
+        /* ===== Tabs ===== */
         .tabs-section {
-            border-bottom: 1px solid #e9ecef;
+            border-bottom: 1px solid #e5e7eb;
+            background: white;
         }
 
         .tabs {
             display: flex;
-            padding: 0 24px;
+            padding: 0 32px;
             gap: 0;
         }
 
         .tab {
-            padding: 12px 20px;
-            font-size: 13px;
+            padding: 14px 22px;
+            font-size: 13.5px;
+            font-weight: 500;
             color: #666;
             cursor: pointer;
-            border-bottom: 2px solid transparent;
+            border-bottom: 3px solid transparent;
             transition: all 0.2s;
+            user-select: none;
         }
 
         .tab:hover {
@@ -201,15 +263,15 @@
         }
 
         .tab.active {
-            color: #333;
-            font-weight: 500;
+            color: #1a1a1a;
+            font-weight: 600;
             border-bottom-color: #4285f4;
         }
 
-        /* Tab Content */
+        /* ===== Tab Content ===== */
         .tab-content {
             display: none;
-            padding: 16px 24px;
+            padding: 28px 32px;
         }
 
         .tab-content.active {
@@ -218,16 +280,20 @@
 
         .tab-form-row {
             display: grid;
-            grid-template-columns: 140px 1fr;
+            grid-template-columns: 180px 1fr;
             align-items: flex-start;
-            gap: 16px;
-            margin-bottom: 16px;
+            margin-bottom: 22px;
+        }
+
+        .tab-form-row .form-label {
+            padding-top: 9px;
         }
 
         .tab-hint {
-            font-size: 11px;
-            color: #999;
-            margin-top: 4px;
+            font-size: 12px;
+            color: #888;
+            margin-top: 6px;
+            line-height: 1.4;
         }
 
         .tab-hint a {
@@ -235,7 +301,11 @@
             text-decoration: none;
         }
 
-        /* Checkbox */
+        .tab-hint a:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== Checkbox ===== */
         .checkbox-row {
             display: flex;
             align-items: center;
@@ -253,51 +323,64 @@
             color: #333;
         }
 
-        /* Upload Section */
+        /* ===== Upload Section ===== */
         .upload-section {
-            margin-top: 8px;
+            margin-top: 0;
         }
 
         .upload-btn {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             padding: 8px 16px;
             background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
+            border: 1px dashed #d0d5dd;
+            border-radius: 6px;
             font-size: 13px;
             color: #333;
             cursor: pointer;
+            transition: all 0.15s;
         }
 
         .upload-btn:hover {
-            background: #f5f5f5;
+            border-color: #4285f4;
+            color: #4285f4;
+            background: #f0f7ff;
+        }
+
+        .upload-btn .upload-icon {
+            font-size: 15px;
+        }
+
+        .upload-btn .upload-arrow {
+            font-size: 10px;
+            color: #999;
+            margin-left: 4px;
         }
 
         .upload-hint {
-            font-size: 11px;
+            font-size: 12px;
             color: #999;
             margin-top: 8px;
         }
 
-        /* Add More Details */
+        /* ===== Add More Details ===== */
         .add-more-link {
-            padding: 16px 24px;
-            border-bottom: 1px solid #e9ecef;
+            padding: 20px 32px;
         }
 
         .add-more-link a {
             color: #4285f4;
             text-decoration: none;
-            font-size: 13px;
+            font-size: 13.5px;
+            font-weight: 500;
         }
 
         .add-more-link a:hover {
             text-decoration: underline;
         }
 
-        /* Footer */
+        /* ===== Footer ===== */
         .form-footer {
             position: fixed;
             bottom: 0;
@@ -306,22 +389,23 @@
             display: flex;
             justify-content: flex-start;
             align-items: center;
-            padding: 12px 24px;
+            padding: 14px 32px;
             background: white;
-            border-top: 1px solid #e9ecef;
+            border-top: 1px solid #e5e7eb;
             gap: 12px;
             z-index: 100;
         }
 
         .btn-save {
-            padding: 10px 20px;
+            padding: 9px 24px;
             background: #4285f4;
             color: white;
             border: none;
             border-radius: 4px;
-            font-size: 13px;
-            font-weight: 500;
+            font-size: 13.5px;
+            font-weight: 600;
             cursor: pointer;
+            transition: background 0.15s;
         }
 
         .btn-save:hover {
@@ -329,33 +413,34 @@
         }
 
         .btn-cancel {
-            padding: 10px 20px;
-            background: #333;
-            color: white;
-            border: none;
+            padding: 9px 24px;
+            background: #f3f4f6;
+            color: #333;
+            border: 1px solid #d0d5dd;
             border-radius: 4px;
-            font-size: 13px;
+            font-size: 13.5px;
             font-weight: 500;
             cursor: pointer;
+            transition: all 0.15s;
         }
 
         .btn-cancel:hover {
-            background: #444;
+            background: #e5e7eb;
         }
 
-        /* Address Tab */
+        /* ===== Address Tab ===== */
         .address-section {
-            margin-bottom: 24px;
+            margin-bottom: 28px;
         }
 
         .address-title {
             font-size: 14px;
             font-weight: 600;
-            color: #333;
-            margin-bottom: 16px;
+            color: #1a1a1a;
+            margin-bottom: 20px;
         }
 
-        /* Contact Persons Tab */
+        /* ===== Contact Persons Tab ===== */
         .contact-persons-table {
             width: 100%;
             border-collapse: collapse;
@@ -363,18 +448,26 @@
 
         .contact-persons-table th {
             text-align: left;
-            padding: 10px;
+            padding: 10px 12px;
             font-size: 11px;
             font-weight: 600;
-            color: #666;
+            color: #888;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
             background: #f9fafb;
-            border-bottom: 1px solid #e9ecef;
+            border-bottom: 1px solid #e5e7eb;
         }
 
         .contact-persons-table td {
-            padding: 10px;
+            padding: 10px 12px;
             border-bottom: 1px solid #f0f0f0;
+        }
+
+        .contact-persons-table .form-input,
+        .contact-persons-table .form-select {
+            max-width: 100%;
+            font-size: 12.5px;
+            padding: 7px 10px;
         }
 
         .add-contact-btn {
@@ -382,12 +475,28 @@
             border: none;
             color: #4285f4;
             font-size: 13px;
+            font-weight: 500;
             cursor: pointer;
-            padding: 8px 0;
+            padding: 12px 0;
         }
 
         .add-contact-btn:hover {
             text-decoration: underline;
+        }
+
+        .remove-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #ccc;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .remove-btn:hover {
+            color: #ef4444;
+            background: #fef2f2;
         }
     </style>
 </head>
@@ -418,7 +527,7 @@
                                 <option value="ms">Ms.</option>
                                 <option value="dr">Dr.</option>
                             </select>
-                            <input type="text" class="form-input highlight" id="firstName" placeholder="First Name">
+                            <input type="text" class="form-input" id="firstName" placeholder="First Name">
                             <input type="text" class="form-input" id="lastName" placeholder="Last Name">
                         </div>
                     </div>
@@ -434,32 +543,33 @@
                     </div>
                     <div class="form-row">
                         <label class="form-label">Email Address <span class="info-icon">ⓘ</span></label>
-                        <input type="email" class="form-input" id="email" placeholder="📧">
+                        <div class="email-wrapper">
+                            <span class="email-icon">✉</span>
+                            <input type="email" class="form-input" id="email">
+                        </div>
                     </div>
                     <div class="form-row">
                         <label class="form-label">Phone <span class="info-icon">ⓘ</span></label>
                         <div class="phone-group">
-                            <select class="form-select" id="workPhoneCode">
-                                <option value="+63">+63</option>
-                                <option value="+1">+1</option>
-                            </select>
-                            <input type="text" class="form-input" id="workPhone" placeholder="Work Phone">
-                            <select class="form-select" id="mobileCode">
-                                <option value="+63">+63</option>
-                                <option value="+1">+1</option>
-                            </select>
-                            <input type="text" class="form-input" id="mobile" placeholder="Mobile">
+                            <div class="phone-pair">
+                                <select class="form-select" id="workPhoneCode">
+                                    <option value="+63">+63</option>
+                                    <option value="+1">+1</option>
+                                </select>
+                                <input type="text" class="form-input" id="workPhone" placeholder="Work Phone">
+                            </div>
+                            <div class="phone-pair">
+                                <select class="form-select" id="mobileCode">
+                                    <option value="+63">+63</option>
+                                    <option value="+1">+1</option>
+                                </select>
+                                <input type="text" class="form-input" id="mobile" placeholder="Mobile">
+                            </div>
                         </div>
                     </div>
-                    <div class="form-row">
-                        <label class="form-label">Vendor Language <span class="info-icon">ⓘ</span></label>
-                        <select class="form-select" id="vendorLanguage">
-                            <option value="english">English</option>
-                            <option value="filipino">Filipino</option>
-                            <option value="spanish">Spanish</option>
-                        </select>
-                    </div>
                 </div>
+
+                <hr class="form-divider">
 
                 <!-- Tabs Section -->
                 <div class="tabs-section">
@@ -478,29 +588,30 @@
                     <div class="tab-form-row">
                         <label class="form-label">Tax Rate</label>
                         <div>
-                            <select class="form-select" id="taxRate" style="max-width: 350px;">
+                            <select class="form-select" id="taxRate" style="max-width: 380px;">
                                 <option value="">Select a Tax</option>
                                 <option value="12">VAT 12%</option>
                                 <option value="0">Exempt</option>
                             </select>
-                            <div class="tab-hint">To associate more than one tax, you need to create a tax group in <a
-                                    href="#">Settings</a>.</div>
+                            <div class="tab-hint">To associate more than one tax, you need to create a tax group in
+                                <a href="#">Settings</a>.
+                            </div>
                         </div>
                     </div>
                     <div class="tab-form-row">
                         <label class="form-label">Company ID <span class="info-icon">ⓘ</span></label>
-                        <input type="text" class="form-input" id="companyId" style="max-width: 250px;">
+                        <input type="text" class="form-input" id="companyId" style="max-width: 380px;">
                     </div>
                     <div class="tab-form-row">
                         <label class="form-label">Currency</label>
-                        <select class="form-select" id="currency" style="max-width: 350px;">
+                        <select class="form-select" id="currency" style="max-width: 380px;">
                             <option value="php">PHP- Philippine Peso</option>
                             <option value="usd">USD- US Dollar</option>
                         </select>
                     </div>
                     <div class="tab-form-row">
                         <label class="form-label">Payment Terms</label>
-                        <select class="form-select" id="paymentTerms" style="max-width: 350px;">
+                        <select class="form-select" id="paymentTerms" style="max-width: 380px;">
                             <option value="due-on-receipt">Due on Receipt</option>
                             <option value="net-15">Net 15</option>
                             <option value="net-30">Net 30</option>
@@ -509,17 +620,10 @@
                         </select>
                     </div>
                     <div class="tab-form-row">
-                        <label class="form-label">Enable Portal? <span class="info-icon">ⓘ</span></label>
-                        <div class="checkbox-row">
-                            <input type="checkbox" id="enablePortal">
-                            <label class="checkbox-label" for="enablePortal">Allow portal access for this vendor</label>
-                        </div>
-                    </div>
-                    <div class="tab-form-row">
                         <label class="form-label">Documents</label>
                         <div class="upload-section">
                             <button class="upload-btn" onclick="uploadDocument()">
-                                📤 Upload File <span>▼</span>
+                                <span class="upload-icon">⬆</span> Upload File <span class="upload-arrow">▾</span>
                             </button>
                             <div class="upload-hint">You can upload a maximum of 10 files, 10MB each</div>
                         </div>
@@ -532,11 +636,11 @@
                         <div class="address-title">Billing Address</div>
                         <div class="tab-form-row">
                             <label class="form-label">Attention</label>
-                            <input type="text" class="form-input" id="billingAttention" style="max-width: 350px;">
+                            <input type="text" class="form-input" id="billingAttention" style="max-width: 380px;">
                         </div>
                         <div class="tab-form-row">
                             <label class="form-label">Country/Region</label>
-                            <select class="form-select" id="billingCountry" style="max-width: 350px;">
+                            <select class="form-select" id="billingCountry" style="max-width: 380px;">
                                 <option value="ph">Philippines</option>
                                 <option value="us">United States</option>
                             </select>
@@ -544,15 +648,15 @@
                         <div class="tab-form-row">
                             <label class="form-label">Address</label>
                             <textarea class="form-input" id="billingAddress" rows="3"
-                                style="max-width: 350px; resize: vertical;"></textarea>
+                                style="max-width: 380px; resize: vertical;"></textarea>
                         </div>
                         <div class="tab-form-row">
                             <label class="form-label">City</label>
-                            <input type="text" class="form-input" id="billingCity" style="max-width: 350px;">
+                            <input type="text" class="form-input" id="billingCity" style="max-width: 380px;">
                         </div>
                         <div class="tab-form-row">
                             <label class="form-label">State</label>
-                            <input type="text" class="form-input" id="billingState" style="max-width: 350px;">
+                            <input type="text" class="form-input" id="billingState" style="max-width: 380px;">
                         </div>
                         <div class="tab-form-row">
                             <label class="form-label">Zip Code</label>
@@ -560,7 +664,7 @@
                         </div>
                         <div class="tab-form-row">
                             <label class="form-label">Phone</label>
-                            <input type="text" class="form-input" id="billingPhone" style="max-width: 250px;">
+                            <input type="text" class="form-input" id="billingPhone" style="max-width: 280px;">
                         </div>
                     </div>
                 </div>
@@ -592,7 +696,7 @@
                                 <td><input type="text" class="form-input" style="max-width: 150px;"></td>
                                 <td><input type="email" class="form-input" style="max-width: 200px;"></td>
                                 <td><input type="text" class="form-input" style="max-width: 150px;"></td>
-                                <td><button class="close-btn" style="font-size: 16px;">×</button></td>
+                                <td><button class="remove-btn" onclick="removeContactPerson(this)">×</button></td>
                             </tr>
                         </tbody>
                     </table>
@@ -601,14 +705,14 @@
 
                 <!-- Custom Fields Tab -->
                 <div class="tab-content" id="custom-fields">
-                    <p style="color: #666;">No custom fields have been created yet. <a href="#"
-                            style="color: #4285f4;">Add Custom Field</a></p>
+                    <p style="color: #888; font-size: 13px;">No custom fields have been created yet. <a href="#"
+                            style="color: #4285f4; text-decoration: none;">Add Custom Field</a></p>
                 </div>
 
                 <!-- Reporting Tags Tab -->
                 <div class="tab-content" id="reporting-tags">
-                    <p style="color: #666;">No reporting tags have been created yet. <a href="#"
-                            style="color: #4285f4;">Add Reporting Tag</a></p>
+                    <p style="color: #888; font-size: 13px;">No reporting tags have been created yet. <a href="#"
+                            style="color: #4285f4; text-decoration: none;">Add Reporting Tag</a></p>
                 </div>
 
                 <!-- Remarks Tab -->
@@ -640,11 +744,9 @@
         // Tab functionality
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', function () {
-                // Remove active from all tabs
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
 
-                // Add active to clicked tab
                 this.classList.add('active');
                 const tabId = this.getAttribute('data-tab');
                 document.getElementById(tabId).classList.add('active');
@@ -680,7 +782,6 @@
         }
 
         function uploadDocument() {
-            // Create file input and trigger click
             const input = document.createElement('input');
             input.type = 'file';
             input.accept = '.pdf,.doc,.docx,.jpg,.png';
@@ -703,7 +804,7 @@
                 <td><input type="text" class="form-input" style="max-width: 150px;"></td>
                 <td><input type="email" class="form-input" style="max-width: 200px;"></td>
                 <td><input type="text" class="form-input" style="max-width: 150px;"></td>
-                <td><button class="close-btn" style="font-size: 16px;" onclick="removeContactPerson(this)">×</button></td>
+                <td><button class="remove-btn" onclick="removeContactPerson(this)">×</button></td>
             `;
             tbody.appendChild(newRow);
         }
@@ -747,13 +848,11 @@
                 work_phone: document.getElementById('workPhone').value,
                 mobile: document.getElementById('mobile').value,
                 phone: document.getElementById('workPhone').value,
-                vendor_language: document.getElementById('vendorLanguage').value,
                 // Other Details tab
                 tax_rate: document.getElementById('taxRate').value,
                 company_id_number: document.getElementById('companyId').value,
                 currency: document.getElementById('currency').value,
                 payment_terms: document.getElementById('paymentTerms').value,
-                enable_portal: document.getElementById('enablePortal').checked,
                 // Address tab
                 billing_attention: document.getElementById('billingAttention') ? document.getElementById('billingAttention').value : '',
                 billing_country: document.getElementById('billingCountry') ? document.getElementById('billingCountry').value : '',

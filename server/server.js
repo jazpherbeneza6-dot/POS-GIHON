@@ -30,6 +30,7 @@ app.use('/api/items', require('./routes/items'));
 app.use('/api/inventory', require('./routes/inventory'));
 app.use('/api/sales', require('./routes/sales'));
 app.use('/api/purchases', require('./routes/purchases'));
+app.use('/api/purchase-receives', require('./routes/purchase-receives'));
 app.use('/api/suppliers', require('./routes/suppliers'));
 app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/barcode', require('./routes/barcode'));
@@ -39,6 +40,16 @@ app.use('/api/brands', require('./routes/brands'));
 app.use('/api/customers', require('./routes/customers'));
 app.use('/api/sales-orders', require('./routes/sales-orders'));
 app.use('/api/salespersons', require('./routes/salespersons'));
+app.use('/api/delivery-methods', require('./routes/delivery-methods'));
+app.use('/api/invoices', require('./routes/invoices'));
+app.use('/api/sales-receipts', require('./routes/sales-receipts'));
+app.use('/api/payments-received', require('./routes/payments-received'));
+app.use('/api/payments-made', require('./routes/payments-made'));
+app.use('/api/vendor-credits', require('./routes/vendor-credits'));
+app.use('/api/packages', require('./routes/packages'));
+app.use('/api/shipments', require('./routes/shipments'));
+app.use('/api/sales-returns', require('./routes/sales-returns'));
+app.use('/api/bills', require('./routes/bills'));
 
 // Get local network IP address
 function getLocalIP() {

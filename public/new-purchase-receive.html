@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Purchase Receive - GiHon</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', 'Source Sans Pro', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f5f6fa;
+            font-size: 12px;
+        }
+
+        .main-layout {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .content {
+            flex: 1;
+            margin-left: 260px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ===== Page Header ===== */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            flex-shrink: 0;
+        }
+
+        .page-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .page-icon {
+            font-size: 18px;
+        }
+
+        .page-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-icon-btn {
+            background: none;
+            border: none;
+            font-size: 16px;
+            color: #999;
+            cursor: pointer;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #999;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        /* ===== Form Body ===== */
+        .form-body {
+            flex: 1;
+            overflow-y: auto;
+            background: #fff;
+        }
+
+        /* ===== Top Form Fields ===== */
+        .top-fields {
+            padding: 20px 24px 16px 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .form-row {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 14px;
+        }
+
+        .form-row label {
+            width: 140px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #e53935;
+            padding-top: 7px;
+            flex-shrink: 0;
+        }
+
+        /* ===== Custom Dropdown ===== */
+        .dropdown-wrap {
+            position: relative;
+            width: 300px;
+        }
+
+        .dropdown-input {
+            width: 100%;
+            padding: 7px 30px 7px 10px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #333;
+            background: #fff;
+            outline: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .dropdown-input:focus,
+        .dropdown-input.open {
+            border-color: #4285f4;
+        }
+
+        .dropdown-input .clear-btn {
+            position: absolute;
+            right: 24px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 0 4px;
+        }
+
+        .dropdown-input .clear-btn:hover {
+            color: #333;
+        }
+
+        .dropdown-arrow {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 10px;
+            pointer-events: none;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-search {
+            width: 100%;
+            padding: 8px 10px;
+            border: none;
+            border-bottom: 1px solid #eee;
+            font-size: 12px;
+            outline: none;
+        }
+
+        .dropdown-option {
+            padding: 8px 12px;
+            font-size: 13px;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .dropdown-option:hover {
+            background: #f0f5ff;
+        }
+
+        .dropdown-empty {
+            padding: 10px 12px;
+            font-size: 11px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        /* ===== Detail Fields ===== */
+        .detail-fields {
+            padding: 16px 24px;
+        }
+
+        .detail-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .detail-row label {
+            width: 140px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #e53935;
+            flex-shrink: 0;
+        }
+
+        .detail-row .value {
+            font-size: 13px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .detail-row input[type="text"],
+        .detail-row input[type="date"] {
+            padding: 6px 10px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 13px;
+            outline: none;
+            color: #333;
+        }
+
+        .detail-row input:focus {
+            border-color: #4285f4;
+        }
+
+        .info-icon {
+            color: #4285f4;
+            margin-left: 6px;
+            cursor: help;
+            font-size: 14px;
+        }
+
+        /* ===== Items Table ===== */
+        .items-section {
+            padding: 0 24px 16px 24px;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .items-table th {
+            background: #f9fafb;
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #666;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .items-table td {
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+        }
+
+        .items-table .center {
+            text-align: center;
+        }
+
+        .item-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .item-thumb {
+            width: 36px;
+            height: 36px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .item-name {
+            font-weight: 500;
+            color: #1a73e8;
+        }
+
+        .qty-input {
+            width: 80px;
+            padding: 6px 8px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .qty-input:focus {
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1);
+        }
+
+        .ordered-badge {
+            background: #e8f0fe;
+            color: #1a73e8;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .received-badge {
+            background: #e6f4ea;
+            color: #137333;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .intransit-badge {
+            background: #fce8e6;
+            color: #c5221f;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .items-empty {
+            padding: 30px;
+            text-align: center;
+            color: #bbb;
+            font-size: 13px;
+        }
+
+        /* ===== Notes ===== */
+        .notes-section {
+            padding: 16px 24px;
+        }
+
+        .notes-section label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: #888;
+            margin-bottom: 6px;
+        }
+
+        .notes-section textarea {
+            width: 50%;
+            min-height: 80px;
+            padding: 10px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+            resize: vertical;
+            outline: none;
+        }
+
+        .notes-section textarea:focus {
+            border-color: #1a73e8;
+        }
+
+        /* ===== Attach Files ===== */
+        .attach-section {
+            padding: 16px 24px;
+        }
+
+        .attach-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #888;
+            margin-bottom: 6px;
+        }
+
+        .attach-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: #555;
+            cursor: pointer;
+            padding: 4px 0;
+        }
+
+        .attach-hint {
+            font-size: 11px;
+            color: #bbb;
+            margin-top: 4px;
+        }
+
+        /* ===== Footer ===== */
+        .page-footer {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            background: #fff;
+            border-top: 1px solid #e0e0e0;
+            flex-shrink: 0;
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid #d9d9d9;
+            background: #fff;
+            color: #333;
+        }
+
+        .btn:hover {
+            background: #f5f5f5;
+        }
+
+        .btn-primary {
+            background: #1a73e8;
+            color: #fff;
+            border-color: #1a73e8;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary:hover {
+            background: #1557b0;
+        }
+
+        .btn-primary .split {
+            border-left: 1px solid rgba(255, 255, 255, 0.3);
+            padding-left: 6px;
+            margin-left: 2px;
+        }
+
+        .btn-cancel {
+            color: #666;
+            border: none;
+            background: none;
+        }
+
+        .btn-cancel:hover {
+            color: #333;
+        }
+
+        /* ===== Loading ===== */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer"></div>
+
+    <div class="main-layout">
+        <div class="content" id="content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="page-title-wrapper">
+                    <span class="page-icon">📋</span>
+                    <h1 class="page-title">New Purchase Receive</h1>
+                </div>
+                <div class="header-actions">
+                    <button class="header-icon-btn">⚙</button>
+                    <button class="close-btn" onclick="goBack()">×</button>
+                </div>
+            </div>
+
+            <!-- Form Body -->
+            <div class="form-body">
+                <!-- Top Fields: Vendor & PO -->
+                <div class="top-fields">
+                    <!-- Vendor Name -->
+                    <div class="form-row">
+                        <label>Vendor Name*</label>
+                        <div class="dropdown-wrap" id="vendorDropdownWrap">
+                            <div class="dropdown-input" id="vendorInput" onclick="toggleVendorDropdown()">
+                                <span id="vendorDisplay">Select a Vendor</span>
+                                <button class="clear-btn" id="vendorClear" style="display:none;"
+                                    onclick="event.stopPropagation();clearVendor()">×</button>
+                            </div>
+                            <span class="dropdown-arrow">▼</span>
+                            <div class="dropdown-menu" id="vendorMenu">
+                                <input type="text" class="dropdown-search" id="vendorSearch" placeholder="Search"
+                                    oninput="filterVendors()">
+                                <div id="vendorOptions"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Purchase Order# -->
+                    <div class="form-row">
+                        <label>Purchase Order#*</label>
+                        <div class="dropdown-wrap" id="poDropdownWrap">
+                            <div class="dropdown-input" id="poInput" onclick="togglePODropdown()">
+                                <span id="poDisplay">Select a Purchase Order</span>
+                            </div>
+                            <span class="dropdown-arrow">▼</span>
+                            <div class="dropdown-menu" id="poMenu">
+                                <input type="text" class="dropdown-search" id="poSearch" placeholder="Search"
+                                    oninput="filterPOs()">
+                                <div id="poOptions"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detail Fields -->
+                <div class="detail-fields">
+                    <div class="detail-row">
+                        <label>Purchase Receive#*</label>
+                        <span class="value" id="receiveNumber" style="color:#999;">Loading...</span>
+                        <span class="info-icon" title="Auto-generated receive number">ℹ️</span>
+                    </div>
+                    <div class="detail-row">
+                        <label>Received Date*</label>
+                        <input type="date" id="receiveDate">
+                    </div>
+                </div>
+
+                <!-- Items Table -->
+                <div class="items-section">
+                    <table class="items-table">
+                        <thead>
+                            <tr>
+                                <th>Items & Description</th>
+                                <th class="center" style="width:90px;">Ordered</th>
+                                <th class="center" style="width:90px;">Received</th>
+                                <th class="center" style="width:90px;">In Transit</th>
+                                <th class="center" style="width:140px;">Quantity to Receive</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemsTableBody">
+                            <tr>
+                                <td colspan="5" class="items-empty">Select a vendor and purchase order to see items
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Notes -->
+                <div class="notes-section">
+                    <label>Notes (For Internal Use)</label>
+                    <textarea id="notes" placeholder=""></textarea>
+                </div>
+
+                <!-- Attach Files -->
+                <div class="attach-section">
+                    <div class="attach-title">Attach File(s) to Purchase Receive</div>
+                    <div class="attach-btn" onclick="uploadFiles()">📎 Upload File ▾</div>
+                    <div class="attach-hint">You can upload a maximum of 5 files, 10MB each</div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="page-footer">
+                <button class="btn" onclick="saveAsDraft()">Save as Draft</button>
+                <button class="btn btn-primary" onclick="saveAsReceived()">Save as Received <span
+                        class="split">▾</span></button>
+                <button class="btn btn-cancel" onclick="goBack()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div>⏳ Saving...</div>
+    </div>
+
+    <script src="/js/layout.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const initialPoId = urlParams.get('poId');
+        let allVendors = [];
+        let allPurchases = [];
+        let selectedVendor = null;
+        let selectedPO = null;
+        let poData = null;
+        let receivedByItem = {};
+        let inTransitByItem = {};
+
+        document.addEventListener('DOMContentLoaded', async function () {
+            document.getElementById('receiveDate').value = new Date().toISOString().split('T')[0];
+
+            // Get next receive number
+            try {
+                const res = await fetch('/api/purchase-receives/next-number');
+                if (res.ok) {
+                    const d = await res.json();
+                    document.getElementById('receiveNumber').textContent = d.receive_number;
+                    document.getElementById('receiveNumber').style.color = '#333';
+                }
+            } catch (e) {
+                document.getElementById('receiveNumber').textContent = 'Auto-generated';
+            }
+
+            // Load all vendors (from purchases)
+            try {
+                const res = await fetch('/api/purchases');
+                if (res.ok) {
+                    allPurchases = await res.json();
+                    const vendorMap = {};
+                    allPurchases.forEach(p => {
+                        const name = p.supplier_name;
+                        if (name && !vendorMap[name]) {
+                            vendorMap[name] = { id: p.supplier_id, name: name };
+                        }
+                    });
+                    allVendors = Object.values(vendorMap);
+                }
+            } catch (e) { }
+
+            renderVendorOptions();
+
+            // If poId is passed, auto-select vendor and PO
+            if (initialPoId) {
+                const po = allPurchases.find(p => p.id === parseInt(initialPoId));
+                if (po) {
+                    selectVendor(po.supplier_name, po.supplier_id, true);
+                    selectPO(po);
+                }
+            }
+
+            // Close dropdowns on outside click
+            document.addEventListener('click', function (e) {
+                if (!document.getElementById('vendorDropdownWrap').contains(e.target)) {
+                    document.getElementById('vendorMenu').classList.remove('show');
+                }
+                if (!document.getElementById('poDropdownWrap').contains(e.target)) {
+                    document.getElementById('poMenu').classList.remove('show');
+                }
+            });
+        });
+
+        // ===== VENDOR DROPDOWN =====
+        function toggleVendorDropdown() {
+            document.getElementById('vendorMenu').classList.toggle('show');
+            document.getElementById('vendorSearch').value = '';
+            filterVendors();
+            setTimeout(() => document.getElementById('vendorSearch').focus(), 50);
+        }
+
+        function renderVendorOptions(query) {
+            const container = document.getElementById('vendorOptions');
+            const q = (query || '').toLowerCase();
+            const filtered = q ? allVendors.filter(v => v.name.toLowerCase().includes(q)) : allVendors;
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="dropdown-empty">No vendors found</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            filtered.forEach(v => {
+                const div = document.createElement('div');
+                div.className = 'dropdown-option';
+                div.textContent = v.name;
+                div.onclick = () => selectVendor(v.name, v.id, false);
+                container.appendChild(div);
+            });
+        }
+
+        function filterVendors() {
+            renderVendorOptions(document.getElementById('vendorSearch').value);
+        }
+
+        function selectVendor(name, id, skipMenuClose) {
+            selectedVendor = { name, id };
+            document.getElementById('vendorDisplay').textContent = name;
+            document.getElementById('vendorClear').style.display = 'block';
+            if (!skipMenuClose) document.getElementById('vendorMenu').classList.remove('show');
+
+            // Reset PO selection
+            selectedPO = null;
+            poData = null;
+            document.getElementById('poDisplay').textContent = 'Select a Purchase Order';
+            document.getElementById('itemsTableBody').innerHTML =
+                '<tr><td colspan="5" class="items-empty">Select a purchase order to see items</td></tr>';
+
+            renderPOOptions();
+        }
+
+        function clearVendor() {
+            selectedVendor = null;
+            selectedPO = null;
+            poData = null;
+            document.getElementById('vendorDisplay').textContent = 'Select a Vendor';
+            document.getElementById('vendorClear').style.display = 'none';
+            document.getElementById('poDisplay').textContent = 'Select a Purchase Order';
+            document.getElementById('itemsTableBody').innerHTML =
+                '<tr><td colspan="5" class="items-empty">Select a vendor and purchase order to see items</td></tr>';
+        }
+
+        // ===== PO DROPDOWN =====
+        function togglePODropdown() {
+            if (!selectedVendor) {
+                alert('Please select a vendor first');
+                return;
+            }
+            document.getElementById('poMenu').classList.toggle('show');
+            document.getElementById('poSearch').value = '';
+            renderPOOptions();
+            setTimeout(() => document.getElementById('poSearch').focus(), 50);
+        }
+
+        function renderPOOptions(query) {
+            const container = document.getElementById('poOptions');
+            if (!selectedVendor) {
+                container.innerHTML = '<div class="dropdown-empty">Select a vendor first</div>';
+                return;
+            }
+
+            const q = (query || '').toLowerCase();
+            const vendorPOs = allPurchases.filter(p => {
+                const nameMatch = p.supplier_name === selectedVendor.name;
+                const notReceived = p.status !== 'received';
+                const searchMatch = !q || (p.po_number || '').toLowerCase().includes(q);
+                return nameMatch && notReceived && searchMatch;
+            });
+
+            if (vendorPOs.length === 0) {
+                container.innerHTML = '<div class="dropdown-empty">There are no purchase orders to be received for this vendor.</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            vendorPOs.forEach(po => {
+                const div = document.createElement('div');
+                div.className = 'dropdown-option';
+                div.textContent = po.po_number || 'PO-' + po.id;
+                div.onclick = () => selectPO(po);
+                container.appendChild(div);
+            });
+        }
+
+        function filterPOs() {
+            renderPOOptions(document.getElementById('poSearch').value);
+        }
+
+        async function selectPO(po) {
+            selectedPO = po;
+            document.getElementById('poDisplay').textContent = po.po_number || 'PO-' + po.id;
+            document.getElementById('poMenu').classList.remove('show');
+
+            try {
+                const [poRes, receivedRes] = await Promise.all([
+                    fetch('/api/purchases/' + po.id),
+                    fetch('/api/purchase-receives/by-po/' + po.id)
+                ]);
+
+                if (!poRes.ok) return;
+                poData = await poRes.json();
+
+                const receivedData = await receivedRes.json();
+                receivedByItem = {};
+                inTransitByItem = {};
+                receivedData.forEach(r => {
+                    const key = r.item_id || ('name:' + (r.item_name || ''));
+                    receivedByItem[key] = (receivedByItem[key] || 0) + (parseFloat(r.total_received) || 0);
+                    inTransitByItem[key] = (inTransitByItem[key] || 0) + (parseFloat(r.total_in_transit) || 0);
+                });
+
+                renderItemsTable();
+            } catch (e) {
+                console.error('Error loading PO:', e);
+            }
+        }
+
+        function renderItemsTable() {
+            const tbody = document.getElementById('itemsTableBody');
+
+            if (!poData || !poData.items || poData.items.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="items-empty">No items found in this Purchase Order</td></tr>';
+                return;
+            }
+
+            let html = '';
+            poData.items.forEach((item, index) => {
+                const ordered = parseFloat(item.quantity) || 0;
+                const itemKey = item.item_id || ('name:' + (item.item_name || ''));
+                const received = receivedByItem[itemKey] || 0;
+                const inTransit = inTransitByItem[itemKey] || 0;
+                const quantityToReceive = Math.max(0, ordered - received - inTransit);
+
+                html += `<tr data-item-id="${item.item_id || ''}" data-index="${index}">
+                    <td>
+                        <div class="item-cell">
+                            <div class="item-thumb">🖼️</div>
+                            <span class="item-name">${item.item_name || '—'}</span>
+                        </div>
+                    </td>
+                    <td class="center"><span class="ordered-badge">${ordered}</span></td>
+                    <td class="center"><span class="received-badge">${received}</span></td>
+                    <td class="center"><span class="intransit-badge">${inTransit}</span></td>
+                    <td class="center">
+                        <input type="number" class="qty-input"
+                               value="${quantityToReceive}" min="0" max="${ordered}"
+                               data-ordered="${ordered}"
+                               data-received="${received}"
+                               data-intransit="${inTransit}">
+                    </td>
+                </tr>`;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        // ===== SAVE =====
+        function collectFormData(status) {
+            if (!selectedPO || !poData) {
+                alert('Please select a vendor and purchase order');
+                return null;
+            }
+
+            const items = [];
+            const rows = document.getElementById('itemsTableBody').querySelectorAll('tr[data-index]');
+
+            rows.forEach((row, i) => {
+                const qtyInput = row.querySelector('.qty-input');
+                const qtyToReceive = parseFloat(qtyInput?.value) || 0;
+
+                if (qtyToReceive > 0) {
+                    const poItem = poData.items[i];
+                    items.push({
+                        item_id: poItem.item_id || null,
+                        item_name: poItem.item_name || '',
+                        ordered_qty: parseFloat(poItem.quantity) || 0,
+                        previously_received_qty: receivedByItem[poItem.item_id] || 0,
+                        quantity_to_receive: qtyToReceive
+                    });
+                }
+            });
+
+            return {
+                purchase_id: selectedPO.id,
+                supplier_id: selectedVendor.id || null,
+                supplier_name: selectedVendor.name || '',
+                receive_date: document.getElementById('receiveDate').value || null,
+                notes: document.getElementById('notes').value.trim(),
+                status: status,
+                items: items
+            };
+        }
+
+        async function saveAsDraft() {
+            const data = collectFormData('draft');
+            if (!data) return;
+            if (data.items.length === 0) {
+                alert('Please enter quantity for at least one item');
+                return;
+            }
+            await submitReceive(data);
+        }
+
+        async function saveAsReceived() {
+            const data = collectFormData('received');
+            if (!data) return;
+            if (data.items.length === 0) {
+                alert('Please enter quantity for at least one item');
+                return;
+            }
+
+            if (!confirm('This will update Stock on Hand for the received items. Continue?')) {
+                return;
+            }
+            await submitReceive(data);
+        }
+
+        async function submitReceive(data) {
+            const loading = document.getElementById('loadingOverlay');
+            loading.classList.add('active');
+
+            try {
+                const res = await fetch('/api/purchase-receives', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await res.json();
+
+                if (!res.ok) {
+                    alert('Error: ' + (result.error || 'Failed to save'));
+                    loading.classList.remove('active');
+                    return;
+                }
+
+                showToast('Purchase Receive has been created');
+                setTimeout(() => {
+                    window.location.href = '/purchase-receives.html';
+                }, 1200);
+            } catch (e) {
+                console.error('Save error:', e);
+                alert('Failed to save purchase receive');
+                loading.classList.remove('active');
+            }
+        }
+
+        function showToast(msg) {
+            const t = document.createElement('div');
+            t.textContent = msg;
+            t.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#16a34a;color:white;padding:12px 28px;border-radius:8px;font-size:14px;font-weight:500;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.15);animation:toastIn 0.3s ease;';
+            document.body.appendChild(t);
+            const style = document.createElement('style');
+            style.textContent = '@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(-20px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}';
+            document.head.appendChild(style);
+            setTimeout(() => t.remove(), 3000);
+        }
+
+        function goBack() {
+            if (initialPoId) {
+                window.location.href = '/purchase-order-detail.html?id=' + initialPoId;
+            } else {
+                window.location.href = '/purchase-receives.html';
+            }
+        }
+
+        function uploadFiles() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.pdf,.doc,.docx,.jpg,.png,.xlsx';
+            input.multiple = true;
+            input.click();
+        }
+    </script>
+</body>
+
+</html>
