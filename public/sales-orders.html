@@ -3307,8 +3307,66 @@
         loadOrders().then(() => {
             const params = new URLSearchParams(window.location.search);
             const orderId = params.get('orderId');
+            const filter = params.get('filter');
+
             if (orderId) {
                 openOrderDetail(parseInt(orderId));
+            }
+
+            // Handle dashboard filter parameters
+            if (filter && allOrders.length > 0) {
+                let filtered = [];
+                let filterLabel = '';
+
+                switch (filter) {
+                    case 'to-be-packed':
+                        filtered = allOrders.filter(o => o.status === 'CONFIRMED' && (parseInt(o.package_count) || 0) === 0);
+                        filterLabel = 'To Be Packed';
+                        break;
+                    case 'to-be-shipped':
+                        filtered = allOrders.filter(o => (parseInt(o.package_count) || 0) > 0 && (parseInt(o.shipment_count) || 0) === 0);
+                        filterLabel = 'To Be Shipped';
+                        break;
+                    case 'to-be-delivered':
+                        filtered = allOrders.filter(o => (parseInt(o.shipment_count) || 0) > 0);
+                        filterLabel = 'To Be Delivered';
+                        break;
+                    case 'to-be-invoiced':
+                        filtered = allOrders.filter(o => o.status === 'CONFIRMED' && !o.has_invoice);
+                        filterLabel = 'To Be Invoiced';
+                        break;
+                }
+
+                if (filterLabel) {
+                    // Show filtered results
+                    document.getElementById('emptyState').style.display = filtered.length === 0 ? 'flex' : 'none';
+                    document.getElementById('ordersContainer').style.display = filtered.length > 0 ? 'block' : 'none';
+
+                    if (filtered.length > 0) {
+                        function renderFilteredPage(pageData) {
+                            document.getElementById('ordersBody').innerHTML = pageData.map(order => {
+                                const dots = getStatusDots(order);
+                                const statusCls = 'status-' + getStatusClass(order.status);
+                                return `<tr onclick="openOrderDetail(${order.id})" style="cursor:pointer;">
+                                    <td><input type="checkbox" class="order-checkbox" value="${order.id}" onclick="event.stopPropagation()"></td>
+                                    <td>${formatDate(order.order_date)}</td>
+                                    <td><span class="order-number-link">${order.order_number}</span></td>
+                                    <td>${order.reference_number || ''}</td>
+                                    <td>${order.customer_name || ''}</td>
+                                    <td><span class="${statusCls}">${(order.status || 'DRAFT').toUpperCase()}</span></td>
+                                    <td style="text-align: center;">${dots.invoiced ? `<span class="status-dot ${dots.invoiced}"></span>` : ''}</td>
+                                    <td style="text-align: center;">${dots.payment ? `<span class="status-dot ${dots.payment}"></span>` : ''}</td>
+                                    <td style="text-align: center;">${dots.packed ? `<span class="status-dot ${dots.packed}"></span>` : ''}</td>
+                                    <td style="text-align: center;">${dots.shipped ? `<span class="status-dot ${dots.shipped}"></span>` : ''}</td>
+                                </tr>`;
+                            }).join('');
+                        }
+                        window.soPager = Pagination.create({
+                            data: filtered, perPage: 14, containerId: 'soPaginationContainer',
+                            onPageChange: function (pageData) { renderFilteredPage(pageData); }
+                        });
+                    }
+                }
             }
         });
     </script>
