@@ -389,25 +389,20 @@ router.get('/reports/order-fulfillment-by-item', async (req, res) => {
       deliveredRows = deliveredResult.rows;
     } catch (e) { /* shipments table may not exist */ }
 
-    // 6. Get invoiced quantities
+    // 6. Get invoiced quantities (linked via order_number to sales_orders for consistent date filtering)
     let invoicedRows = [];
     try {
-      let invDateFilter = '';
-      const invParams = [];
-      if (from && to) {
-        invDateFilter = 'AND inv.invoice_date >= $1 AND inv.invoice_date <= $2';
-        invParams.push(from, to);
-      }
       const invoicedResult = await db.query(`
         SELECT
           ii.item_name,
           SUM(ii.quantity) AS invoiced_qty
         FROM invoice_items ii
         JOIN invoices inv ON ii.invoice_id = inv.id
-        WHERE inv.status NOT IN ('VOID', 'Void', 'draft')
-        ${invDateFilter}
+        LEFT JOIN sales_orders so ON inv.order_number = so.order_number
+        WHERE inv.status NOT IN ('VOID', 'Void')
+        ${dateFilter}
         GROUP BY ii.item_name
-      `, invParams);
+      `, params);
       invoicedRows = invoicedResult.rows;
     } catch (e) { /* invoice_items table may not exist */ }
 

@@ -2,6 +2,56 @@ const express = require('express');
 const router = express.Router();
 const database = require('../database');
 
+// Helper: Recalculate and update sales order status based on its packages/shipments
+async function updateSalesOrderFulfillmentStatus(pool, salesOrderId) {
+    if (!salesOrderId) return;
+    try {
+        // Get all packages for this sales order
+        const pkgResult = await pool.query(
+            'SELECT id, status FROM packages WHERE sales_order_id = $1',
+            [salesOrderId]
+        );
+        const packages = pkgResult.rows;
+        if (packages.length === 0) return;
+
+        const allDelivered = packages.every(p => p.status === 'DELIVERED');
+        const allShipped = packages.every(p => p.status === 'SHIPPED' || p.status === 'DELIVERED');
+        const someShipped = packages.some(p => p.status === 'SHIPPED' || p.status === 'DELIVERED');
+
+        // Get current sales order status
+        const soResult = await pool.query('SELECT status FROM sales_orders WHERE id = $1', [salesOrderId]);
+        if (soResult.rows.length === 0) return;
+        const currentStatus = soResult.rows[0].status;
+
+        // Don't downgrade from CLOSED or CANCELLED
+        if (currentStatus === 'CLOSED' || currentStatus === 'CANCELLED') return;
+
+        let newStatus = currentStatus;
+        if (allDelivered) {
+            newStatus = 'DELIVERED';
+        } else if (allShipped) {
+            newStatus = 'SHIPPED';
+        } else if (someShipped) {
+            newStatus = 'PARTIALLY SHIPPED';
+        } else {
+            // No packages shipped — keep CONFIRMED or revert
+            if (currentStatus === 'SHIPPED' || currentStatus === 'DELIVERED' || currentStatus === 'PARTIALLY SHIPPED') {
+                newStatus = 'CONFIRMED';
+            }
+        }
+
+        if (newStatus !== currentStatus) {
+            await pool.query(
+                'UPDATE sales_orders SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
+                [newStatus, salesOrderId]
+            );
+            console.log(`Sales order ${salesOrderId} status updated: ${currentStatus} → ${newStatus}`);
+        }
+    } catch (err) {
+        console.error('Error updating sales order fulfillment status:', err);
+    }
+}
+
 // GET all shipments
 router.get('/', async (req, res) => {
     try {
@@ -102,6 +152,10 @@ router.post('/', async (req, res) => {
             [pkgStatus, package_id]
         );
 
+        // Auto-update sales order status based on all packages
+        const soId = sales_order_id || (await pool.query('SELECT sales_order_id FROM packages WHERE id = $1', [package_id])).rows[0]?.sales_order_id;
+        await updateSalesOrderFulfillmentStatus(pool, soId);
+
         res.status(201).json(result.rows[0]);
     } catch (err) {
         console.error('Error creating shipment:', err);
@@ -145,6 +199,11 @@ router.patch('/mark-delivered/:packageId', async (req, res) => {
             [packageId]
         );
 
+        // Auto-update sales order status — get sales_order_id from package
+        const pkgResult = await pool.query('SELECT sales_order_id FROM packages WHERE id = $1', [packageId]);
+        const soId = pkgResult.rows[0]?.sales_order_id;
+        await updateSalesOrderFulfillmentStatus(pool, soId);
+
         res.json({ message: 'Marked as delivered' });
     } catch (err) {
         console.error('Error marking as delivered:', err);
@@ -158,6 +217,10 @@ router.delete('/by-package/:packageId', async (req, res) => {
         const pool = database.getDb();
         const packageId = req.params.packageId;
 
+        // Get the sales_order_id before deleting
+        const pkgResult = await pool.query('SELECT sales_order_id FROM packages WHERE id = $1', [packageId]);
+        const soId = pkgResult.rows[0]?.sales_order_id;
+
         await pool.query('DELETE FROM shipments WHERE package_id = $1', [packageId]);
 
         // Revert package status
@@ -165,6 +228,9 @@ router.delete('/by-package/:packageId', async (req, res) => {
             "UPDATE packages SET status = 'NOT SHIPPED', updated_at = CURRENT_TIMESTAMP WHERE id = $1",
             [packageId]
         );
+
+        // Auto-update sales order status
+        await updateSalesOrderFulfillmentStatus(pool, soId);
 
         res.json({ message: 'Shipment deleted' });
     } catch (err) {
@@ -180,8 +246,18 @@ router.delete('/:id', async (req, res) => {
 
         // Get the shipment first to find related package
         const shipment = await pool.query('SELECT * FROM shipments WHERE id = $1', [req.params.id]);
+        let soId = null;
+
         if (shipment.rows.length > 0) {
             const pkgId = shipment.rows[0].package_id;
+            soId = shipment.rows[0].sales_order_id;
+
+            // If no sales_order_id on shipment, get it from package
+            if (!soId) {
+                const pkgResult = await pool.query('SELECT sales_order_id FROM packages WHERE id = $1', [pkgId]);
+                soId = pkgResult.rows[0]?.sales_order_id;
+            }
+
             // Check if there are other shipments for this package
             const others = await pool.query(
                 'SELECT id FROM shipments WHERE package_id = $1 AND id != $2',
@@ -197,6 +273,10 @@ router.delete('/:id', async (req, res) => {
         }
 
         await pool.query('DELETE FROM shipments WHERE id = $1', [req.params.id]);
+
+        // Auto-update sales order status
+        await updateSalesOrderFulfillmentStatus(pool, soId);
+
         res.json({ message: 'Shipment deleted' });
     } catch (err) {
         console.error('Error deleting shipment:', err);

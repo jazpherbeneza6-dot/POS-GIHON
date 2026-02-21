@@ -367,6 +367,134 @@
         .breadcrumb-category a:hover {
             text-decoration: underline;
         }
+
+        /* ===== STATUS BADGES ===== */
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            min-width: 32px;
+            text-align: center;
+        }
+
+        .badge-to-be-shipped {
+            background: #fff3e0;
+            color: #e65100;
+            border: 1px solid #ffcc80;
+        }
+
+        .badge-to-be-delivered {
+            background: #e3f2fd;
+            color: #1565c0;
+            border: 1px solid #90caf9;
+        }
+
+        .badge-to-be-packed {
+            background: #fce4ec;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+        }
+
+        .badge-to-be-invoiced {
+            background: #f3e5f5;
+            color: #6a1b9a;
+            border: 1px solid #ce93d8;
+        }
+
+        .badge-zero {
+            background: #f5f5f5;
+            color: #bbb;
+            border: 1px solid #e0e0e0;
+        }
+
+        .badge-cancelled {
+            background: #ffebee;
+            color: #b71c1c;
+            border: 1px solid #ef9a9a;
+        }
+
+        /* Pulse animation for active counts */
+        @keyframes subtlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .badge-to-be-shipped, .badge-to-be-delivered, .badge-to-be-packed {
+            animation: subtlePulse 2s ease-in-out infinite;
+        }
+
+        /* ===== AUTO-REFRESH INDICATOR ===== */
+        .refresh-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: #999;
+            padding: 4px 12px;
+        }
+
+        .refresh-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4caf50;
+            display: inline-block;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .refresh-dot.refreshing {
+            animation: blink 0.6s ease-in-out infinite;
+            background: #ff9800;
+        }
+
+        /* Summary cards */
+        .summary-cards {
+            display: flex;
+            gap: 16px;
+            padding: 16px 20px;
+            flex-wrap: wrap;
+        }
+
+        .summary-card {
+            flex: 1;
+            min-width: 140px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 14px 16px;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .summary-card-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .summary-card-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #888;
+        }
+
+        .card-packed .summary-card-value { color: #c62828; }
+        .card-shipped .summary-card-value { color: #e65100; }
+        .card-delivered .summary-card-value { color: #1565c0; }
+        .card-invoiced .summary-card-value { color: #6a1b9a; }
     </style>
 </head>
 
@@ -389,6 +517,10 @@
                     </div>
                 </div>
                 <div class="top-bar-actions">
+                    <div class="refresh-indicator">
+                        <span class="refresh-dot" id="refreshDot"></span>
+                        <span id="refreshTimer">Auto-refresh: 30s</span>
+                    </div>
                     <button title="Schedule"><span>📅</span></button>
                     <button title="Refresh" onclick="runReport()"><span>🔄</span></button>
                     <button title="Share"><span>📤</span></button>
@@ -443,6 +575,26 @@
                     </div>
                 </div>
 
+                <!-- Summary Cards -->
+                <div class="summary-cards" id="summaryCards" style="display:none;">
+                    <div class="summary-card card-packed">
+                        <div class="summary-card-value" id="cardToBePacked">0</div>
+                        <div class="summary-card-label">To Be Packed</div>
+                    </div>
+                    <div class="summary-card card-shipped">
+                        <div class="summary-card-value" id="cardToBeShipped">0</div>
+                        <div class="summary-card-label">To Be Shipped</div>
+                    </div>
+                    <div class="summary-card card-delivered">
+                        <div class="summary-card-value" id="cardToBeDelivered">0</div>
+                        <div class="summary-card-label">To Be Delivered</div>
+                    </div>
+                    <div class="summary-card card-invoiced">
+                        <div class="summary-card-value" id="cardToBeInvoiced">0</div>
+                        <div class="summary-card-label">To Be Invoiced</div>
+                    </div>
+                </div>
+
                 <div class="report-table-wrapper">
                     <table class="report-table">
                         <thead id="reportTableHead">
@@ -489,11 +641,32 @@
     <script>
         let currentFrom = '';
         let currentTo = '';
+        let autoRefreshInterval = null;
+        let countdownInterval = null;
+        let countdown = 30;
 
         document.addEventListener('DOMContentLoaded', () => {
             setThisMonth();
             runReport();
+            startAutoRefresh();
         });
+
+        // ===== AUTO-REFRESH =====
+        function startAutoRefresh() {
+            countdown = 30;
+            if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+            if (countdownInterval) clearInterval(countdownInterval);
+
+            countdownInterval = setInterval(() => {
+                countdown--;
+                const timerEl = document.getElementById('refreshTimer');
+                if (timerEl) timerEl.textContent = `Auto-refresh: ${countdown}s`;
+                if (countdown <= 0) {
+                    countdown = 30;
+                    runReport(true);
+                }
+            }, 1000);
+        }
 
         function setThisMonth() {
             const now = new Date();
@@ -549,11 +722,30 @@
             return parseFloat(val).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
+        function fmtInt(val) {
+            return Math.round(parseFloat(val)).toLocaleString('en-PH');
+        }
+
+        function makeBadge(value, type) {
+            const v = parseFloat(value) || 0;
+            if (v === 0) {
+                return `<span class="status-badge badge-zero">${fmtNum(v)}</span>`;
+            }
+            return `<span class="status-badge badge-${type}">${fmtNum(v)}</span>`;
+        }
+
         // ===== MAIN REPORT =====
-        async function runReport() {
+        async function runReport(isSilent = false) {
             const tbody = document.getElementById('reportTableBody');
-            tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:40px;color:#999;">Loading...</td></tr>';
-            document.getElementById('reportTableFoot').style.display = 'none';
+            const refreshDot = document.getElementById('refreshDot');
+
+            if (!isSilent) {
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:40px;color:#999;">Loading...</td></tr>';
+                document.getElementById('reportTableFoot').style.display = 'none';
+            }
+
+            // Show refreshing indicator
+            if (refreshDot) refreshDot.classList.add('refreshing');
 
             try {
                 let url = '/api/sales/reports/order-fulfillment-by-item';
@@ -564,8 +756,12 @@
                 if (!res.ok) throw new Error('API error');
                 const data = await res.json();
 
+                // Reset countdown
+                countdown = 30;
+
                 if (data.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:60px;color:#999;font-size:14px;">No order fulfillment data found for the selected period.</td></tr>';
+                    document.getElementById('summaryCards').style.display = 'none';
                     return;
                 }
 
@@ -596,13 +792,13 @@
                             <td class="item-link">${item.item_name}</td>
                             <td>${item.sku || ''}</td>
                             <td class="align-right">${fmtNum(ordered)}</td>
-                            <td class="align-right">${fmtNum(cancelled)}</td>
+                            <td class="align-right">${cancelled > 0 ? makeBadge(cancelled, 'cancelled') : fmtNum(cancelled)}</td>
                             <td class="align-right">${fmtNum(dropshipped)}</td>
                             <td class="align-right">${fmtNum(forceFulfilled)}</td>
-                            <td class="align-right">${fmtNum(toBePacked)}</td>
-                            <td class="align-right">${fmtNum(toBeShipped)}</td>
-                            <td class="align-right">${fmtNum(toBeDelivered)}</td>
-                            <td class="align-right">${fmtNum(toBeInvoiced)}</td>
+                            <td class="align-right">${makeBadge(toBePacked, 'to-be-packed')}</td>
+                            <td class="align-right">${makeBadge(toBeShipped, 'to-be-shipped')}</td>
+                            <td class="align-right">${makeBadge(toBeDelivered, 'to-be-delivered')}</td>
+                            <td class="align-right">${makeBadge(toBeInvoiced, 'to-be-invoiced')}</td>
                         </tr>
                     `;
                 }).join('');
@@ -618,9 +814,21 @@
                 document.getElementById('totalToBeInvoiced').textContent = fmtNum(totalToBeInvoiced);
                 document.getElementById('reportTableFoot').style.display = '';
 
+                // Update summary cards
+                document.getElementById('cardToBePacked').textContent = fmtInt(totalToBePacked);
+                document.getElementById('cardToBeShipped').textContent = fmtInt(totalToBeShipped);
+                document.getElementById('cardToBeDelivered').textContent = fmtInt(totalToBeDelivered);
+                document.getElementById('cardToBeInvoiced').textContent = fmtInt(totalToBeInvoiced);
+                document.getElementById('summaryCards').style.display = 'flex';
+
             } catch (e) {
                 console.error('Error:', e);
-                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:40px;color:#e53935;">Error loading report data.</td></tr>';
+                if (!isSilent) {
+                    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:40px;color:#e53935;">Error loading report data.</td></tr>';
+                }
+            } finally {
+                // Remove refreshing indicator
+                if (refreshDot) refreshDot.classList.remove('refreshing');
             }
         }
     </script>
