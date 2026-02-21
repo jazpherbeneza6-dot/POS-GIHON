@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase Receive Detail - Inventory Management</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', 'Source Sans Pro', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f5f6fa;
+            font-size: 13px;
+        }
+
+        .main-layout {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .page-wrapper {
+            flex: 1;
+            margin-left: 260px;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ===== LEFT SIDEBAR - PR List ===== */
+        .pr-sidebar {
+            width: 220px;
+            min-width: 220px;
+            background: white;
+            border-right: 1px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .pr-sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px;
+            border-bottom: 1px solid #e9ecef;
+            gap: 8px;
+        }
+
+        .pr-sidebar-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .pr-sidebar-title:hover {
+            color: #4285f4;
+        }
+
+        .pr-sidebar-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .pr-sidebar-btn {
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .pr-sidebar-btn.green {
+            background: #16a34a;
+            color: white;
+        }
+
+        .pr-sidebar-btn.gray {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .pr-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .pr-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 12px 14px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .pr-item:hover {
+            background: #f8f9ff;
+        }
+
+        .pr-item.active {
+            background: #eef3ff;
+            border-left: 3px solid #4285f4;
+        }
+
+        .pr-item-left {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .pr-item-vendor {
+            font-size: 12px;
+            font-weight: 500;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .pr-item-numbers {
+            font-size: 10px;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .pr-item-status {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-top: 3px;
+        }
+
+        .pr-item-status.received {
+            color: #16a34a;
+        }
+
+        .pr-item-status.draft {
+            color: #f59e0b;
+        }
+
+        .pr-item-amount {
+            font-size: 12px;
+            font-weight: 500;
+            color: #333;
+            white-space: nowrap;
+        }
+
+        /* ===== RIGHT PANEL - Detail ===== */
+        .pr-detail-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f5f6fa;
+            overflow-y: auto;
+        }
+
+        /* Detail Header */
+        .detail-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .detail-pr-number {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .detail-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .detail-header-icon {
+            width: 32px;
+            height: 32px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .detail-header-icon:hover {
+            background: #e0e0e0;
+        }
+
+        .detail-header-icon.close {
+            color: #dc2626;
+            font-size: 18px;
+        }
+
+        /* Toolbar */
+        .detail-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 10px 20px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 12px;
+        }
+
+        .toolbar-btn {
+            background: none;
+            border: none;
+            color: #555;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .toolbar-btn:hover {
+            color: #4285f4;
+        }
+
+        .toolbar-btn.mark-received {
+            background: #16a34a;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .toolbar-btn.mark-received:hover {
+            background: #15803d;
+            color: white;
+        }
+
+        /* Tabs */
+        .detail-tabs {
+            display: flex;
+            gap: 20px;
+            padding: 0 20px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .detail-tab {
+            padding: 10px 0;
+            font-size: 12px;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+
+        .detail-tab:hover {
+            color: #333;
+        }
+
+        .detail-tab.active {
+            color: #4285f4;
+            border-bottom-color: #4285f4;
+            font-weight: 500;
+        }
+
+        .detail-tab .count {
+            display: inline-block;
+            background: #e8f0fe;
+            color: #4285f4;
+            padding: 1px 6px;
+            border-radius: 10px;
+            font-size: 10px;
+            margin-left: 4px;
+        }
+
+        /* PDF View toggle */
+        .pdf-toggle-row {
+            display: flex;
+            justify-content: flex-end;
+            padding: 10px 20px;
+            background: white;
+        }
+
+        .pdf-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: #666;
+        }
+
+        .pdf-toggle input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 36px;
+            height: 20px;
+            background: #ccc;
+            border-radius: 10px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .pdf-toggle input[type="checkbox"]::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            transition: left 0.2s;
+        }
+
+        .pdf-toggle input[type="checkbox"]:checked {
+            background: #4285f4;
+        }
+
+        .pdf-toggle input[type="checkbox"]:checked::after {
+            left: 18px;
+        }
+
+        /* Document Card */
+        .document-card {
+            background: white;
+            margin: 20px;
+            border-radius: 4px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+            padding: 32px 40px;
+        }
+
+        .doc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+
+        .doc-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            letter-spacing: 0.5px;
+        }
+
+        .doc-receive-number {
+            font-size: 13px;
+            color: #555;
+            margin-top: 2px;
+        }
+
+        .doc-vendor-label {
+            font-size: 11px;
+            color: #999;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .doc-vendor-name {
+            font-size: 14px;
+            color: #4285f4;
+            margin-top: 2px;
+            font-weight: 500;
+        }
+
+        /* Status Section */
+        .doc-status-section {
+            margin-bottom: 20px;
+        }
+
+        .doc-status-label {
+            font-size: 11px;
+            color: #999;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .doc-status-rows {
+            border-left: 3px solid #e0e0e0;
+            padding-left: 14px;
+        }
+
+        .doc-status-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 4px 0;
+            font-size: 13px;
+        }
+
+        .doc-status-key {
+            color: #666;
+            min-width: 60px;
+        }
+
+        .doc-status-value {
+            font-weight: 500;
+        }
+
+        .badge-received {
+            background: #16a34a;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-draft {
+            background: #f59e0b;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-billed {
+            color: #4285f4;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-unbilled {
+            color: #999;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* PO & Date info */
+        .doc-info-row {
+            display: flex;
+            gap: 10px;
+            padding: 4px 0;
+            font-size: 13px;
+        }
+
+        .doc-info-label {
+            color: #999;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 11px;
+            min-width: 130px;
+        }
+
+        .doc-info-value {
+            color: #333;
+        }
+
+        .doc-info-value a {
+            color: #4285f4;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .doc-info-value a:hover {
+            text-decoration: underline;
+        }
+
+        /* Items Table */
+        .doc-items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 24px;
+        }
+
+        .doc-items-table th {
+            text-align: left;
+            padding: 10px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #999;
+            text-transform: uppercase;
+            border-bottom: 2px solid #e9ecef;
+            background: #f9fafb;
+        }
+
+        .doc-items-table td {
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .doc-items-table .item-image {
+            width: 36px;
+            height: 36px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .doc-items-table .item-name-link {
+            color: #4285f4;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .doc-items-table .item-name-link:hover {
+            text-decoration: underline;
+        }
+
+        .doc-items-table .item-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="sidebarContainer"></div>
+
+    <div class="main-layout">
+        <div class="page-wrapper">
+            <!-- Left Sidebar - PR List -->
+            <div class="pr-sidebar">
+                <div class="pr-sidebar-header">
+                    <span class="pr-sidebar-title" onclick="window.location.href='/purchase-receives.html'">All Purchase
+                        Re... ▾</span>
+                    <div class="pr-sidebar-actions">
+                        <button class="pr-sidebar-btn green"
+                            onclick="window.location.href='/purchase-orders.html'">+</button>
+                        <button class="pr-sidebar-btn gray">⋯</button>
+                    </div>
+                </div>
+                <div class="pr-list" id="prList">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Right Panel - Detail -->
+            <div class="pr-detail-panel" id="detailPanel">
+                <!-- Detail Header -->
+                <div class="detail-header">
+                    <span class="detail-pr-number" id="headerPRNumber">—</span>
+                    <div class="detail-header-actions">
+                        <button class="detail-header-icon" title="Attachment">📎</button>
+                        <button class="detail-header-icon" title="Comment">💬</button>
+                        <button class="detail-header-icon close"
+                            onclick="window.location.href='/purchase-receives.html'" title="Close">×</button>
+                    </div>
+                </div>
+
+                <!-- Toolbar -->
+                <div class="detail-toolbar">
+                    <button class="toolbar-btn" onclick="editReceive()">✏️ Edit</button>
+                    <button class="toolbar-btn">📄 PDF/Print ▾</button>
+                    <button class="toolbar-btn mark-received" id="markReceivedBtn" style="display:none;"
+                        onclick="markAsReceived()">✅ Mark as Received</button>
+                    <button class="toolbar-btn" id="markTransitBtn" onclick="markAsTransit()">⏱ Mark as In
+                        Transit</button>
+                    <button class="toolbar-btn" id="convertBillBtn" onclick="convertToBill()">🔄 Convert to
+                        Bill</button>
+                    <button class="toolbar-btn">⋯</button>
+                </div>
+
+                <!-- Tabs -->
+                <div class="detail-tabs">
+                    <div class="detail-tab active">Bills <span class="count" id="billsCount">0</span></div>
+                    <div class="detail-tab">Purchase Orders <span class="count" id="poCount">1</span></div>
+                </div>
+
+                <!-- PDF Toggle -->
+                <div class="pdf-toggle-row">
+                    <label class="pdf-toggle">
+                        <span>Show PDF View</span>
+                        <input type="checkbox">
+                    </label>
+                </div>
+
+                <!-- Document Card -->
+                <div class="document-card" id="documentCard">
+                    <div class="doc-header">
+                        <div>
+                            <div class="doc-title">PURCHASE RECEIVE</div>
+                            <div class="doc-receive-number" id="docReceiveNumber">Receive# —</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="doc-vendor-label">VENDOR NAME</div>
+                            <div class="doc-vendor-name" id="docVendorName">—</div>
+                        </div>
+                    </div>
+
+                    <!-- Status Section -->
+                    <div class="doc-status-section">
+                        <div class="doc-status-label">STATUS</div>
+                        <div class="doc-status-rows">
+                            <div class="doc-status-row">
+                                <span class="doc-status-key">Receive</span>
+                                <span class="doc-status-value" id="docReceiveStatus">—</span>
+                            </div>
+                            <div class="doc-status-row">
+                                <span class="doc-status-key">Bill</span>
+                                <span class="doc-status-value" id="docBillStatus">—</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PO and Date -->
+                    <div style="margin-bottom: 8px;">
+                        <div class="doc-info-row">
+                            <span class="doc-info-label">Purchase Order#</span>
+                            <span class="doc-info-value" id="docPONumber">—</span>
+                        </div>
+                        <div class="doc-info-row">
+                            <span class="doc-info-label">Date</span>
+                            <span class="doc-info-value" id="docDate">—</span>
+                        </div>
+                    </div>
+
+                    <!-- Items Table -->
+                    <table class="doc-items-table">
+                        <thead>
+                            <tr>
+                                <th style="width:40px;">#</th>
+                                <th>ITEMS & DESCRIPTION</th>
+                                <th style="width:100px;">QUANTITY</th>
+                                <th style="width:100px;">BILL STATUS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="docItemsBody">
+                            <!-- Items populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/layout.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentId = parseInt(urlParams.get('id')) || null;
+        let allReceives = [];
+        let allPOs = [];
+
+        document.addEventListener('DOMContentLoaded', async function () {
+            // Load all POs for billed status check
+            try {
+                const posRes = await fetch('/api/purchases');
+                if (posRes.ok) allPOs = await posRes.json();
+            } catch (e) { }
+
+            // Load all receives for sidebar
+            try {
+                const res = await fetch('/api/purchase-receives');
+                if (res.ok) allReceives = await res.json();
+            } catch (e) { }
+
+            // Enrich with item totals
+            for (let r of allReceives) {
+                try {
+                    const dRes = await fetch('/api/purchase-receives/' + r.id);
+                    if (dRes.ok) {
+                        const detail = await dRes.json();
+                        r.items = detail.items || [];
+                        r.total_qty = r.items.reduce((s, i) => s + (parseFloat(i.quantity_to_receive) || 0), 0);
+                    }
+                } catch (e) { r.total_qty = 0; }
+            }
+
+            renderSidebar();
+
+            if (currentId) {
+                loadDetail(currentId);
+            } else if (allReceives.length > 0) {
+                loadDetail(allReceives[0].id);
+            }
+        });
+
+        function renderSidebar() {
+            const list = document.getElementById('prList');
+            list.innerHTML = '';
+
+            allReceives.forEach(r => {
+                const div = document.createElement('div');
+                div.className = 'pr-item' + (r.id === currentId ? ' active' : '');
+                div.onclick = () => {
+                    window.history.replaceState(null, '', '?id=' + r.id);
+                    document.querySelectorAll('.pr-item').forEach(el => el.classList.remove('active'));
+                    div.classList.add('active');
+                    loadDetail(r.id);
+                };
+
+                const statusClass = r.status === 'received' ? 'received' : 'draft';
+                const statusLabel = r.status === 'received' ? 'RECEIVED' : 'DRAFT';
+                const totalQty = r.total_qty || 0;
+
+                div.innerHTML = `
+                    <div class="pr-item-left">
+                        <div class="pr-item-vendor">${r.supplier_name || '—'}</div>
+                        <div class="pr-item-numbers">${r.receive_number || '—'} · ${r.po_number || '—'}</div>
+                        <div class="pr-item-status ${statusClass}">${statusLabel}</div>
+                    </div>
+                    <div class="pr-item-amount">${totalQty.toFixed(2)}</div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        async function loadDetail(id) {
+            try {
+                const res = await fetch('/api/purchase-receives/' + id);
+                if (!res.ok) return;
+                const pr = await res.json();
+
+                // Header
+                document.getElementById('headerPRNumber').textContent = pr.receive_number || 'PR-' + pr.id;
+
+                // Document card
+                document.getElementById('docReceiveNumber').textContent = 'Receive# ' + (pr.receive_number || 'PR-' + pr.id);
+                document.getElementById('docVendorName').textContent = pr.supplier_name || '—';
+
+                // Receive status
+                const receiveStatusEl = document.getElementById('docReceiveStatus');
+                if (pr.status === 'received') {
+                    receiveStatusEl.innerHTML = '<span class="badge-received">Received</span>';
+                } else {
+                    receiveStatusEl.innerHTML = '<span class="badge-draft">Draft</span>';
+                }
+
+                // Bill status - check if bills exist for this PO
+                const linkedPO = allPOs.find(po => po.id === pr.purchase_id);
+
+                // Fetch bills to check billed status and count
+                let billsCount = 0;
+                let isBilled = false;
+                try {
+                    const billsRes = await fetch('/api/bills');
+                    if (billsRes.ok) {
+                        const allBills = await billsRes.json();
+                        const poBills = allBills.filter(b => b.purchase_order_id === pr.purchase_id);
+                        billsCount = poBills.length;
+                        isBilled = billsCount > 0;
+                    }
+                } catch (e) { }
+
+                const billStatusEl = document.getElementById('docBillStatus');
+                if (isBilled) {
+                    billStatusEl.innerHTML = '<span class="badge-billed">Billed</span>';
+                } else {
+                    billStatusEl.innerHTML = '<span class="badge-unbilled">Unbilled</span>';
+                }
+
+                document.getElementById('billsCount').textContent = billsCount;
+
+                // PO number
+                const poNum = linkedPO ? linkedPO.po_number : (pr.po_number || '—');
+                document.getElementById('docPONumber').innerHTML =
+                    pr.purchase_id ? `<a href="/purchase-order-detail.html?id=${pr.purchase_id}">${poNum}</a>` : poNum;
+
+                // Date
+                const date = pr.receive_date ? new Date(pr.receive_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+                document.getElementById('docDate').textContent = date;
+
+                // Items table
+                const tbody = document.getElementById('docItemsBody');
+                tbody.innerHTML = '';
+                const items = pr.items || [];
+
+                items.forEach((item, idx) => {
+                    const qty = parseFloat(item.quantity_to_receive) || 0;
+                    const unit = item.unit || 'pcs';
+                    const billStatusText = isBilled ? `${qty} Billed` : `${qty} Unbilled`;
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${idx + 1}</td>
+                        <td>
+                            <div class="item-cell">
+                                <div class="item-image">🖼</div>
+                                <a class="item-name-link" href="#">${item.item_name || '—'}</a>
+                            </div>
+                        </td>
+                        <td>${qty} ${unit}</td>
+                        <td>${billStatusText}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                // Mark as In Transit button visibility
+                const transitBtn = document.getElementById('markTransitBtn');
+                const receivedBtn = document.getElementById('markReceivedBtn');
+                if (pr.status === 'received') {
+                    transitBtn.style.display = 'none';
+                    receivedBtn.style.display = 'none';
+                } else {
+                    transitBtn.style.display = 'flex';
+                    receivedBtn.style.display = 'flex';
+                }
+
+                // Convert to Bill button - hide if already billed
+                const convertBillBtn = document.getElementById('convertBillBtn');
+                if (isBilled) {
+                    convertBillBtn.style.display = 'none';
+                } else {
+                    convertBillBtn.style.display = 'flex';
+                    convertBillBtn.setAttribute('data-po-id', pr.purchase_id || '');
+                }
+            } catch (e) {
+                console.error('Error loading detail:', e);
+            }
+        }
+
+        function editReceive() {
+            alert('Edit feature coming soon!');
+        }
+
+        function markAsTransit() {
+            alert('Mark as In Transit feature coming soon!');
+        }
+
+        async function markAsReceived() {
+            const currentId = new URLSearchParams(window.location.search).get('id');
+            if (!currentId) return;
+            if (!confirm('Mark this purchase receive as RECEIVED? This will update stock quantities and the Purchase Order status.')) return;
+
+            try {
+                const res = await fetch('/api/purchase-receives/' + currentId + '/mark-received', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    alert('Error: ' + (err.error || 'Failed to update'));
+                    return;
+                }
+
+                showToast('Purchase Receive marked as Received!');
+                // Reload page to refresh sidebar and detail
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1200);
+            } catch (e) {
+                console.error('Error marking as received:', e);
+                alert('Failed to mark as received');
+            }
+        }
+
+        function showToast(msg) {
+            const t = document.createElement('div');
+            t.textContent = msg;
+            t.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#16a34a;color:white;padding:12px 28px;border-radius:8px;font-size:14px;font-weight:500;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.15);';
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 3000);
+        }
+
+        function convertToBill() {
+            const poId = document.getElementById('convertBillBtn').getAttribute('data-po-id');
+            if (poId) {
+                window.location.href = '/new-bill.html?poId=' + poId;
+            } else {
+                window.location.href = '/new-bill.html';
+            }
+        }
+    </script>
+</body>
+
+</html>

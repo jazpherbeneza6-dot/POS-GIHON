@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Made Detail - GiHon</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', 'Source Sans Pro', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f5f6fa;
+            font-size: 13px;
+        }
+
+        .main-layout {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .page-wrapper {
+            flex: 1;
+            margin-left: 260px;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ===== LEFT SIDEBAR ===== */
+        .pr-sidebar {
+            width: 220px;
+            min-width: 220px;
+            background: white;
+            border-right: 1px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .pr-sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px;
+            border-bottom: 1px solid #e9ecef;
+            gap: 8px;
+        }
+
+        .pr-sidebar-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .pr-sidebar-title:hover {
+            color: #4285f4;
+        }
+
+        .pr-sidebar-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .pr-sidebar-btn {
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .pr-sidebar-btn.green {
+            background: #16a34a;
+            color: white;
+        }
+
+        .pr-sidebar-btn.gray {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .sidebar-search {
+            padding: 8px 14px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .sidebar-search input {
+            width: 100%;
+            padding: 7px 10px 7px 28px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 12px;
+            outline: none;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 8px center;
+        }
+
+        .sidebar-search input:focus {
+            border-color: #4285f4;
+        }
+
+        .pr-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .pr-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 12px 14px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .pr-item:hover {
+            background: #f8f9ff;
+        }
+
+        .pr-item.active {
+            background: #eef3ff;
+            border-left: 3px solid #4285f4;
+        }
+
+        .pr-item-left {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .pr-item-vendor {
+            font-size: 12px;
+            font-weight: 500;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .pr-item-numbers {
+            font-size: 10px;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .pr-item-status {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-top: 3px;
+        }
+
+        .pr-item-status.paid {
+            color: #16a34a;
+        }
+
+        .pr-item-status.draft {
+            color: #f59e0b;
+        }
+
+        .pr-item-amount {
+            font-size: 12px;
+            font-weight: 500;
+            color: #333;
+            white-space: nowrap;
+        }
+
+        /* ===== RIGHT PANEL ===== */
+        .pr-detail-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f5f6fa;
+            overflow-y: auto;
+        }
+
+        .detail-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .detail-header-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-location {
+            font-size: 10px;
+            color: #999;
+        }
+
+        .detail-pr-number {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .detail-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .detail-header-icon {
+            width: 32px;
+            height: 32px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .detail-header-icon:hover {
+            background: #e0e0e0;
+        }
+
+        .detail-header-icon.close {
+            color: #dc2626;
+            font-size: 18px;
+        }
+
+        .detail-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 10px 20px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 12px;
+        }
+
+        .toolbar-btn {
+            background: none;
+            border: none;
+            color: #555;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .toolbar-btn:hover {
+            color: #4285f4;
+        }
+
+        .toolbar-btn.mark-paid {
+            background: #16a34a;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .toolbar-btn.mark-paid:hover {
+            background: #15803d;
+            color: white;
+        }
+
+        /* ===== DOCUMENT CARD ===== */
+        .document-card {
+            background: white;
+            margin: 20px;
+            border-radius: 4px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+            padding: 40px 48px;
+            position: relative;
+        }
+
+        /* Ribbon */
+        .ribbon {
+            position: absolute;
+            top: 10px;
+            left: -8px;
+            background: #16a34a;
+            color: white;
+            padding: 4px 20px 4px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            clip-path: polygon(0 0, 100% 0, 90% 50%, 100% 100%, 0 100%);
+        }
+
+        .ribbon.paid {
+            background: #16a34a;
+        }
+
+        .ribbon.draft {
+            background: #f59e0b;
+        }
+
+        /* Company Info */
+        .company-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-top: 20px;
+        }
+
+        .company-details {
+            font-size: 11px;
+            color: #888;
+            line-height: 1.6;
+        }
+
+        /* Title */
+        .doc-title {
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            letter-spacing: 1px;
+            margin: 28px 0 32px;
+        }
+
+        /* Payment Info Section */
+        .payment-info-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 28px;
+        }
+
+        .payment-info-left {
+            flex: 1;
+        }
+
+        .payment-info-row {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+
+        .payment-info-label {
+            color: #888;
+            min-width: 130px;
+        }
+
+        .payment-info-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .payment-info-value.link {
+            color: #4285f4;
+            cursor: pointer;
+        }
+
+        .payment-info-value.link:hover {
+            text-decoration: underline;
+        }
+
+        /* Amount Paid Box */
+        .amount-paid-box {
+            background: #16a34a;
+            color: white;
+            padding: 14px 24px;
+            border-radius: 6px;
+            text-align: center;
+            min-width: 140px;
+        }
+
+        .amount-paid-box.draft {
+            background: #f59e0b;
+        }
+
+        .amount-paid-label {
+            font-size: 11px;
+            font-weight: 400;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+
+        .amount-paid-value {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        /* Divider */
+        .section-divider {
+            border: none;
+            border-top: 1px solid #e9ecef;
+            margin: 24px 0;
+        }
+
+        /* Paid To Section */
+        .paid-to-section {
+            margin-bottom: 28px;
+        }
+
+        .paid-to-label {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+
+        .paid-to-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Payment For Table */
+        .payment-for-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .payment-for-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .payment-for-table th {
+            background: #f9fafb;
+            padding: 10px 14px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            text-align: left;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .payment-for-table th:nth-child(3),
+        .payment-for-table th:nth-child(4) {
+            text-align: right;
+        }
+
+        .payment-for-table td {
+            padding: 12px 14px;
+            font-size: 13px;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .payment-for-table td:nth-child(3),
+        .payment-for-table td:nth-child(4) {
+            text-align: right;
+        }
+
+        .payment-for-table td a {
+            color: #4285f4;
+            text-decoration: none;
+        }
+
+        .payment-for-table td a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="sidebarContainer"></div>
+
+    <div class="main-layout">
+        <div class="page-wrapper">
+            <!-- Left Sidebar -->
+            <div class="pr-sidebar">
+                <div class="pr-sidebar-header">
+                    <span class="pr-sidebar-title" onclick="window.location.href='/payments-made.html'">All Payments
+                        ▾</span>
+                    <div class="pr-sidebar-actions">
+                        <button class="pr-sidebar-btn green" onclick="window.location.href='/bills.html'">+</button>
+                        <button class="pr-sidebar-btn gray">⋯</button>
+                    </div>
+                </div>
+                <div class="sidebar-search">
+                    <input type="text" placeholder="Search in Payments Made ( / )" oninput="filterSidebar(this.value)">
+                </div>
+                <div class="pr-list" id="prList"></div>
+            </div>
+
+            <!-- Right Panel -->
+            <div class="pr-detail-panel" id="detailPanel">
+                <div class="detail-header">
+                    <div class="detail-header-left">
+                        <span class="detail-location" id="detailLocation">Location: Head Office</span>
+                        <span class="detail-pr-number" id="headerPaymentNumber">—</span>
+                    </div>
+                    <div class="detail-header-actions">
+                        <button class="detail-header-icon" title="Notes">📝</button>
+                        <button class="detail-header-icon" title="Comments">💬</button>
+                        <button class="detail-header-icon close" onclick="window.location.href='/payments-made.html'"
+                            title="Close">×</button>
+                    </div>
+                </div>
+
+                <div class="detail-toolbar">
+                    <button class="toolbar-btn">✏️ Edit</button>
+                    <button class="toolbar-btn">📧 Send Email</button>
+                    <button class="toolbar-btn">📄 PDF/Print ▾</button>
+                    <button class="toolbar-btn mark-paid" id="markAsPaidBtn" style="display:none;"
+                        onclick="markAsPaid()">✅ Mark as Paid</button>
+                    <button class="toolbar-btn">⋯</button>
+                </div>
+
+                <!-- Document Card -->
+                <div class="document-card" id="documentCard">
+                    <div class="ribbon" id="docRibbon">PAID</div>
+
+                    <div class="company-name">SOLO</div>
+                    <div class="company-details">
+                        Philippines<br>
+                        projectfinal167@gmail.com
+                    </div>
+
+                    <div class="doc-title">PAYMENTS MADE</div>
+
+                    <div class="payment-info-section">
+                        <div class="payment-info-left">
+                            <div class="payment-info-row">
+                                <span class="payment-info-label">Payment#</span>
+                                <span class="payment-info-value" id="docPaymentNumber">—</span>
+                            </div>
+                            <div class="payment-info-row">
+                                <span class="payment-info-label">Payment Date</span>
+                                <span class="payment-info-value" id="docPaymentDate">—</span>
+                            </div>
+                            <div class="payment-info-row">
+                                <span class="payment-info-label">Reference Number</span>
+                                <span class="payment-info-value" id="docRefNumber"></span>
+                            </div>
+                            <div class="payment-info-row">
+                                <span class="payment-info-label">Paid To</span>
+                                <span class="payment-info-value link" id="docPaidTo">—</span>
+                            </div>
+                            <div class="payment-info-row">
+                                <span class="payment-info-label">Payment Mode</span>
+                                <span class="payment-info-value" id="docPaymentMode" style="font-weight:600;">—</span>
+                            </div>
+                            <div class="payment-info-row">
+                                <span class="payment-info-label">Paid Through</span>
+                                <span class="payment-info-value" id="docPaidThrough" style="font-weight:600;">—</span>
+                            </div>
+                        </div>
+                        <div class="amount-paid-box" id="amountPaidBox">
+                            <div class="amount-paid-label">Amount Paid</div>
+                            <div class="amount-paid-value" id="amountPaidValue">PHP0.00</div>
+                        </div>
+                    </div>
+
+                    <hr class="section-divider">
+
+                    <div class="paid-to-section">
+                        <div class="paid-to-label">Paid To</div>
+                        <div class="paid-to-name" id="paidToName">—</div>
+                    </div>
+
+                    <div class="payment-for-title">Payment for</div>
+                    <table class="payment-for-table">
+                        <thead>
+                            <tr>
+                                <th>Bill Number</th>
+                                <th>Bill Date</th>
+                                <th>Bill Amount</th>
+                                <th>Payment Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paymentForBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/layout.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const paymentId = urlParams.get('id');
+        let allPayments = [];
+        let currentPayment = null;
+
+        document.addEventListener('DOMContentLoaded', async function () {
+            await loadSidebar();
+            if (paymentId) {
+                loadPaymentDetail(paymentId);
+                highlightSidebar(parseInt(paymentId));
+            } else if (allPayments.length > 0) {
+                const firstId = allPayments[0].id;
+                window.history.replaceState(null, '', '?id=' + firstId);
+                loadPaymentDetail(firstId);
+                highlightSidebar(firstId);
+            }
+        });
+
+        // ===== SIDEBAR =====
+        async function loadSidebar() {
+            try {
+                const res = await fetch('/api/payments-made');
+                if (!res.ok) return;
+                allPayments = await res.json();
+                renderSidebar(allPayments);
+            } catch (e) {
+                console.error('Error loading payments:', e);
+            }
+        }
+
+        function renderSidebar(payments) {
+            const list = document.getElementById('prList');
+            list.innerHTML = '';
+
+            payments.forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'pr-item';
+                div.dataset.id = p.id;
+                div.onclick = () => {
+                    window.history.pushState(null, '', '?id=' + p.id);
+                    loadPaymentDetail(p.id);
+                    highlightSidebar(p.id);
+                };
+
+                const amount = parseFloat(p.amount_paid || 0);
+                const pDate = p.payment_date ? new Date(p.payment_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+                const status = (p.status || 'DRAFT').toUpperCase();
+                const statusClass = status === 'PAID' ? 'paid' : 'draft';
+
+                div.innerHTML = `
+                    <div class="pr-item-left">
+                        <div class="pr-item-vendor">${p.supplier_name || '—'}</div>
+                        <div class="pr-item-numbers">${pDate} · ${p.payment_mode || 'Cash'}</div>
+                        <div class="pr-item-status ${statusClass}">${status}</div>
+                    </div>
+                    <div class="pr-item-amount">PHP${amount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function highlightSidebar(id) {
+            document.querySelectorAll('.pr-item').forEach(el => {
+                el.classList.toggle('active', parseInt(el.dataset.id) === parseInt(id));
+            });
+        }
+
+        function filterSidebar(query) {
+            const q = query.toLowerCase();
+            const filtered = allPayments.filter(p => {
+                return (p.payment_number || '').toLowerCase().includes(q) ||
+                    (p.supplier_name || '').toLowerCase().includes(q);
+            });
+            renderSidebar(filtered);
+            highlightSidebar(parseInt(new URLSearchParams(window.location.search).get('id')));
+        }
+
+        // ===== DETAIL =====
+        async function loadPaymentDetail(id) {
+            try {
+                const res = await fetch('/api/payments-made/' + id);
+                if (!res.ok) return;
+                currentPayment = await res.json();
+                const p = currentPayment;
+
+                // Header
+                document.getElementById('headerPaymentNumber').textContent = p.payment_number || '—';
+                document.getElementById('detailLocation').textContent = 'Location: ' + (p.location || 'Head Office');
+
+                // Ribbon
+                const status = (p.status || 'DRAFT').toUpperCase();
+                const ribbon = document.getElementById('docRibbon');
+                ribbon.textContent = status;
+                ribbon.className = 'ribbon ' + (status === 'PAID' ? 'paid' : 'draft');
+
+                // Amount Paid Box
+                const amountBox = document.getElementById('amountPaidBox');
+                amountBox.className = 'amount-paid-box ' + (status === 'PAID' ? 'paid' : 'draft');
+
+                // Show/Hide Mark as Paid button
+                const markBtn = document.getElementById('markAsPaidBtn');
+                markBtn.style.display = status === 'DRAFT' ? 'flex' : 'none';
+                const amount = parseFloat(p.amount_paid || 0);
+                const fmtAmount = 'PHP' + amount.toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                document.getElementById('amountPaidValue').textContent = fmtAmount;
+
+                // Payment info
+                document.getElementById('docPaymentNumber').textContent = p.payment_number || '—';
+                const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+                document.getElementById('docPaymentDate').textContent = formatDate(p.payment_date);
+                document.getElementById('docRefNumber').textContent = p.reference_number || '';
+                document.getElementById('docPaidTo').textContent = p.supplier_name || '—';
+                document.getElementById('docPaymentMode').textContent = p.payment_mode || 'Cash';
+                document.getElementById('docPaidThrough').textContent = p.paid_through || 'Petty Cash';
+
+                // Paid To section
+                document.getElementById('paidToName').textContent = p.supplier_name || '—';
+
+                // Payment For table - fetch bill info
+                const tbody = document.getElementById('paymentForBody');
+                tbody.innerHTML = '';
+
+                if (p.bill_id) {
+                    try {
+                        const billRes = await fetch('/api/bills/' + p.bill_id);
+                        if (billRes.ok) {
+                            const bill = await billRes.json();
+                            const billNum = bill.bill_number || 'BILL-' + bill.id;
+                            const billDate = formatDate(bill.bill_date);
+                            const billAmount = parseFloat(bill.total_amount || 0);
+                            const paymentAmount = amount;
+
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td><a href="/bill-detail.html?id=${bill.id}">${billNum.replace('BILL-', '')}</a></td>
+                                <td>${billDate}</td>
+                                <td>PHP${billAmount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+                                <td>PHP${paymentAmount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+                            `;
+                            tbody.appendChild(tr);
+                        }
+                    } catch (e) {
+                        console.error('Error loading bill:', e);
+                    }
+                }
+
+            } catch (e) {
+                console.error('Error loading payment detail:', e);
+            }
+        }
+
+        async function markAsPaid() {
+            if (!currentPayment) return;
+            if (!confirm('Mark this payment as PAID? This will also update the bill status.')) return;
+
+            try {
+                const res = await fetch('/api/payments-made/' + currentPayment.id + '/mark-paid', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    alert('Error: ' + (err.error || 'Failed to update'));
+                    return;
+                }
+
+                showToast('Payment marked as Paid!');
+                await loadSidebar();
+                await loadPaymentDetail(currentPayment.id);
+                highlightSidebar(currentPayment.id);
+            } catch (e) {
+                console.error('Error marking as paid:', e);
+                alert('Failed to mark as paid');
+            }
+        }
+
+        function showToast(msg) {
+            const t = document.createElement('div');
+            t.textContent = msg;
+            t.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#16a34a;color:white;padding:12px 28px;border-radius:8px;font-size:14px;font-weight:500;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.15);';
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 3000);
+        }
+    </script>
+</body>
+
+</html>

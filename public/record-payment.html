@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Record Payment - Inventory Management</title>
+    <title>Record Payment - GiHon</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/sidebar.css">
     <link
@@ -15,15 +15,13 @@
             font-family: 'Inter', 'Source Sans Pro', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            text-rendering: optimizeLegibility;
-            box-sizing: border-box;
         }
 
         body {
             margin: 0;
             padding: 0;
             background: #f5f6fa;
-            font-size: 12px;
+            font-size: 13px;
         }
 
         .main-layout {
@@ -32,678 +30,701 @@
             overflow: hidden;
         }
 
-        .content {
+        .page-wrapper {
             flex: 1;
             margin-left: 260px;
-            background: white;
             display: flex;
-            flex-direction: column;
             height: 100vh;
             overflow: hidden;
         }
 
-        /* Page Header */
-        .page-header {
+        /* ===== LEFT SIDEBAR - Bills List ===== */
+        .pr-sidebar {
+            width: 220px;
+            min-width: 220px;
+            background: white;
+            border-right: 1px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .pr-sidebar-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 16px 24px;
-            background: white;
+            padding: 12px 14px;
+            border-bottom: 1px solid #e9ecef;
+            gap: 8px;
+        }
+
+        .pr-sidebar-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .pr-sidebar-title:hover {
+            color: #4285f4;
+        }
+
+        .pr-sidebar-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .pr-sidebar-btn {
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .pr-sidebar-btn.green {
+            background: #16a34a;
+            color: white;
+        }
+
+        .pr-sidebar-btn.gray {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .sidebar-search {
+            padding: 8px 14px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .sidebar-search input {
+            width: 100%;
+            padding: 7px 10px 7px 28px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 12px;
+            outline: none;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 8px center;
+        }
+
+        .sidebar-search input:focus {
+            border-color: #4285f4;
+        }
+
+        .pr-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .pr-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 12px 14px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .pr-item:hover {
+            background: #f8f9ff;
+        }
+
+        .pr-item.active {
+            background: #eef3ff;
+            border-left: 3px solid #4285f4;
+        }
+
+        .pr-item-left {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .pr-item-vendor {
+            font-size: 12px;
+            font-weight: 500;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .pr-item-numbers {
+            font-size: 10px;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .pr-item-status {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-top: 3px;
+        }
+
+        .pr-item-status.open {
+            color: #16a34a;
+        }
+
+        .pr-item-status.paid {
+            color: #2563eb;
+        }
+
+        .pr-item-status.draft {
+            color: #f59e0b;
+        }
+
+        .pr-item-amount {
+            font-size: 12px;
+            font-weight: 500;
+            color: #333;
+            white-space: nowrap;
+        }
+
+        /* ===== RIGHT PANEL - Payment Form ===== */
+        .form-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+            overflow: hidden;
+        }
+
+        .form-header {
+            padding: 20px 32px 16px;
             border-bottom: 1px solid #e9ecef;
             flex-shrink: 0;
         }
 
-        .page-title {
+        .form-title {
             font-size: 18px;
             font-weight: 600;
             color: #333;
             margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
-        .title-icon {
-            font-size: 20px;
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 24px;
-            color: #999;
-            cursor: pointer;
-        }
-
-        .close-btn:hover {
-            color: #333;
-        }
-
-        /* Main Form Area */
-        .form-main {
+        .form-body {
+            padding: 24px 32px;
             flex: 1;
-            display: flex;
-            flex-direction: column;
             overflow-y: auto;
-            padding-bottom: 80px;
         }
 
-        /* Vendor Section (Blue Background) */
-        .vendor-section {
-            background: #e8f0fe;
-            padding: 16px 24px;
-            border-bottom: 1px solid #c5d9f7;
+        .form-group {
+            margin-bottom: 20px;
         }
 
-        .vendor-row {
-            display: grid;
-            grid-template-columns: 120px 1fr;
-            align-items: center;
-            gap: 16px;
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: #e53935;
+            margin-bottom: 6px;
         }
 
-        .vendor-label {
-            font-size: 13px;
-            color: #dc2626;
+        .form-group label.gray {
+            color: #666;
         }
 
-        .vendor-select {
-            padding: 10px 12px;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            font-size: 13px;
-            background: white;
-            max-width: 300px;
-        }
-
-        /* Form Section */
-        .form-section {
-            padding: 16px 24px;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 120px 1fr;
-            align-items: flex-start;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-
-        .form-row:last-child {
-            margin-bottom: 0;
-        }
-
-        .form-label {
-            font-size: 13px;
-            color: #333;
-            padding-top: 8px;
-        }
-
-        .form-label.required {
-            color: #dc2626;
-        }
-
-        .form-input {
-            padding: 10px 12px;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            font-size: 13px;
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group input[type="date"],
+        .form-group select,
+        .form-group textarea {
             width: 100%;
-            max-width: 300px;
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+            color: #333;
+            background: #fff;
+            box-sizing: border-box;
         }
 
-        .form-input:focus {
-            outline: none;
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
             border-color: #4285f4;
         }
 
-        .form-select {
-            padding: 10px 12px;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            font-size: 13px;
-            background: white;
-            cursor: pointer;
-            max-width: 300px;
-            width: 100%;
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
         }
 
-        .input-with-icon {
-            position: relative;
-            display: inline-block;
-            max-width: 300px;
-            width: 100%;
-        }
-
-        .input-with-icon input {
-            width: 100%;
-            padding-right: 36px;
-        }
-
-        .input-icon {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #999;
-            cursor: pointer;
-        }
-
-        /* TDS Section */
-        .tds-section {
-            padding: 16px 24px;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .tds-row {
+        .form-2col {
             display: grid;
-            grid-template-columns: 120px 1fr;
-            align-items: center;
-            gap: 16px;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
         }
 
-        .tds-checkbox {
+        .form-2col .form-group {
+            margin-bottom: 16px;
+        }
+
+        .amount-highlight {
+            border-color: #4285f4 !important;
+            background: #fff !important;
+            font-size: 16px !important;
+            font-weight: 600 !important;
+            padding: 10px 12px !important;
+        }
+
+        .form-checkbox {
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 13px;
-            color: #666;
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 16px;
         }
 
-        .tds-checkbox input[type="checkbox"] {
-            accent-color: #4285f4;
+        .form-checkbox input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
         }
 
-        /* Bills Table Section */
-        .bills-table-section {
-            padding: 16px 24px;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 12px;
-        }
-
-        .clear-link {
-            color: #4285f4;
-            text-decoration: none;
-            font-size: 13px;
-        }
-
-        .clear-link:hover {
-            text-decoration: underline;
-        }
-
-        .bills-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 12px;
-        }
-
-        .bills-table th {
-            text-align: left;
-            padding: 10px 12px;
-            font-size: 11px;
-            font-weight: 600;
-            color: #666;
-            text-transform: uppercase;
-            background: #f9fafb;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .bills-table td {
-            padding: 10px 12px;
-            border-bottom: 1px solid #f0f0f0;
-            font-size: 13px;
-            color: #333;
-        }
-
-        .empty-message {
-            text-align: center;
-            padding: 40px;
+        .info-icon {
             color: #999;
-            font-size: 14px;
-        }
-
-        /* Totals Section */
-        .totals-section {
-            padding: 16px 24px;
-        }
-
-        .totals-box {
-            max-width: 400px;
-            margin-left: auto;
-        }
-
-        .total-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
+            cursor: help;
             font-size: 13px;
+            margin-left: 4px;
         }
 
-        .total-row.main {
-            border-bottom: 1px solid #e9ecef;
-            padding-bottom: 12px;
-        }
-
-        .amount-box {
-            background: #fef2f2;
-            padding: 12px 16px;
-            border-radius: 4px;
-            margin-top: 12px;
-        }
-
-        .amount-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 6px 0;
-            font-size: 13px;
-            color: #666;
-        }
-
-        .amount-row .value {
-            color: #dc2626;
-        }
-
-        .amount-row.warning {
-            color: #dc2626;
-        }
-
-        .amount-row.warning .label {
+        .payment-num-wrap {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
 
-        /* Notes Section */
-        .notes-section {
-            padding: 16px 24px;
-            background: #f9fafb;
-            border-top: 1px solid #e9ecef;
+        .payment-num-wrap input {
+            flex: 1;
         }
 
-        .notes-textarea {
-            width: 100%;
-            max-width: 600px;
-            padding: 10px;
-            border: 1px solid #e0e0e0;
+        .refresh-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #d9d9d9;
             border-radius: 4px;
-            font-size: 13px;
-            resize: vertical;
-            min-height: 80px;
-            font-family: inherit;
-            background: white;
+            background: #f9f9f9;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #4285f4;
+            flex-shrink: 0;
         }
 
-        .notes-hint {
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 8px;
+        .refresh-btn:hover {
+            background: #e8f0fe;
         }
 
-        /* Attachments Section */
-        .attachments-section {
-            padding: 16px 24px;
-            border-top: 1px solid #e9ecef;
+        .attach-section {
+            margin-top: 8px;
         }
 
-        .attachments-label {
-            font-size: 13px;
-            font-weight: 500;
-            color: #666;
-            margin-bottom: 8px;
+        .attach-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
         }
 
-        .upload-btn {
+        .attach-btn {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 8px 16px;
-            background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            font-size: 13px;
-            color: #666;
+            font-size: 12px;
+            color: #555;
             cursor: pointer;
-        }
-
-        .upload-btn:hover {
-            background: #f5f5f5;
-        }
-
-        /* Footer */
-        .form-footer {
-            position: fixed;
-            bottom: 0;
-            left: 260px;
-            right: 0;
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            padding: 12px 24px;
-            background: white;
-            border-top: 1px solid #e9ecef;
-            gap: 12px;
-            z-index: 100;
-        }
-
-        .btn-draft {
-            padding: 10px 20px;
-            background: white;
-            color: #333;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-        }
-
-        .btn-draft:hover {
-            background: #f5f5f5;
-        }
-
-        .btn-save {
-            padding: 10px 20px;
-            background: #ef4444;
-            color: white;
+            padding: 4px 0;
             border: none;
+            background: none;
+        }
+
+        .attach-hint {
+            font-size: 11px;
+            color: #bbb;
+            margin-top: 4px;
+        }
+
+        .form-footer {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 32px;
+            border-top: 1px solid #e9ecef;
+            background: #fff;
+            flex-shrink: 0;
+        }
+
+        .btn {
+            padding: 8px 20px;
             border-radius: 4px;
             font-size: 13px;
             font-weight: 500;
             cursor: pointer;
+            border: 1px solid #d9d9d9;
+            background: #fff;
+            color: #333;
         }
 
-        .btn-save:hover {
-            background: #dc2626;
+        .btn:hover {
+            background: #f5f5f5;
+        }
+
+        .btn-primary {
+            background: #16a34a;
+            color: #fff;
+            border-color: #16a34a;
+        }
+
+        .btn-primary:hover {
+            background: #15803d;
         }
 
         .btn-cancel {
-            padding: 10px 20px;
-            background: #e5e7eb;
-            color: #333;
+            color: #666;
             border: none;
-            border-radius: 4px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
+            background: none;
         }
 
         .btn-cancel:hover {
-            background: #d1d5db;
+            color: #333;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .loading-overlay.active {
+            display: flex;
         }
     </style>
 </head>
 
 <body>
-    <!-- Sidebar Container -->
     <div id="sidebarContainer"></div>
 
     <div class="main-layout">
-        <div class="content" id="content">
-            <!-- Page Header -->
-            <div class="page-header">
-                <h1 class="page-title">
-                    <span class="title-icon">🏠</span>
-                    Record Payment
-                </h1>
-                <button class="close-btn" onclick="goBack()">×</button>
+        <div class="page-wrapper">
+            <!-- Left Sidebar - Bills List -->
+            <div class="pr-sidebar">
+                <div class="pr-sidebar-header">
+                    <span class="pr-sidebar-title" onclick="window.location.href='/bills.html'">All Bills ▾</span>
+                    <div class="pr-sidebar-actions">
+                        <button class="pr-sidebar-btn green" onclick="window.location.href='/new-bill.html'">+</button>
+                        <button class="pr-sidebar-btn gray">⋯</button>
+                    </div>
+                </div>
+                <div class="sidebar-search">
+                    <input type="text" placeholder="Search in Bills ( / )" oninput="filterSidebar(this.value)">
+                </div>
+                <div class="pr-list" id="prList"></div>
             </div>
 
-            <!-- Main Form Area -->
-            <div class="form-main">
-                <!-- Vendor Section (Blue) -->
-                <div class="vendor-section">
-                    <div class="vendor-row">
-                        <label class="vendor-label">Vendor Name*</label>
-                        <select class="vendor-select" id="vendorName" onchange="loadVendorBills()">
-                            <option value="">Select Vendor</option>
-                        </select>
-                    </div>
+            <!-- Right Panel - Payment Form -->
+            <div class="form-panel">
+                <div class="form-header">
+                    <h1 class="form-title" id="formTitle">Payment for —</h1>
                 </div>
 
-                <!-- Form Fields Section -->
-                <div class="form-section">
-                    <div class="form-row">
-                        <label class="form-label required">Payment #*</label>
-                        <div class="input-with-icon">
-                            <input type="text" class="form-input" id="paymentNumber">
-                            <span class="input-icon">ⓘ</span>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <label class="form-label required">Payment Made*</label>
-                        <input type="text" class="form-input" id="paymentMade">
-                    </div>
-
-                    <div class="form-row">
-                        <label class="form-label required">Payment Date*</label>
-                        <input type="text" class="form-input" id="paymentDate" placeholder="dd MMM yyyy">
-                    </div>
-
-                    <div class="form-row">
-                        <label class="form-label">Payment Mode</label>
-                        <select class="form-select" id="paymentMode">
-                            <option value="">Choose the payment item or type to add</option>
-                            <option value="cash">Cash</option>
-                            <option value="bank">Bank Transfer</option>
-                            <option value="check">Check</option>
-                            <option value="credit-card">Credit Card</option>
+                <div class="form-body">
+                    <!-- Location -->
+                    <div class="form-group" style="max-width: 480px;">
+                        <label class="gray">Location</label>
+                        <select id="locationField">
+                            <option value="Head Office">Head Office</option>
                         </select>
                     </div>
 
-                    <div class="form-row">
-                        <label class="form-label required">Paid Through*</label>
-                        <select class="form-select" id="paidThrough">
-                            <option value="">Select an account</option>
-                            <option value="petty-cash">Petty Cash</option>
-                            <option value="bank-account">Bank Account</option>
-                        </select>
+                    <!-- Payment Made (Amount) -->
+                    <div class="form-group" style="max-width: 380px;">
+                        <label>Payment Made*(PHP)</label>
+                        <input type="number" id="amountField" class="amount-highlight" value="0" step="0.01" min="0">
                     </div>
 
-                    <div class="form-row">
-                        <label class="form-label">Reference#</label>
-                        <input type="text" class="form-input" id="referenceNumber">
-                    </div>
-                </div>
-
-                <!-- TDS Section -->
-                <div class="tds-section">
-                    <div class="tds-row">
-                        <label class="form-label">TDS</label>
-                        <label class="tds-checkbox">
-                            <input type="checkbox" id="deductTds">
-                            Deduct TDS Tax
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Bills Table Section -->
-                <div class="bills-table-section">
-                    <div class="section-header">
-                        <a href="#" class="clear-link" onclick="clearAppliedAmount()">Clear Applied Amount</a>
+                    <!-- Deduct TDS Tax -->
+                    <div class="form-checkbox">
+                        <input type="checkbox" id="deductTds">
+                        <span>Deduct TDS Tax</span>
                     </div>
 
-                    <table class="bills-table">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Bill#</th>
-                                <th>Bill Amount</th>
-                                <th>Amount Due</th>
-                                <th>Payment Made on ⓘ</th>
-                                <th>Payment</th>
-                            </tr>
-                        </thead>
-                        <tbody id="billsTableBody">
-                            <tr>
-                                <td colspan="6" class="empty-message">There are no bills for this vendor.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Totals Section -->
-                <div class="totals-section">
-                    <div class="totals-box">
-                        <div class="total-row main">
-                            <span>Total :</span>
-                            <span id="total">0.00</span>
+                    <!-- Two Column Section -->
+                    <div class="form-2col">
+                        <div>
+                            <div class="form-group">
+                                <label class="gray">Bank Charges (if any) <span class="info-icon"
+                                        title="Additional bank charges">ℹ️</span></label>
+                                <input type="number" id="bankCharges" value="0" step="0.01" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label>Payment Date*</label>
+                                <input type="date" id="paymentDate">
+                            </div>
+                            <div class="form-group">
+                                <label class="gray">Payment Made on</label>
+                                <input type="date" id="paymentMadeOn">
+                            </div>
                         </div>
-
-                        <div class="amount-box">
-                            <div class="amount-row">
-                                <span>Amount Paid:</span>
-                                <span class="value" id="amountPaid">0</span>
+                        <div>
+                            <div class="form-group">
+                                <label class="gray">Payment Mode</label>
+                                <select id="paymentMode">
+                                    <option value="Cash">Cash</option>
+                                    <option value="Bank Transfer">Bank Transfer</option>
+                                    <option value="Check">Check</option>
+                                    <option value="Credit Card">Credit Card</option>
+                                </select>
                             </div>
-                            <div class="amount-row">
-                                <span>Amount used for Payments:</span>
-                                <span class="value" id="amountUsed">0.00</span>
+                            <div class="form-group">
+                                <label>Payment #*</label>
+                                <div class="payment-num-wrap">
+                                    <input type="text" id="paymentNumber" value="">
+                                    <button class="refresh-btn" onclick="refreshPaymentNumber()"
+                                        title="Refresh">🔄</button>
+                                </div>
                             </div>
-                            <div class="amount-row">
-                                <span>Amount Refunded:</span>
-                                <span class="value" id="amountRefunded">0</span>
-                            </div>
-                            <div class="amount-row warning">
-                                <span class="label">⚠️ Amount in Excess:</span>
-                                <span class="value" id="amountExcess">0</span>
+                            <div class="form-group">
+                                <label>Paid Through*</label>
+                                <select id="paidThrough">
+                                    <option value="Petty Cash">Petty Cash</option>
+                                    <option value="Cash on Hand">Cash on Hand</option>
+                                    <option value="Bank Account">Bank Account</option>
+                                </select>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Reference # -->
+                    <div class="form-2col">
+                        <div></div>
+                        <div class="form-group">
+                            <label class="gray">Reference#</label>
+                            <input type="text" id="referenceNumber">
+                        </div>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="form-group">
+                        <label class="gray">Notes</label>
+                        <textarea id="notes"></textarea>
+                    </div>
+
+                    <!-- Attachments -->
+                    <div class="attach-section">
+                        <div class="attach-title">Attachments</div>
+                        <button class="attach-btn" onclick="uploadFile()">📎 Upload File ▾</button>
+                        <div class="attach-hint">You can upload a maximum of 5 files, 10MB each</div>
+                    </div>
+
+                    <!-- Send Email -->
+                    <div class="form-checkbox" style="margin-top: 20px;">
+                        <input type="checkbox" id="sendEmail">
+                        <span>Send a Payment Made email notification.</span>
+                    </div>
                 </div>
 
-                <!-- Notes Section -->
-                <div class="notes-section">
-                    <div class="notes-hint">Notes (Internal use. Not visible to vendor)</div>
-                    <textarea class="notes-textarea" id="notes" placeholder=""></textarea>
+                <!-- Footer -->
+                <div class="form-footer">
+                    <button class="btn" onclick="saveAsDraft()">Save as Draft</button>
+                    <button class="btn btn-primary" onclick="saveAsPaid()">Save as Paid</button>
+                    <button class="btn btn-cancel" onclick="goBack()">Cancel</button>
                 </div>
-
-                <!-- Attachments Section -->
-                <div class="attachments-section">
-                    <div class="attachments-label">Attachments</div>
-                    <button class="upload-btn" onclick="attachFiles()">
-                        📤 Upload File <span>▼</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Footer -->
-            <div class="form-footer">
-                <button class="btn-draft" onclick="saveAsDraft()">Save as Draft</button>
-                <button class="btn-save" onclick="saveAsPaid()">Save as Paid</button>
-                <button class="btn-cancel" onclick="goBack()">Cancel</button>
             </div>
         </div>
     </div>
 
-    <!-- Layout Script -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div>⏳ Saving...</div>
+    </div>
+
     <script src="/js/layout.js"></script>
     <script>
-        // Set current date
-        document.addEventListener('DOMContentLoaded', function () {
-            const today = new Date();
-            const options = { day: '2-digit', month: 'short', year: 'numeric' };
-            const dateStr = today.toLocaleDateString('en-GB', options);
-            document.getElementById('paymentDate').value = dateStr;
+        const urlParams = new URLSearchParams(window.location.search);
+        const billId = urlParams.get('billId');
+        let allBills = [];
+        let currentBill = null;
 
-            // Load vendors
-            loadVendors();
+        document.addEventListener('DOMContentLoaded', async function () {
+            document.getElementById('paymentDate').value = new Date().toISOString().split('T')[0];
+            await loadSidebar();
+            await refreshPaymentNumber();
+            if (billId) {
+                await loadBillInfo(billId);
+                highlightSidebar(parseInt(billId));
+            }
         });
 
-        async function loadVendors() {
+        async function loadSidebar() {
             try {
-                const response = await fetch('/api/vendors');
-                if (response.ok) {
-                    const vendors = await response.json();
-                    const select = document.getElementById('vendorName');
-                    vendors.forEach(vendor => {
-                        const option = document.createElement('option');
-                        option.value = vendor.id;
-                        option.textContent = vendor.company_name || vendor.first_name + ' ' + vendor.last_name;
-                        select.appendChild(option);
-                    });
+                const res = await fetch('/api/bills');
+                if (!res.ok) return;
+                allBills = await res.json();
+                renderSidebar(allBills);
+            } catch (e) { console.error('Error loading bills:', e); }
+        }
+
+        function renderSidebar(bills) {
+            const list = document.getElementById('prList');
+            list.innerHTML = '';
+            bills.forEach(bill => {
+                const div = document.createElement('div');
+                div.className = 'pr-item';
+                div.dataset.id = bill.id;
+                div.onclick = () => { window.location.href = '/record-payment.html?billId=' + bill.id; };
+                const amount = parseFloat(bill.total_amount || 0);
+                const billNum = (bill.bill_number || 'BILL-' + bill.id).replace('BILL-', '');
+                const billDate = bill.bill_date ? new Date(bill.bill_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+                const status = (bill.status || 'draft').toLowerCase();
+                div.innerHTML = `
+                    <div class="pr-item-left">
+                        <div class="pr-item-vendor">${bill.supplier_name || '—'}</div>
+                        <div class="pr-item-numbers">${billNum} · ${billDate}</div>
+                        <div class="pr-item-status ${status}">${status.toUpperCase()}</div>
+                    </div>
+                    <div class="pr-item-amount">PHP${amount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function highlightSidebar(id) {
+            document.querySelectorAll('.pr-item').forEach(el => {
+                el.classList.toggle('active', parseInt(el.dataset.id) === parseInt(id));
+            });
+        }
+
+        function filterSidebar(query) {
+            const q = query.toLowerCase();
+            const filtered = allBills.filter(b => (b.bill_number || '').toLowerCase().includes(q) || (b.supplier_name || '').toLowerCase().includes(q));
+            renderSidebar(filtered);
+            if (billId) highlightSidebar(parseInt(billId));
+        }
+
+        async function loadBillInfo(id) {
+            try {
+                const res = await fetch('/api/bills/' + id);
+                if (!res.ok) return;
+                currentBill = await res.json();
+                const billNum = (currentBill.bill_number || 'BILL-' + currentBill.id).replace('BILL-', '');
+                document.getElementById('formTitle').textContent = 'Payment for ' + billNum;
+                document.getElementById('amountField').value = parseFloat(currentBill.total_amount || 0);
+            } catch (e) { console.error('Error loading bill:', e); }
+        }
+
+        async function refreshPaymentNumber() {
+            try {
+                const res = await fetch('/api/payments-made/next-number');
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('paymentNumber').value = data.next_number;
                 }
-            } catch (error) {
-                console.error('Error loading vendors:', error);
+            } catch (e) { document.getElementById('paymentNumber').value = '1'; }
+        }
+
+        function collectFormData(status) {
+            if (!currentBill) { alert('No bill selected'); return null; }
+            return {
+                payment_number: document.getElementById('paymentNumber').value,
+                bill_id: currentBill.id,
+                bill_number: currentBill.bill_number || null,
+                supplier_id: currentBill.supplier_id || null,
+                supplier_name: currentBill.supplier_name || '',
+                amount_paid: parseFloat(document.getElementById('amountField').value) || 0,
+                bank_charges: parseFloat(document.getElementById('bankCharges').value) || 0,
+                tax_deducted: document.getElementById('deductTds').checked,
+                payment_date: document.getElementById('paymentDate').value || null,
+                payment_made_on: document.getElementById('paymentMadeOn').value || null,
+                payment_mode: document.getElementById('paymentMode').value,
+                paid_through: document.getElementById('paidThrough').value,
+                location: document.getElementById('locationField').value,
+                reference_number: document.getElementById('referenceNumber').value,
+                notes: document.getElementById('notes').value.trim(),
+                status: status
+            };
+        }
+
+        async function saveAsDraft() {
+            const data = collectFormData('DRAFT');
+            if (!data) return;
+            await submitPayment(data);
+        }
+
+        async function saveAsPaid() {
+            const data = collectFormData('PAID');
+            if (!data) return;
+            if (!confirm('This will mark the bill as paid. Continue?')) return;
+            await submitPayment(data);
+        }
+
+        async function submitPayment(data) {
+            const loading = document.getElementById('loadingOverlay');
+            loading.classList.add('active');
+            try {
+                const res = await fetch('/api/payments-made', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+                if (!res.ok) {
+                    alert('Error: ' + (result.error || 'Failed to save'));
+                    loading.classList.remove('active');
+                    return;
+                }
+                showToast('Payment has been recorded');
+                setTimeout(() => {
+                    window.location.href = '/bill-detail.html?id=' + (currentBill ? currentBill.id : '');
+                }, 1200);
+            } catch (e) {
+                console.error('Save error:', e);
+                alert('Failed to save payment');
+                loading.classList.remove('active');
             }
         }
 
-        function loadVendorBills() {
-            const vendorId = document.getElementById('vendorName').value;
-            const tbody = document.getElementById('billsTableBody');
-
-            if (!vendorId) {
-                tbody.innerHTML = '<tr><td colspan="6" class="empty-message">There are no bills for this vendor.</td></tr>';
-                return;
-            }
-
-            // In real app, fetch bills for vendor
-            // For now, show empty state
-            tbody.innerHTML = '<tr><td colspan="6" class="empty-message">There are no bills for this vendor.</td></tr>';
+        function showToast(msg) {
+            const t = document.createElement('div');
+            t.textContent = msg;
+            t.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#16a34a;color:white;padding:12px 28px;border-radius:8px;font-size:14px;font-weight:500;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.15);animation:toastIn 0.3s ease;';
+            document.body.appendChild(t);
+            const style = document.createElement('style');
+            style.textContent = '@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(-20px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}';
+            document.head.appendChild(style);
+            setTimeout(() => t.remove(), 3000);
         }
 
         function goBack() {
-            window.location.href = '/payments-made.html';
+            if (billId) window.location.href = '/bill-detail.html?id=' + billId;
+            else window.location.href = '/bills.html';
         }
 
-        function clearAppliedAmount() {
-            // Clear all payment inputs in the table
-            const inputs = document.querySelectorAll('.bills-table input[type="number"]');
-            inputs.forEach(input => input.value = 0);
-            calculateTotals();
-        }
-
-        function calculateTotals() {
-            // Calculate totals
-            let total = 0;
-            const inputs = document.querySelectorAll('.bills-table input[type="number"]');
-            inputs.forEach(input => {
-                total += parseFloat(input.value) || 0;
-            });
-
-            document.getElementById('total').textContent = total.toFixed(2);
-            document.getElementById('amountPaid').textContent = total.toFixed(0);
-            document.getElementById('amountUsed').textContent = total.toFixed(2);
-        }
-
-        function attachFiles() {
+        function uploadFile() {
             const input = document.createElement('input');
             input.type = 'file';
-            input.accept = '.pdf,.doc,.docx,.jpg,.png';
+            input.accept = '.pdf,.doc,.docx,.jpg,.png,.xlsx';
             input.multiple = true;
             input.click();
-        }
-
-        function saveAsDraft() {
-            alert('Payment saved as draft!');
-            goBack();
-        }
-
-        function saveAsPaid() {
-            const vendorName = document.getElementById('vendorName').value;
-            const paymentNumber = document.getElementById('paymentNumber').value;
-            const paymentMade = document.getElementById('paymentMade').value;
-
-            if (!vendorName) {
-                alert('Please select a vendor');
-                return;
-            }
-
-            if (!paymentNumber) {
-                alert('Please enter a payment number');
-                return;
-            }
-
-            if (!paymentMade) {
-                alert('Please enter payment made amount');
-                return;
-            }
-
-            alert('Payment saved successfully!');
-            goBack();
         }
     </script>
 </body>

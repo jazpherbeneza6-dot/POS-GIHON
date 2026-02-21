@@ -89,6 +89,12 @@ CREATE TABLE IF NOT EXISTS purchases (
     payment_terms VARCHAR(50),
     status VARCHAR(50) DEFAULT 'ordered',
     notes TEXT,
+    delivery_address TEXT,
+    reference_number VARCHAR(100),
+    discount_percent NUMERIC(10,2) DEFAULT 0,
+    adjustment NUMERIC(12,2) DEFAULT 0,
+    terms_conditions TEXT,
+    shipment_preference VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (supplier_id) REFERENCES suppliers(id) ON DELETE SET NULL
 );
@@ -98,9 +104,12 @@ CREATE TABLE IF NOT EXISTS purchase_items (
     id SERIAL PRIMARY KEY,
     purchase_id INTEGER NOT NULL,
     item_id INTEGER,
+    item_name VARCHAR(255),
     quantity NUMERIC(38,10) NOT NULL,
     unit_price NUMERIC(38,10) NOT NULL,
     total_price NUMERIC(38,10) NOT NULL,
+    selling_price NUMERIC(12,2),
+    is_new BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (purchase_id) REFERENCES purchases(id) ON DELETE CASCADE,
     FOREIGN KEY (item_id) REFERENCES items(id)
 );
@@ -235,10 +244,16 @@ CREATE TABLE IF NOT EXISTS sales_orders (
     customer_name VARCHAR(255),
     salesperson_name VARCHAR(255),
     payment_terms VARCHAR(100),
+    delivery_method VARCHAR(255),
+    expected_shipment_date DATE,
     status VARCHAR(50) DEFAULT 'DRAFT',
     notes TEXT,
     sub_total DECIMAL(12,2) DEFAULT 0,
     discount DECIMAL(12,2) DEFAULT 0,
+    discount_type VARCHAR(10) DEFAULT '%',
+    discount_value DECIMAL(12,2) DEFAULT 0,
+    shipping_charges DECIMAL(12,2) DEFAULT 0,
+    adjustment DECIMAL(12,2) DEFAULT 0,
     total DECIMAL(12,2) DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -247,11 +262,13 @@ CREATE TABLE IF NOT EXISTS sales_orders (
 CREATE TABLE IF NOT EXISTS sales_order_items (
     id SERIAL PRIMARY KEY,
     sales_order_id INTEGER NOT NULL,
+    item_id INTEGER,
     item_name VARCHAR(255),
     quantity DECIMAL(12,2) DEFAULT 1,
     rate DECIMAL(12,2) DEFAULT 0,
     tax VARCHAR(50),
     amount DECIMAL(12,2) DEFAULT 0,
+    discounts JSONB DEFAULT '[]',
     FOREIGN KEY (sales_order_id) REFERENCES sales_orders(id) ON DELETE CASCADE
 );
 
@@ -263,5 +280,122 @@ CREATE TABLE IF NOT EXISTS salespersons (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS delivery_methods (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE INDEX IF NOT EXISTS idx_sales_orders_status ON sales_orders(status);
 CREATE INDEX IF NOT EXISTS idx_sales_orders_date ON sales_orders(order_date);
+
+-- Invoices
+CREATE TABLE IF NOT EXISTS invoices (
+    id SERIAL PRIMARY KEY,
+    invoice_number VARCHAR(50) UNIQUE,
+    invoice_date DATE DEFAULT CURRENT_DATE,
+    due_date DATE,
+    order_number VARCHAR(100),
+    customer_id INTEGER,
+    customer_name VARCHAR(255),
+    salesperson_name VARCHAR(255),
+    payment_terms VARCHAR(100),
+    subject TEXT,
+    status VARCHAR(50) DEFAULT 'DRAFT',
+    notes TEXT,
+    terms_conditions TEXT,
+    sub_total DECIMAL(12,2) DEFAULT 0,
+    discount DECIMAL(12,2) DEFAULT 0,
+    discount_type VARCHAR(10) DEFAULT '%',
+    discount_value DECIMAL(12,2) DEFAULT 0,
+    shipping_charges DECIMAL(12,2) DEFAULT 0,
+    adjustment DECIMAL(12,2) DEFAULT 0,
+    total DECIMAL(12,2) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS invoice_items (
+    id SERIAL PRIMARY KEY,
+    invoice_id INTEGER NOT NULL,
+    item_name VARCHAR(255),
+    quantity DECIMAL(12,2) DEFAULT 1,
+    rate DECIMAL(12,2) DEFAULT 0,
+    tax VARCHAR(50),
+    amount DECIMAL(12,2) DEFAULT 0,
+    discounts JSONB DEFAULT '[]',
+    FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_invoices_status ON invoices(status);
+CREATE INDEX IF NOT EXISTS idx_invoices_date ON invoices(invoice_date);
+
+-- Sales Receipts
+CREATE TABLE IF NOT EXISTS sales_receipts (
+    id SERIAL PRIMARY KEY,
+    receipt_number VARCHAR(50) UNIQUE,
+    receipt_date DATE DEFAULT CURRENT_DATE,
+    reference_number VARCHAR(100),
+    customer_id INTEGER,
+    customer_name VARCHAR(255),
+    salesperson_name VARCHAR(255),
+    payment_mode VARCHAR(100),
+    deposit_to VARCHAR(255),
+    status VARCHAR(50) DEFAULT 'DRAFT',
+    notes TEXT,
+    terms_conditions TEXT,
+    sub_total DECIMAL(12,2) DEFAULT 0,
+    discount DECIMAL(12,2) DEFAULT 0,
+    shipping_charges DECIMAL(12,2) DEFAULT 0,
+    adjustment DECIMAL(12,2) DEFAULT 0,
+    total DECIMAL(12,2) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS sales_receipt_items (
+    id SERIAL PRIMARY KEY,
+    sales_receipt_id INTEGER NOT NULL,
+    item_id INTEGER,
+    item_name VARCHAR(255),
+    quantity DECIMAL(12,2) DEFAULT 1,
+    rate DECIMAL(12,2) DEFAULT 0,
+    tax VARCHAR(50),
+    amount DECIMAL(12,2) DEFAULT 0,
+    discounts JSONB DEFAULT '[]',
+    FOREIGN KEY (sales_receipt_id) REFERENCES sales_receipts(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_sales_receipts_status ON sales_receipts(status);
+CREATE INDEX IF NOT EXISTS idx_sales_receipts_date ON sales_receipts(receipt_date);
+
+-- Purchase receives table (tracks individual receive transactions against a PO)
+CREATE TABLE IF NOT EXISTS purchase_receives (
+    id SERIAL PRIMARY KEY,
+    purchase_id INTEGER NOT NULL,
+    receive_number VARCHAR(100),
+    receive_date DATE DEFAULT CURRENT_DATE,
+    supplier_id INTEGER,
+    supplier_name VARCHAR(255),
+    notes TEXT,
+    status VARCHAR(50) DEFAULT 'draft',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (purchase_id) REFERENCES purchases(id) ON DELETE CASCADE,
+    FOREIGN KEY (supplier_id) REFERENCES suppliers(id) ON DELETE SET NULL
+);
+
+-- Purchase receive items table
+CREATE TABLE IF NOT EXISTS purchase_receive_items (
+    id SERIAL PRIMARY KEY,
+    receive_id INTEGER NOT NULL,
+    item_id INTEGER,
+    item_name VARCHAR(255),
+    ordered_qty NUMERIC(38,10) DEFAULT 0,
+    previously_received_qty NUMERIC(38,10) DEFAULT 0,
+    quantity_to_receive NUMERIC(38,10) DEFAULT 0,
+    FOREIGN KEY (receive_id) REFERENCES purchase_receives(id) ON DELETE CASCADE,
+    FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_purchase_receives_purchase_id ON purchase_receives(purchase_id);
+CREATE INDEX IF NOT EXISTS idx_purchase_receives_status ON purchase_receives(status);

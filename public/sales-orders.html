@@ -7,6 +7,8 @@
     <title>All Sales Orders - Inventory Management</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/pagination.css">
+    <link rel="stylesheet" href="/css/global-search.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
         rel="stylesheet">
@@ -519,6 +521,57 @@
             color: #666;
         }
 
+        /* PDF/Print Dropdown */
+        .so-pdf-dropdown-wrap {
+            position: relative;
+            display: inline-block;
+        }
+
+        .so-pdf-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            z-index: 100;
+            min-width: 180px;
+            padding: 4px 0;
+            margin-top: 4px;
+        }
+
+        .so-pdf-dropdown.open {
+            display: block;
+        }
+
+        .so-pdf-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            transition: background 0.15s;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .so-pdf-dropdown-item:hover {
+            background: #f0f5ff;
+            color: #1a73e8;
+        }
+
+        .so-pdf-dropdown-item .pdf-icon {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+
         .so-detail-scroll {
             flex: 1;
             overflow-y: auto;
@@ -638,6 +691,11 @@
 
         .so-not-invoiced {
             color: #888;
+        }
+
+        .so-invoiced {
+            color: #16a34a;
+            font-weight: 600;
         }
 
         .so-fields-section {
@@ -779,6 +837,1170 @@
         .so-more-info-value {
             color: #333;
         }
+
+        /* Create Dropdown */
+        .create-dropdown-wrap {
+            position: relative;
+            display: inline-block;
+        }
+
+        .create-dropdown-btn {
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid #d9d9d9;
+            cursor: pointer;
+            font-size: 12px;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        .create-dropdown-btn:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .create-dropdown-btn .create-icon {
+            width: 16px;
+            height: 16px;
+            border: 1.5px solid #666;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            line-height: 1;
+            font-weight: 600;
+        }
+
+        .create-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            min-width: 160px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            z-index: 1000;
+            overflow: hidden;
+            padding: 4px 0;
+        }
+
+        .create-dropdown-menu.open {
+            display: block;
+        }
+
+        .create-dropdown-item {
+            display: block;
+            width: 100%;
+            padding: 8px 16px;
+            text-align: left;
+            background: none;
+            border: none;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .create-dropdown-item:hover {
+            background: #4285f4;
+            color: white;
+        }
+
+        .create-dropdown-item.primary {
+            background: #4285f4;
+            color: white;
+        }
+
+        .create-dropdown-item.primary:hover {
+            background: #3367d6;
+        }
+
+        /* ===== NEW PACKAGE FORM ===== */
+        .pkg-form-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 24px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            flex-shrink: 0;
+        }
+
+        .pkg-form-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pkg-form-header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .pkg-eval-link {
+            color: #4285f4;
+            text-decoration: none;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .pkg-eval-link:hover {
+            text-decoration: underline;
+        }
+
+        .pkg-close-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #999;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+
+        .pkg-close-btn:hover {
+            color: #333;
+        }
+
+        .pkg-form-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            background: #f9fafb;
+        }
+
+        .pkg-fields-row {
+            display: flex;
+            gap: 32px;
+            margin-bottom: 24px;
+        }
+
+        .pkg-field-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 220px;
+        }
+
+        .pkg-field-label {
+            font-size: 12px;
+            color: #dc2626;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .pkg-field-label.normal {
+            color: #333;
+        }
+
+        .pkg-field-input {
+            padding: 7px 10px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #333;
+            background: white;
+        }
+
+        .pkg-field-input:focus {
+            outline: none;
+            border-color: #4285f4;
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.1);
+        }
+
+        .pkg-info-banner {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 12px;
+            color: #92400e;
+        }
+
+        .pkg-info-banner a {
+            color: #4285f4;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .pkg-info-banner a:hover {
+            text-decoration: underline;
+        }
+
+        /* Items Table */
+        .pkg-items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 24px;
+            background: white;
+            border: 1px solid #e9ecef;
+        }
+
+        .pkg-items-table th {
+            text-align: left;
+            padding: 10px 14px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: #f9fafb;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .pkg-items-table th.col-right,
+        .pkg-items-table td.col-right {
+            text-align: right;
+        }
+
+        .pkg-items-table th.col-center,
+        .pkg-items-table td.col-center {
+            text-align: center;
+        }
+
+        .pkg-items-table td {
+            padding: 12px 14px;
+            font-size: 13px;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: top;
+        }
+
+        .pkg-qty-input {
+            width: 60px;
+            padding: 4px 6px;
+            border: 1px solid #d9d9d9;
+            border-radius: 3px;
+            font-size: 13px;
+            text-align: right;
+        }
+
+        .pkg-qty-input:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+
+        .pkg-stock-info {
+            font-size: 11px;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        .pkg-stock-qty {
+            color: #dc2626;
+            font-weight: 500;
+        }
+
+        .pkg-stock-location {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .pkg-delete-btn {
+            background: none;
+            border: none;
+            color: #dc2626;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 2px 6px;
+        }
+
+        .pkg-delete-btn:hover {
+            color: #b91c1c;
+        }
+
+        /* Internal Notes */
+        .pkg-notes-section {
+            margin-bottom: 24px;
+        }
+
+        .pkg-notes-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .pkg-notes-textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 10px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #333;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .pkg-notes-textarea:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+
+        /* Footer */
+        .pkg-form-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 24px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+            flex-shrink: 0;
+        }
+
+        .pkg-footer-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .pkg-btn-save {
+            padding: 8px 20px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .pkg-btn-save:hover {
+            background: #3367d6;
+        }
+
+        .pkg-btn-cancel {
+            padding: 8px 16px;
+            background: #f0f0f0;
+            color: #333;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .pkg-btn-cancel:hover {
+            background: #e0e0e0;
+        }
+
+        .pkg-footer-right {
+            font-size: 13px;
+            color: #555;
+        }
+
+        .pkg-footer-right strong {
+            font-weight: 600;
+        }
+
+        /* ===== SALES RETURN FORM OVERLAY ===== */
+        .sr-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #f5f6fa;
+            z-index: 10000;
+            display: none;
+            flex-direction: column;
+        }
+
+        .sr-overlay.open {
+            display: flex;
+        }
+
+        .sr-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 32px;
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .sr-header-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .sr-close-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: none;
+            font-size: 22px;
+            color: #666;
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sr-close-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .sr-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px 32px;
+        }
+
+        .sr-form-card {
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            padding: 28px 32px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .sr-field-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .sr-field-label {
+            width: 180px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            text-align: right;
+            padding-right: 16px;
+            flex-shrink: 0;
+        }
+
+        .sr-field-label.required {
+            color: #e53e3e;
+        }
+
+        .sr-field-input {
+            padding: 8px 12px;
+            border: 1px solid #d0d5dd;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #333;
+            width: 220px;
+            outline: none;
+        }
+
+        .sr-field-input:focus {
+            border-color: #4285f4;
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.15);
+        }
+
+        .sr-field-select {
+            padding: 8px 12px;
+            border: 1px solid #d0d5dd;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #333;
+            width: 220px;
+            outline: none;
+            background: white;
+        }
+
+        .sr-rma-refresh {
+            width: 28px;
+            height: 28px;
+            border: 1px solid #d0d5dd;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            margin-left: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .sr-rma-refresh:hover {
+            background: #f5f5f5;
+        }
+
+        .sr-credit-check {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 180px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .sr-credit-check input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+        }
+
+        .sr-info-bar {
+            background: #fef3cd;
+            border: 1px solid #ffc107;
+            border-radius: 6px;
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #856404;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sr-info-bar a {
+            color: #4285f4;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .sr-items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+        }
+
+        .sr-items-table th {
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 10px 12px;
+            border-bottom: 2px solid #e9ecef;
+            background: #f9fafb;
+        }
+
+        .sr-items-table td {
+            padding: 12px;
+            font-size: 13px;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: top;
+        }
+
+        .sr-items-table th:nth-child(2),
+        .sr-items-table th:nth-child(3),
+        .sr-items-table td:nth-child(2),
+        .sr-items-table td:nth-child(3) {
+            text-align: center;
+            width: 120px;
+        }
+
+        .sr-items-table th:nth-child(4),
+        .sr-items-table td:nth-child(4) {
+            text-align: right;
+            width: 160px;
+        }
+
+        .sr-items-table th:last-child,
+        .sr-items-table td:last-child {
+            width: 40px;
+            text-align: center;
+        }
+
+        .sr-qty-input {
+            width: 70px;
+            padding: 6px 8px;
+            border: 1px solid #d0d5dd;
+            border-radius: 4px;
+            font-size: 13px;
+            text-align: right;
+            outline: none;
+        }
+
+        .sr-qty-input:focus {
+            border-color: #4285f4;
+        }
+
+        .sr-stock-info {
+            font-size: 11px;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        .sr-stock-info a {
+            color: #4285f4;
+            text-decoration: none;
+            font-size: 11px;
+        }
+
+        .sr-remove-btn {
+            background: none;
+            border: none;
+            color: #dc3545;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .sr-remove-btn:hover {
+            color: #a71d2a;
+        }
+
+        .sr-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 32px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .sr-footer-left {
+            display: flex;
+            gap: 10px;
+        }
+
+        .sr-btn-draft {
+            padding: 8px 20px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .sr-btn-draft:hover {
+            background: #3367d6;
+        }
+
+        .sr-btn-approve {
+            padding: 8px 20px;
+            background: white;
+            color: #333;
+            border: 1px solid #d0d5dd;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .sr-btn-approve:hover {
+            background: #f5f5f5;
+        }
+
+        .sr-btn-cancel {
+            padding: 8px 20px;
+            background: white;
+            color: #333;
+            border: 1px solid #d0d5dd;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .sr-btn-cancel:hover {
+            background: #f5f5f5;
+        }
+
+        .sr-footer-right {
+            font-size: 13px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* ===== Invoice Detail View (after convert) ===== */
+        .inv-detail-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 24px;
+            background: #fff;
+            border-bottom: 1px solid #e2e5ea;
+        }
+
+        .inv-detail-header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .inv-detail-header-left .inv-back {
+            font-size: 16px;
+            color: #666;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .inv-detail-header-left .inv-back:hover {
+            color: #333;
+        }
+
+        .inv-detail-meta {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .inv-detail-meta-top {
+            font-size: 11px;
+            color: #888;
+        }
+
+        .inv-detail-meta-top a {
+            color: #4285f4;
+            text-decoration: none;
+        }
+
+        .inv-detail-meta-top a:hover {
+            text-decoration: underline;
+        }
+
+        .inv-detail-meta-num {
+            font-size: 17px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .inv-detail-header-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .inv-detail-header-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #e2e5ea;
+            border-radius: 4px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 14px;
+            color: #888;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .inv-detail-header-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .inv-detail-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #999;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+
+        .inv-detail-close:hover {
+            color: #333;
+        }
+
+        .inv-action-bar {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 10px 24px;
+            background: #fff;
+            border-bottom: 1px solid #e2e5ea;
+            flex-wrap: wrap;
+        }
+
+        .inv-action-btn {
+            padding: 6px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            background: white;
+            font-size: 12px;
+            color: #333;
+            cursor: pointer;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+
+        .inv-action-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .inv-action-btn .icon {
+            font-size: 13px;
+        }
+
+        .inv-action-btn .arrow {
+            font-size: 10px;
+            color: #888;
+        }
+
+        .inv-action-btn.primary {
+            background: #4285f4;
+            color: white;
+            border-color: #4285f4;
+            font-weight: 600;
+        }
+
+        .inv-action-btn.primary:hover {
+            background: #3367d6;
+        }
+
+        .inv-info-banner {
+            padding: 12px 24px;
+            background: #f0f7ff;
+            border-bottom: 1px solid #d4e5f7;
+            font-size: 13px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .inv-info-banner .star {
+            color: #f5a623;
+            font-size: 16px;
+        }
+
+        .inv-info-banner a {
+            color: #4285f4;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .inv-info-banner a:hover {
+            text-decoration: underline;
+        }
+
+        .inv-setup-banner {
+            padding: 10px 24px;
+            background: #fafafa;
+            border-bottom: 1px solid #e2e5ea;
+            font-size: 13px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .inv-setup-banner a {
+            color: #4285f4;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .inv-detail-tabs {
+            display: flex;
+            gap: 0;
+            background: #fff;
+            border-bottom: 1px solid #e2e5ea;
+            padding: 0 24px;
+        }
+
+        .inv-detail-tab {
+            padding: 10px 16px;
+            font-size: 13px;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            font-weight: 500;
+        }
+
+        .inv-detail-tab.active {
+            color: #4285f4;
+            border-bottom-color: #4285f4;
+            font-weight: 600;
+        }
+
+        .inv-detail-tab .tab-count {
+            background: #e8f0fe;
+            color: #4285f4;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 1px 6px;
+            border-radius: 10px;
+            margin-left: 4px;
+        }
+
+        .inv-detail-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            background: #f0f1f5;
+        }
+
+        /* Invoice document card */
+        .inv-doc-card {
+            background: #fff;
+            border: 1px solid #e2e5ea;
+            border-radius: 8px;
+            padding: 40px;
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+
+        .inv-doc-ribbon {
+            position: absolute;
+            top: 30px;
+            left: -30px;
+            background: #27ae60;
+            color: white;
+            padding: 6px 18px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transform: rotate(-45deg);
+            width: 130px;
+            text-align: center;
+        }
+
+        .inv-doc-ribbon.draft {
+            background: #888;
+        }
+
+        .inv-doc-ribbon.sent {
+            background: #27ae60;
+        }
+
+        .inv-doc-ribbon.overdue {
+            background: #e74c3c;
+        }
+
+        .inv-doc-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .inv-doc-company-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .inv-doc-company-info {
+            font-size: 11px;
+            color: #888;
+            line-height: 1.6;
+        }
+
+        .inv-doc-title-area {
+            text-align: right;
+        }
+
+        .inv-doc-title-area h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+            margin: 0;
+        }
+
+        .inv-doc-title-area .inv-number {
+            font-size: 12px;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .inv-doc-title-area .inv-balance {
+            font-size: 12px;
+            color: #888;
+            margin-top: 8px;
+        }
+
+        .inv-doc-title-area .inv-balance-amount {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .inv-doc-bill-section {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .inv-doc-bill-to {
+            flex: 1;
+        }
+
+        .inv-doc-bill-to-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #888;
+            margin-bottom: 6px;
+        }
+
+        .inv-doc-bill-to-name {
+            font-size: 13px;
+            color: #4285f4;
+            font-weight: 600;
+        }
+
+        .inv-doc-bill-to-addr {
+            font-size: 12px;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .inv-doc-details {
+            text-align: right;
+        }
+
+        .inv-doc-details-row {
+            display: flex;
+            justify-content: flex-end;
+            gap: 16px;
+            margin-bottom: 4px;
+            font-size: 12px;
+        }
+
+        .inv-doc-details-label {
+            color: #888;
+        }
+
+        .inv-doc-details-value {
+            color: #333;
+            font-weight: 500;
+            min-width: 100px;
+            text-align: right;
+        }
+
+        .inv-doc-items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            margin-bottom: 16px;
+        }
+
+        .inv-doc-items-table thead tr {
+            background: #1a3a5c;
+            color: white;
+        }
+
+        .inv-doc-items-table th {
+            padding: 10px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-align: left;
+            text-transform: uppercase;
+        }
+
+        .inv-doc-items-table th:nth-child(n+3) {
+            text-align: right;
+        }
+
+        .inv-doc-items-table td {
+            padding: 10px 12px;
+            font-size: 12px;
+            color: #333;
+            border-bottom: 1px solid #f0f1f5;
+        }
+
+        .inv-doc-items-table td:nth-child(n+3) {
+            text-align: right;
+        }
+
+        .inv-doc-item-desc {
+            font-size: 11px;
+            color: #888;
+        }
+
+        .inv-doc-totals {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            margin-top: 12px;
+        }
+
+        .inv-doc-totals-row {
+            display: flex;
+            gap: 24px;
+            padding: 4px 0;
+            font-size: 12px;
+        }
+
+        .inv-doc-totals-label {
+            color: #888;
+            min-width: 100px;
+            text-align: right;
+        }
+
+        .inv-doc-totals-value {
+            color: #333;
+            font-weight: 500;
+            min-width: 80px;
+            text-align: right;
+        }
+
+        .inv-doc-totals-row.total {
+            border-top: 1px solid #e2e5ea;
+            padding-top: 8px;
+            margin-top: 4px;
+        }
+
+        .inv-doc-totals-row.total .inv-doc-totals-label,
+        .inv-doc-totals-row.total .inv-doc-totals-value {
+            font-weight: 700;
+            color: #333;
+            font-size: 13px;
+        }
+
+        .inv-doc-totals-row.balance {
+            background: #f5f6fa;
+            padding: 8px 12px;
+            margin-top: 8px;
+            border-radius: 4px;
+        }
+
+        .inv-doc-totals-row.balance .inv-doc-totals-label,
+        .inv-doc-totals-row.balance .inv-doc-totals-value {
+            font-weight: 700;
+            color: #333;
+            font-size: 13px;
+        }
+
+        .inv-doc-notes {
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid #e2e5ea;
+        }
+
+        .inv-doc-notes-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .inv-doc-notes-text {
+            font-size: 12px;
+            color: #555;
+            line-height: 1.5;
+        }
     </style>
 </head>
 
@@ -797,6 +2019,11 @@
                             All Sales Orders
                             <span class="dropdown-arrow">▼</span>
                         </h1>
+                    </div>
+                    <div class="global-search-container">
+                        <span class="global-search-icon">🔍</span>
+                        <input type="text" class="global-search-input" id="soSearchInput"
+                            placeholder="Search sales orders..." oninput="searchOrders()">
                     </div>
                     <div class="header-actions">
                         <a href="#" class="view-stats-link">
@@ -836,6 +2063,7 @@
                         </thead>
                         <tbody id="ordersBody"></tbody>
                     </table>
+                    <div id="soPaginationContainer"></div>
                 </div>
             </div>
 
@@ -859,6 +2087,7 @@
     </div>
 
     <!-- Layout Script -->
+    <script src="/js/pagination.js"></script>
     <script src="/js/layout.js"></script>
     <script>
         let allOrders = [];
@@ -878,10 +2107,19 @@
             return 'confirmed';
         }
 
-        function getStatusDots(status) {
-            const s = (status || '').toUpperCase();
-            if (s === 'CLOSED') return { invoiced: 'active', payment: 'done', packed: 'done', shipped: 'done' };
-            return { invoiced: '', payment: '', packed: '', shipped: '' };
+        function getStatusDots(order) {
+            const s = (order.status || '').toUpperCase();
+            const hasInvoice = order.has_invoice || false;
+            const invoicePaid = order.invoice_paid || false;
+            const packageCount = parseInt(order.package_count) || 0;
+            const shipmentCount = parseInt(order.shipment_count) || 0;
+
+            return {
+                invoiced: hasInvoice ? 'active' : '',
+                payment: invoicePaid ? 'done' : '',
+                packed: packageCount > 0 ? 'done' : '',
+                shipped: shipmentCount > 0 ? 'done' : ''
+            };
         }
 
         function formatCurrency(val) {
@@ -893,24 +2131,26 @@
         }
 
         // ===== LOAD TABLE LIST =====
-        async function loadOrders() {
-            try {
-                const res = await fetch('/api/sales-orders');
-                if (!res.ok) return;
-                allOrders = await res.json();
-
-                if (allOrders.length === 0) {
-                    document.getElementById('emptyState').style.display = 'flex';
-                    document.getElementById('ordersContainer').style.display = 'none';
-                    return;
-                }
-
-                document.getElementById('emptyState').style.display = 'none';
-                document.getElementById('ordersContainer').style.display = 'block';
-
-                const tbody = document.getElementById('ordersBody');
-                tbody.innerHTML = allOrders.map(order => {
-                    const dots = getStatusDots(order.status);
+        function searchOrders() {
+            const query = (document.getElementById('soSearchInput').value || '').toLowerCase();
+            if (!query) { loadOrders(); return; }
+            const filtered = allOrders.filter(o => {
+                return (o.order_number || '').toLowerCase().includes(query) ||
+                    (o.customer_name || '').toLowerCase().includes(query) ||
+                    (o.reference_number || '').toLowerCase().includes(query) ||
+                    (o.status || '').toLowerCase().includes(query);
+            });
+            if (filtered.length === 0) {
+                document.getElementById('emptyState').style.display = 'flex';
+                document.getElementById('ordersContainer').style.display = 'none';
+                document.getElementById('soPaginationContainer').innerHTML = '';
+                return;
+            }
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('ordersContainer').style.display = 'block';
+            function renderPage(pageData) {
+                document.getElementById('ordersBody').innerHTML = pageData.map(order => {
+                    const dots = getStatusDots(order);
                     const statusCls = 'status-' + getStatusClass(order.status);
                     return `<tr onclick="openOrderDetail(${order.id})" style="cursor:pointer;">
                         <td><input type="checkbox" class="order-checkbox" value="${order.id}" onclick="event.stopPropagation()"></td>
@@ -925,6 +2165,59 @@
                         <td style="text-align: center;">${dots.shipped ? `<span class="status-dot ${dots.shipped}"></span>` : ''}</td>
                     </tr>`;
                 }).join('');
+            }
+            window.soPager = Pagination.create({
+                data: filtered, perPage: 14, containerId: 'soPaginationContainer',
+                onPageChange: function (pageData) { renderPage(pageData); }
+            });
+        }
+
+        async function loadOrders() {
+            try {
+                const res = await fetch('/api/sales-orders');
+                if (!res.ok) return;
+                allOrders = await res.json();
+
+                if (allOrders.length === 0) {
+                    document.getElementById('emptyState').style.display = 'flex';
+                    document.getElementById('ordersContainer').style.display = 'none';
+                    document.getElementById('soPaginationContainer').innerHTML = '';
+                    return;
+                }
+
+                document.getElementById('emptyState').style.display = 'none';
+                document.getElementById('ordersContainer').style.display = 'block';
+
+                function renderSOPage(pageData) {
+                    const tbody = document.getElementById('ordersBody');
+                    tbody.innerHTML = pageData.map(order => {
+                        const dots = getStatusDots(order);
+                        const statusCls = 'status-' + getStatusClass(order.status);
+                        return `<tr onclick="openOrderDetail(${order.id})" style="cursor:pointer;">
+                            <td><input type="checkbox" class="order-checkbox" value="${order.id}" onclick="event.stopPropagation()"></td>
+                            <td>${formatDate(order.order_date)}</td>
+                            <td><span class="order-number-link">${order.order_number}</span></td>
+                            <td>${order.reference_number || ''}</td>
+                            <td>${order.customer_name || ''}</td>
+                            <td><span class="${statusCls}">${(order.status || 'DRAFT').toUpperCase()}</span></td>
+                            <td style="text-align: center;">${dots.invoiced ? `<span class="status-dot ${dots.invoiced}"></span>` : ''}</td>
+                            <td style="text-align: center;">${dots.payment ? `<span class="status-dot ${dots.payment}"></span>` : ''}</td>
+                            <td style="text-align: center;">${dots.packed ? `<span class="status-dot ${dots.packed}"></span>` : ''}</td>
+                            <td style="text-align: center;">${dots.shipped ? `<span class="status-dot ${dots.shipped}"></span>` : ''}</td>
+                        </tr>`;
+                    }).join('');
+                }
+
+                if (!window.soPager) {
+                    window.soPager = Pagination.create({
+                        data: allOrders,
+                        perPage: 14,
+                        containerId: 'soPaginationContainer',
+                        onPageChange: function (pageData) { renderSOPage(pageData); }
+                    });
+                } else {
+                    window.soPager.updateData(allOrders);
+                }
             } catch (err) {
                 console.error('Error loading orders:', err);
             }
@@ -968,13 +2261,54 @@
                 const res = await fetch(`/api/sales-orders/${orderId}`);
                 if (!res.ok) return;
                 const order = await res.json();
-                renderDetail(order);
+
+                // Check if invoice exists for this SO
+                let hasInvoice = false;
+                try {
+                    const invRes = await fetch('/api/invoices');
+                    if (invRes.ok) {
+                        const invoices = await invRes.json();
+                        hasInvoice = invoices.some(inv => inv.order_number === order.order_number);
+                    }
+                } catch (e) { /* ignore */ }
+
+                // Check if packages exist for this SO
+                let hasPackage = false;
+                try {
+                    const pkgRes = await fetch(`/api/packages/by-order/${orderId}`);
+                    if (pkgRes.ok) {
+                        const pkgs = await pkgRes.json();
+                        hasPackage = pkgs.length > 0;
+                    }
+                } catch (e) { /* ignore */ }
+
+                // Check if shipments exist for this SO
+                let hasShipment = false;
+                try {
+                    const shipRes = await fetch('/api/shipments');
+                    if (shipRes.ok) {
+                        const ships = await shipRes.json();
+                        hasShipment = ships.some(s => parseInt(s.sales_order_id) === orderId);
+                    }
+                } catch (e) { /* ignore */ }
+
+                // Check if sales returns exist for this SO
+                let hasReturn = false;
+                try {
+                    const retRes = await fetch(`/api/sales-returns/by-order/${orderId}`);
+                    if (retRes.ok) {
+                        const returns = await retRes.json();
+                        hasReturn = returns.length > 0;
+                    }
+                } catch (e) { /* ignore */ }
+
+                renderDetail(order, hasInvoice, hasPackage, hasShipment, hasReturn);
             } catch (err) {
                 console.error('Error loading order detail:', err);
             }
         }
 
-        function renderDetail(order) {
+        function renderDetail(order, hasInvoice, hasPackage, hasShipment, hasReturn) {
             const panel = document.getElementById('soRightPanel');
             const statusCls = getStatusClass(order.status);
             const statusLabel = (order.status || 'DRAFT').toUpperCase();
@@ -982,6 +2316,9 @@
             const subTotal = items.reduce((sum, i) => sum + parseFloat(i.amount || 0), 0);
             const totalQty = items.reduce((sum, i) => sum + parseFloat(i.quantity || 0), 0);
             const total = parseFloat(order.total || subTotal);
+            const discountAmount = parseFloat(order.discount || 0);
+            const shippingCharges = parseFloat(order.shipping_charges || 0);
+            const adjustment = parseFloat(order.adjustment || 0);
 
             // Build address strings
             function buildAddress(street, city, state, zip, country) {
@@ -999,6 +2336,31 @@
             const billingAddr = buildAddress(order.billing_street, order.billing_city, order.billing_state, order.billing_zip, order.billing_country);
             const shippingAddr = buildAddress(order.shipping_street, order.shipping_city, order.shipping_state, order.shipping_zip, order.shipping_country);
 
+            // Build discount display for each item
+            function buildItemDiscountText(item) {
+                const discs = item.discounts || [];
+                if (!discs || discs.length === 0) return '—';
+                const parts = discs.filter(d => d.value > 0).map(d => {
+                    return d.type === '%' ? d.value + '%' : '₱' + d.value;
+                });
+                return parts.length > 0 ? parts.join(', ') : '—';
+            }
+
+            // Build totals rows for discount/shipping/adjustment
+            let extraTotalsRows = '';
+            if (discountAmount > 0) {
+                const discLabel = order.discount_type === '%'
+                    ? `Discount (${parseFloat(order.discount_value)}%)`
+                    : 'Discount';
+                extraTotalsRows += `<div class="so-totals-row"><span class="so-totals-label">${discLabel}</span><span class="so-totals-value" style="color:#dc2626;">-${formatCurrency(discountAmount)}</span></div>`;
+            }
+            if (shippingCharges > 0) {
+                extraTotalsRows += `<div class="so-totals-row"><span class="so-totals-label">Shipping Charges</span><span class="so-totals-value">${formatCurrency(shippingCharges)}</span></div>`;
+            }
+            if (adjustment !== 0) {
+                extraTotalsRows += `<div class="so-totals-row"><span class="so-totals-label">Adjustment</span><span class="so-totals-value">${adjustment >= 0 ? '' : '-'}${formatCurrency(Math.abs(adjustment))}</span></div>`;
+            }
+
             panel.innerHTML = `
                 <div class="so-right-header">
                     <div class="so-right-header-left">
@@ -1013,12 +2375,30 @@
                 </div>
 
                 <div class="so-action-bar">
-                    <button class="so-action-btn">✏️ Edit</button>
-                    <button class="so-action-btn">📄 PDF/Print ▾</button>
+                    <button class="so-action-btn" onclick="window.location.href='/new-sales-order.html?editId=' + selectedOrderId">✏️ Edit</button>
+                    <div class="so-pdf-dropdown-wrap">
+                        <button class="so-action-btn" onclick="togglePdfDropdown(event)">📄 PDF/Print ▾</button>
+                        <div class="so-pdf-dropdown" id="pdfDropdown">
+                            <button class="so-pdf-dropdown-item" onclick="downloadSalesOrderPdf()">
+                                <span class="pdf-icon">📥</span> Download as PDF
+                            </button>
+                            <button class="so-pdf-dropdown-item" onclick="printSalesOrder()">
+                                <span class="pdf-icon">🖨️</span> Print
+                            </button>
+                        </div>
+                    </div>
                     <div class="so-action-separator"></div>
-                    <button class="so-action-btn">🔄 Convert to Invoice</button>
-                    <div class="so-action-separator"></div>
-                    <button class="so-action-btn">➕ Create ▾</button>
+                    ${!hasInvoice ? '<button class="so-action-btn" onclick="convertToInvoice()">🔄 Convert to Invoice</button><div class="so-action-separator"></div>' : ''}
+                    <div class="create-dropdown-wrap">
+                        <button class="create-dropdown-btn" onclick="toggleCreateDropdown(event)">
+                            <span class="create-icon">+</span> Create <span style="font-size:10px;">▾</span>
+                        </button>
+                        <div class="create-dropdown-menu" id="createDropdownMenu">
+                            ${!hasPackage ? '<button class="create-dropdown-item primary" onclick="createPackage()">Package</button>' : ''}
+                            ${!hasShipment ? '<button class="create-dropdown-item" onclick="createShipment()">Shipment</button>' : ''}
+                            ${hasShipment ? '<button class="create-dropdown-item" onclick="openSalesReturnForm()">Sales Return</button>' : ''}
+                        </div>
+                    </div>
                     <div class="so-action-separator"></div>
                     <button class="so-action-btn">⋯</button>
                     <div class="so-pdf-toggle">
@@ -1052,11 +2432,11 @@
                                 <span class="so-status-label">Order</span>
                                 <span class="so-status-value"><span class="so-badge ${statusCls}">${statusLabel}</span></span>
                                 <span class="so-status-label">Invoice</span>
-                                <span class="so-status-value so-not-invoiced">Not Invoiced</span>
+                                <span class="so-status-value ${hasInvoice ? 'so-invoiced' : 'so-not-invoiced'}">${hasInvoice ? 'Invoiced' : 'Not Invoiced'}</span>
                                 <span class="so-status-label">Payment</span>
                                 <span class="so-status-value so-unpaid">Unpaid</span>
                                 <span class="so-status-label">Shipment</span>
-                                <span class="so-status-value so-pending">Pending</span>
+                                <span class="so-status-value ${hasShipment ? 'so-invoiced' : 'so-pending'}">${hasShipment ? 'Shipped' : 'Pending'}</span>
                             </div>
                         </div>
 
@@ -1066,10 +2446,14 @@
                                 <span class="so-field-value">${order.reference_number || 'N/A'}</span>
                                 <span class="so-field-label">ORDER DATE</span>
                                 <span class="so-field-value">${formatDate(order.order_date)}</span>
+                                <span class="so-field-label">EXPECTED SHIPMENT</span>
+                                <span class="so-field-value">${order.expected_shipment_date ? formatDate(order.expected_shipment_date) : 'N/A'}</span>
                                 <span class="so-field-label">PAYMENT TERMS</span>
                                 <span class="so-field-value">${order.payment_terms || 'Due on Receipt'}</span>
                                 <span class="so-field-label">SALESPERSON</span>
                                 <span class="so-field-value">${order.salesperson_name || 'N/A'}</span>
+                                <span class="so-field-label">DELIVERY METHOD</span>
+                                <span class="so-field-value">${order.delivery_method || 'N/A'}</span>
                             </div>
                         </div>
 
@@ -1094,7 +2478,7 @@
                                     </td>
                                     <td style="text-align:center;">${parseFloat(item.quantity || 0)}<br><span style="font-size:11px;color:#888;">pcs</span></td>
                                     <td style="text-align:right;">${formatCurrency(item.rate)}</td>
-                                    <td style="text-align:right;">0</td>
+                                    <td style="text-align:right;">${buildItemDiscountText(item)}</td>
                                     <td style="text-align:right;">${formatCurrency(item.amount)}</td>
                                 </tr>`).join('') : '<tr><td colspan="5" style="text-align:center;padding:20px;color:#999;">No items</td></tr>'}
                             </tbody>
@@ -1105,6 +2489,7 @@
                                 <span class="so-totals-label">Sub Total</span>
                                 <span class="so-totals-value">${formatCurrency(subTotal)}</span>
                             </div>
+                            ${extraTotalsRows}
                             <div class="so-totals-row">
                                 <span class="so-totals-qty">Total Quantity : ${totalQty}</span>
                                 <span></span>
@@ -1127,6 +2512,389 @@
             `;
         }
 
+        // ===== PDF / PRINT =====
+        function togglePdfDropdown(e) {
+            e.stopPropagation();
+            const dd = document.getElementById('pdfDropdown');
+            dd.classList.toggle('open');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function () {
+            const dd = document.getElementById('pdfDropdown');
+            if (dd) dd.classList.remove('open');
+        });
+
+        function openPrintWindow() {
+            const docCard = document.querySelector('.so-detail-card');
+            if (!docCard) { alert('No sales order detail to print.'); return null; }
+
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Sales Order</title>
+                    <style>
+                        * { margin: 0; padding: 0; box-sizing: border-box; }
+                        body {
+                            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                            padding: 0; color: #333;
+                        }
+                        .so-detail-card {
+                            width: 100%; max-width: 750px; margin: 20px auto;
+                            padding: 40px 50px; position: relative; overflow: hidden;
+                        }
+                        .so-detail-top {
+                            display: flex; justify-content: space-between; margin-bottom: 24px;
+                        }
+                        .so-detail-title {
+                            font-size: 20px; font-weight: 700; color: #333; margin: 0 0 4px 0;
+                        }
+                        .so-detail-subtitle {
+                            font-size: 13px; color: #666; margin: 0;
+                        }
+                        .so-address-block { text-align: right; }
+                        .so-address-label {
+                            font-size: 11px; font-weight: 600; color: #888;
+                            text-transform: uppercase; margin-bottom: 4px;
+                        }
+                        .so-address-name { font-size: 14px; font-weight: 600; color: #333; }
+                        .so-address-text { font-size: 13px; color: #555; line-height: 1.5; }
+
+                        .so-status-section {
+                            background: #f8f9fa; border-radius: 6px;
+                            padding: 16px 20px; margin-bottom: 24px;
+                        }
+                        .so-status-grid {
+                            display: grid; grid-template-columns: auto 1fr auto 1fr;
+                            gap: 8px 16px; align-items: center;
+                        }
+                        .so-status-label {
+                            font-size: 12px; font-weight: 600; color: #888; text-transform: uppercase;
+                        }
+                        .so-status-value { font-size: 13px; }
+                        .so-badge {
+                            display: inline-block; padding: 2px 10px; border-radius: 12px;
+                            font-size: 11px; font-weight: 600;
+                        }
+                        .so-badge.draft { background: #e8f0fe; color: #1a73e8; }
+                        .so-badge.confirmed { background: #e6f4ea; color: #137333; }
+                        .so-badge.closed { background: #fce8e6; color: #c5221f; }
+                        .so-invoiced { color: #137333; font-weight: 600; }
+                        .so-not-invoiced { color: #c5221f; }
+                        .so-unpaid { color: #e37400; font-weight: 600; }
+                        .so-pending { color: #888; }
+
+                        .so-fields-section { margin-bottom: 24px; }
+                        .so-fields-grid {
+                            display: grid; grid-template-columns: 160px 1fr; gap: 6px 16px;
+                        }
+                        .so-field-label {
+                            font-size: 12px; font-weight: 600; color: #888;
+                            text-transform: uppercase;
+                        }
+                        .so-field-value { font-size: 13px; color: #333; }
+
+                        .so-items-table {
+                            width: 100%; border-collapse: collapse; margin-bottom: 20px;
+                        }
+                        .so-items-table thead { background: #1a73e8; }
+                        .so-items-table thead th {
+                            color: #fff; font-size: 11px; font-weight: 600;
+                            padding: 10px 14px; text-align: left; text-transform: uppercase;
+                        }
+                        .so-items-table tbody td {
+                            padding: 12px 14px; font-size: 13px; color: #333;
+                            border-bottom: 1px solid #f0f0f0;
+                        }
+                        .so-item-placeholder {
+                            display: inline-block; width: 28px; height: 28px;
+                            background: #f0f0f0; border-radius: 4px;
+                            text-align: center; line-height: 28px; font-size: 14px;
+                            margin-right: 8px;
+                        }
+                        .so-item-name-link { color: #1a73e8; font-weight: 500; }
+
+                        .so-totals {
+                            display: flex; flex-direction: column; align-items: flex-end;
+                            padding: 16px 0;
+                        }
+                        .so-totals-row {
+                            display: flex; justify-content: space-between;
+                            width: 300px; padding: 4px 0;
+                        }
+                        .so-totals-row.subtotal { border-bottom: 1px solid #eee; padding-bottom: 8px; }
+                        .so-totals-row.total {
+                            border-top: 2px solid #333; padding-top: 8px; margin-top: 4px;
+                        }
+                        .so-totals-label { font-size: 13px; color: #555; }
+                        .so-totals-value { font-size: 13px; font-weight: 600; color: #333; }
+                        .so-totals-qty { font-size: 12px; color: #888; }
+                        .so-totals-row.total .so-totals-label,
+                        .so-totals-row.total .so-totals-value {
+                            font-size: 15px; font-weight: 700; color: #222;
+                        }
+
+                        .so-more-info { margin-top: 24px; padding-top: 16px; border-top: 1px solid #eee; }
+                        .so-more-info h3 { font-size: 14px; margin-bottom: 8px; }
+                        .so-more-info-grid {
+                            display: grid; grid-template-columns: 120px 1fr; gap: 4px 8px;
+                        }
+                        .so-more-info-label { font-size: 13px; color: #888; }
+                        .so-more-info-value { font-size: 13px; color: #333; }
+
+                        @media print {
+                            body { padding: 0; }
+                            .so-detail-card { border: none; margin: 0 auto; box-shadow: none; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    ${docCard.outerHTML}
+                    <script>
+                        window.onload = function() {
+                            window.print();
+                            window.onafterprint = function() { window.close(); };
+                        };
+                    <\/script>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            return printWindow;
+        }
+
+        function printSalesOrder() {
+            document.getElementById('pdfDropdown').classList.remove('open');
+            openPrintWindow();
+        }
+
+        function downloadSalesOrderPdf() {
+            document.getElementById('pdfDropdown').classList.remove('open');
+            openPrintWindow();
+            // The browser's print dialog allows the user to choose "Save as PDF"
+        }
+
+        // ===== CONVERT TO INVOICE =====
+        async function convertToInvoice() {
+            if (!selectedOrderId) return;
+            if (!confirm('Are you sure you want to convert this Sales Order to an Invoice?')) return;
+
+            try {
+                const res = await fetch(`/api/sales-orders/${selectedOrderId}/convert-to-invoice`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (!res.ok) {
+                    const err = await res.json();
+                    alert('Error: ' + (err.error || 'Failed to convert'));
+                    return;
+                }
+
+                const data = await res.json();
+                // Refresh orders list, then show invoice detail
+                await loadOrders();
+                showInvoiceDetail(data.invoice_id, data.invoice_number);
+            } catch (err) {
+                console.error('Error converting to invoice:', err);
+                alert('Failed to convert sales order to invoice.');
+            }
+        }
+
+        // ===== INVOICE DETAIL VIEW =====
+        async function showInvoiceDetail(invoiceId, invoiceNumber) {
+            try {
+                const res = await fetch(`/api/invoices/${invoiceId}`);
+                if (!res.ok) { alert('Failed to load invoice.'); return; }
+                const inv = await res.json();
+
+                const panel = document.getElementById('soRightPanel');
+                const fromSO = inv.order_number || '';
+                const invDate = formatDate(inv.invoice_date);
+                const dueDate = inv.due_date ? formatDate(inv.due_date) : invDate;
+                const total = parseFloat(inv.total || 0);
+                const subTotal = parseFloat(inv.sub_total || 0);
+                const discount = parseFloat(inv.discount || 0);
+                const shippingCharges = parseFloat(inv.shipping_charges || 0);
+                const adjustment = parseFloat(inv.adjustment || 0);
+                const items = inv.items || [];
+
+                // Build address
+                const addrParts = [inv.billing_street, inv.billing_city, inv.billing_state, inv.billing_zip, inv.billing_country].filter(Boolean);
+                const billingAddr = addrParts.join(', ') || '';
+
+                // Build items table
+                const itemsHTML = items.map((item, idx) => {
+                    const qty = parseFloat(item.quantity || 1).toFixed(2);
+                    const rate = parseFloat(item.rate || 0).toFixed(2);
+                    const amount = parseFloat(item.amount || 0).toFixed(2);
+                    return `
+                        <tr>
+                            <td>${idx + 1}</td>
+                            <td>${item.item_name || ''}<br><span class="inv-doc-item-desc">${item.description || ''}</span></td>
+                            <td>${qty}<br><span class="inv-doc-item-desc">${item.unit || 'pcs'}</span></td>
+                            <td>${rate}</td>
+                            <td>${amount}</td>
+                        </tr>
+                    `;
+                }).join('') || '<tr><td colspan="5" style="text-align:center;color:#aaa;padding:16px">No items</td></tr>';
+
+                // Extra totals
+                let extraTotals = '';
+                if (discount > 0) {
+                    const discLabel = inv.discount_type === '%' ? `Discount (${parseFloat(inv.discount_value || 0)}%)` : 'Discount';
+                    extraTotals += `<div class="inv-doc-totals-row"><span class="inv-doc-totals-label">${discLabel}</span><span class="inv-doc-totals-value" style="color:#dc2626;">-${formatCurrency(discount)}</span></div>`;
+                }
+                if (shippingCharges > 0) {
+                    extraTotals += `<div class="inv-doc-totals-row"><span class="inv-doc-totals-label">Shipping</span><span class="inv-doc-totals-value">${formatCurrency(shippingCharges)}</span></div>`;
+                }
+                if (adjustment !== 0) {
+                    extraTotals += `<div class="inv-doc-totals-row"><span class="inv-doc-totals-label">Adjustment</span><span class="inv-doc-totals-value">${adjustment >= 0 ? '' : '-'}${formatCurrency(Math.abs(adjustment))}</span></div>`;
+                }
+
+                const statusText = (inv.status || 'DRAFT').toUpperCase();
+                const ribbonClass = statusText === 'SENT' ? 'sent' : statusText === 'OVERDUE' ? 'overdue' : 'draft';
+
+                panel.innerHTML = `
+                    <div class="inv-detail-header">
+                        <div class="inv-detail-header-left">
+                            <span class="inv-back" onclick="selectOrder(selectedOrderId)" title="Back to Sales Order">◂</span>
+                            <div class="inv-detail-meta">
+                                <span class="inv-detail-meta-top">Location: Head Office &nbsp; From sales order: <a href="javascript:void(0)" onclick="selectOrder(selectedOrderId)">${fromSO}</a></span>
+                                <span class="inv-detail-meta-num">${inv.invoice_number || ''}</span>
+                            </div>
+                        </div>
+                        <div class="inv-detail-header-right">
+                            <button class="inv-detail-header-btn" title="Fullscreen">⛶</button>
+                            <button class="inv-detail-header-btn" title="Chat">💬</button>
+                            <button class="inv-detail-close" onclick="selectOrder(selectedOrderId)" title="Close">✕</button>
+                        </div>
+                    </div>
+
+                    <div class="inv-action-bar">
+                        <button class="inv-action-btn"><span class="icon">✏</span> Edit</button>
+                        <button class="inv-action-btn"><span class="icon">✉</span> Send Email</button>
+                        <button class="inv-action-btn"><span class="icon">🔗</span> Share</button>
+                        <button class="inv-action-btn"><span class="icon">🔔</span> Reminders <span class="arrow">▾</span></button>
+                        <button class="inv-action-btn"><span class="icon">📄</span> PDF/Print <span class="arrow">▾</span></button>
+                        <button class="inv-action-btn primary" onclick="window.location.href='/record-invoice-payment.html?invoice_id=${inv.id}'">Record Payment</button>
+                        <button class="inv-action-btn"><span class="icon">⋯</span></button>
+                    </div>
+
+                    <div class="inv-info-banner">
+                        <span class="star">★</span>
+                        <span>WHAT'S NEXT? Invoice has been sent. Record payment for it as soon as you receive payment.</span>
+                        <a href="javascript:void(0)">Learn More</a>
+                        <button class="inv-action-btn primary" style="margin-left:auto;" onclick="window.location.href='/record-invoice-payment.html?invoice_id=${inv.id}'">Record Payment</button>
+                    </div>
+
+                    <div class="inv-setup-banner">
+                        <span>💳</span>
+                        <span>Get paid faster by setting up online payment gateways.</span>
+                        <a href="javascript:void(0)">Set Up Now ›</a>
+                    </div>
+
+                    <div class="inv-detail-tabs">
+                        <div class="inv-detail-tab active">Associated sales orders <span class="tab-count">1</span></div>
+                    </div>
+
+                    <div class="inv-detail-content">
+                        <div class="inv-doc-card">
+                            <div class="inv-doc-ribbon ${ribbonClass}">${ribbonClass === 'draft' ? 'Draft' : ribbonClass === 'sent' ? 'Sent' : statusText}</div>
+                            <div class="inv-doc-header">
+                                <div>
+                                    <div class="inv-doc-company-name">GOLO</div>
+                                    <div class="inv-doc-company-info">Philippines<br>glojetfra1357@gmail.com</div>
+                                </div>
+                                <div class="inv-doc-title-area">
+                                    <h2>INVOICE</h2>
+                                    <div class="inv-number"># ${inv.invoice_number || ''}</div>
+                                    <div class="inv-balance">Balance Due</div>
+                                    <div class="inv-balance-amount">${formatCurrency(total)}</div>
+                                </div>
+                            </div>
+
+                            <div class="inv-doc-bill-section">
+                                <div class="inv-doc-bill-to">
+                                    <div class="inv-doc-bill-to-label">Bill To</div>
+                                    <div class="inv-doc-bill-to-name">${inv.customer_name || 'N/A'}</div>
+                                    ${billingAddr ? `<div class="inv-doc-bill-to-addr">${billingAddr}</div>` : ''}
+                                </div>
+                                <div class="inv-doc-details">
+                                    <div class="inv-doc-details-row">
+                                        <span class="inv-doc-details-label">Invoice Date :</span>
+                                        <span class="inv-doc-details-value">${invDate}</span>
+                                    </div>
+                                    <div class="inv-doc-details-row">
+                                        <span class="inv-doc-details-label">Terms :</span>
+                                        <span class="inv-doc-details-value">${inv.payment_terms || 'Due on Receipt'}</span>
+                                    </div>
+                                    <div class="inv-doc-details-row">
+                                        <span class="inv-doc-details-label">Due Date :</span>
+                                        <span class="inv-doc-details-value">${dueDate}</span>
+                                    </div>
+                                    <div class="inv-doc-details-row">
+                                        <span class="inv-doc-details-label">P.O.# :</span>
+                                        <span class="inv-doc-details-value">${fromSO}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <table class="inv-doc-items-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:30px">#</th>
+                                        <th>Item & Description</th>
+                                        <th>Qty</th>
+                                        <th>Rate</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${itemsHTML}
+                                </tbody>
+                            </table>
+
+                            <div class="inv-doc-totals">
+                                <div class="inv-doc-totals-row">
+                                    <span class="inv-doc-totals-label">Sub Total</span>
+                                    <span class="inv-doc-totals-value">${subTotal.toFixed(2)}</span>
+                                </div>
+                                ${extraTotals}
+                                <div class="inv-doc-totals-row total">
+                                    <span class="inv-doc-totals-label">Total</span>
+                                    <span class="inv-doc-totals-value">${formatCurrency(total)}</span>
+                                </div>
+                                <div class="inv-doc-totals-row balance">
+                                    <span class="inv-doc-totals-label">Balance Due</span>
+                                    <span class="inv-doc-totals-value">${formatCurrency(total)}</span>
+                                </div>
+                            </div>
+
+                            ${inv.notes ? `
+                                <div class="inv-doc-notes">
+                                    <div class="inv-doc-notes-title">Notes</div>
+                                    <div class="inv-doc-notes-text">${inv.notes}</div>
+                                </div>
+                            ` : ''}
+
+                            ${inv.terms_conditions ? `
+                                <div class="inv-doc-notes" style="border-top:none;margin-top:8px;padding-top:0">
+                                    <div class="inv-doc-notes-title">Terms & Conditions</div>
+                                    <div class="inv-doc-notes-text">${inv.terms_conditions}</div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            } catch (err) {
+                console.error('Error loading invoice detail:', err);
+                alert('Error loading invoice details.');
+            }
+        }
+
         // ===== BACK TO LIST =====
         function backToList() {
             document.getElementById('detailView').classList.remove('active');
@@ -1134,8 +2902,480 @@
             selectedOrderId = null;
         }
 
-        loadOrders();
+        // ===== CREATE DROPDOWN =====
+        function toggleCreateDropdown(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('createDropdownMenu');
+            menu.classList.toggle('open');
+        }
+
+        document.addEventListener('click', function () {
+            const menu = document.getElementById('createDropdownMenu');
+            if (menu) menu.classList.remove('open');
+        });
+
+        async function createPackage() {
+            if (!selectedOrderId) return;
+            document.getElementById('createDropdownMenu').classList.remove('open');
+
+            // Fetch the order detail
+            try {
+                const orderRes = await fetch(`/api/sales-orders/${selectedOrderId}`);
+                if (!orderRes.ok) return;
+                const order = await orderRes.json();
+
+                // Fetch next package number
+                const numRes = await fetch('/api/packages/next-number');
+                const numData = await numRes.json();
+
+                // Fetch existing packages for this order to calculate packed quantities
+                const pkgsRes = await fetch(`/api/packages/by-order/${selectedOrderId}`);
+                const existingPkgs = await pkgsRes.json();
+
+                // Calculate already-packed quantities per item
+                const packedMap = {};
+                for (const pkg of existingPkgs) {
+                    const pkgDetail = await fetch(`/api/packages/${pkg.id}`);
+                    const pkgData = await pkgDetail.json();
+                    if (pkgData.items) {
+                        for (const pi of pkgData.items) {
+                            packedMap[pi.item_name] = (packedMap[pi.item_name] || 0) + parseFloat(pi.quantity_to_pack || 0);
+                        }
+                    }
+                }
+
+                // Fetch stock for items
+                let stockMap = {};
+                try {
+                    const itemsRes = await fetch('/api/items');
+                    const allItems = await itemsRes.json();
+                    for (const item of allItems) {
+                        stockMap[item.name] = parseFloat(item.stock_quantity || 0);
+                    }
+                } catch (e) { /* ignore */ }
+
+                showPackageForm(order, numData.package_number, packedMap, stockMap);
+            } catch (err) {
+                console.error('Error creating package:', err);
+                alert('Error loading order details.');
+            }
+        }
+
+        function showPackageForm(order, packageNumber, packedMap, stockMap) {
+            const panel = document.getElementById('soRightPanel');
+            const today = new Date().toISOString().split('T')[0];
+            const todayDisplay = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+            const items = order.items || [];
+
+            let itemsHTML = items.map((item, idx) => {
+                const ordered = parseFloat(item.quantity || 0);
+                const packed = parseFloat(packedMap[item.item_name] || 0);
+                const remaining = Math.max(0, ordered - packed);
+                const stock = stockMap[item.item_name] || 0;
+                return `
+                    <tr data-idx="${idx}">
+                        <td>${item.item_name || ''}</td>
+                        <td class="col-center">${ordered.toFixed(2)}</td>
+                        <td class="col-center">${packed.toFixed(0)}</td>
+                        <td class="col-right">
+                            <input type="number" class="pkg-qty-input" id="pkgQty_${idx}" value="${remaining}" min="0" max="${remaining}" step="1">
+                            <div class="pkg-stock-info">
+                                Stock on Hand:
+                                <span class="pkg-stock-qty">${stock} pcs</span>
+                            </div>
+                            <div class="pkg-stock-location">
+                                📦 Head Office
+                            </div>
+                        </td>
+                        <td class="col-center">
+                            <button class="pkg-delete-btn" onclick="this.closest('tr').remove(); updatePkgTotalItems();" title="Remove">✕</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            panel.innerHTML = `
+                <div class="pkg-form-header">
+                    <div class="pkg-form-title">📦 New Package</div>
+                    <div class="pkg-form-header-right">
+                        <a href="#" class="pkg-eval-link">📐 Evaluate packing geometry</a>
+                        <button class="pkg-close-btn" onclick="cancelPackage()">✕</button>
+                    </div>
+                </div>
+
+                <div class="pkg-form-body">
+                    <div class="pkg-fields-row">
+                        <div class="pkg-field-group">
+                            <label class="pkg-field-label">Package Slip#*</label>
+                            <div style="display:flex;align-items:center;gap:6px;">
+                                <input type="text" class="pkg-field-input" id="pkgSlipNumber" value="${packageNumber}">
+                                <span style="cursor:pointer;color:#999;font-size:16px;" title="Info">ℹ️</span>
+                            </div>
+                        </div>
+                        <div class="pkg-field-group">
+                            <label class="pkg-field-label normal">Date*</label>
+                            <input type="date" class="pkg-field-input" id="pkgDate" value="${today}">
+                        </div>
+                    </div>
+
+                    <div class="pkg-info-banner">
+                        ⚠️ You can also select or scan the items to be included from the sales order.
+                        <a href="#">Select or Scan Items</a>
+                    </div>
+
+                    <table class="pkg-items-table">
+                        <thead>
+                            <tr>
+                                <th>ITEMS & DESCRIPTION</th>
+                                <th class="col-center">ORDERED</th>
+                                <th class="col-center">PACKED</th>
+                                <th class="col-right">QUANTITY TO PACK</th>
+                                <th class="col-center" style="width:40px"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="pkgItemsBody">
+                            ${itemsHTML}
+                        </tbody>
+                    </table>
+
+                    <div class="pkg-notes-section">
+                        <div class="pkg-notes-label">INTERNAL NOTES</div>
+                        <textarea class="pkg-notes-textarea" id="pkgNotes" placeholder="Add internal notes..."></textarea>
+                    </div>
+                </div>
+
+                <div class="pkg-form-footer">
+                    <div class="pkg-footer-left">
+                        <button class="pkg-btn-save" onclick="savePackage()">Save</button>
+                        <button class="pkg-btn-cancel" onclick="cancelPackage()">Cancel</button>
+                    </div>
+                    <div class="pkg-footer-right">Total Items : <strong id="pkgTotalItems">${items.length}</strong></div>
+                </div>
+            `;
+
+            // Store order data for saving
+            panel.dataset.orderId = order.id;
+            panel.dataset.orderNumber = order.order_number;
+            panel.dataset.customerName = order.customer_name || '';
+        }
+
+        function updatePkgTotalItems() {
+            const rows = document.querySelectorAll('#pkgItemsBody tr');
+            const el = document.getElementById('pkgTotalItems');
+            if (el) el.textContent = rows.length;
+        }
+
+        async function savePackage() {
+            const panel = document.getElementById('soRightPanel');
+            const packageNumber = document.getElementById('pkgSlipNumber').value.trim();
+            const packageDate = document.getElementById('pkgDate').value;
+            const internalNotes = document.getElementById('pkgNotes').value.trim();
+
+            if (!packageNumber) {
+                alert('Package Slip# is required');
+                return;
+            }
+
+            // Collect items
+            const rows = document.querySelectorAll('#pkgItemsBody tr');
+            const items = [];
+            rows.forEach(row => {
+                const idx = row.dataset.idx;
+                const itemName = row.querySelector('td:first-child').textContent.trim();
+                const ordered = parseFloat(row.querySelector('td:nth-child(2)').textContent) || 0;
+                const packed = parseFloat(row.querySelector('td:nth-child(3)').textContent) || 0;
+                const qtyInput = row.querySelector('.pkg-qty-input');
+                const qtyToPack = parseFloat(qtyInput ? qtyInput.value : 0);
+                if (qtyToPack > 0) {
+                    items.push({
+                        item_name: itemName,
+                        ordered_quantity: ordered,
+                        packed_quantity: packed,
+                        quantity_to_pack: qtyToPack
+                    });
+                }
+            });
+
+            if (items.length === 0) {
+                alert('Please add at least one item to pack.');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/packages', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        package_number: packageNumber,
+                        sales_order_id: parseInt(panel.dataset.orderId),
+                        sales_order_number: panel.dataset.orderNumber,
+                        customer_name: panel.dataset.customerName,
+                        package_date: packageDate,
+                        internal_notes: internalNotes,
+                        items: items
+                    })
+                });
+
+                if (!res.ok) {
+                    const err = await res.json();
+                    alert('Error: ' + (err.error || 'Failed to save package'));
+                    return;
+                }
+
+                alert('Package ' + packageNumber + ' saved successfully!');
+                // Redirect to packages page (Not Shipped)
+                window.location.href = '/packages.html?filter=not-shipped';
+            } catch (err) {
+                console.error('Error saving package:', err);
+                alert('Failed to save package.');
+            }
+        }
+
+        function cancelPackage() {
+            // Go back to order detail
+            if (selectedOrderId) {
+                selectOrder(selectedOrderId);
+            }
+        }
+
+        function createShipment() {
+            if (!selectedOrderId) return;
+            alert('Create Shipment for Sales Order #' + selectedOrderId + ' (Coming soon)');
+            document.getElementById('createDropdownMenu').classList.remove('open');
+        }
+
+        // ===== SALES RETURN FORM =====
+        let srOrderData = null;
+
+        async function openSalesReturnForm() {
+            if (!selectedOrderId) return;
+            document.getElementById('createDropdownMenu').classList.remove('open');
+
+            try {
+                // Fetch the sales order detail
+                const orderRes = await fetch(`/api/sales-orders/${selectedOrderId}`);
+                if (!orderRes.ok) { alert('Failed to load sales order'); return; }
+                srOrderData = await orderRes.json();
+
+                // Get next RMA number
+                const rmaRes = await fetch('/api/sales-returns/next-number');
+                const rmaData = await rmaRes.json();
+                document.getElementById('srRmaNumber').value = rmaData.rma_number;
+
+                // Set today's date
+                const today = new Date();
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                document.getElementById('srDate').value = `${String(today.getDate()).padStart(2, '0')} ${months[today.getMonth()]} ${today.getFullYear()}`;
+
+                // Set warehouse
+                document.getElementById('srWarehouse').value = 'Head Office';
+
+                // Clear reason
+                document.getElementById('srReason').value = '';
+                document.getElementById('srCreditOnly').checked = false;
+
+                // Populate items table from SO items (with shipped quantities from packages)
+                const items = srOrderData.items || [];
+                const tbody = document.getElementById('srItemsBody');
+                let totalItems = 0;
+                tbody.innerHTML = items.map((item, idx) => {
+                    const shipped = parseFloat(item.quantity || 0);
+                    totalItems += shipped;
+                    return `
+                        <tr data-idx="${idx}">
+                            <td>${item.item_name}</td>
+                            <td style="text-align:center;">${shipped}</td>
+                            <td style="text-align:center;">0</td>
+                            <td style="text-align:right;">
+                                <input type="number" class="sr-qty-input" value="${shipped}" min="0" max="${shipped}" data-item="${idx}">
+                                <div class="sr-stock-info">Stock on Hand:<br>${item.quantity || 0} g</div>
+                                <div class="sr-stock-info"><a href="#">🏢 Head Office</a></div>
+                            </td>
+                            <td><button class="sr-remove-btn" onclick="removeSRItem(this)">✕</button></td>
+                        </tr>
+                    `;
+                }).join('');
+
+                document.getElementById('srTotalItems').textContent = 'Total Items : ' + totalItems;
+
+                // Show overlay
+                document.getElementById('srOverlay').classList.add('open');
+            } catch (err) {
+                console.error('Error opening sales return form:', err);
+                alert('Failed to open Sales Return form.');
+            }
+        }
+
+        function closeSalesReturnForm() {
+            document.getElementById('srOverlay').classList.remove('open');
+        }
+
+        function removeSRItem(btn) {
+            const row = btn.closest('tr');
+            row.remove();
+            // Update total
+            let total = 0;
+            document.querySelectorAll('#srItemsBody .sr-qty-input').forEach(inp => {
+                total += parseFloat(inp.value || 0);
+            });
+            document.getElementById('srTotalItems').textContent = 'Total Items : ' + total;
+        }
+
+        async function saveSalesReturn(status) {
+            if (!srOrderData) { alert('No order data'); return; }
+
+            const rmaNumber = document.getElementById('srRmaNumber').value.trim();
+            if (!rmaNumber) { alert('RMA# is required'); return; }
+
+            const dateStr = document.getElementById('srDate').value.trim();
+            if (!dateStr) { alert('Date is required'); return; }
+
+            const warehouse = document.getElementById('srWarehouse').value;
+            const reason = document.getElementById('srReason').value.trim();
+            const creditOnly = document.getElementById('srCreditOnly').checked;
+
+            // Gather items
+            const rows = document.querySelectorAll('#srItemsBody tr');
+            const items = [];
+            rows.forEach(row => {
+                const idx = parseInt(row.dataset.idx);
+                const soItem = srOrderData.items[idx];
+                const qtyInput = row.querySelector('.sr-qty-input');
+                const returnQty = parseFloat(qtyInput ? qtyInput.value : 0);
+                if (returnQty > 0) {
+                    items.push({
+                        item_name: soItem.item_name,
+                        item_id: soItem.item_id || null,
+                        shipped_quantity: parseFloat(soItem.quantity || 0),
+                        returned_quantity: 0,
+                        return_quantity: returnQty,
+                        rate: parseFloat(soItem.rate || 0),
+                        amount: parseFloat(soItem.amount || 0)
+                    });
+                }
+            });
+
+            if (items.length === 0) {
+                alert('Please add at least one item with a return quantity.');
+                return;
+            }
+
+            // Parse date
+            const months = { 'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5, 'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11 };
+            const dateParts = dateStr.split(' ');
+            let parsedDate = new Date();
+            if (dateParts.length === 3) {
+                parsedDate = new Date(parseInt(dateParts[2]), months[dateParts[1]] || 0, parseInt(dateParts[0]));
+            }
+
+            const payload = {
+                rma_number: rmaNumber,
+                return_date: parsedDate.toISOString().split('T')[0],
+                warehouse_location: warehouse,
+                reason: reason,
+                credit_only: creditOnly,
+                sales_order_id: selectedOrderId,
+                sales_order_number: srOrderData.order_number,
+                customer_name: srOrderData.customer_name,
+                status: status,
+                items: items
+            };
+
+            try {
+                const res = await fetch('/api/sales-returns', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) {
+                    const err = await res.json();
+                    alert('Error: ' + (err.error || 'Failed to save'));
+                    return;
+                }
+
+                const data = await res.json();
+                alert('Sales Return ' + rmaNumber + ' saved successfully as ' + status + '!');
+                closeSalesReturnForm();
+                selectOrder(selectedOrderId);
+            } catch (err) {
+                console.error('Error saving sales return:', err);
+                alert('Failed to save sales return.');
+            }
+        }
+
+        loadOrders().then(() => {
+            const params = new URLSearchParams(window.location.search);
+            const orderId = params.get('orderId');
+            if (orderId) {
+                openOrderDetail(parseInt(orderId));
+            }
+        });
     </script>
+
+    <!-- Sales Return Form Overlay -->
+    <div class="sr-overlay" id="srOverlay">
+        <div class="sr-header">
+            <span class="sr-header-title">New Sales Return</span>
+            <button class="sr-close-btn" onclick="closeSalesReturnForm()">✕</button>
+        </div>
+        <div class="sr-body">
+            <div class="sr-form-card">
+                <div class="sr-field-row">
+                    <label class="sr-field-label required">RMA#*</label>
+                    <input type="text" class="sr-field-input" id="srRmaNumber" readonly>
+                    <button class="sr-rma-refresh" title="Refresh RMA#" onclick="refreshRMA()">🔄</button>
+                </div>
+                <div class="sr-field-row">
+                    <label class="sr-field-label required">Date*</label>
+                    <input type="text" class="sr-field-input" id="srDate">
+                </div>
+                <div class="sr-field-row">
+                    <label class="sr-field-label required">Warehouse Location*</label>
+                    <select class="sr-field-select" id="srWarehouse">
+                        <option value="Head Office">Head Office</option>
+                    </select>
+                </div>
+                <div class="sr-field-row">
+                    <label class="sr-field-label">Reason</label>
+                    <input type="text" class="sr-field-input" id="srReason">
+                </div>
+                <div class="sr-credit-check">
+                    <input type="checkbox" id="srCreditOnly">
+                    <span>This sales return contains credit-only goods ⓘ</span>
+                </div>
+
+                <div class="sr-info-bar">
+                    ⚠️ You can also select or scan the items to be included from the package. <a href="#">Select or Scan
+                        Items</a>
+                </div>
+
+                <table class="sr-items-table">
+                    <thead>
+                        <tr>
+                            <th>ITEMS & DESCRIPTION</th>
+                            <th>SHIPPED / FULFILLED</th>
+                            <th>RETURNED</th>
+                            <th>RETURN QUANTITY</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="srItemsBody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="sr-footer">
+            <div class="sr-footer-left">
+                <button class="sr-btn-draft" onclick="saveSalesReturn('DRAFT')">Save as Draft</button>
+                <button class="sr-btn-approve" onclick="saveSalesReturn('APPROVED')">Save and Approve</button>
+                <button class="sr-btn-cancel" onclick="closeSalesReturnForm()">Cancel</button>
+            </div>
+            <div class="sr-footer-right" id="srTotalItems">Total Items : 0</div>
+        </div>
+    </div>
+
 </body>
 
 </html>

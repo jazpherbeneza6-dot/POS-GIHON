@@ -239,6 +239,9 @@ async function loadReport(reportType) {
             case 'turnover-amount':
                 generateTurnoverByAmountReport();
                 break;
+            case 'sales-item':
+                generateSalesByItemReport();
+                break;
             default:
                 document.getElementById('summaryCards').innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #868e96;"><div style="font-size: 48px; margin-bottom: 16px;">🚧</div><div style="font-size: 18px; font-weight: 600;">Report Coming Soon</div><div style="font-size: 14px; margin-top: 8px;">This report type is under development.</div></div>';
                 break;
@@ -368,6 +371,7 @@ function applyFilters() {
             case 'valuation-summary': generateValuationSummaryReport(); break;
             case 'fifo': generateFifoReport(); break;
             case 'turnover-amount': generateTurnoverByAmountReport(); break;
+            case 'sales-item': generateSalesByItemReport(); break;
             default: loadReport(currentReport);
         }
     } else {
@@ -2593,4 +2597,99 @@ function formatDateTime(dateString) {
         hour: '2-digit',
         minute: '2-digit'
     }).format(new Date(dateString));
+}
+
+// ========== SALES BY ITEM REPORT ==========
+async function generateSalesByItemReport() {
+    document.getElementById('reportTitle').textContent = 'Sales by Item';
+    document.getElementById('summaryCards').innerHTML = '';
+    document.getElementById('chartContainer').style.display = 'none';
+    document.getElementById('chartContainer2').style.display = 'none';
+
+    // Get date range
+    const fromDateEl = document.getElementById('filterFromDate');
+    const toDateEl = document.getElementById('filterToDate');
+    const fromDate = fromDateEl ? fromDateEl.value : '';
+    const toDate = toDateEl ? toDateEl.value : '';
+
+    // Format display dates
+    const fromDisplay = fromDate ? new Date(fromDate + 'T00:00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+    const toDisplay = toDate ? new Date(toDate + 'T00:00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+
+    // Fetch data from API
+    let reportData = [];
+    try {
+        let url = '/api/sales/reports/sales-by-item';
+        if (fromDate && toDate) {
+            url += `?from=${fromDate}&to=${toDate}`;
+        }
+        const res = await fetch(url);
+        if (res.ok) {
+            reportData = await res.json();
+        }
+    } catch (e) {
+        console.error('Error fetching sales by item:', e);
+    }
+
+    // Calculate totals
+    let totalQty = 0;
+    let totalAmt = 0;
+    reportData.forEach(item => {
+        totalQty += parseFloat(item.quantity_sold) || 0;
+        totalAmt += parseFloat(item.total_amount) || 0;
+    });
+
+    // Build Zoho-style report
+    const tableContainer = document.getElementById('tableContainer');
+    tableContainer.innerHTML = `
+    <div style="background:white; border:1px solid #e0e0e0; border-radius:8px; overflow:hidden;">
+        <!-- Report Header -->
+        <div style="text-align:center; padding:30px 24px 20px;">
+            <div style="font-size:12px; color:#4285f4; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;">SOLO</div>
+            <div style="font-size:18px; font-weight:700; color:#333; margin-bottom:6px;">Sales by Item</div>
+            <div style="font-size:13px; color:#666;">From <span style="color:#4285f4; font-weight:600;">${fromDisplay}</span> To <span style="color:#4285f4; font-weight:600;">${toDisplay}</span></div>
+        </div>
+
+        <!-- Report Table -->
+        <table style="width:100%; border-collapse:collapse;">
+            <thead>
+                <tr style="border-top:1px solid #e0e0e0; border-bottom:1px solid #e0e0e0;">
+                    <th style="text-align:left; padding:12px 20px; font-size:11px; font-weight:600; color:#999; text-transform:uppercase; letter-spacing:0.5px;">ITEM NAME ⇅</th>
+                    <th style="text-align:left; padding:12px 16px; font-size:11px; font-weight:600; color:#999; text-transform:uppercase; letter-spacing:0.5px;">SKU</th>
+                    <th style="text-align:right; padding:12px 16px; font-size:11px; font-weight:600; color:#999; text-transform:uppercase; letter-spacing:0.5px;">QUANTITY SOLD</th>
+                    <th style="text-align:right; padding:12px 16px; font-size:11px; font-weight:600; color:#999; text-transform:uppercase; letter-spacing:0.5px;">AMOUNT</th>
+                    <th style="text-align:right; padding:12px 20px; font-size:11px; font-weight:600; color:#999; text-transform:uppercase; letter-spacing:0.5px;">AVERAGE PRICE</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${reportData.length === 0 ? `
+                    <tr><td colspan="5" style="text-align:center; padding:40px; color:#999; font-size:14px;">No sales data found for the selected period.</td></tr>
+                ` : reportData.map(item => {
+        const qty = parseFloat(item.quantity_sold) || 0;
+        const amt = parseFloat(item.total_amount) || 0;
+        const avg = parseFloat(item.average_price) || 0;
+        return `
+                        <tr style="border-bottom:1px solid #f0f0f0;">
+                            <td style="padding:14px 20px; font-size:13px; color:#333;">${item.item_name}</td>
+                            <td style="padding:14px 16px; font-size:13px; color:#333;">${item.sku || ''}</td>
+                            <td style="padding:14px 16px; font-size:13px; color:#4285f4; text-align:right;">${qty.toFixed(2)}</td>
+                            <td style="padding:14px 16px; font-size:13px; color:#4285f4; text-align:right;">PHP${amt.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                            <td style="padding:14px 20px; font-size:13px; color:#4285f4; text-align:right;">PHP${avg.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                        </tr>
+                    `;
+    }).join('')}
+                <!-- TOTAL ROW -->
+                ${reportData.length > 0 ? `
+                <tr style="border-top:2px solid #e0e0e0; background:#f9fafb;">
+                    <td style="padding:14px 20px; font-size:13px; font-weight:700; color:#333;">Total</td>
+                    <td style="padding:14px 16px;"></td>
+                    <td style="padding:14px 16px; font-size:13px; font-weight:700; color:#333; text-align:right;">${totalQty.toFixed(2)}</td>
+                    <td style="padding:14px 16px; font-size:13px; font-weight:700; color:#333; text-align:right;">PHP${totalAmt.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                    <td style="padding:14px 20px;"></td>
+                </tr>
+                ` : ''}
+            </tbody>
+        </table>
+    </div>
+    `;
 }

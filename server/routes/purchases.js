@@ -56,8 +56,13 @@ router.post('/', async (req, res) => {
     const discountAmt = totalAmount * (discPct / 100);
     totalAmount = totalAmount - discountAmt + adj;
 
+    // Auto-generate PO number
+    const poCountResult = await db.query('SELECT COUNT(*) as cnt FROM purchases');
+    const poCount = parseInt(poCountResult.rows[0].cnt) || 0;
+    const generatedPONumber = 'PO-' + String(poCount + 1).padStart(5, '0');
+
     // Generate invoice number if not provided
-    const invoiceNum = invoice_number || po_number || 'INV-' + Date.now().toString().slice(-8);
+    const invoiceNum = invoice_number || generatedPONumber;
 
     // Start transaction
     let purchaseId;
@@ -72,7 +77,7 @@ router.post('/', async (req, res) => {
         finalSupplierName,
         totalAmount,
         invoiceNum,
-        po_number || null,
+        generatedPONumber,
         expected_date || null,
         payment_terms || null,
         notes || null,
@@ -156,11 +161,42 @@ router.post('/', async (req, res) => {
     res.status(201).json(result.rows[0]);
   } catch (error) {
     console.error('Error creating purchase:', error);
-    if (error.code === '23505') { // PostgreSQL unique violation
-      res.status(400).json({ error: 'Invoice number already exists' });
-    } else {
-      res.status(500).json({ error: error.message || 'Failed to create purchase' });
+
+    // User-friendly error messages
+    if (error.code === '42703') {
+      // PostgreSQL: undefined column
+      const colMatch = error.message.match(/column "(.+?)"/);
+      const colName = colMatch ? colMatch[1] : 'unknown';
+      return res.status(500).json({
+        error: `Database column "${colName}" is missing. Please run the migration: node server/migrate-purchases.js`
+      });
     }
+    if (error.code === '23505') {
+      // Unique violation
+      return res.status(400).json({ error: 'A purchase order with this invoice number already exists. Please use a different number.' });
+    }
+    if (error.code === '23502') {
+      // Not-null constraint
+      const colMatch = error.message.match(/column "(.+?)"/);
+      const colName = colMatch ? colMatch[1] : 'unknown';
+      return res.status(400).json({ error: `Required field is missing: ${colName}` });
+    }
+
+    res.status(500).json({ error: 'Failed to save purchase order. Please check your input and try again.' });
+  }
+});
+
+// Get next PO number (for display before saving)
+router.get('/next-number', async (req, res) => {
+  try {
+    const db = database.getDb();
+    const countResult = await db.query('SELECT COUNT(*) as cnt FROM purchases');
+    const count = parseInt(countResult.rows[0].cnt) || 0;
+    const poNumber = 'PO-' + String(count + 1).padStart(5, '0');
+    res.json({ po_number: poNumber });
+  } catch (error) {
+    console.error('Error generating next PO number:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -432,7 +468,21 @@ router.put('/:id', async (req, res) => {
     res.json(result.rows[0]);
   } catch (error) {
     console.error('Error updating purchase:', error);
-    res.status(500).json({ error: 'Failed to update purchase' });
+
+    if (error.code === '42703') {
+      const colMatch = error.message.match(/column "(.+?)"/);
+      const colName = colMatch ? colMatch[1] : 'unknown';
+      return res.status(500).json({
+        error: `Database column "${colName}" is missing. Please run the migration: node server/migrate-purchases.js`
+      });
+    }
+    if (error.code === '23502') {
+      const colMatch = error.message.match(/column "(.+?)"/);
+      const colName = colMatch ? colMatch[1] : 'unknown';
+      return res.status(400).json({ error: `Required field is missing: ${colName}` });
+    }
+
+    res.status(500).json({ error: 'Failed to update purchase order. Please check your input and try again.' });
   }
 });
 

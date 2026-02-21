@@ -96,7 +96,7 @@
         .form-main {
             flex: 1;
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 2fr 3fr;
             gap: 0;
             overflow: hidden;
         }
@@ -271,6 +271,16 @@
             width: 100%;
         }
 
+        .item-table input[type="number"]::-webkit-inner-spin-button,
+        .item-table input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .item-table input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
         .item-table select {
             padding: 5px 8px;
             border: 1px solid #e0e0e0;
@@ -354,6 +364,18 @@
             font-size: 11px;
             width: 60px;
             text-align: right;
+        }
+
+        .totals-input input[type="number"]::-webkit-inner-spin-button,
+        .totals-input input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            appearance: none;
+            margin: 0;
+        }
+
+        .totals-input input[type="number"] {
+            -moz-appearance: textfield;
+            appearance: textfield;
         }
 
         .totals-row.total {
@@ -481,6 +503,84 @@
             cursor: pointer;
         }
 
+        /* Split Button Group */
+        .btn-split-group {
+            position: relative;
+            display: inline-flex;
+        }
+
+        .btn-split-group .btn-split-main {
+            padding: 8px 16px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px 0 0 4px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-split-group .btn-split-main:hover {
+            background: #3367d6;
+        }
+
+        .btn-split-group .btn-split-arrow {
+            padding: 8px 10px;
+            background: #3b7ddb;
+            color: white;
+            border: none;
+            border-left: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-split-group .btn-split-arrow:hover {
+            background: #2d5bb9;
+        }
+
+        .btn-split-dropdown {
+            display: none;
+            position: absolute;
+            bottom: calc(100% + 4px);
+            left: 0;
+            background: white;
+            border: 1px solid #d0d5dd;
+            border-radius: 6px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            z-index: 200;
+            min-width: 180px;
+            overflow: hidden;
+        }
+
+        .btn-split-dropdown.open {
+            display: block;
+        }
+
+        .btn-split-dropdown-item {
+            padding: 10px 16px;
+            font-size: 12px;
+            color: #333;
+            cursor: pointer;
+            white-space: nowrap;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .btn-split-dropdown-item:hover {
+            background: #4285f4;
+            color: white;
+        }
+
+        .btn-split-dropdown-item.active {
+            background: #e8f0fe;
+            font-weight: 600;
+        }
+
         .btn-cancel {
             padding: 8px 16px;
             background: #f0f0f0;
@@ -494,10 +594,11 @@
 
         .footer-right {
             display: flex;
-            align-items: center;
-            gap: 6px;
-            color: #333;
-            font-size: 12px;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+            color: #666;
+            font-size: 13px;
         }
 
         .footer-right .amount {
@@ -1295,6 +1396,221 @@
         .sp-pw-popup-btns .sp-pw-cancel:hover {
             background: #e0e0e0;
         }
+
+        /* Delivery Method Dropdown */
+        .dm-wrap {
+            position: relative;
+            max-width: 200px;
+        }
+
+        .dm-input {
+            padding: 6px 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 12px;
+            width: 100%;
+            font-family: inherit;
+            cursor: text;
+        }
+
+        .dm-input:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+
+        .dm-panel {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 200;
+            margin-top: 2px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .dm-panel.open {
+            display: block;
+        }
+
+        .dm-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .dm-option:hover {
+            background: #f0f4ff;
+        }
+
+        .dm-option-name {
+            flex: 1;
+        }
+
+        .dm-delete-btn {
+            background: none;
+            border: none;
+            color: #dc2626;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 0 4px;
+            line-height: 1;
+            opacity: 0.6;
+        }
+
+        .dm-delete-btn:hover {
+            opacity: 1;
+        }
+
+        .dm-empty {
+            padding: 10px 12px;
+            color: #999;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        .dm-hint {
+            padding: 6px 12px;
+            font-size: 10px;
+            color: #999;
+            border-top: 1px solid #f0f0f0;
+            text-align: center;
+        }
+
+        /* Discount Column */
+        .disc-cell {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .disc-cell input {
+            width: 50px !important;
+            text-align: right;
+            padding: 5px 4px !important;
+        }
+
+        .disc-deduct {
+            font-size: 9px;
+            color: #dc2626;
+            font-weight: 600;
+            white-space: nowrap;
+            min-width: 30px;
+        }
+
+        .disc-toggle {
+            background: #f0f0f0;
+            border: 1px solid #d0d5dd;
+            border-radius: 3px;
+            font-size: 9px;
+            padding: 4px 4px;
+            cursor: pointer;
+            color: #555;
+            font-weight: 600;
+            min-width: 22px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .disc-toggle:hover {
+            background: #e0e0e0;
+        }
+
+        .disc-th {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            justify-content: center;
+        }
+
+        .add-disc-btn {
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            font-size: 10px;
+            cursor: pointer;
+            padding: 1px 5px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .add-disc-btn:hover {
+            background: #3367d6;
+        }
+
+        .disc-remove-btn {
+            background: none;
+            border: none;
+            color: #dc2626;
+            cursor: pointer;
+            font-size: 12px;
+            padding: 0 2px;
+            line-height: 1;
+            opacity: 0.5;
+            font-weight: 600;
+        }
+
+        .disc-remove-btn:hover {
+            opacity: 1;
+        }
+
+        .totals-disc-cell {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .totals-disc-cell input {
+            width: 60px;
+            padding: 4px 8px;
+            border: 1px solid #e0e0e0;
+            border-radius: 3px;
+            font-size: 11px;
+            text-align: right;
+        }
+
+        .totals-disc-cell input[type="number"]::-webkit-inner-spin-button,
+        .totals-disc-cell input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .totals-disc-cell input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        .totals-disc-toggle {
+            background: #f0f0f0;
+            border: 1px solid #d0d5dd;
+            border-radius: 3px;
+            font-size: 10px;
+            padding: 3px 6px;
+            cursor: pointer;
+            color: #555;
+            font-weight: 600;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        .totals-disc-toggle:hover {
+            background: #e0e0e0;
+        }
+
+        .totals-disc-value {
+            font-size: 11px;
+            color: #333;
+            min-width: 40px;
+            text-align: right;
+        }
     </style>
 </head>
 
@@ -1308,7 +1624,7 @@
             <div class="page-header">
                 <div class="page-title-wrapper">
                     <span class="page-icon">📋</span>
-                    <h1 class="page-title">New Sales Order</h1>
+                    <h1 class="page-title" id="pageTitle">New Sales Order</h1>
                 </div>
                 <div class="header-actions">
                     <button class="header-icon-btn">⚙</button>
@@ -1360,7 +1676,7 @@
                         </div>
                         <div class="form-row">
                             <label class="form-label">Reference#</label>
-                            <input type="text" class="form-input" id="reference">
+                            <input type="text" class="form-input" id="referenceNumber">
                         </div>
                         <div class="form-row">
                             <label class="form-label required">Sales Order Date*</label>
@@ -1418,9 +1734,15 @@
                         </div>
                         <div class="form-row">
                             <label class="form-label">Delivery Method</label>
-                            <select class="form-select" id="deliveryMethod">
-                                <option value="">Select a delivery method</option>
-                            </select>
+                            <div class="dm-wrap" id="dmWrap">
+                                <input type="text" class="dm-input" id="dmInput"
+                                    placeholder="Type or select delivery method" onfocus="openDmPanel()"
+                                    oninput="filterDmPanel()">
+                                <div class="dm-panel" id="dmPanel">
+                                    <div id="dmOptions"></div>
+                                    <div class="dm-hint">Press Enter to save a new method</div>
+                                </div>
+                            </div>
                         </div>
                         <div class="form-row">
                             <label class="form-label">Salesperson</label>
@@ -1490,6 +1812,11 @@
                                     <th>ITEM DETAILS</th>
                                     <th class="center" style="width: 70px;">QTY</th>
                                     <th class="center" style="width: 80px;">RATE ₱</th>
+                                    <th class="center disc-col-th" style="width: 100px;">
+                                        <div class="disc-th">DISCOUNT <button class="add-disc-btn"
+                                                onclick="addDiscountColumn()" title="Add another discount">+</button>
+                                        </div>
+                                    </th>
                                     <th style="width: 90px;">TAX</th>
                                     <th class="center" style="width: 80px;">AMOUNT</th>
                                     <th style="width: 30px;"></th>
@@ -1504,16 +1831,22 @@
                                         <input type="hidden" class="item-id-hidden" value="">
                                         <div class="item-picker-dropdown"></div>
                                     </td>
-                                    <td class="center"><input type="number" value="1.00" style="text-align: center;"
+                                    <td class="center"><input type="number" value="1" style="text-align: center;"
                                             class="qty-input" onchange="recalcRow(this)"></td>
-                                    <td class="center"><input type="number" value="0.00" style="text-align: right;"
+                                    <td class="center"><input type="number" value="0" style="text-align: right;"
                                             class="rate-input" onchange="recalcRow(this)"></td>
+                                    <td class="disc-col-td">
+                                        <div class="disc-cell"><input type="number" value="0" class="disc-input"
+                                                onchange="recalcRow(this)"><button class="disc-toggle"
+                                                onclick="toggleDiscType(this)" data-type="%">%</button><span
+                                                class="disc-deduct"></span></div>
+                                    </td>
                                     <td>
                                         <select>
                                             <option value="">Select Tax</option>
                                         </select>
                                     </td>
-                                    <td class="center amount-cell">0.00</td>
+                                    <td class="center amount-cell">0</td>
                                     <td class="center"><button class="delete-row-btn"
                                             onclick="deleteItemRow(this)">×</button></td>
                                 </tr>
@@ -1533,24 +1866,27 @@
                             <span class="totals-value">0.00</span>
                         </div>
                         <div class="totals-row">
-                            <span class="totals-label">Discount</span>
-                            <div class="totals-input">
-                                <input type="text" value="0"> %
-                                <span class="totals-value">0.00</span>
+                            <span class="totals-label">Discount <span id="totalDiscDisplay"
+                                    style="color:#dc2626; font-weight:600;"></span></span>
+                            <div class="totals-disc-cell">
+                                <input type="number" value="0" id="totalDiscInput" oninput="recalcTotals()">
+                                <button class="totals-disc-toggle" id="totalDiscToggle" onclick="toggleTotalsDiscType()"
+                                    data-type="%">%</button>
+                                <span class="totals-disc-value" id="totalDiscValue">0.00</span>
                             </div>
                         </div>
                         <div class="totals-row">
                             <span class="totals-label">Shipping Charges</span>
                             <div class="totals-input">
-                                <input type="text" value="">
-                                <span class="totals-value">0.00</span>
+                                <input type="number" value="" id="shippingInput" oninput="recalcTotals()">
+                                <span class="totals-value" id="shippingValue">0</span>
                             </div>
                         </div>
                         <div class="totals-row">
                             <span class="totals-label">Adjustment</span>
                             <div class="totals-input">
-                                <input type="text" value="">
-                                <span class="totals-value">0.00</span>
+                                <input type="number" value="" id="adjustmentInput" oninput="recalcTotals()">
+                                <span class="totals-value" id="adjustmentValue">0</span>
                             </div>
                         </div>
                         <div class="totals-row total">
@@ -1565,12 +1901,28 @@
             <div class="form-footer">
                 <div class="footer-left">
                     <button class="btn-draft" onclick="saveAsDraft()">Save as Draft</button>
-                    <button class="btn-save" onclick="saveAndSend()">Save and Send</button>
+                    <div class="btn-split-group">
+                        <button class="btn-split-main" id="splitMainBtn" onclick="splitMainAction()">Save and
+                            Print</button>
+                        <button class="btn-split-arrow" onclick="toggleSplitDropdown(event)">▲</button>
+                        <div class="btn-split-dropdown" id="splitDropdown">
+                            <button class="btn-split-dropdown-item active" onclick="setSplitOption('print')">Save and
+                                Print</button>
+                            <button class="btn-split-dropdown-item" onclick="setSplitOption('confirm')">Save and
+                                Confirm</button>
+                        </div>
+                    </div>
                     <button class="btn-cancel" onclick="goBack()">Cancel</button>
                 </div>
                 <div class="footer-right">
-                    <span>Total Amount:</span>
-                    <span class="amount">PHP 0.00</span>
+                    <div>
+                        <span>Total Amount:</span>
+                        <span class="amount" id="footerTotalAmount">PHP 0.00</span>
+                    </div>
+                    <div style="font-size:12px;color:#999;">
+                        <span>Total Quantity:</span>
+                        <span id="footerTotalQty">0</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1639,6 +1991,106 @@
     <!-- Layout Script -->
     <script src="/js/layout.js"></script>
     <script>
+        let editingOrderId = null;
+        // ===== Delivery Method Dropdown =====
+        let deliveryMethodsList = [];
+
+        async function loadDeliveryMethods() {
+            try {
+                const res = await fetch('/api/delivery-methods');
+                if (res.ok) {
+                    deliveryMethodsList = await res.json();
+                    renderDmOptions();
+                }
+            } catch (err) {
+                console.error('Error loading delivery methods:', err);
+            }
+        }
+        loadDeliveryMethods();
+
+        function renderDmOptions(filter = '') {
+            const container = document.getElementById('dmOptions');
+            const filtered = deliveryMethodsList.filter(dm =>
+                dm.name.toLowerCase().includes(filter.toLowerCase())
+            );
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="dm-empty">No saved methods</div>';
+                return;
+            }
+            container.innerHTML = filtered.map(dm => {
+                return `<div class="dm-option" onclick="selectDm('${dm.name.replace(/'/g, "\\\'")}')">
+                    <span class="dm-option-name">${dm.name}</span>
+                    <button class="dm-delete-btn" onclick="event.stopPropagation(); deleteDm(${dm.id})" title="Delete">×</button>
+                </div>`;
+            }).join('');
+        }
+
+        function openDmPanel() {
+            renderDmOptions(document.getElementById('dmInput').value);
+            document.getElementById('dmPanel').classList.add('open');
+        }
+
+        function closeDmPanel() {
+            document.getElementById('dmPanel').classList.remove('open');
+        }
+
+        function selectDm(name) {
+            document.getElementById('dmInput').value = name;
+            closeDmPanel();
+        }
+
+        function filterDmPanel() {
+            renderDmOptions(document.getElementById('dmInput').value);
+        }
+
+        async function saveDm(name) {
+            if (!name.trim()) return;
+            // Check if already exists
+            const exists = deliveryMethodsList.some(dm => dm.name.toLowerCase() === name.trim().toLowerCase());
+            if (exists) return;
+            try {
+                const res = await fetch('/api/delivery-methods', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: name.trim() })
+                });
+                if (res.ok) {
+                    const newDm = await res.json();
+                    deliveryMethodsList.push(newDm);
+                    renderDmOptions();
+                }
+            } catch (err) {
+                console.error('Error saving delivery method:', err);
+            }
+        }
+
+        async function deleteDm(id) {
+            try {
+                await fetch('/api/delivery-methods/' + id, { method: 'DELETE' });
+                deliveryMethodsList = deliveryMethodsList.filter(dm => dm.id !== id);
+                renderDmOptions(document.getElementById('dmInput').value);
+            } catch (err) {
+                console.error('Error deleting delivery method:', err);
+            }
+        }
+
+        // Save on Enter key
+        document.getElementById('dmInput').addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                saveDm(this.value);
+                closeDmPanel();
+            }
+        });
+
+        // Close panel when clicking outside
+        document.addEventListener('click', function (e) {
+            const wrap = document.getElementById('dmWrap');
+            if (wrap && !wrap.contains(e.target)) {
+                closeDmPanel();
+            }
+        });
+
         // Set today's date as default for Sales Order Date
         (function () {
             const today = new Date();
@@ -1647,6 +2099,204 @@
             const dd = String(today.getDate()).padStart(2, '0');
             document.getElementById('orderDate').value = `${yyyy}-${mm}-${dd}`;
         })();
+
+        // Fetch next available SO number (only for new orders)
+        (async function () {
+            const params = new URLSearchParams(window.location.search);
+            const editId = params.get('editId');
+            if (!editId) {
+                try {
+                    const res = await fetch('/api/sales-orders/next-number');
+                    if (res.ok) {
+                        const data = await res.json();
+                        document.getElementById('salesOrderNumber').value = data.order_number;
+                    }
+                } catch (e) {
+                    console.error('Could not fetch next SO number:', e);
+                }
+            } else {
+                editingOrderId = parseInt(editId);
+                document.getElementById('pageTitle').textContent = 'Edit Sales Order';
+                document.title = 'Edit Sales Order - Inventory Management';
+                // Wait for all data to load, then populate
+                const waitForData = () => {
+                    return new Promise((resolve) => {
+                        const check = () => {
+                            if (customersList.length >= 0 && salespersonsList.length >= 0 && allItems.length >= 0) {
+                                // Give a small delay for DOM to settle
+                                setTimeout(resolve, 200);
+                            } else {
+                                setTimeout(check, 100);
+                            }
+                        };
+                        // Wait at least 300ms for fetches to start
+                        setTimeout(check, 300);
+                    });
+                };
+                await waitForData();
+                loadOrderForEdit(editingOrderId);
+            }
+        })();
+
+        async function loadOrderForEdit(orderId) {
+            try {
+                const res = await fetch(`/api/sales-orders/${orderId}`);
+                if (!res.ok) { alert('Failed to load order for editing.'); return; }
+                const order = await res.json();
+
+                // Set order number (read-only when editing)
+                document.getElementById('salesOrderNumber').value = order.order_number;
+                document.getElementById('salesOrderNumber').readOnly = true;
+
+                // Set dates
+                if (order.order_date) {
+                    const d = new Date(order.order_date);
+                    document.getElementById('orderDate').value = d.toISOString().split('T')[0];
+                }
+                if (order.expected_shipment_date) {
+                    const d = new Date(order.expected_shipment_date);
+                    document.getElementById('shipmentDate').value = d.toISOString().split('T')[0];
+                }
+
+                // Set reference number
+                if (order.reference_number) {
+                    document.getElementById('referenceNumber').value = order.reference_number;
+                }
+
+                // Set customer
+                if (order.customer_id && order.customer_name) {
+                    selectCustDd(order.customer_id, order.customer_name);
+                }
+
+                // Set salesperson
+                if (order.salesperson_name) {
+                    const sp = salespersonsList.find(s => s.name === order.salesperson_name);
+                    if (sp) {
+                        selectSpDd(sp.id || sp.dbId, sp.name);
+                    } else {
+                        document.getElementById('salesperson').value = order.salesperson_name;
+                        document.getElementById('spDdLabel').textContent = order.salesperson_name;
+                        document.getElementById('spDdLabel').style.color = '#333';
+                    }
+                }
+
+                // Set delivery method
+                if (order.delivery_method) {
+                    document.getElementById('dmInput').value = order.delivery_method;
+                }
+
+                // Set payment terms
+                if (order.payment_terms) {
+                    const term = paymentTermsList.find(t => t.id === order.payment_terms || t.name === order.payment_terms);
+                    if (term) {
+                        selectedPT = term.id;
+                        document.getElementById('paymentTerms').value = term.id;
+                        document.getElementById('ptLabel').textContent = term.name;
+                    } else {
+                        // Fallback: set label directly
+                        document.getElementById('ptLabel').textContent = order.payment_terms;
+                        document.getElementById('paymentTerms').value = order.payment_terms;
+                    }
+                }
+
+                // Populate notes
+                if (order.notes) {
+                    document.getElementById('customerNotes').value = order.notes;
+                }
+
+                // Populate items
+                const items = order.items || [];
+                const tbody = document.getElementById('itemsBody');
+                tbody.innerHTML = '';
+
+                // Determine max discount columns needed
+                let maxDiscs = 1;
+                items.forEach(item => {
+                    let parsedD = item.discounts || [];
+                    if (typeof parsedD === 'string') {
+                        try { parsedD = JSON.parse(parsedD); } catch (e) { parsedD = []; }
+                    }
+                    if (parsedD.length > maxDiscs) maxDiscs = parsedD.length;
+                });
+                // Add extra discount columns if needed
+                while (discountColumnCount < maxDiscs) {
+                    addDiscountColumn();
+                }
+
+                items.forEach(item => {
+                    // Build discount cells
+                    let discCells = '';
+                    let parsedDiscs = item.discounts || [];
+                    if (typeof parsedDiscs === 'string') {
+                        try { parsedDiscs = JSON.parse(parsedDiscs); } catch (e) { parsedDiscs = []; }
+                    }
+                    for (let i = 0; i < discountColumnCount; i++) {
+                        const disc = i < parsedDiscs.length ? parsedDiscs[i] : { value: 0, type: '%' };
+                        discCells += `<td class="disc-col-td"><div class="disc-cell"><input type="number" value="${disc.value || 0}" class="disc-input" onchange="recalcRow(this)"><button class="disc-toggle" onclick="toggleDiscType(this)" data-type="${disc.type || '%'}">${disc.type || '%'}</button><span class="disc-deduct"></span></div></td>`;
+                    }
+
+                    // Find the item in allItems to get image_url
+                    let matchedItem = null;
+                    if (item.item_id) {
+                        matchedItem = allItems.find(ai => ai.id === item.item_id);
+                    }
+                    if (!matchedItem && item.item_name) {
+                        matchedItem = allItems.find(ai => ai.name === item.item_name);
+                    }
+                    const imageUrl = matchedItem ? (matchedItem.image_url || '') : '';
+                    const itemId = item.item_id || (matchedItem ? matchedItem.id : '');
+
+                    // Build image display HTML (same as selectItem does)
+                    const imgHtml = imageUrl
+                        ? `<img src="${imageUrl}" onerror="this.outerHTML='<div class=\\'item-selected-placeholder\\'>📦</div>'">`
+                        : '<div class="item-selected-placeholder">📦</div>';
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="item-picker-cell">
+                            <div class="item-selected-display" style="cursor:pointer;" onclick="this.remove(); this.parentElement.querySelector('.item-picker-input').style.display=''; this.parentElement.querySelector('.item-picker-input').focus();">
+                                ${imgHtml}<span class="item-selected-name">${item.item_name || ''}</span>
+                            </div>
+                            <input type="text" class="item-picker-input" value="${item.item_name || ''}" placeholder="Type or click to select an item." onfocus="openItemPicker(this)" oninput="filterItemPicker(this)" style="display:none;">
+                            <input type="hidden" class="item-id-hidden" value="${itemId}">
+                            <div class="item-picker-dropdown"></div>
+                        </td>
+                        <td class="center"><input type="number" value="${item.quantity || 1}" style="text-align: center;" class="qty-input" onchange="recalcRow(this)"></td>
+                        <td class="center"><input type="number" value="${item.rate || 0}" style="text-align: right;" class="rate-input" onchange="recalcRow(this)"></td>
+                        ${discCells}
+                        <td><select><option value="">Select Tax</option></select></td>
+                        <td class="center amount-cell">${item.amount || 0}</td>
+                        <td class="center"><button class="delete-row-btn" onclick="deleteItemRow(this)">×</button></td>
+                    `;
+                    tbody.appendChild(row);
+                });
+
+                // Set totals discount
+                if (order.discount_value) {
+                    document.getElementById('totalDiscInput').value = order.discount_value;
+                }
+                if (order.discount_type) {
+                    const toggleBtn = document.getElementById('totalDiscToggle');
+                    toggleBtn.dataset.type = order.discount_type;
+                    toggleBtn.textContent = order.discount_type;
+                }
+
+                // Set shipping & adjustment
+                if (order.shipping_charges) {
+                    document.getElementById('shippingInput').value = order.shipping_charges;
+                }
+                if (order.adjustment) {
+                    document.getElementById('adjustmentInput').value = order.adjustment;
+                }
+
+                // Recalculate totals
+                recalcTotals();
+
+            } catch (err) {
+                console.error('Error loading order for edit:', err);
+                alert('Failed to load sales order for editing.');
+            }
+        }
 
         // ===== Customer Name Custom Dropdown =====
         let customersList = [];
@@ -2037,6 +2687,8 @@
             const spLabel = document.getElementById('spDdLabel').textContent;
             const orderDate = document.getElementById('orderDate').value;
             const referenceNumber = document.getElementById('referenceNumber') ? document.getElementById('referenceNumber').value : '';
+            const deliveryMethod = document.getElementById('dmInput') ? document.getElementById('dmInput').value : '';
+            const shipmentDate = document.getElementById('shipmentDate') ? document.getElementById('shipmentDate').value : '';
 
             // Collect items from table
             const items = [];
@@ -2048,18 +2700,48 @@
                 const rateInput = row.querySelector('.rate-input');
                 const amountCell = row.querySelector('.amount-cell');
                 const itemName = nameInput ? nameInput.value : '';
+
+                // Collect discount info for this row
+                const discounts = [];
+                row.querySelectorAll('.disc-input').forEach(discInput => {
+                    const toggleBtn = discInput.parentElement.querySelector('.disc-toggle');
+                    discounts.push({
+                        value: parseFloat(discInput.value) || 0,
+                        type: toggleBtn ? toggleBtn.dataset.type : '%'
+                    });
+                });
+
                 if (itemName) {
                     items.push({
                         item_id: idInput ? parseInt(idInput.value) || null : null,
                         item_name: itemName,
                         quantity: qtyInput ? parseFloat(qtyInput.value) || 1 : 1,
                         rate: rateInput ? parseFloat(rateInput.value) || 0 : 0,
-                        amount: amountCell ? parseFloat(amountCell.textContent) || 0 : 0
+                        amount: amountCell ? parseFloat(amountCell.textContent) || 0 : 0,
+                        discounts: discounts
                     });
                 }
             });
 
             const subTotal = items.reduce((sum, i) => sum + i.amount, 0);
+
+            // Totals discount
+            const discInput = document.getElementById('totalDiscInput');
+            const discToggle = document.getElementById('totalDiscToggle');
+            const discountValue = discInput ? parseFloat(discInput.value) || 0 : 0;
+            const discountType = discToggle ? discToggle.dataset.type : '%';
+            let discountAmount = 0;
+            if (discountType === '%') {
+                discountAmount = subTotal * (discountValue / 100);
+            } else {
+                discountAmount = discountValue;
+            }
+
+            const shippingCharges = parseFloat(document.getElementById('shippingInput')?.value) || 0;
+            const adjustment = parseFloat(document.getElementById('adjustmentInput')?.value) || 0;
+
+            let total = subTotal - discountAmount + shippingCharges + adjustment;
+            if (total < 0) total = 0;
 
             return {
                 order_date: orderDate,
@@ -2067,9 +2749,17 @@
                 customer_id: selectedCustomerId || null,
                 customer_name: custLabel !== 'Select or Add Customer' ? custLabel : '',
                 salesperson_name: spLabel !== 'Select or Add Salesperson' ? spLabel : '',
-                payment_terms: '',
+                delivery_method: deliveryMethod,
+                expected_shipment_date: shipmentDate,
+                payment_terms: document.getElementById('ptLabel').textContent || '',
                 sub_total: subTotal,
-                total: subTotal,
+                discount: discountAmount,
+                discount_type: discountType,
+                discount_value: discountValue,
+                shipping_charges: shippingCharges,
+                adjustment: adjustment,
+                notes: document.getElementById('customerNotes') ? document.getElementById('customerNotes').value : '',
+                total: total,
                 items: items
             };
         }
@@ -2080,15 +2770,17 @@
             data.status = 'DRAFT';
 
             try {
-                const res = await fetch('/api/sales-orders', {
-                    method: 'POST',
+                const url = editingOrderId ? `/api/sales-orders/${editingOrderId}` : '/api/sales-orders';
+                const method = editingOrderId ? 'PUT' : 'POST';
+                const res = await fetch(url, {
+                    method: method,
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
                 if (res.ok) {
                     const order = await res.json();
                     alert(`Sales Order ${order.order_number} saved as draft!`);
-                    goBack();
+                    window.location.href = '/sales-orders.html?orderId=' + order.id;
                 } else {
                     const err = await res.json();
                     alert('Error saving: ' + (err.error || 'Unknown error'));
@@ -2099,7 +2791,7 @@
             }
         }
 
-        async function saveAndSend() {
+        async function saveAndPrint() {
             const customerName = document.getElementById('customerName').value;
             if (!customerName) {
                 alert('Please select a customer');
@@ -2110,15 +2802,17 @@
             data.status = 'CONFIRMED';
 
             try {
-                const res = await fetch('/api/sales-orders', {
-                    method: 'POST',
+                const url = editingOrderId ? `/api/sales-orders/${editingOrderId}` : '/api/sales-orders';
+                const method = editingOrderId ? 'PUT' : 'POST';
+                const res = await fetch(url, {
+                    method: method,
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
                 if (res.ok) {
                     const order = await res.json();
-                    alert(`Sales Order ${order.order_number} saved and sent!`);
-                    goBack();
+                    alert(`Sales Order ${order.order_number} saved and ready to print!`);
+                    window.location.href = '/sales-orders.html?orderId=' + order.id;
                 } else {
                     const err = await res.json();
                     alert('Error saving: ' + (err.error || 'Unknown error'));
@@ -2128,6 +2822,84 @@
                 alert('Failed to save sales order.');
             }
         }
+
+        // ===== Split Button Logic =====
+        let currentSplitOption = 'print'; // 'print' or 'confirm'
+
+        function toggleSplitDropdown(e) {
+            e.stopPropagation();
+            const dd = document.getElementById('splitDropdown');
+            dd.classList.toggle('open');
+        }
+
+        function setSplitOption(option) {
+            currentSplitOption = option;
+            const btn = document.getElementById('splitMainBtn');
+            const dd = document.getElementById('splitDropdown');
+
+            // Update button label
+            if (option === 'print') {
+                btn.textContent = 'Save and Print';
+            } else {
+                btn.textContent = 'Save and Confirm';
+            }
+
+            // Update active state in dropdown
+            dd.querySelectorAll('.btn-split-dropdown-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            dd.classList.remove('open');
+        }
+
+        function splitMainAction() {
+            if (currentSplitOption === 'print') {
+                saveAndPrint();
+            } else {
+                saveAndConfirm();
+            }
+        }
+
+        async function saveAndConfirm() {
+            const customerName = document.getElementById('customerName').value;
+            if (!customerName) {
+                alert('Please select a customer');
+                return;
+            }
+            if (!verifySalespersonPassword()) return;
+            const data = collectOrderData();
+            data.status = 'CONFIRMED';
+
+            try {
+                const url = editingOrderId ? `/api/sales-orders/${editingOrderId}` : '/api/sales-orders';
+                const method = editingOrderId ? 'PUT' : 'POST';
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (res.ok) {
+                    const order = await res.json();
+                    alert(`Sales Order ${order.order_number} ${editingOrderId ? 'updated' : 'confirmed'} successfully!`);
+                    window.location.href = '/sales-orders.html?orderId=' + order.id;
+                } else {
+                    const err = await res.json();
+                    alert('Error saving: ' + (err.error || 'Unknown error'));
+                }
+            } catch (err) {
+                console.error('Save error:', err);
+                alert('Failed to save sales order.');
+            }
+        }
+
+        // Close split dropdown when clicking outside
+        document.addEventListener('click', function (e) {
+            const dd = document.getElementById('splitDropdown');
+            if (dd && !e.target.closest('.btn-split-group')) {
+                dd.classList.remove('open');
+            }
+        });
 
         // ===== Item Picker System =====
         let allItems = [];
@@ -2179,7 +2951,7 @@
                 const imgHtml = item.image_url
                     ? `<img src="${item.image_url}" class="item-picker-img" onerror="this.outerHTML='<div class=\\'item-picker-placeholder-img\\'>📦</div>'">`
                     : '<div class="item-picker-placeholder-img">📦</div>';
-                const price = parseFloat(item.selling_price || 0).toFixed(2);
+                const price = formatNum(item.selling_price || 0);
                 const stock = item.stock_quantity || 0;
                 return `<div class="item-picker-option" onclick="selectItem(this, ${item.id}, '${item.name.replace(/'/g, "\\'")}', ${item.selling_price || 0}, '${(item.image_url || '').replace(/'/g, "\\'")}', '${(item.sku || '').replace(/'/g, "\\'")}')">
                     ${imgHtml}
@@ -2205,7 +2977,7 @@
             // Set rate
             const row = cell.closest('tr');
             const rateInput = row.querySelector('.rate-input');
-            rateInput.value = parseFloat(price).toFixed(2);
+            rateInput.value = formatNum(price);
 
             // Set image display: replace input with selected item display
             const imgHtml = imageUrl
@@ -2232,13 +3004,113 @@
             recalcRow(rateInput);
         }
 
+        function formatNum(n) {
+            const val = parseFloat(n);
+            if (isNaN(val)) return '0';
+            // Use up to 2 decimals but strip trailing zeros
+            return val % 1 === 0 ? val.toString() : parseFloat(val.toFixed(2)).toString();
+        }
+
         function recalcRow(inputEl) {
             const row = inputEl.closest('tr');
             const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
             const rate = parseFloat(row.querySelector('.rate-input').value) || 0;
-            const amount = qty * rate;
-            row.querySelector('.amount-cell').textContent = amount.toFixed(2);
+            let amount = qty * rate;
+
+            // Apply all discount columns and show deduction
+            row.querySelectorAll('.disc-input').forEach(discInput => {
+                const discVal = parseFloat(discInput.value) || 0;
+                const toggleBtn = discInput.parentElement.querySelector('.disc-toggle');
+                const deductSpan = discInput.parentElement.querySelector('.disc-deduct');
+                const discType = toggleBtn ? toggleBtn.dataset.type : '%';
+                let deduction = 0;
+                if (discType === '%') {
+                    deduction = amount * (discVal / 100);
+                } else {
+                    deduction = discVal;
+                }
+                amount -= deduction;
+                // Show deduction amount
+                if (deductSpan) {
+                    deductSpan.textContent = deduction > 0 ? '-₱' + formatNum(deduction) : '';
+                }
+            });
+
+            if (amount < 0) amount = 0;
+            row.querySelector('.amount-cell').textContent = formatNum(amount);
             recalcTotals();
+        }
+
+        function toggleDiscType(btn) {
+            if (btn.dataset.type === '%') {
+                btn.dataset.type = '₱';
+                btn.textContent = '₱';
+            } else {
+                btn.dataset.type = '%';
+                btn.textContent = '%';
+            }
+            const row = btn.closest('tr');
+            if (row) recalcRow(btn);
+        }
+
+        let discountColumnCount = 1;
+
+        function getNextDiscNumber() {
+            // Find existing disc column numbers
+            const existing = new Set();
+            document.querySelectorAll('th[data-disc-col]').forEach(th => {
+                existing.add(parseInt(th.getAttribute('data-disc-col')));
+            });
+            // Find the next available number starting from 2
+            let num = 2;
+            while (existing.has(num)) num++;
+            return num;
+        }
+
+        function addDiscountColumn() {
+            const colIndex = getNextDiscNumber();
+            const label = 'DISC ' + colIndex;
+
+            // Add header with × remove button
+            const headerRow = document.querySelector('.item-table thead tr');
+            const taxTh = headerRow.querySelector('th:nth-last-child(3)');
+            const newTh = document.createElement('th');
+            newTh.className = 'center disc-col-th disc-col-extra';
+            newTh.style.width = '100px';
+            newTh.setAttribute('data-disc-col', colIndex);
+            newTh.innerHTML = `<div class="disc-th">${label} <button class="disc-remove-btn" onclick="removeDiscountColumn(${colIndex})" title="Remove">×</button></div>`;
+            headerRow.insertBefore(newTh, taxTh);
+
+            // Add cell to each row
+            document.querySelectorAll('#itemsBody tr').forEach(row => {
+                const taxTd = row.querySelector('td:nth-last-child(3)');
+                const newTd = document.createElement('td');
+                newTd.className = 'disc-col-td disc-col-extra';
+                newTd.setAttribute('data-disc-col', colIndex);
+                newTd.innerHTML = `<div class="disc-cell"><input type="number" value="0" class="disc-input" onchange="recalcRow(this)"><button class="disc-toggle" onclick="toggleDiscType(this)" data-type="%">%</button><span class="disc-deduct"></span></div>`;
+                row.insertBefore(newTd, taxTd);
+            });
+
+            // Update count for addNewRow
+            discountColumnCount = document.querySelectorAll('.item-table thead th.disc-col-th').length;
+        }
+
+        function removeDiscountColumn(colIndex) {
+            // Remove the header
+            const th = document.querySelector(`th[data-disc-col="${colIndex}"]`);
+            if (th) th.remove();
+
+            // Remove cells from all rows
+            document.querySelectorAll(`td[data-disc-col="${colIndex}"]`).forEach(td => td.remove());
+
+            // Update count
+            discountColumnCount = document.querySelectorAll('.item-table thead th.disc-col-th').length;
+
+            // Recalc all rows
+            document.querySelectorAll('#itemsBody tr').forEach(row => {
+                const input = row.querySelector('.qty-input') || row.querySelector('.rate-input');
+                if (input) recalcRow(input);
+            });
         }
 
         function recalcTotals() {
@@ -2251,12 +3123,73 @@
             });
             const totalsValues = document.querySelectorAll('.totals-value');
             if (totalsValues.length > 0) {
-                totalsValues[0].textContent = subTotal.toFixed(2);
+                totalsValues[0].textContent = formatNum(subTotal);
             }
-            // Update total (last .totals-value)
+
+            // Apply totals discount
+            const discInput = document.getElementById('totalDiscInput');
+            const discToggle = document.getElementById('totalDiscToggle');
+            const discValue = document.getElementById('totalDiscValue');
+            let discAmount = 0;
+            if (discInput && discToggle) {
+                const discVal = parseFloat(discInput.value) || 0;
+                const discType = discToggle.dataset.type;
+                if (discType === '%') {
+                    discAmount = subTotal * (discVal / 100);
+                } else {
+                    discAmount = discVal;
+                }
+            }
+            if (discValue) discValue.textContent = formatNum(discAmount);
+
+            // Show deduction on label
+            const discDisplay = document.getElementById('totalDiscDisplay');
+            if (discDisplay) {
+                discDisplay.textContent = discAmount > 0 ? '(-₱' + formatNum(discAmount) + ')' : '';
+            }
+
+            // Shipping & Adjustment
+            const shipping = parseFloat(document.getElementById('shippingInput')?.value) || 0;
+            const adjustment = parseFloat(document.getElementById('adjustmentInput')?.value) || 0;
+
+            // Display shipping/adjustment values
+            const shippingVal = document.getElementById('shippingValue');
+            if (shippingVal) shippingVal.textContent = formatNum(shipping);
+            const adjustmentVal = document.getElementById('adjustmentValue');
+            if (adjustmentVal) adjustmentVal.textContent = formatNum(adjustment);
+
+            let total = subTotal - discAmount + shipping + adjustment;
+            if (total < 0) total = 0;
+
+            // Update total in totals section (last .totals-value)
             if (totalsValues.length > 2) {
-                totalsValues[totalsValues.length - 1].textContent = subTotal.toFixed(2);
+                totalsValues[totalsValues.length - 1].textContent = formatNum(total);
             }
+
+            // Update footer Total Amount
+            const footerTotal = document.getElementById('footerTotalAmount');
+            if (footerTotal) footerTotal.textContent = 'PHP ' + formatNum(total);
+
+            // Update footer Total Quantity
+            let totalQty = 0;
+            document.querySelectorAll('#itemsBody tr').forEach(row => {
+                const qtyInput = row.querySelector('.qty-input');
+                if (qtyInput) totalQty += parseFloat(qtyInput.value) || 0;
+            });
+            const footerQty = document.getElementById('footerTotalQty');
+            if (footerQty) footerQty.textContent = formatNum(totalQty);
+        }
+
+        function toggleTotalsDiscType() {
+            const btn = document.getElementById('totalDiscToggle');
+            if (btn.dataset.type === '%') {
+                btn.dataset.type = '₱';
+                btn.textContent = '₱';
+            } else {
+                btn.dataset.type = '%';
+                btn.textContent = '%';
+            }
+            recalcTotals();
         }
 
         function deleteItemRow(btn) {
@@ -2276,6 +3209,11 @@
 
         document.querySelector('.add-row-btn.primary').addEventListener('click', function () {
             const tbody = document.getElementById('itemsBody');
+            // Build discount cells based on current column count
+            let discCells = '';
+            for (let i = 0; i < discountColumnCount; i++) {
+                discCells += `<td class="disc-col-td"><div class="disc-cell"><input type="number" value="0" class="disc-input" onchange="recalcRow(this)"><button class="disc-toggle" onclick="toggleDiscType(this)" data-type="%">%</button><span class="disc-deduct"></span></div></td>`;
+            }
             const newRow = document.createElement('tr');
             newRow.innerHTML = `
                 <td class="item-picker-cell">
@@ -2283,10 +3221,11 @@
                     <input type="hidden" class="item-id-hidden" value="">
                     <div class="item-picker-dropdown"></div>
                 </td>
-                <td class="center"><input type="number" value="1.00" style="text-align: center;" class="qty-input" onchange="recalcRow(this)"></td>
-                <td class="center"><input type="number" value="0.00" style="text-align: right;" class="rate-input" onchange="recalcRow(this)"></td>
+                <td class="center"><input type="number" value="1" style="text-align: center;" class="qty-input" onchange="recalcRow(this)"></td>
+                <td class="center"><input type="number" value="0" style="text-align: right;" class="rate-input" onchange="recalcRow(this)"></td>
+                ${discCells}
                 <td><select><option value="">Select Tax</option></select></td>
-                <td class="center amount-cell">0.00</td>
+                <td class="center amount-cell">0</td>
                 <td class="center"><button class="delete-row-btn" onclick="deleteItemRow(this)">×</button></td>
             `;
             tbody.appendChild(newRow);

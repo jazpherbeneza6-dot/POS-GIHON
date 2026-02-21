@@ -247,6 +247,46 @@
         .refresh-icon:hover {
             color: #333;
         }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .status-received {
+            background: #e6f4ea;
+            color: #137333;
+        }
+
+        .status-draft {
+            background: #fef7e0;
+            color: #b06000;
+        }
+
+        .status-in-transit {
+            background: #e8f0fe;
+            color: #1a73e8;
+        }
+
+        /* Row hover */
+        .receives-table tr:hover td {
+            background: #f8f9fa;
+            cursor: pointer;
+        }
+
+        .receive-link {
+            color: #1a73e8;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .receive-link:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 
@@ -261,13 +301,14 @@
                 <div class="page-title-wrapper">
                     <div class="filter-dropdown">
                         <h1 class="page-title" onclick="toggleFilterMenu()">
-                            In Transit
+                            All Purchase Receives
                             <span class="dropdown-arrow">▼</span>
                         </h1>
                         <div class="filter-menu" id="filterMenu">
-                            <a href="#" class="filter-menu-item active" onclick="setFilter('in-transit')">In Transit</a>
+                            <a href="#" class="filter-menu-item" onclick="setFilter('in-transit')">In Transit</a>
                             <a href="#" class="filter-menu-item" onclick="setFilter('received')">Received</a>
-                            <a href="#" class="filter-menu-item" onclick="setFilter('all')">All</a>
+                            <a href="#" class="filter-menu-item active" onclick="setFilter('all')">All Purchase
+                                Receives</a>
                         </div>
                     </div>
                 </div>
@@ -318,7 +359,8 @@
     <!-- Layout Script -->
     <script src="/js/layout.js"></script>
     <script>
-        let currentFilter = 'in-transit';
+        let currentFilter = 'all';
+        let allReceives = [];
 
         function toggleFilterMenu() {
             const menu = document.getElementById('filterMenu');
@@ -356,28 +398,115 @@
             // Close menu
             document.getElementById('filterMenu').classList.remove('show');
 
-            // Reload data
-            loadReceives();
+            // Re-render with filter
+            renderReceives();
         }
 
-        function loadReceives() {
-            // In a real app, this would fetch from the API
-            const receives = []; // Empty for now
+        async function loadReceives() {
+            try {
+                const res = await fetch('/api/purchase-receives');
+                if (!res.ok) throw new Error('Failed to fetch');
+                allReceives = await res.json();
 
-            const tbody = document.getElementById('receivesBody');
-            const emptyMessage = document.getElementById('emptyMessage');
+                // Fetch all bills to check billed status
+                let allBills = [];
+                try {
+                    const billsRes = await fetch('/api/bills');
+                    if (billsRes.ok) allBills = await billsRes.json();
+                } catch (e) { }
 
-            if (receives.length === 0) {
-                tbody.innerHTML = '';
-                emptyMessage.style.display = 'block';
-            } else {
-                emptyMessage.style.display = 'none';
-                // Populate table
+                // Also fetch items count for each receive
+                for (let r of allReceives) {
+                    // Check if linked PO has any bills
+                    r.po_billed = allBills.some(b => b.purchase_order_id === r.purchase_id);
+
+                    try {
+                        const itemsRes = await fetch('/api/purchase-receives/' + r.id);
+                        if (itemsRes.ok) {
+                            const detail = await itemsRes.json();
+                            r.items = detail.items || [];
+                            r.total_qty = r.items.reduce((sum, item) => sum + (parseFloat(item.quantity_to_receive) || 0), 0);
+                        }
+                    } catch (e) {
+                        r.total_qty = 0;
+                    }
+                }
+
+                renderReceives();
+            } catch (e) {
+                console.error('Error loading receives:', e);
+                document.getElementById('receivesBody').innerHTML = '';
+                document.getElementById('emptyMessage').style.display = 'block';
+                document.getElementById('emptyMessage').textContent = 'Failed to load purchase receives.';
             }
         }
 
+        function renderReceives() {
+            const tbody = document.getElementById('receivesBody');
+            const emptyMessage = document.getElementById('emptyMessage');
+
+            // Filter based on currentFilter
+            let filtered = allReceives;
+            if (currentFilter === 'received') {
+                filtered = allReceives.filter(r => r.status === 'received');
+            } else if (currentFilter === 'in-transit') {
+                filtered = allReceives.filter(r => r.status === 'draft');
+            }
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '';
+                emptyMessage.style.display = 'block';
+                emptyMessage.textContent = 'No Purchase Receives to display!';
+            } else {
+                emptyMessage.style.display = 'none';
+
+                let html = '';
+                filtered.forEach(r => {
+                    const date = r.receive_date ? new Date(r.receive_date).toLocaleDateString('en-US', {
+                        year: 'numeric', month: 'short', day: 'numeric'
+                    }) : '—';
+
+                    const receiveNum = r.receive_number || '—';
+                    const poNum = r.po_number || '—';
+                    const vendor = r.supplier_name || '—';
+                    const totalQty = r.total_qty || 0;
+
+                    let statusLabel = r.status || 'draft';
+                    let statusClass = 'status-draft';
+                    if (statusLabel === 'received') {
+                        statusClass = 'status-received';
+                        statusLabel = 'Received';
+                    } else if (statusLabel === 'draft') {
+                        statusClass = 'status-draft';
+                        statusLabel = 'Draft';
+                    }
+
+                    const billedCell = r.po_billed
+                        ? '<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#4285f4;"></span>'
+                        : '-';
+
+                    html += `<tr onclick="viewReceive(${r.id})">
+                        <td>${date}</td>
+                        <td><a class="receive-link" href="#">${receiveNum}</a></td>
+                        <td><a class="receive-link" href="/purchase-order-detail.html?id=${r.purchase_id}">${poNum}</a></td>
+                        <td>${vendor}</td>
+                        <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
+                        <td style="text-align:center;">${billedCell}</td>
+                        <td>${totalQty}</td>
+                        <td></td>
+                    </tr>`;
+                });
+
+                tbody.innerHTML = html;
+            }
+        }
+
+        function viewReceive(id) {
+            window.location.href = '/purchase-receive-detail.html?id=' + id;
+        }
+
         function createNewReceive() {
-            alert('Create new purchase receive - would typically be done from a Purchase Order');
+            window.location.href = '/new-purchase-receive.html';
         }
 
         function refreshData() {

@@ -234,11 +234,13 @@ router.delete('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Supplier not found' });
     }
 
-    const purchasesResult = await db.query('SELECT COUNT(*) as count FROM purchases WHERE supplier_id = $1', [req.params.id]);
-    if (parseInt(purchasesResult.rows[0].count) > 0) {
-      return res.status(400).json({ error: 'Cannot delete supplier with existing purchases.' });
-    }
+    // Delete related contact persons first
+    await db.query('DELETE FROM vendor_contact_persons WHERE vendor_id = $1', [req.params.id]);
 
+    // Nullify supplier_id in purchases referencing this supplier
+    await db.query('UPDATE purchases SET supplier_id = NULL WHERE supplier_id = $1', [req.params.id]);
+
+    // Delete the supplier
     await db.query('DELETE FROM suppliers WHERE id = $1', [req.params.id]);
     res.json({ message: 'Supplier deleted successfully' });
   } catch (error) {

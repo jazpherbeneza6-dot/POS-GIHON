@@ -14,6 +14,29 @@ router.get('/', async (req, res) => {
     }
 });
 
+// POST verify salesperson password
+router.post('/verify-password', async (req, res) => {
+    try {
+        const pool = database.getDb();
+        const { name, password } = req.body;
+        if (!name || !password) {
+            return res.status(400).json({ valid: false, error: 'Name and password are required' });
+        }
+        const result = await pool.query(
+            'SELECT id, name FROM salespersons WHERE name = $1 AND password = $2',
+            [name, password]
+        );
+        if (result.rows.length > 0) {
+            res.json({ valid: true, salesperson: result.rows[0] });
+        } else {
+            res.json({ valid: false, error: 'Invalid password' });
+        }
+    } catch (err) {
+        console.error('Error verifying salesperson password:', err);
+        res.status(500).json({ valid: false, error: 'Server error' });
+    }
+});
+
 // POST create new salesperson
 router.post('/', async (req, res) => {
     try {

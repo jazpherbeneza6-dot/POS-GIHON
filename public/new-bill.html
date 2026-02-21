@@ -15,15 +15,6 @@
             font-family: 'Inter', 'Source Sans Pro', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            text-rendering: optimizeLegibility;
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            background: #f5f6fa;
-            font-size: 12px;
         }
 
         .main-layout {
@@ -39,32 +30,37 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
-            overflow: hidden;
+            overflow-y: auto;
         }
 
         /* Page Header */
         .page-header {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            padding: 16px 24px;
-            background: white;
+            align-items: center;
+            padding: 14px 24px;
             border-bottom: 1px solid #e9ecef;
-            flex-shrink: 0;
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 50;
         }
 
-        .page-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #333;
-            margin: 0;
+        .page-title-wrapper {
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .title-icon {
+        .page-icon {
             font-size: 20px;
+        }
+
+        .page-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
         }
 
         .close-btn {
@@ -79,75 +75,47 @@
             color: #333;
         }
 
-        /* Main Form Area */
+        /* Two Column Layout */
         .form-main {
+            display: flex;
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 70px;
+        }
+
+        .left-column {
+            width: 36%;
+            min-width: 320px;
+            max-width: 400px;
+            border-right: 2px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .right-column {
             flex: 1;
             display: flex;
             flex-direction: column;
-            overflow-y: auto;
-            padding-bottom: 80px;
+            min-width: 0;
         }
 
-        /* Vendor Section (Blue Background) */
-        .vendor-section {
-            background: #e8f0fe;
-            padding: 16px 24px;
-            border-bottom: 1px solid #c5d9f7;
-        }
-
-        .vendor-row {
-            display: grid;
-            grid-template-columns: 120px 1fr;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .vendor-label {
-            font-size: 13px;
-            color: #dc2626;
-        }
-
-        .vendor-input-group {
-            display: flex;
-            gap: 8px;
-            max-width: 450px;
-        }
-
-        .vendor-select {
-            flex: 1;
-            padding: 10px 12px;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            font-size: 13px;
-            background: white;
-        }
-
-        .search-btn {
-            padding: 10px 14px;
-            background: #4285f4;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .search-btn:hover {
-            background: #3367d6;
-        }
-
-        /* Form Section */
+        /* Form Sections */
         .form-section {
-            padding: 16px 24px;
+            padding: 12px 20px;
             border-bottom: 1px solid #e9ecef;
+        }
+
+        .form-section-gray {
+            background: #f9fafb;
         }
 
         .form-row {
             display: grid;
             grid-template-columns: 120px 1fr;
-            align-items: flex-start;
-            gap: 16px;
-            margin-bottom: 16px;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
         }
 
         .form-row:last-child {
@@ -155,9 +123,8 @@
         }
 
         .form-label {
-            font-size: 13px;
+            font-size: 12px;
             color: #333;
-            padding-top: 8px;
         }
 
         .form-label.required {
@@ -165,7 +132,7 @@
         }
 
         .form-input {
-            padding: 10px 12px;
+            padding: 7px 10px;
             border: 1px solid #e0e0e0;
             border-radius: 4px;
             font-size: 13px;
@@ -179,7 +146,7 @@
         }
 
         .form-select {
-            padding: 10px 12px;
+            padding: 7px 10px;
             border: 1px solid #e0e0e0;
             border-radius: 4px;
             font-size: 13px;
@@ -190,130 +157,115 @@
         }
 
         .form-textarea {
-            padding: 10px 12px;
+            padding: 7px 10px;
             border: 1px solid #e0e0e0;
             border-radius: 4px;
             font-size: 13px;
             width: 100%;
-            max-width: 400px;
-            min-height: 60px;
+            min-height: 50px;
             resize: vertical;
             font-family: inherit;
         }
 
-        .form-row-inline {
-            display: flex;
-            gap: 24px;
-        }
-
-        .form-group {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .info-icon {
-            color: #999;
-            cursor: help;
-        }
-
-        /* Tax Options */
-        .tax-options {
-            display: flex;
-            gap: 24px;
-            padding: 12px 24px;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .tax-option {
-            display: flex;
-            align-items: center;
-            gap: 6px;
+        .vendor-display {
             font-size: 13px;
-            color: #666;
-        }
-
-        .tax-option select {
-            padding: 6px 10px;
-            border: 1px solid #e0e0e0;
+            color: #333;
+            font-weight: 500;
+            padding: 7px 10px;
+            background: #f0f4ff;
+            border: 1px solid #c5d5f5;
             border-radius: 4px;
-            font-size: 13px;
-            background: white;
+            max-width: 220px;
         }
 
-        /* Item Table Section */
+        .po-ref-badge {
+            display: inline-block;
+            font-size: 11px;
+            color: #4285f4;
+            background: #e8f0fe;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        /* Item Table */
         .item-table-section {
-            padding: 16px 24px;
+            padding: 16px;
+            flex: 1;
         }
 
-        .section-header {
+        .item-table-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
-        .section-title {
-            font-size: 14px;
+        .item-table-title {
+            font-size: 13px;
             font-weight: 600;
             color: #333;
-        }
-
-        .bulk-actions-link {
-            color: #4285f4;
-            text-decoration: none;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
         }
 
         .item-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 12px;
         }
 
         .item-table th {
             text-align: left;
-            padding: 10px 8px;
+            padding: 8px 6px;
             font-size: 10px;
             font-weight: 600;
-            color: #666;
+            color: #888;
             text-transform: uppercase;
             background: #f9fafb;
             border-bottom: 1px solid #e9ecef;
         }
 
         .item-table td {
-            padding: 10px 8px;
+            padding: 8px 6px;
             border-bottom: 1px solid #f0f0f0;
             vertical-align: middle;
+            font-size: 12px;
         }
 
-        .item-table .item-image {
-            width: 36px;
-            height: 36px;
-            background: #f0f0f0;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #999;
-            font-size: 16px;
+        .item-table .center {
+            text-align: center;
         }
 
         .item-table input,
         .item-table select {
-            padding: 8px 8px;
+            padding: 6px 8px;
             border: 1px solid #e0e0e0;
-            border-radius: 4px;
+            border-radius: 3px;
             font-size: 12px;
             width: 100%;
         }
 
         .item-table input[type="number"] {
-            width: 60px;
+            width: 65px;
+        }
+
+        .item-table input[type="number"]::-webkit-inner-spin-button,
+        .item-table input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .item-table input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        .item-image {
+            width: 32px;
+            height: 32px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
         }
 
         .delete-row-btn {
@@ -321,208 +273,158 @@
             border: none;
             color: #dc2626;
             cursor: pointer;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
+            font-size: 16px;
         }
 
         .add-row-actions {
             display: flex;
             gap: 16px;
-            margin-bottom: 12px;
+            margin-top: 8px;
         }
 
         .add-row-btn {
             background: none;
             border: none;
             color: #4285f4;
-            font-size: 13px;
+            font-size: 12px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 4px;
+            font-weight: 500;
         }
 
         .add-row-btn:hover {
             text-decoration: underline;
         }
 
-        .filter-tags {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 16px;
-            color: #666;
-            font-size: 12px;
+        .add-row-btn.primary {
+            background: #4285f4;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 4px;
         }
 
-        .filter-tag {
+        .add-row-btn.primary:hover {
+            background: #3367d6;
+            text-decoration: none;
+        }
+
+        /* Open POs link */
+        .open-po-link {
             display: flex;
             align-items: center;
             gap: 6px;
+            padding: 10px 16px;
+            background: #fffbeb;
+            border: 1px dashed #f59e0b;
+            border-radius: 6px;
+            color: #92400e;
+            font-size: 12px;
             cursor: pointer;
+            margin-top: 12px;
         }
 
-        .filter-tag:hover {
-            color: #4285f4;
+        .open-po-link:hover {
+            background: #fef3c7;
         }
 
         /* Totals Section */
         .totals-section {
             padding: 16px 24px;
-        }
-
-        .totals-box {
-            max-width: 400px;
-            margin-left: auto;
-        }
-
-        .total-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            font-size: 13px;
-        }
-
-        .total-row.final {
-            font-weight: 600;
-            font-size: 14px;
-            border-top: 1px solid #e9ecef;
-            padding-top: 12px;
-            margin-top: 8px;
-        }
-
-        .adjustment-input-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .adjustment-input-group input {
-            width: 80px;
-            padding: 6px 8px;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            font-size: 12px;
-            text-align: right;
-        }
-
-        /* Notes Section */
-        .notes-section {
-            display: flex;
-            gap: 48px;
-            padding: 16px 24px;
             background: #f9fafb;
             border-top: 1px solid #e9ecef;
         }
 
-        .notes-box {
+        .totals-box {
+            max-width: 350px;
+            margin-left: auto;
+        }
+
+        .totals-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+            font-size: 12px;
+        }
+
+        .totals-label {
+            color: #666;
+        }
+
+        .totals-value {
+            font-weight: 500;
+            color: #333;
+            min-width: 80px;
+            text-align: right;
+        }
+
+        .totals-input {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .totals-input input {
+            width: 60px;
+            padding: 4px 6px;
+            border: 1px solid #e0e0e0;
+            border-radius: 3px;
+            font-size: 12px;
+            text-align: right;
+        }
+
+        .totals-row.total {
+            border-top: 1px solid #d1d5db;
+            padding-top: 8px;
+            margin-top: 4px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        /* Notes Section */
+        .notes-section {
+            padding: 12px 20px;
             flex: 1;
-            max-width: 400px;
+        }
+
+        .notes-row {
+            margin-bottom: 12px;
         }
 
         .notes-label {
-            font-size: 13px;
-            font-weight: 500;
-            color: #333;
-            margin-bottom: 8px;
-        }
-
-        .notes-textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            font-size: 13px;
-            resize: vertical;
-            min-height: 80px;
-            font-family: inherit;
-            background: white;
-        }
-
-        .notes-hint {
             font-size: 11px;
-            color: #999;
-            margin-top: 6px;
-        }
-
-        .attach-section {
-            min-width: 280px;
-        }
-
-        .attach-label {
-            font-size: 13px;
-            font-weight: 500;
+            font-weight: 600;
             color: #333;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
 
-        .upload-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 16px;
-            background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            font-size: 13px;
-            color: #333;
-            cursor: pointer;
-        }
-
-        .upload-btn:hover {
-            background: #f5f5f5;
-        }
-
-        .upload-hint {
-            font-size: 11px;
+        .notes-sublabel {
+            font-size: 10px;
             color: #999;
-            margin-top: 8px;
+            margin-bottom: 6px;
         }
 
         /* Footer */
         .form-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: white;
+            border-top: 1px solid #e9ecef;
             position: fixed;
             bottom: 0;
             left: 260px;
             right: 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 24px;
-            background: white;
-            border-top: 1px solid #e9ecef;
             z-index: 100;
         }
 
         .footer-left {
             display: flex;
-            gap: 12px;
-        }
-
-        .footer-right {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            font-size: 12px;
-            color: #666;
-        }
-
-        .template-link {
-            color: #666;
-        }
-
-        .template-link a {
-            color: #4285f4;
-            text-decoration: none;
-        }
-
-        .template-link a:hover {
-            text-decoration: underline;
+            gap: 10px;
         }
 
         .btn-draft {
-            padding: 10px 20px;
+            padding: 8px 18px;
             background: white;
             color: #333;
             border: 1px solid #e0e0e0;
@@ -537,7 +439,7 @@
         }
 
         .btn-save {
-            padding: 10px 20px;
+            padding: 8px 18px;
             background: #4285f4;
             color: white;
             border: none;
@@ -552,8 +454,8 @@
         }
 
         .btn-cancel {
-            padding: 10px 20px;
-            background: #333;
+            padding: 8px 18px;
+            background: #555;
             color: white;
             border: none;
             border-radius: 4px;
@@ -563,219 +465,333 @@
         }
 
         .btn-cancel:hover {
-            background: #444;
+            background: #333;
+        }
+
+        .footer-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+            color: #666;
+            font-size: 13px;
+        }
+
+        .footer-right .amount {
+            font-weight: 600;
+        }
+
+        /* Vendor Autocomplete */
+        .vendor-autocomplete-wrap {
+            position: relative;
+        }
+
+        .vendor-autocomplete-wrap input {
+            width: 100%;
+            max-width: 220px;
+            padding: 7px 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .vendor-autocomplete-wrap input:focus {
+            border-color: #4285f4;
+            outline: none;
+        }
+
+        .vendor-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 280px;
+            max-height: 200px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+            z-index: 100;
+        }
+
+        .vendor-dropdown.show {
+            display: block;
+        }
+
+        .vendor-dropdown-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            font-size: 12px;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .vendor-dropdown-item:hover {
+            background: #f0f5ff;
+        }
+
+        .vendor-dropdown-item .vendor-item-name {
+            font-weight: 500;
+        }
+
+        .vendor-dropdown-item .vendor-item-addr {
+            font-size: 11px;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .vendor-dropdown-empty {
+            padding: 14px;
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+        }
+
+        .vendor-billing-address {
+            margin-top: 6px;
+            padding: 8px 10px;
+            background: #f9fafb;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #666;
+            line-height: 1.5;
+            max-width: 220px;
+        }
+
+        .vendor-billing-address .addr-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 2px;
+        }
+
+        /* Item Autocomplete */
+        .item-autocomplete-wrap {
+            position: relative;
+        }
+
+        .item-autocomplete-wrap input {
+            width: 100%;
+        }
+
+        .item-autocomplete-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            min-width: 280px;
+            max-height: 200px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+            z-index: 100;
+        }
+
+        .item-autocomplete-dropdown.open {
+            display: block;
+        }
+
+        .item-ac-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 7px 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .item-ac-option:hover {
+            background: #eef3ff;
+        }
+
+        .item-ac-option:last-child {
+            border-bottom: none;
+        }
+
+        .item-ac-name {
+            font-size: 12px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .item-ac-sku {
+            font-size: 10px;
+            color: #888;
+        }
+
+        .item-ac-right {
+            text-align: right;
+        }
+
+        .item-ac-price {
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .item-ac-stock {
+            font-size: 10px;
+            color: #888;
+        }
+
+        .item-ac-stock.green {
+            color: #16a34a;
+        }
+
+        .item-ac-stock.red {
+            color: #dc2626;
+        }
+
+        .item-ac-empty {
+            padding: 14px;
+            text-align: center;
+            color: #999;
+            font-size: 12px;
         }
     </style>
 </head>
 
 <body>
-    <!-- Sidebar Container -->
     <div id="sidebarContainer"></div>
 
     <div class="main-layout">
         <div class="content" id="content">
             <!-- Page Header -->
             <div class="page-header">
-                <h1 class="page-title">
-                    <span class="title-icon">📋</span>
-                    New Bill
-                </h1>
+                <div class="page-title-wrapper">
+                    <span class="page-icon">📋</span>
+                    <h1 class="page-title" id="pageTitle">New Bill</h1>
+                </div>
                 <button class="close-btn" onclick="goBack()">×</button>
             </div>
 
-            <!-- Main Form Area -->
+            <!-- Main Form Area - Two Column Layout -->
             <div class="form-main">
-                <!-- Vendor Section (Blue) -->
-                <div class="vendor-section">
-                    <div class="vendor-row">
-                        <label class="vendor-label">Vendor Name*</label>
-                        <div class="vendor-input-group">
-                            <select class="vendor-select" id="vendorName">
-                                <option value="">Select a Vendor</option>
-                            </select>
-                            <button class="search-btn">🔍</button>
+                <!-- Left Column -->
+                <div class="left-column">
+                    <!-- Vendor Section -->
+                    <div class="form-section">
+                        <div class="form-row">
+                            <label class="form-label required">Vendor Name*</label>
+                            <div class="vendor-autocomplete-wrap">
+                                <input type="text" id="vendorSearchInput" placeholder="Type to search vendors..."
+                                    autocomplete="off">
+                                <div class="vendor-dropdown" id="vendorDropdown"></div>
+                            </div>
+                            <div class="vendor-billing-address" id="vendorBillingAddress" style="display:none;"></div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Form Fields Section -->
-                <div class="form-section">
-                    <div class="form-row">
-                        <label class="form-label required">Bill#*</label>
-                        <input type="text" class="form-input" id="billNumber">
-                    </div>
-
-                    <div class="form-row">
-                        <label class="form-label">Order Number</label>
-                        <input type="text" class="form-input" id="orderNumber">
-                    </div>
-
-                    <div class="form-row">
-                        <label class="form-label required">Bill Date*</label>
-                        <input type="text" class="form-input" id="billDate" placeholder="dd MMM yyyy">
-                    </div>
-
-                    <div class="form-row-inline">
-                        <div class="form-group">
+                    <!-- Bill Details Section -->
+                    <div class="form-section">
+                        <div class="form-row">
+                            <label class="form-label required">Bill#*</label>
+                            <input type="text" class="form-input" id="billNumber" placeholder="Bill number">
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label">Order Number</label>
+                            <span class="po-ref-badge" id="orderNumberDisplay">-</span>
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label required">Bill Date*</label>
+                            <input type="date" class="form-input" id="billDate">
+                        </div>
+                        <div class="form-row">
                             <label class="form-label">Due Date</label>
-                            <input type="text" class="form-input" id="dueDate" value="12 Jan 2026"
-                                style="width: 150px;">
+                            <input type="date" class="form-input" id="dueDate">
                         </div>
-                        <div class="form-group">
+                        <div class="form-row">
                             <label class="form-label">Payment Terms</label>
-                            <select class="form-select" id="paymentTerms" style="width: 150px;">
+                            <select class="form-select" id="paymentTerms">
                                 <option value="due-on-receipt">Due on Receipt</option>
                                 <option value="net-15">Net 15</option>
                                 <option value="net-30">Net 30</option>
                                 <option value="net-45">Net 45</option>
+                                <option value="net-60">Net 60</option>
                             </select>
                         </div>
                     </div>
 
-                    <div class="form-row">
-                        <label class="form-label">Subject <span class="info-icon">ⓘ</span></label>
-                        <input type="text" class="form-textarea" id="subject"
-                            placeholder="Enter a subject within 250 characters" style="min-height: 40px;">
-                    </div>
-                </div>
-
-                <!-- Tax Options -->
-                <div class="tax-options">
-                    <div class="tax-option">
-                        🏷️ Tax Exclusive
-                        <select id="taxType">
-                            <option value="exclusive">Tax Exclusive</option>
-                            <option value="inclusive">Tax Inclusive</option>
-                        </select>
-                    </div>
-                    <div class="tax-option">
-                        ⏱️ At Line Item Level
-                        <select id="taxLevel">
-                            <option value="item">At Line Item Level</option>
-                            <option value="transaction">At Transaction Level</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Item Table Section -->
-                <div class="item-table-section">
-                    <div class="section-header">
-                        <span class="section-title">Item Table</span>
-                        <a href="#" class="bulk-actions-link">🔄 Bulk Actions</a>
-                    </div>
-
-                    <table class="item-table">
-                        <thead>
-                            <tr>
-                                <th style="width: 40px;"></th>
-                                <th>ITEM DETAILS</th>
-                                <th>ACCOUNT</th>
-                                <th style="width: 80px;">QUANTITY</th>
-                                <th style="width: 80px;">RATE 💲</th>
-                                <th style="width: 80px;">DISCOUNT</th>
-                                <th>TAX</th>
-                                <th>CUSTOMER DETAILS</th>
-                                <th style="width: 80px;">AMOUNT</th>
-                                <th style="width: 40px;"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="itemTableBody">
-                            <tr>
-                                <td>
-                                    <div class="item-image">🖼️</div>
-                                </td>
-                                <td>
-                                    <input type="text" placeholder="Type or click to select an item.">
-                                </td>
-                                <td>
-                                    <select>
-                                        <option value="">Select an account</option>
-                                        <option value="inventory">Inventory Asset</option>
-                                        <option value="expense">Expense</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <input type="number" value="1.00" step="0.01">
-                                </td>
-                                <td>
-                                    <input type="number" value="0.00" step="0.01">
-                                </td>
-                                <td>
-                                    <div style="display: flex; align-items: center; gap: 2px;">
-                                        <input type="number" value="0" style="width: 40px;">
-                                        <span>%</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <select>
-                                        <option value="">Select a Tax</option>
-                                        <option value="12">VAT 12%</option>
-                                        <option value="0">Exempt</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <select>
-                                        <option value="">Select Customer</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <span style="font-weight: 500;">0.00</span>
-                                </td>
-                                <td>
-                                    <button class="delete-row-btn" onclick="deleteRow(this)">⋮ ✕</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <div class="filter-tags">
-                        <span class="filter-tag">📋 Purchase Discounts ▼</span>
-                        <span class="filter-tag">🏷️ Reporting Tags ▼</span>
-                    </div>
-
-                    <div class="add-row-actions">
-                        <button class="add-row-btn" onclick="addNewRow()">
-                            ⊕ Add New Row <span>▼</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Totals Section -->
-                <div class="totals-section">
-                    <div class="totals-box">
-                        <div class="total-row">
-                            <span>Sub Total</span>
-                            <span id="subTotal">0.00</span>
+                    <!-- Notes Section -->
+                    <div class="notes-section">
+                        <div class="notes-row">
+                            <div class="notes-label">Notes</div>
+                            <div class="notes-sublabel">Notes will not be shown in PDF</div>
+                            <textarea class="form-textarea" id="notes" rows="3"></textarea>
                         </div>
-                        <div class="total-row">
-                            <span>Adjustment</span>
-                            <div class="adjustment-input-group">
-                                <input type="number" id="adjustmentValue" value="0" style="width: 80px;">
-                                <span style="color: #999;">ⓘ</span>
-                                <span id="adjustmentAmount">0.00</span>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="right-column">
+                    <!-- Item Table Section -->
+                    <div class="item-table-section">
+                        <div class="item-table-header">
+                            <span class="item-table-title">Item Table</span>
+                        </div>
+                        <table class="item-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 32px;"></th>
+                                    <th>ITEM DETAILS</th>
+                                    <th>ACCOUNT</th>
+                                    <th class="center" style="width: 70px;">QTY</th>
+                                    <th class="center" style="width: 80px;">RATE ₱</th>
+                                    <th style="width: 80px;">TAX</th>
+                                    <th class="center" style="width: 80px;">AMOUNT</th>
+                                    <th style="width: 30px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="itemTableBody">
+                                <!-- Items populated from PO -->
+                            </tbody>
+                        </table>
+                        <div class="add-row-actions">
+                            <button class="add-row-btn primary" onclick="addNewRow()">+ Add New Row</button>
+                        </div>
+
+                        <!-- Open POs link -->
+                        <div class="open-po-link" id="openPOsLink" style="display: none;"
+                            onclick="alert('Feature coming soon!')">
+                            📦 Include <span id="openPOCount">0</span> Open Purchase Orders
+                        </div>
+                    </div>
+
+                    <!-- Totals Section -->
+                    <div class="totals-section">
+                        <div class="totals-box">
+                            <div class="totals-row">
+                                <span class="totals-label">Sub Total</span>
+                                <span class="totals-value" id="subTotal">0.00</span>
+                            </div>
+                            <div class="totals-row">
+                                <span class="totals-label">Discount</span>
+                                <div class="totals-input">
+                                    <input type="number" id="discountValue" value="0" oninput="recalculateTotals()">
+                                    <span>%</span>
+                                    <span class="totals-value" id="discountAmount">0.00</span>
+                                </div>
+                            </div>
+                            <div class="totals-row">
+                                <span class="totals-label">Adjustment</span>
+                                <div class="totals-input">
+                                    <input type="number" id="adjustmentValue" value="0" oninput="recalculateTotals()">
+                                    <span class="totals-value" id="adjustmentAmount">0.00</span>
+                                </div>
+                            </div>
+                            <div class="totals-row total">
+                                <span class="totals-label">Total ( PHP )</span>
+                                <span class="totals-value" id="total">0.00</span>
                             </div>
                         </div>
-                        <div class="total-row final">
-                            <span>Total</span>
-                            <span id="total">0.00</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Notes Section -->
-                <div class="notes-section">
-                    <div class="notes-box">
-                        <div class="notes-label">Notes</div>
-                        <textarea class="notes-textarea" id="notes" placeholder=""></textarea>
-                        <div class="notes-hint">It will not be shown in PDF</div>
-                    </div>
-
-                    <div class="attach-section">
-                        <div class="attach-label">Attach File(s) to Bill</div>
-                        <button class="upload-btn" onclick="attachFiles()">
-                            📤 Upload File <span>▼</span>
-                        </button>
-                        <div class="upload-hint">You can upload a maximum of 5 files, 10MB each</div>
                     </div>
                 </div>
             </div>
@@ -783,120 +799,456 @@
             <!-- Footer -->
             <div class="form-footer">
                 <div class="footer-left">
-                    <button class="btn-draft" onclick="saveAsDraft()">Save as Draft</button>
-                    <button class="btn-save" onclick="saveAsOpen()">Save as Open</button>
+                    <button class="btn-draft" onclick="saveBill('draft')">Save as Draft</button>
+                    <button class="btn-save" onclick="saveBill('open')">Save as Open</button>
                     <button class="btn-cancel" onclick="goBack()">Cancel</button>
                 </div>
                 <div class="footer-right">
-                    <span class="template-link">PDF Template: <a href="#">Standard Template</a> <a
-                            href="#">Change</a></span>
+                    <div><span>Total:</span> <span class="amount" id="footerTotal">PHP 0.00</span></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Layout Script -->
     <script src="/js/layout.js"></script>
     <script>
-        // Set current date
-        document.addEventListener('DOMContentLoaded', function () {
-            const today = new Date();
-            const options = { day: '2-digit', month: 'short', year: 'numeric' };
-            const dateStr = today.toLocaleDateString('en-GB', options);
-            document.getElementById('dueDate').value = dateStr;
+        const urlParams = new URLSearchParams(window.location.search);
+        const sourcePOId = urlParams.get('poId');
+        let allItems = [];
+        let poData = null;
+        let allVendors = [];
+        let selectedVendor = null;
+
+        // ===== VENDOR DROPDOWN =====
+        async function loadVendors() {
+            try {
+                const res = await fetch('/api/suppliers');
+                if (res.ok) allVendors = await res.json();
+            } catch (e) { console.error('Error loading vendors:', e); }
+
+            const input = document.getElementById('vendorSearchInput');
+            const dropdown = document.getElementById('vendorDropdown');
+
+            input.addEventListener('focus', () => {
+                renderVendorDropdown(input.value);
+                dropdown.classList.add('show');
+            });
+
+            input.addEventListener('input', () => {
+                selectedVendor = null;
+                renderVendorDropdown(input.value);
+                document.getElementById('vendorBillingAddress').style.display = 'none';
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.vendor-autocomplete-wrap')) {
+                    dropdown.classList.remove('show');
+                }
+            });
+        }
+
+        function renderVendorDropdown(query) {
+            const dropdown = document.getElementById('vendorDropdown');
+            const q = (query || '').toLowerCase();
+            const filtered = allVendors.filter(v => {
+                const name = v.name || v.display_name || v.company_name || '';
+                return name.toLowerCase().includes(q);
+            });
+
+            if (filtered.length === 0) {
+                dropdown.innerHTML = '<div class="vendor-dropdown-empty">No vendors found</div>';
+                dropdown.classList.add('show');
+                return;
+            }
+
+            dropdown.innerHTML = '';
+            filtered.forEach(v => {
+                const name = v.name || v.display_name || v.company_name || 'Unnamed';
+                const addr = v.address || '';
+                const div = document.createElement('div');
+                div.className = 'vendor-dropdown-item';
+                div.innerHTML = `
+                    <div class="vendor-item-name">${name}</div>
+                    ${addr ? '<div class="vendor-item-addr">' + addr + '</div>' : ''}
+                `;
+                div.addEventListener('click', () => selectVendor(v));
+                dropdown.appendChild(div);
+            });
+            dropdown.classList.add('show');
+        }
+
+        function selectVendor(vendor) {
+            const name = vendor.name || vendor.display_name || vendor.company_name || '';
+            selectedVendor = { id: vendor.id, name: name };
+
+            document.getElementById('vendorSearchInput').value = name;
+            document.getElementById('vendorDropdown').classList.remove('show');
+
+            // Show billing address
+            const addrDiv = document.getElementById('vendorBillingAddress');
+            const addr = vendor.address || '';
+            if (addr) {
+                addrDiv.innerHTML = '<div class="addr-label">Billing Address</div>' + addr;
+                addrDiv.style.display = 'block';
+            } else {
+                addrDiv.style.display = 'none';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async function () {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('billDate').value = today;
+            document.getElementById('dueDate').value = today;
+
+            // Load items for autocomplete
+            try { allItems = await (await fetch('/api/items')).json(); } catch (e) { console.error(e); }
+
+            // Load vendors
+            await loadVendors();
+
+            // Generate bill number
+            try {
+                const res = await fetch('/api/bills/next-number');
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('billNumber').value = data.bill_number;
+                }
+            } catch (e) { console.error(e); }
+
+            // Load PO data if converting
+            if (sourcePOId) {
+                await loadPOData(sourcePOId);
+            } else {
+                addNewRow();
+            }
+
+            // Check open POs count
+            try {
+                const posRes = await fetch('/api/purchases');
+                if (posRes.ok) {
+                    const allPOs = await posRes.json();
+                    const openPOs = allPOs.filter(p => p.status === 'ordered' || p.status === 'partially_received' || p.status === 'received');
+                    if (openPOs.length > 0) {
+                        document.getElementById('openPOsLink').style.display = 'flex';
+                        document.getElementById('openPOCount').textContent = openPOs.length;
+                    }
+                }
+            } catch (e) { }
         });
 
-        function goBack() {
-            window.location.href = '/bills.html';
+        async function loadPOData(poId) {
+            try {
+                const res = await fetch('/api/purchases/' + poId);
+                if (!res.ok) { alert('Failed to load Purchase Order'); return; }
+                poData = await res.json();
+
+                document.getElementById('pageTitle').textContent = 'New Bill (from PO)';
+                // Set vendor from PO
+                document.getElementById('vendorSearchInput').value = poData.supplier_name || '';
+                selectedVendor = { id: poData.supplier_id, name: poData.supplier_name };
+                document.getElementById('vendorSearchInput').readOnly = true;
+                document.getElementById('orderNumberDisplay').textContent = poData.po_number || 'PO-' + poId;
+
+                if (poData.payment_terms) {
+                    document.getElementById('paymentTerms').value = poData.payment_terms;
+                }
+
+                // Populate items
+                const tbody = document.getElementById('itemTableBody');
+                tbody.innerHTML = '';
+
+                if (poData.items && poData.items.length > 0) {
+                    poData.items.forEach(item => {
+                        const qty = parseFloat(item.quantity) || 1;
+                        const rate = parseFloat(item.unit_price) || 0;
+                        const amt = (qty * rate).toFixed(2);
+
+                        const tr = document.createElement('tr');
+                        if (item.item_id) tr.setAttribute('data-item-id', item.item_id);
+                        tr.innerHTML = buildRowHTML(item.item_name || '', qty, rate, amt);
+                        tbody.appendChild(tr);
+                    });
+                    recalculateTotals();
+                } else {
+                    addNewRow();
+                }
+
+                // Apply discount/adjustment from PO if available
+                if (poData.discount_percent) {
+                    document.getElementById('discountValue').value = parseFloat(poData.discount_percent) || 0;
+                }
+                if (poData.adjustment) {
+                    document.getElementById('adjustmentValue').value = parseFloat(poData.adjustment) || 0;
+                }
+                recalculateTotals();
+            } catch (e) {
+                console.error('Error loading PO:', e);
+                alert('Error loading Purchase Order data');
+            }
+        }
+
+        function buildRowHTML(name, qty, rate, amt, accountVal) {
+            const acct = accountVal || 'inventory';
+            const isExpense = acct !== 'inventory';
+            return `<td><div class="item-image">${isExpense ? '💡' : '🖼️'}</div></td>
+                <td><div class="item-autocomplete-wrap">
+                    <input type="text" value="${name}" placeholder="${isExpense ? 'Enter description (e.g. Electricity - Jan 2026)' : 'Type or click to select an item.'}" class="item-name-input" ${isExpense ? '' : 'onfocus="openItemDropdown(this)" oninput="filterItemDropdown(this)"'}>
+                    <div class="item-autocomplete-dropdown"></div>
+                </div></td>
+                <td><select class="account-select" onchange="onAccountChange(this)">
+                    <option value="" disabled>── Assets ──</option>
+                    <option value="inventory" ${acct === 'inventory' ? 'selected' : ''}>Inventory Asset</option>
+                    <option value="" disabled>── Expenses ──</option>
+                    <option value="electricity-expense" ${acct === 'electricity-expense' ? 'selected' : ''}>Electricity Expense</option>
+                    <option value="utilities-expense" ${acct === 'utilities-expense' ? 'selected' : ''}>Utilities</option>
+                    <option value="rent-expense" ${acct === 'rent-expense' ? 'selected' : ''}>Rent Expense</option>
+                    <option value="office-supplies" ${acct === 'office-supplies' ? 'selected' : ''}>Office Supplies</option>
+                    <option value="repairs-maintenance" ${acct === 'repairs-maintenance' ? 'selected' : ''}>Repairs & Maintenance</option>
+                    <option value="telecommunications" ${acct === 'telecommunications' ? 'selected' : ''}>Telecommunications</option>
+                    <option value="transportation" ${acct === 'transportation' ? 'selected' : ''}>Transportation</option>
+                    <option value="professional-fees" ${acct === 'professional-fees' ? 'selected' : ''}>Professional Fees</option>
+                    <option value="miscellaneous-expense" ${acct === 'miscellaneous-expense' ? 'selected' : ''}>Miscellaneous Expense</option>
+                </select></td>
+                <td class="center"><input type="number" value="${qty}" style="text-align:center;" class="qty-input" onchange="updateRowAmount(this)"></td>
+                <td class="center"><input type="number" value="${parseFloat(rate).toFixed(2)}" style="text-align:right;" class="rate-input" onchange="updateRowAmount(this)"></td>
+                <td><select>
+                    <option value="">Select Tax</option>
+                    <option value="12">VAT 12%</option>
+                    <option value="0">Exempt</option>
+                </select></td>
+                <td class="center row-amount" style="font-weight:500;">${amt}</td>
+                <td class="center"><button class="delete-row-btn" onclick="deleteRow(this)">×</button></td>`;
         }
 
         function addNewRow() {
-            const tbody = document.getElementById('itemTableBody');
-            const newRow = document.createElement('tr');
-            newRow.innerHTML = `
-                <td>
-                    <div class="item-image">🖼️</div>
-                </td>
-                <td>
-                    <input type="text" placeholder="Type or click to select an item.">
-                </td>
-                <td>
-                    <select>
-                        <option value="">Select an account</option>
-                        <option value="inventory">Inventory Asset</option>
-                        <option value="expense">Expense</option>
-                    </select>
-                </td>
-                <td>
-                    <input type="number" value="1.00" step="0.01">
-                </td>
-                <td>
-                    <input type="number" value="0.00" step="0.01">
-                </td>
-                <td>
-                    <div style="display: flex; align-items: center; gap: 2px;">
-                        <input type="number" value="0" style="width: 40px;">
-                        <span>%</span>
-                    </div>
-                </td>
-                <td>
-                    <select>
-                        <option value="">Select a Tax</option>
-                        <option value="12">VAT 12%</option>
-                        <option value="0">Exempt</option>
-                    </select>
-                </td>
-                <td>
-                    <select>
-                        <option value="">Select Customer</option>
-                    </select>
-                </td>
-                <td>
-                    <span style="font-weight: 500;">0.00</span>
-                </td>
-                <td>
-                    <button class="delete-row-btn" onclick="deleteRow(this)">⋮ ✕</button>
-                </td>
-            `;
-            tbody.appendChild(newRow);
+            const tr = document.createElement('tr');
+            tr.innerHTML = buildRowHTML('', 1, 0, '0.00');
+            document.getElementById('itemTableBody').appendChild(tr);
         }
 
         function deleteRow(btn) {
             const tbody = document.getElementById('itemTableBody');
             if (tbody.rows.length > 1) {
                 btn.closest('tr').remove();
+                recalculateTotals();
             }
         }
 
-        function attachFiles() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.pdf,.doc,.docx,.jpg,.png';
-            input.multiple = true;
-            input.click();
+        function updateRowAmount(input) {
+            const row = input.closest('tr');
+            const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
+            const rate = parseFloat(row.querySelector('.rate-input').value) || 0;
+            const ac = row.querySelector('.row-amount');
+            if (ac) ac.textContent = (qty * rate).toFixed(2);
+            recalculateTotals();
         }
 
-        function saveAsDraft() {
-            alert('Bill saved as draft!');
-            goBack();
+        function recalculateTotals() {
+            const rows = document.getElementById('itemTableBody').rows;
+            let sub = 0;
+            for (let i = 0; i < rows.length; i++) {
+                const a = rows[i].querySelector('.row-amount');
+                if (a) sub += parseFloat(a.textContent) || 0;
+            }
+            document.getElementById('subTotal').textContent = sub.toFixed(2);
+
+            const dp = parseFloat(document.getElementById('discountValue').value) || 0;
+            const da = sub * (dp / 100);
+            document.getElementById('discountAmount').textContent = da.toFixed(2);
+
+            const adj = parseFloat(document.getElementById('adjustmentValue').value) || 0;
+            const total = sub - da + adj;
+            document.getElementById('total').textContent = total.toFixed(2);
+            document.getElementById('footerTotal').textContent = 'PHP ' + total.toFixed(2);
         }
 
-        function saveAsOpen() {
-            const vendorName = document.getElementById('vendorName').value;
-            const billNumber = document.getElementById('billNumber').value;
+        // Account change handler
+        function onAccountChange(sel) {
+            const row = sel.closest('tr');
+            const input = row.querySelector('.item-name-input');
+            const dropdown = row.querySelector('.item-autocomplete-dropdown');
+            const icon = row.querySelector('.item-image');
+            const isExpense = sel.value !== 'inventory';
 
-            if (!vendorName) {
-                alert('Please select a vendor');
+            // Clear current value
+            input.value = '';
+            row.removeAttribute('data-item-id');
+            dropdown.classList.remove('open');
+            dropdown.innerHTML = '';
+
+            if (isExpense) {
+                // Switch to manual entry mode
+                input.placeholder = 'Enter description (e.g. Electricity - Jan 2026)';
+                input.removeAttribute('onfocus');
+                input.removeAttribute('oninput');
+                input.onfocus = null;
+                input.oninput = null;
+                if (icon) icon.textContent = '💡';
+            } else {
+                // Switch to inventory autocomplete mode
+                input.placeholder = 'Type or click to select an item.';
+                input.setAttribute('onfocus', 'openItemDropdown(this)');
+                input.setAttribute('oninput', 'filterItemDropdown(this)');
+                if (icon) icon.textContent = '🖼️';
+            }
+        }
+
+        // Item Autocomplete
+        function openItemDropdown(input) {
+            // Only open if account is inventory
+            const row = input.closest('tr');
+            const acctSel = row.querySelector('.account-select');
+            if (acctSel && acctSel.value !== 'inventory') return;
+
+            document.querySelectorAll('.item-autocomplete-dropdown.open').forEach(d => d.classList.remove('open'));
+            const wrap = input.closest('.item-autocomplete-wrap');
+            const dropdown = wrap.querySelector('.item-autocomplete-dropdown');
+            renderItemDropdown(dropdown, input.value);
+            dropdown.classList.add('open');
+        }
+
+        function filterItemDropdown(input) {
+            const wrap = input.closest('.item-autocomplete-wrap');
+            const dropdown = wrap.querySelector('.item-autocomplete-dropdown');
+            renderItemDropdown(dropdown, input.value);
+            if (!dropdown.classList.contains('open')) dropdown.classList.add('open');
+        }
+
+        function renderItemDropdown(dropdown, filter) {
+            const fl = (filter || '').toLowerCase();
+            const filtered = allItems.filter(item => {
+                if (!fl) return true;
+                return (item.name || '').toLowerCase().includes(fl) ||
+                    (item.sku || '').toLowerCase().includes(fl);
+            });
+
+            if (filtered.length === 0) {
+                dropdown.innerHTML = '<div class="item-ac-empty">No items found</div>';
                 return;
             }
 
-            if (!billNumber) {
-                alert('Please enter a bill number');
-                return;
+            let html = '';
+            filtered.forEach(item => {
+                const price = parseFloat(item.purchase_cost) || 0;
+                const stock = parseFloat(item.stock_quantity) || 0;
+                const stockClass = stock > 0 ? 'green' : 'red';
+                html += `<div class="item-ac-option" onclick="selectItem(this, ${item.id})">
+                    <div>
+                        <div class="item-ac-name">${item.name}</div>
+                        <div class="item-ac-sku">SKU: ${item.sku || '-'}</div>
+                    </div>
+                    <div class="item-ac-right">
+                        <div class="item-ac-price">₱${price.toFixed(2)}</div>
+                        <div class="item-ac-stock ${stockClass}">${stock} ${item.unit || 'pcs'}</div>
+                    </div>
+                </div>`;
+            });
+            dropdown.innerHTML = html;
+        }
+
+        function selectItem(optionEl, itemId) {
+            const item = allItems.find(i => i.id === itemId);
+            if (!item) return;
+
+            const row = optionEl.closest('tr');
+            row.querySelector('.item-name-input').value = item.name;
+            row.setAttribute('data-item-id', item.id);
+
+            const rateInput = row.querySelector('.rate-input');
+            const cost = parseFloat(item.purchase_cost) || 0;
+            if (cost > 0) rateInput.value = cost.toFixed(2);
+
+            updateRowAmount(rateInput);
+            optionEl.closest('.item-autocomplete-dropdown').classList.remove('open');
+        }
+
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.item-autocomplete-wrap')) {
+                document.querySelectorAll('.item-autocomplete-dropdown.open').forEach(d => d.classList.remove('open'));
+            }
+        });
+
+        // Save Bill
+        async function saveBill(status) {
+            const billNumber = document.getElementById('billNumber').value.trim();
+            if (!billNumber) { alert('Please enter a bill number'); return; }
+
+            const rows = document.getElementById('itemTableBody').rows;
+            const items = [];
+            for (let i = 0; i < rows.length; i++) {
+                const r = rows[i];
+                const nameIn = r.querySelector('.item-name-input');
+                if (!nameIn || !nameIn.value.trim()) continue;
+
+                const accountSel = r.querySelector('.account-select');
+                const accountVal = accountSel ? accountSel.value : 'inventory';
+                const isExpenseItem = accountVal !== 'inventory';
+
+                items.push({
+                    item_id: isExpenseItem ? null : (r.getAttribute('data-item-id') ? parseInt(r.getAttribute('data-item-id')) : null),
+                    item_name: nameIn.value.trim(),
+                    account: accountVal,
+                    account_type: isExpenseItem ? 'expense' : 'inventory',
+                    quantity: parseFloat(r.querySelector('.qty-input')?.value) || 1,
+                    rate: parseFloat(r.querySelector('.rate-input')?.value) || 0,
+                    tax_percent: parseFloat(r.querySelectorAll('select')[1]?.value) || 0
+                });
             }
 
-            alert('Bill saved as open!');
-            goBack();
+            if (items.length === 0) { alert('Please add at least one item'); return; }
+
+            const payload = {
+                bill_number: billNumber,
+                purchase_order_id: sourcePOId ? parseInt(sourcePOId) : null,
+                supplier_id: selectedVendor?.id || poData?.supplier_id || null,
+                supplier_name: selectedVendor?.name || poData?.supplier_name || '',
+                order_number: poData?.po_number || null,
+                bill_date: document.getElementById('billDate').value || null,
+                due_date: document.getElementById('dueDate').value || null,
+                payment_terms: document.getElementById('paymentTerms').value,
+                notes: document.getElementById('notes').value.trim(),
+                discount_percent: parseFloat(document.getElementById('discountValue').value) || 0,
+                adjustment: parseFloat(document.getElementById('adjustmentValue').value) || 0,
+                items: items,
+                status: status
+            };
+
+            try {
+                const res = await fetch('/api/bills', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await res.json();
+                if (!res.ok) { alert('Error: ' + (result.error || 'Failed to save')); return; }
+
+                showToast('New Bill has been created');
+                setTimeout(() => {
+                    window.location.href = '/bills.html';
+                }, 1200);
+            } catch (e) {
+                console.error(e);
+                alert('Failed to save bill');
+            }
+        }
+
+        function showToast(msg) {
+            const t = document.createElement('div');
+            t.textContent = msg;
+            t.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#16a34a;color:white;padding:12px 28px;border-radius:8px;font-size:14px;font-weight:500;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.15);animation:toastIn 0.3s ease;';
+            document.body.appendChild(t);
+            const style = document.createElement('style');
+            style.textContent = '@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(-20px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}';
+            document.head.appendChild(style);
+            setTimeout(() => t.remove(), 3000);
+        }
+
+        function goBack() {
+            if (sourcePOId) {
+                window.location.href = '/purchase-order-detail.html?id=' + sourcePOId;
+            } else {
+                window.location.href = '/bills.html';
+            }
         }
     </script>
 </body>

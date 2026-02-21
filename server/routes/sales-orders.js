@@ -6,11 +6,49 @@ const database = require('../database');
 router.get('/', async (req, res) => {
     try {
         const pool = database.getDb();
-        const result = await pool.query('SELECT * FROM sales_orders ORDER BY created_at DESC');
+        const result = await pool.query(`
+            SELECT so.*,
+                COALESCE(pkg.package_count, 0)::int AS package_count,
+                COALESCE(pkg.shipped_count, 0)::int AS shipped_package_count,
+                COALESCE(shp.shipment_count, 0)::int AS shipment_count,
+                CASE WHEN inv.id IS NOT NULL THEN true ELSE false END AS has_invoice,
+                CASE WHEN inv.status IN ('PAID', 'Paid') THEN true ELSE false END AS invoice_paid
+            FROM sales_orders so
+            LEFT JOIN (
+                SELECT sales_order_id, 
+                    COUNT(*) AS package_count,
+                    COUNT(CASE WHEN status = 'SHIPPED' THEN 1 END) AS shipped_count
+                FROM packages 
+                GROUP BY sales_order_id
+            ) pkg ON so.id = pkg.sales_order_id
+            LEFT JOIN (
+                SELECT sales_order_id, COUNT(*) AS shipment_count
+                FROM shipments
+                GROUP BY sales_order_id
+            ) shp ON so.id = shp.sales_order_id
+            LEFT JOIN LATERAL (
+                SELECT id, status FROM invoices WHERE order_number = so.order_number LIMIT 1
+            ) inv ON true
+            ORDER BY so.created_at DESC
+        `);
         res.json(result.rows);
     } catch (err) {
         console.error('Error fetching sales orders:', err);
         res.status(500).json({ error: 'Failed to fetch sales orders' });
+    }
+});
+
+// GET next available order number (must be before /:id)
+router.get('/next-number', async (req, res) => {
+    try {
+        const pool = database.getDb();
+        const result = await pool.query('SELECT COUNT(*) FROM sales_orders');
+        const count = parseInt(result.rows[0].count) + 1;
+        const order_number = 'SO-' + String(count).padStart(5, '0');
+        res.json({ order_number });
+    } catch (err) {
+        console.error('Error getting next order number:', err);
+        res.status(500).json({ error: 'Failed to get next order number' });
     }
 });
 
@@ -53,10 +91,16 @@ router.post('/', async (req, res) => {
             customer_name,
             salesperson_name,
             payment_terms,
+            delivery_method,
+            expected_shipment_date,
             status,
             notes,
             sub_total,
             discount,
+            discount_type,
+            discount_value,
+            shipping_charges,
+            adjustment,
             total,
             items
         } = req.body;
@@ -67,10 +111,10 @@ router.post('/', async (req, res) => {
         const order_number = 'SO-' + String(count).padStart(5, '0');
 
         const result = await pool.query(
-            `INSERT INTO sales_orders (order_number, order_date, reference_number, customer_id, customer_name, salesperson_name, payment_terms, status, notes, sub_total, discount, total)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+            `INSERT INTO sales_orders (order_number, order_date, reference_number, customer_id, customer_name, salesperson_name, payment_terms, delivery_method, expected_shipment_date, status, notes, sub_total, discount, discount_type, discount_value, shipping_charges, adjustment, total)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
              RETURNING *`,
-            [order_number, order_date || new Date(), reference_number, customer_id, customer_name, salesperson_name, payment_terms, status || 'DRAFT', notes, sub_total || 0, discount || 0, total || 0]
+            [order_number, order_date || new Date(), reference_number, customer_id, customer_name, salesperson_name, payment_terms, delivery_method || '', expected_shipment_date || null, status || 'DRAFT', notes, sub_total || 0, discount || 0, discount_type || '%', discount_value || 0, shipping_charges || 0, adjustment || 0, total || 0]
         );
 
         const order = result.rows[0];
@@ -79,9 +123,9 @@ router.post('/', async (req, res) => {
         if (items && items.length > 0) {
             for (const item of items) {
                 await pool.query(
-                    `INSERT INTO sales_order_items (sales_order_id, item_name, quantity, rate, tax, amount)
-                     VALUES ($1, $2, $3, $4, $5, $6)`,
-                    [order.id, item.item_name, item.quantity || 1, item.rate || 0, item.tax, item.amount || 0]
+                    `INSERT INTO sales_order_items (sales_order_id, item_id, item_name, quantity, rate, tax, amount, discounts)
+                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+                    [order.id, item.item_id || null, item.item_name, item.quantity || 1, item.rate || 0, item.tax, item.amount || 0, JSON.stringify(item.discounts || [])]
                 );
             }
         }
@@ -90,6 +134,116 @@ router.post('/', async (req, res) => {
     } catch (err) {
         console.error('Error creating sales order:', err);
         res.status(500).json({ error: 'Failed to create sales order' });
+    }
+});
+
+// POST convert sales order to invoice
+router.post('/:id/convert-to-invoice', async (req, res) => {
+    try {
+        const pool = database.getDb();
+
+        // 1. Fetch the sales order
+        const orderResult = await pool.query('SELECT * FROM sales_orders WHERE id = $1', [req.params.id]);
+        if (orderResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Sales order not found' });
+        }
+        const order = orderResult.rows[0];
+
+        // 2. Fetch sales order items
+        const itemsResult = await pool.query('SELECT * FROM sales_order_items WHERE sales_order_id = $1', [order.id]);
+        const items = itemsResult.rows;
+
+        // 3. Generate next invoice number
+        const countResult = await pool.query('SELECT COUNT(*) FROM invoices');
+        const count = parseInt(countResult.rows[0].count) + 1;
+        const invoice_number = 'INV-' + String(count).padStart(6, '0');
+
+        // 4. Create the invoice
+        const invoiceResult = await pool.query(
+            `INSERT INTO invoices (invoice_number, invoice_date, order_number, customer_id, customer_name, salesperson_name, payment_terms, status, notes, sub_total, discount, discount_type, discount_value, shipping_charges, adjustment, total)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+             RETURNING *`,
+            [invoice_number, new Date(), order.order_number, order.customer_id, order.customer_name, order.salesperson_name, order.payment_terms, 'DRAFT', order.notes || '', order.sub_total || 0, order.discount || 0, order.discount_type || '%', order.discount_value || 0, order.shipping_charges || 0, order.adjustment || 0, order.total || 0]
+        );
+        const invoice = invoiceResult.rows[0];
+
+        // 5. Copy sales order items to invoice items
+        for (const item of items) {
+            await pool.query(
+                `INSERT INTO invoice_items (invoice_id, item_name, quantity, rate, tax, amount, discounts)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+                [invoice.id, item.item_name, item.quantity || 1, item.rate || 0, item.tax, item.amount || 0, JSON.stringify(item.discounts || [])]
+            );
+        }
+
+        // 6. Update sales order status to CLOSED
+        await pool.query('UPDATE sales_orders SET status = $1 WHERE id = $2', ['CLOSED', order.id]);
+
+        res.status(201).json({ invoice_id: invoice.id, invoice_number: invoice.invoice_number });
+    } catch (err) {
+        console.error('Error converting sales order to invoice:', err);
+        res.status(500).json({ error: 'Failed to convert sales order to invoice' });
+    }
+});
+
+// PUT update entire sales order
+router.put('/:id', async (req, res) => {
+    try {
+        const pool = database.getDb();
+        const {
+            order_date,
+            reference_number,
+            customer_id,
+            customer_name,
+            salesperson_name,
+            payment_terms,
+            delivery_method,
+            expected_shipment_date,
+            status,
+            notes,
+            sub_total,
+            discount,
+            discount_type,
+            discount_value,
+            shipping_charges,
+            adjustment,
+            total,
+            items
+        } = req.body;
+
+        const result = await pool.query(
+            `UPDATE sales_orders SET
+                order_date = $1, reference_number = $2, customer_id = $3, customer_name = $4,
+                salesperson_name = $5, payment_terms = $6, delivery_method = $7,
+                expected_shipment_date = $8, status = $9, notes = $10, sub_total = $11,
+                discount = $12, discount_type = $13, discount_value = $14,
+                shipping_charges = $15, adjustment = $16, total = $17
+             WHERE id = $18 RETURNING *`,
+            [order_date || new Date(), reference_number, customer_id, customer_name, salesperson_name, payment_terms, delivery_method || '', expected_shipment_date || null, status || 'DRAFT', notes, sub_total || 0, discount || 0, discount_type || '%', discount_value || 0, shipping_charges || 0, adjustment || 0, total || 0, req.params.id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Sales order not found' });
+        }
+
+        const order = result.rows[0];
+
+        // Replace items: delete old, insert new
+        await pool.query('DELETE FROM sales_order_items WHERE sales_order_id = $1', [order.id]);
+        if (items && items.length > 0) {
+            for (const item of items) {
+                await pool.query(
+                    `INSERT INTO sales_order_items (sales_order_id, item_id, item_name, quantity, rate, tax, amount, discounts)
+                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+                    [order.id, item.item_id || null, item.item_name, item.quantity || 1, item.rate || 0, item.tax, item.amount || 0, JSON.stringify(item.discounts || [])]
+                );
+            }
+        }
+
+        res.json(order);
+    } catch (err) {
+        console.error('Error updating sales order:', err);
+        res.status(500).json({ error: 'Failed to update sales order' });
     }
 });
 

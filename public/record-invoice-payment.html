@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Record Payment - Inventory Management</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', 'Source Sans Pro', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f5f6fa;
+            font-size: 13px;
+        }
+
+        .main-layout {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .content {
+            flex: 1;
+            margin-left: 260px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            padding: 10px 24px;
+            font-size: 12px;
+            color: #4285f4;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            flex-shrink: 0;
+        }
+
+        .breadcrumb a {
+            color: #4285f4;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumb span {
+            color: #999;
+            margin: 0 4px;
+        }
+
+        /* Page Title */
+        .page-title-bar {
+            padding: 16px 24px;
+            border-bottom: 1px solid #e9ecef;
+            flex-shrink: 0;
+        }
+
+        .page-title-bar h1 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Form Area */
+        .form-main {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 80px;
+        }
+
+        /* Form Section */
+        .form-section {
+            padding: 20px 32px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0 60px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            font-size: 13px;
+            color: #333;
+        }
+
+        .form-label.required {
+            color: #dc2626;
+        }
+
+        .form-input {
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 13px;
+            width: 100%;
+            max-width: 260px;
+            color: #333;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+
+        /* Hide number input spinner arrows */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+
+        .form-select {
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 13px;
+            background: white;
+            cursor: pointer;
+            max-width: 260px;
+            width: 100%;
+            color: #333;
+        }
+
+        .input-with-icon {
+            position: relative;
+            display: inline-block;
+            max-width: 260px;
+            width: 100%;
+        }
+
+        .input-with-icon input {
+            width: 100%;
+            padding-right: 36px;
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* Tax Deducted Radio Section */
+        .radio-group {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .radio-option input[type="radio"] {
+            accent-color: #4285f4;
+        }
+
+        /* Attachments */
+        .attachments-section {
+            padding: 20px 32px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .attachments-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .upload-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .upload-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .upload-hint {
+            font-size: 11px;
+            color: #999;
+            margin-top: 6px;
+        }
+
+        .thankyou-check {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .thankyou-check input[type="checkbox"] {
+            accent-color: #4285f4;
+        }
+
+        /* Notes Section */
+        .notes-section {
+            padding: 20px 32px;
+        }
+
+        .notes-row {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            align-items: flex-start;
+        }
+
+        .notes-textarea {
+            width: 100%;
+            max-width: 260px;
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 13px;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+            color: #333;
+        }
+
+        /* Footer */
+        .form-footer {
+            position: fixed;
+            bottom: 0;
+            left: 260px;
+            right: 0;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 12px 24px;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .btn-draft {
+            padding: 9px 18px;
+            background: white;
+            color: #333;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-draft:hover {
+            background: #f5f5f5;
+        }
+
+        .btn-save-paid {
+            padding: 9px 18px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-save-paid:hover {
+            background: #3367d6;
+        }
+
+        .btn-cancel {
+            padding: 9px 18px;
+            background: #e5e7eb;
+            color: #333;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-cancel:hover {
+            background: #d1d5db;
+        }
+    </style>
+    <style>
+        /* Custom Salesperson Dropdown */
+        .sp-dd-wrap {
+            position: relative;
+            max-width: 260px;
+            width: 100%;
+        }
+
+        .sp-dd-trigger {
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            user-select: none;
+            color: #999;
+        }
+
+        .sp-dd-trigger.selected {
+            color: #333;
+        }
+
+        .sp-dd-trigger:hover,
+        .sp-dd-trigger.open {
+            border-color: #4285f4;
+        }
+
+        .sp-dd-trigger .sp-arrow {
+            color: #4285f4;
+            font-size: 10px;
+            flex-shrink: 0;
+        }
+
+        .sp-dd-panel {
+            display: none;
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #d0d5dd;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            z-index: 999;
+            min-width: 260px;
+        }
+
+        .sp-dd-panel.open {
+            display: block;
+        }
+
+        .sp-dd-search {
+            padding: 8px;
+        }
+
+        .sp-dd-search-inner {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid #4285f4;
+            border-radius: 6px;
+            padding: 6px 10px;
+        }
+
+        .sp-dd-search-inner input {
+            border: none;
+            outline: none;
+            font-size: 13px;
+            flex: 1;
+            font-family: inherit;
+        }
+
+        .sp-dd-options {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .sp-dd-option {
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+
+        .sp-dd-option:hover {
+            background: #4285f4;
+            color: white;
+        }
+
+        .sp-dd-option.selected {
+            background: #f0f0f0;
+        }
+
+        .sp-dd-option.selected:hover {
+            background: #4285f4;
+            color: white;
+        }
+
+        .sp-dd-empty {
+            padding: 14px;
+            font-size: 13px;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer"></div>
+
+    <div class="main-layout">
+        <div class="content" id="content">
+            <!-- Breadcrumb -->
+            <div class="breadcrumb" id="breadcrumb">
+                <a href="/invoices.html" id="breadcrumbLink"></a>
+            </div>
+
+            <!-- Page Title -->
+            <div class="page-title-bar">
+                <h1 id="pageTitle">Payment for Invoice</h1>
+            </div>
+
+            <!-- Form Area -->
+            <div class="form-main">
+                <!-- Top Fields Section -->
+                <div class="form-section">
+                    <div class="form-row">
+                        <label class="form-label required">Customer Name*</label>
+                        <input type="text" class="form-input" id="customerName" readonly>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label required">Payment #*</label>
+                        <div class="input-with-icon">
+                            <input type="text" class="form-input" id="paymentNumber">
+                            <span class="input-icon">⚙</span>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">Location</label>
+                        <select class="form-select" id="location">
+                            <option value="Head Office">Head Office</option>
+                            <option value="Branch 1">Branch 1</option>
+                            <option value="Branch 2">Branch 2</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label required">Salesperson*</label>
+                        <div class="sp-dd-wrap" id="spDdWrap">
+                            <input type="hidden" id="salesperson" value="">
+                            <div class="sp-dd-trigger" id="spDdTrigger" onclick="toggleSpDd()">
+                                <span id="spDdLabel">Select or Add Salesperson</span>
+                                <span class="sp-arrow">▼</span>
+                            </div>
+                            <div class="sp-dd-panel" id="spDdPanel">
+                                <div class="sp-dd-search">
+                                    <div class="sp-dd-search-inner">
+                                        <span style="color: #999;">🔍</span>
+                                        <input type="text" id="spDdSearch" placeholder="Search" oninput="filterSpDd()">
+                                    </div>
+                                </div>
+                                <div class="sp-dd-options" id="spDdOptions"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Amount Section -->
+                <div class="form-section">
+                    <div class="form-grid">
+                        <div class="form-row">
+                            <label class="form-label required">Amount Received (PHP)*</label>
+                            <input type="number" class="form-input" id="amountReceived" step="0.01">
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label">Bank Charges (if any)</label>
+                            <input type="number" class="form-input" id="bankCharges" step="0.01" value="0">
+                        </div>
+                    </div>
+
+                    <!-- Tax Deducted -->
+                    <div class="form-row" style="margin-top: 8px;">
+                        <label class="form-label">Tax deducted?</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="taxDeducted" value="no" checked> No Tax deducted
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="taxDeducted" value="yes"> Yes, TDS
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Details Section -->
+                <div class="form-section">
+                    <div class="form-grid">
+                        <div>
+                            <div class="form-row">
+                                <label class="form-label required">Payment Date*</label>
+                                <input type="text" class="form-input" id="paymentDate">
+                            </div>
+                            <div class="form-row">
+                                <label class="form-label">Payment Received On</label>
+                                <input type="date" class="form-input" id="paymentReceivedOn">
+                            </div>
+                            <div class="form-row">
+                                <label class="form-label">Reference#</label>
+                                <input type="text" class="form-input" id="referenceNumber">
+                            </div>
+                        </div>
+                        <div>
+                            <div class="form-row">
+                                <label class="form-label">Payment Mode</label>
+                                <select class="form-select" id="paymentMode">
+                                    <option value="Cash">Cash</option>
+                                    <option value="Bank Transfer">Bank Transfer</option>
+                                    <option value="Check">Check</option>
+                                    <option value="Credit Card">Credit Card</option>
+                                    <option value="GCash">GCash</option>
+                                    <option value="Maya">Maya</option>
+                                </select>
+                            </div>
+                            <div class="form-row">
+                                <label class="form-label required">Deposit To*</label>
+                                <select class="form-select" id="depositTo">
+                                    <option value="Petty Cash">Petty Cash</option>
+                                    <option value="Bank Account">Bank Account</option>
+                                    <option value="Undeposited Funds">Undeposited Funds</option>
+                                </select>
+                            </div>
+                            <div class="notes-row">
+                                <label class="form-label">Notes</label>
+                                <textarea class="notes-textarea" id="notes"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Attachments -->
+                <div class="attachments-section">
+                    <div class="attachments-label">Attachments</div>
+                    <button class="upload-btn" onclick="attachFiles()">
+                        📤 Upload File <span>▼</span>
+                    </button>
+                    <div class="upload-hint">You can upload a maximum of 5 files, 5MB each</div>
+
+                    <label class="thankyou-check">
+                        <input type="checkbox" id="thankYouNote">
+                        Send a "Thank you" note for this payment
+                    </label>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="form-footer">
+                <button class="btn-draft" onclick="savePayment('DRAFT')">Save as Draft</button>
+                <button class="btn-save-paid" onclick="savePayment('PAID')">Save as Paid</button>
+                <button class="btn-cancel" onclick="goBack()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Layout Script -->
+    <script src="/js/layout.js"></script>
+    <script>
+        // Get query parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const invoiceId = urlParams.get('invoice_id');
+        let invoiceData = null;
+        let salespersonsList = [];
+
+        document.addEventListener('DOMContentLoaded', async function () {
+            // Set today's date
+            const today = new Date();
+            const options = { day: '2-digit', month: 'short', year: 'numeric' };
+            document.getElementById('paymentDate').value = today.toLocaleDateString('en-GB', options);
+
+            // Load salespersons
+            try {
+                const spRes = await fetch('/api/salespersons');
+                if (spRes.ok) {
+                    salespersonsList = await spRes.json();
+                    renderSpOptions();
+                }
+            } catch (e) {
+                console.error('Error loading salespersons:', e);
+            }
+
+            // Load next payment number
+            try {
+                const numRes = await fetch('/api/payments-received/next-number');
+                if (numRes.ok) {
+                    const numData = await numRes.json();
+                    document.getElementById('paymentNumber').value = numData.next_number;
+                }
+            } catch (e) {
+                console.error('Error loading next payment number:', e);
+            }
+
+            // Load invoice data if invoice_id is provided
+            if (invoiceId) {
+                try {
+                    const res = await fetch(`/api/invoices/${invoiceId}`);
+                    if (res.ok) {
+                        invoiceData = await res.json();
+
+                        // Set breadcrumb
+                        const orderNum = invoiceData.order_number || '';
+                        const breadcrumb = document.getElementById('breadcrumb');
+                        let breadcrumbHTML = '';
+                        if (orderNum) {
+                            breadcrumbHTML += `<a href="/sales-orders.html">&lt; ${orderNum}</a>`;
+                            breadcrumbHTML += ` <span>/</span>`;
+                        }
+                        breadcrumbHTML += `<a href="/invoices.html">${invoiceData.invoice_number}</a>`;
+                        breadcrumb.innerHTML = breadcrumbHTML;
+
+                        // Set title
+                        document.getElementById('pageTitle').textContent = `Payment for ${invoiceData.invoice_number}`;
+
+                        // Pre-fill
+                        document.getElementById('customerName').value = invoiceData.customer_name || '';
+                        document.getElementById('amountReceived').value = parseFloat(invoiceData.total) || 0;
+                    }
+                } catch (e) {
+                    console.error('Error loading invoice:', e);
+                }
+            }
+        });
+
+        async function savePayment(status) {
+            const customerName = document.getElementById('customerName').value;
+            const paymentNumber = document.getElementById('paymentNumber').value;
+            const amountReceived = document.getElementById('amountReceived').value;
+
+            if (!customerName) {
+                alert('Customer name is required.');
+                return;
+            }
+            if (!paymentNumber) {
+                alert('Payment number is required.');
+                return;
+            }
+            if (!amountReceived || parseFloat(amountReceived) <= 0) {
+                alert('Amount received must be greater than 0.');
+                return;
+            }
+
+            // Verify salesperson selection and password
+            if (!verifySalespersonPassword()) return;
+
+            const taxDeducted = document.querySelector('input[name="taxDeducted"]:checked').value === 'yes';
+
+            const paymentData = {
+                payment_number: paymentNumber,
+                invoice_id: invoiceData ? invoiceData.id : null,
+                invoice_number: invoiceData ? invoiceData.invoice_number : '',
+                customer_id: invoiceData ? invoiceData.customer_id : null,
+                customer_name: customerName,
+                amount_received: parseFloat(amountReceived),
+                bank_charges: parseFloat(document.getElementById('bankCharges').value) || 0,
+                tax_deducted: taxDeducted,
+                payment_date: new Date().toISOString(),
+                payment_received_on: document.getElementById('paymentReceivedOn').value || null,
+                payment_mode: document.getElementById('paymentMode').value,
+                deposit_to: document.getElementById('depositTo').value,
+                location: document.getElementById('location').value,
+                reference_number: document.getElementById('referenceNumber').value,
+                notes: document.getElementById('notes').value,
+                status: status,
+                salesperson_name: document.getElementById('spDdLabel').textContent !== 'Select or Add Salesperson' ? document.getElementById('spDdLabel').textContent : ''
+            };
+
+            try {
+                const res = await fetch('/api/payments-received', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(paymentData)
+                });
+
+                if (!res.ok) {
+                    const err = await res.json();
+                    alert('Error: ' + (err.error || 'Failed to save payment'));
+                    return;
+                }
+
+                const data = await res.json();
+                alert(`Payment #${data.payment_number} saved as ${status} successfully!`);
+                window.location.href = '/payments-received.html';
+            } catch (err) {
+                console.error('Error saving payment:', err);
+                alert('Failed to save payment.');
+            }
+        }
+
+        function goBack() {
+            if (invoiceId) {
+                window.location.href = '/invoices.html';
+            } else {
+                window.location.href = '/payments-received.html';
+            }
+        }
+
+        function attachFiles() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.pdf,.doc,.docx,.jpg,.png';
+            input.multiple = true;
+            input.click();
+        }
+
+        function verifySalespersonPassword() {
+            const selectedId = document.getElementById('salesperson').value;
+            if (!selectedId) {
+                alert('Please select a salesperson.');
+                return false;
+            }
+            const sp = salespersonsList.find(s => s.id == selectedId);
+            if (!sp) {
+                alert('Selected salesperson not found.');
+                return false;
+            }
+            if (sp.password) {
+                const enteredPw = prompt(`Enter password for "${sp.name}" to proceed:`);
+                if (enteredPw === null) return false;
+                if (enteredPw !== sp.password) {
+                    alert('Incorrect password. Only the salesperson can authorize this transaction.');
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // ===== Salesperson Custom Dropdown =====
+        function toggleSpDd() {
+            const panel = document.getElementById('spDdPanel');
+            const trigger = document.getElementById('spDdTrigger');
+            const isOpen = panel.classList.contains('open');
+            if (isOpen) {
+                panel.classList.remove('open');
+                trigger.classList.remove('open');
+                trigger.querySelector('.sp-arrow').textContent = '▼';
+            } else {
+                panel.classList.add('open');
+                trigger.classList.add('open');
+                trigger.querySelector('.sp-arrow').textContent = '▲';
+                document.getElementById('spDdSearch').value = '';
+                document.getElementById('spDdSearch').focus();
+                renderSpOptions();
+            }
+        }
+
+        function renderSpOptions(filter) {
+            const container = document.getElementById('spDdOptions');
+            const selectedId = document.getElementById('salesperson').value;
+            let list = salespersonsList;
+            if (filter) {
+                const q = filter.toLowerCase();
+                list = list.filter(s => s.name.toLowerCase().includes(q));
+            }
+            if (list.length === 0) {
+                container.innerHTML = '<div class="sp-dd-empty">No salespersons found.</div>';
+                return;
+            }
+            container.innerHTML = list.map(sp => {
+                const sel = sp.id == selectedId ? ' selected' : '';
+                return `<div class="sp-dd-option${sel}" onclick="selectSp(${sp.id}, '${sp.name.replace(/'/g, "\\'")}')">${sp.name}</div>`;
+            }).join('');
+        }
+
+        function filterSpDd() {
+            renderSpOptions(document.getElementById('spDdSearch').value);
+        }
+
+        function selectSp(id, name) {
+            document.getElementById('salesperson').value = id;
+            const label = document.getElementById('spDdLabel');
+            label.textContent = name;
+            document.getElementById('spDdTrigger').classList.add('selected');
+            // Close dropdown
+            document.getElementById('spDdPanel').classList.remove('open');
+            document.getElementById('spDdTrigger').classList.remove('open');
+            document.getElementById('spDdTrigger').querySelector('.sp-arrow').textContent = '▼';
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('#spDdWrap')) {
+                const panel = document.getElementById('spDdPanel');
+                const trigger = document.getElementById('spDdTrigger');
+                if (panel) {
+                    panel.classList.remove('open');
+                    trigger.classList.remove('open');
+                    trigger.querySelector('.sp-arrow').textContent = '▼';
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
