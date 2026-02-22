@@ -393,6 +393,124 @@
             font-size: 12px;
         }
 
+        /* ===== Selection Header Bar ===== */
+        .selection-header-bar {
+            display: none;
+            align-items: center;
+            padding: 10px 16px;
+            background: linear-gradient(180deg, #dce9f8 0%, #d0e2f5 100%);
+            border-bottom: 1px solid #b8d4ef;
+            flex-shrink: 0;
+            animation: selBarSlideDown 0.2s ease-out;
+        }
+
+        @keyframes selBarSlideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .selection-header-bar.visible {
+            display: flex;
+        }
+
+        .selection-header-bar .sel-checkbox {
+            width: 17px;
+            height: 17px;
+            border: 2px solid #7faed4;
+            border-radius: 3px;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            background: white;
+            flex-shrink: 0;
+            transition: all 0.15s ease;
+            position: relative;
+        }
+
+        .selection-header-bar .sel-checkbox:hover {
+            border-color: #4285f4;
+        }
+
+        .selection-header-bar .sel-checkbox:checked {
+            background: #4285f4;
+            border-color: #4285f4;
+        }
+
+        .selection-header-bar .sel-checkbox:checked::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 5px;
+            width: 5px;
+            height: 9px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .selection-header-bar .sel-actions {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            margin-left: 10px;
+        }
+
+        .selection-header-bar .sel-action-btn {
+            width: 34px;
+            height: 34px;
+            border: none;
+            border-radius: 6px;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #516a80;
+            transition: all 0.15s ease;
+        }
+
+        .selection-header-bar .sel-action-btn:hover {
+            background: rgba(66, 133, 244, 0.12);
+            color: #1a73e8;
+        }
+
+        .selection-header-bar .sel-action-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .selection-header-bar .sel-close {
+            margin-left: auto;
+            width: 30px;
+            height: 30px;
+            border: none;
+            border-radius: 50%;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7a94a8;
+            transition: all 0.15s ease;
+        }
+
+        .selection-header-bar .sel-close:hover {
+            background: rgba(0, 0, 0, 0.08);
+            color: #333;
+        }
+
+        .selection-header-bar .sel-close svg {
+            width: 16px;
+            height: 16px;
+        }
+
         /* ===== Package Detail View Overlay ===== */
         .pkg-detail-overlay {
             display: none;
@@ -1664,6 +1782,38 @@
                         <span>Packages, Not Shipped</span>
                         <button class="col-menu">☰</button>
                     </div>
+                    <div class="selection-header-bar" id="selBar_colNotShipped">
+                        <input type="checkbox" class="sel-checkbox"
+                            onchange="selectAllInColumn('colNotShipped', this.checked)">
+                        <div class="sel-actions">
+                            <button class="sel-action-btn" title="Print"
+                                onclick="printSelectedPackages('colNotShipped')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 6 2 18 2 18 9" />
+                                    <path
+                                        d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                                    <rect x="6" y="14" width="12" height="8" />
+                                </svg>
+                            </button>
+                            <button class="sel-action-btn" title="Delete"
+                                onclick="deleteSelectedPackages('colNotShipped')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6" />
+                                    <path
+                                        d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                </svg>
+                            </button>
+                        </div>
+                        <button class="sel-close" title="Remove Selection" onclick="removeSelection('colNotShipped')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18" />
+                                <line x1="6" y1="6" x2="18" y2="18" />
+                            </svg>
+                        </button>
+                    </div>
                     <div class="kanban-column-body" id="colNotShipped">
                         <div class="kanban-empty">No packages</div>
                     </div>
@@ -1675,6 +1825,37 @@
                         <span>Shipped Packages</span>
                         <button class="col-menu">☰</button>
                     </div>
+                    <div class="selection-header-bar" id="selBar_colShipped">
+                        <input type="checkbox" class="sel-checkbox"
+                            onchange="selectAllInColumn('colShipped', this.checked)">
+                        <div class="sel-actions">
+                            <button class="sel-action-btn" title="Print" onclick="printSelectedPackages('colShipped')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 6 2 18 2 18 9" />
+                                    <path
+                                        d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                                    <rect x="6" y="14" width="12" height="8" />
+                                </svg>
+                            </button>
+                            <button class="sel-action-btn" title="Delete"
+                                onclick="deleteSelectedPackages('colShipped')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6" />
+                                    <path
+                                        d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                </svg>
+                            </button>
+                        </div>
+                        <button class="sel-close" title="Remove Selection" onclick="removeSelection('colShipped')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18" />
+                                <line x1="6" y1="6" x2="18" y2="18" />
+                            </svg>
+                        </button>
+                    </div>
                     <div class="kanban-column-body" id="colShipped">
                         <div class="kanban-empty">No packages</div>
                     </div>
@@ -1685,6 +1866,38 @@
                     <div class="kanban-column-header">
                         <span>Delivered Packages</span>
                         <button class="col-menu">☰</button>
+                    </div>
+                    <div class="selection-header-bar" id="selBar_colDelivered">
+                        <input type="checkbox" class="sel-checkbox"
+                            onchange="selectAllInColumn('colDelivered', this.checked)">
+                        <div class="sel-actions">
+                            <button class="sel-action-btn" title="Print"
+                                onclick="printSelectedPackages('colDelivered')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 6 2 18 2 18 9" />
+                                    <path
+                                        d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                                    <rect x="6" y="14" width="12" height="8" />
+                                </svg>
+                            </button>
+                            <button class="sel-action-btn" title="Delete"
+                                onclick="deleteSelectedPackages('colDelivered')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6" />
+                                    <path
+                                        d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                </svg>
+                            </button>
+                        </div>
+                        <button class="sel-close" title="Remove Selection" onclick="removeSelection('colDelivered')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18" />
+                                <line x1="6" y1="6" x2="18" y2="18" />
+                            </svg>
+                        </button>
                     </div>
                     <div class="kanban-column-body" id="colDelivered">
                         <div class="kanban-empty">No packages</div>
@@ -1973,7 +2186,7 @@
                 <div class="pkg-card" onclick="viewPackage(${pkg.id})">
                     <div class="pkg-card-row1">
                         <div class="pkg-card-left">
-                            <input type="checkbox" class="pkg-card-checkbox" onclick="event.stopPropagation()">
+                            <input type="checkbox" class="pkg-card-checkbox" data-pkg-id="${pkg.id}" data-column="${pkg.__columnId || ''}" onclick="event.stopPropagation(); onPkgCheckboxChange(this)">
                             <span class="pkg-card-customer">${pkg.customer_name || 'Unknown'}</span>
                         </div>
                         <span class="pkg-card-qty">${qty.toFixed(2)}</span>
@@ -2737,6 +2950,267 @@
             document.querySelectorAll('.pkg-card-dropdown.open').forEach(menu => {
                 menu.classList.remove('open');
             });
+        }
+
+        // ===== Selection Header Bar Functions =====
+        function onPkgCheckboxChange(cb) {
+            // Find which column this checkbox belongs to
+            const column = cb.closest('.kanban-column-body');
+            if (!column) return;
+            const columnId = column.id;
+            updateSelectionBar(columnId);
+        }
+
+        function updateSelectionBar(columnId) {
+            const bar = document.getElementById('selBar_' + columnId);
+            const column = document.getElementById(columnId);
+            if (!bar || !column) return;
+
+            const checkboxes = column.querySelectorAll('.pkg-card-checkbox');
+            const checkedCount = column.querySelectorAll('.pkg-card-checkbox:checked').length;
+
+            if (checkedCount > 0) {
+                bar.classList.add('visible');
+            } else {
+                bar.classList.remove('visible');
+            }
+
+            // Update select-all checkbox state
+            const selectAllCb = bar.querySelector('.sel-checkbox');
+            if (selectAllCb) {
+                selectAllCb.checked = checkboxes.length > 0 && checkedCount === checkboxes.length;
+            }
+        }
+
+        function selectAllInColumn(columnId, checked) {
+            const column = document.getElementById(columnId);
+            if (!column) return;
+            column.querySelectorAll('.pkg-card-checkbox').forEach(cb => {
+                cb.checked = checked;
+            });
+            updateSelectionBar(columnId);
+        }
+
+        function removeSelection(columnId) {
+            const column = document.getElementById(columnId);
+            if (!column) return;
+            column.querySelectorAll('.pkg-card-checkbox').forEach(cb => {
+                cb.checked = false;
+            });
+            const bar = document.getElementById('selBar_' + columnId);
+            if (bar) {
+                bar.classList.remove('visible');
+                const selectAllCb = bar.querySelector('.sel-checkbox');
+                if (selectAllCb) selectAllCb.checked = false;
+            }
+        }
+
+        function getSelectedPkgIds(columnId) {
+            const column = document.getElementById(columnId);
+            if (!column) return [];
+            const ids = [];
+            column.querySelectorAll('.pkg-card-checkbox:checked').forEach(cb => {
+                const id = cb.getAttribute('data-pkg-id');
+                if (id) ids.push(parseInt(id));
+            });
+            return ids;
+        }
+
+        async function deleteSelectedPackages(columnId) {
+            const ids = getSelectedPkgIds(columnId);
+            if (ids.length === 0) { alert('No packages selected.'); return; }
+            if (!confirm('Are you sure you want to delete ' + ids.length + ' selected package(s)?')) return;
+
+            try {
+                for (const id of ids) {
+                    // For shipped/delivered packages, delete the shipment first
+                    if (columnId === 'colShipped' || columnId === 'colDelivered') {
+                        try {
+                            await fetch('/api/shipments/by-package/' + id, { method: 'DELETE' });
+                        } catch (e) { /* shipment may not exist, continue */ }
+                    }
+                    await fetch('/api/packages/' + id, { method: 'DELETE' });
+                }
+                removeSelection(columnId);
+                loadPackages();
+            } catch (err) {
+                console.error('Error deleting selected packages:', err);
+                alert('Error deleting packages.');
+            }
+        }
+
+        async function printSelectedPackages(columnId) {
+            const ids = getSelectedPkgIds(columnId);
+            if (ids.length === 0) { alert('No packages selected.'); return; }
+
+            // Fetch each selected package detail
+            const packages = [];
+            for (const id of ids) {
+                try {
+                    const res = await fetch('/api/packages/' + id);
+                    if (res.ok) {
+                        const pkg = await res.json();
+                        // Also fetch sales order for address
+                        let so = null;
+                        if (pkg.sales_order_id) {
+                            try {
+                                const soRes = await fetch('/api/sales-orders/' + pkg.sales_order_id);
+                                if (soRes.ok) so = await soRes.json();
+                            } catch (e) { }
+                        }
+                        packages.push({ pkg, so });
+                    }
+                } catch (e) {
+                    console.error('Error fetching package', id, e);
+                }
+            }
+
+            if (packages.length === 0) { alert('Could not load package details.'); return; }
+
+            // Build print HTML for all selected packages
+            const cardsHTML = packages.map(({ pkg, so }) => {
+                const status = (pkg.status || 'NOT SHIPPED').toUpperCase();
+                let ribbonClass = 'not-shipped';
+                let ribbonText = 'Not Shipped';
+                if (status === 'SHIPPED') { ribbonClass = 'shipped'; ribbonText = 'Shipped'; }
+                else if (status === 'DELIVERED') { ribbonClass = 'delivered'; ribbonText = 'Delivered'; }
+
+                const pkgDate = fmtDate(pkg.package_date);
+                const orderDate = so ? fmtDate(so.order_date) : pkgDate;
+                const totalQty = getTotalQty(pkg);
+
+                const billStreet = so ? (so.billing_street || '') : '';
+                const billCity = so ? (so.billing_city || '') : '';
+                const billState = so ? (so.billing_state || '') : '';
+                const billZip = so ? (so.billing_zip || '') : '';
+                const billCountry = so ? (so.billing_country || '') : '';
+                const shipStreet = so ? (so.shipping_street || '') : '';
+                const shipCity = so ? (so.shipping_city || '') : '';
+                const shipState = so ? (so.shipping_state || '') : '';
+                const shipZip = so ? (so.shipping_zip || '') : '';
+                const shipCountry = so ? (so.shipping_country || '') : '';
+
+                function buildAddr(street, city, state, zip, country) {
+                    return [street, city, state, zip, country].filter(Boolean).join(', ');
+                }
+
+                const itemRows = (pkg.items || []).map((item, idx) => `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td>${item.item_name || ''}</td>
+                        <td>${parseFloat(item.quantity_to_pack || 0).toFixed(2)}</td>
+                    </tr>
+                `).join('');
+
+                return `
+                    <div class="pkg-slip">
+                        <div class="ribbon ${ribbonClass}"><span>${ribbonText}</span></div>
+                        <div class="slip-header">
+                            <div>
+                                <div class="company-name">SOLO</div>
+                                <div class="company-detail">Philippines</div>
+                            </div>
+                            <div class="slip-title">
+                                <h2>PACKAGE</h2>
+                                <div class="slip-num">Package# ${pkg.package_number || ''}</div>
+                            </div>
+                        </div>
+                        <div class="slip-details">
+                            <div class="detail-cell"><div class="label">Package#</div><div class="value">${pkg.package_number || ''}</div></div>
+                            <div class="detail-cell"><div class="label">Order Date</div><div class="value">${orderDate}</div></div>
+                            <div class="detail-cell"><div class="label">Package Date</div><div class="value">${pkgDate}</div></div>
+                            <div class="detail-cell"><div class="label">Sales Order#</div><div class="value">${pkg.sales_order_number || ''}</div></div>
+                            <div class="detail-cell total"><div class="label">Total Qty</div><div class="value">${totalQty.toFixed(2)}</div></div>
+                        </div>
+                        <div class="address-row">
+                            <div class="address-block">
+                                <div class="addr-title">Bill To</div>
+                                <div class="addr-name">${pkg.customer_name || ''}</div>
+                                <div class="addr-line">${buildAddr(billStreet, billCity, billState, billZip, billCountry)}</div>
+                            </div>
+                            <div class="address-block">
+                                <div class="addr-title">Ship To</div>
+                                <div class="addr-line">${buildAddr(shipStreet, shipCity, shipState, shipZip, shipCountry)}</div>
+                            </div>
+                        </div>
+                        <table class="items-table">
+                            <thead><tr><th>#</th><th>Item & Description</th><th>Qty</th></tr></thead>
+                            <tbody>${itemRows || '<tr><td colspan="3" style="text-align:center;color:#999;padding:16px">No items</td></tr>'}</tbody>
+                        </table>
+                    </div>
+                `;
+            }).join('');
+
+            // Open print window
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Package Slips</title>
+                    <style>
+                        * { margin: 0; padding: 0; box-sizing: border-box; }
+                        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 0; background: white; }
+                        .pkg-slip {
+                            width: 100%; max-width: 720px; margin: 24px auto;
+                            padding: 40px 40px 32px 40px; position: relative; overflow: hidden;
+                            border: 1px solid #e0e0e0; border-radius: 4px; page-break-after: always;
+                        }
+                        .pkg-slip:last-child { page-break-after: auto; }
+                        .ribbon { position: absolute; top: 0; left: 0; width: 100px; height: 100px; overflow: hidden; }
+                        .ribbon span {
+                            position: absolute; display: block; width: 160px; padding: 5px 0;
+                            color: white; font-size: 10px; font-weight: 700; text-align: center;
+                            text-transform: uppercase; transform: rotate(-45deg); top: 22px; left: -36px;
+                            letter-spacing: 0.5px;
+                        }
+                        .ribbon.not-shipped span { background: #95a5a6; }
+                        .ribbon.shipped span { background: #4285f4; }
+                        .ribbon.delivered span { background: #27ae60; }
+                        .slip-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; margin-top: 16px; }
+                        .company-name { font-size: 18px; font-weight: 700; color: #333; }
+                        .company-detail { font-size: 12px; color: #666; }
+                        .slip-title { text-align: right; }
+                        .slip-title h2 { font-size: 24px; font-weight: 700; color: #333; margin: 0; }
+                        .slip-num { font-size: 12px; color: #555; margin-top: 4px; }
+                        .slip-details { display: flex; border: 1px solid #e0e0e0; border-radius: 4px; margin-bottom: 20px; overflow: hidden; }
+                        .detail-cell { flex: 1; padding: 10px 14px; border-right: 1px solid #e0e0e0; }
+                        .detail-cell:last-child { border-right: none; }
+                        .detail-cell.total { background: #f8f9fb; text-align: center; }
+                        .detail-cell .label { font-size: 10px; font-weight: 600; color: #888; text-transform: uppercase; margin-bottom: 3px; }
+                        .detail-cell .value { font-size: 12px; font-weight: 600; color: #333; }
+                        .detail-cell.total .value { font-size: 15px; font-weight: 700; color: #4285f4; }
+                        .address-row { display: flex; gap: 60px; margin-bottom: 20px; }
+                        .address-block { flex: 1; }
+                        .addr-title { font-size: 11px; font-weight: 700; color: #333; margin-bottom: 4px; }
+                        .addr-name { font-size: 13px; color: #4285f4; font-weight: 600; margin-bottom: 2px; }
+                        .addr-line { font-size: 12px; color: #555; line-height: 1.6; }
+                        .items-table { width: 100%; border-collapse: collapse; }
+                        .items-table thead tr { background: #555; }
+                        .items-table th { padding: 8px 14px; color: white; font-size: 11px; font-weight: 600; text-align: left; }
+                        .items-table th:first-child { width: 40px; text-align: center; }
+                        .items-table th:last-child { text-align: right; }
+                        .items-table td { padding: 10px 14px; font-size: 12px; color: #333; border-bottom: 1px solid #f0f0f0; }
+                        .items-table td:first-child { text-align: center; color: #888; }
+                        .items-table td:last-child { text-align: right; }
+                        @media print {
+                            body { padding: 0; }
+                            .pkg-slip { border: none; margin: 0 auto; box-shadow: none; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    ${cardsHTML}
+                    <script>
+                        window.onload = function() {
+                            window.print();
+                            window.onafterprint = function() { window.close(); };
+                        };
+                    <\/script>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
         }
     </script>
 </body>

@@ -1,7 +1,30 @@
 const express = require('express');
 const router = express.Router();
 const database = require('../database');
+const multer = require('multer');
+const path = require('path');
 
+// Multer config for item images
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, '../../public/uploads/items'));
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    cb(null, `item_${req.params.id}_${Date.now()}${ext}`);
+  }
+});
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  fileFilter: (req, file, cb) => {
+    const allowed = /jpeg|jpg|png|gif|webp/;
+    const ext = allowed.test(path.extname(file.originalname).toLowerCase());
+    const mime = allowed.test(file.mimetype);
+    if (ext && mime) cb(null, true);
+    else cb(new Error('Only image files are allowed'));
+  }
+});
 // Get all items
 router.get('/', async (req, res) => {
   try {
@@ -467,16 +490,27 @@ router.post('/groups', async (req, res) => {
 // Update item group
 router.put('/groups/:id', async (req, res) => {
   try {
-    const { name, description, unit, brand, manufacturer } = req.body;
+    const { name, description, unit, brand, manufacturer, status } = req.body;
+    const db = database.getDb();
+
+    // If only status is being updated (from selection toolbar)
+    if (status && !name) {
+      await db.query('UPDATE item_groups SET status = $1 WHERE id = $2', [status, req.params.id]);
+      const result = await db.query('SELECT * FROM item_groups WHERE id = $1', [req.params.id]);
+      if (result.rows.length === 0) {
+        return res.status(404).json({ error: 'Group not found' });
+      }
+      return res.json(result.rows[0]);
+    }
+
     if (!name) {
       return res.status(400).json({ error: 'Group name is required' });
     }
-    const db = database.getDb();
     await db.query(`
       UPDATE item_groups 
-      SET name = $1, description = $2, unit = $3, brand = $4, manufacturer = $5
-      WHERE id = $6
-    `, [name, description || null, unit || 'pcs', brand || null, manufacturer || null, req.params.id]);
+      SET name = $1, description = $2, unit = $3, brand = $4, manufacturer = $5, status = $6
+      WHERE id = $7
+    `, [name, description || null, unit || 'pcs', brand || null, manufacturer || null, status || 'active', req.params.id]);
 
     const result = await db.query('SELECT * FROM item_groups WHERE id = $1', [req.params.id]);
     if (result.rows.length === 0) {
@@ -582,6 +616,40 @@ router.get('/:id/transactions', async (req, res) => {
   } catch (error) {
     console.error('Error fetching item transactions:', error);
     res.status(500).json({ error: 'Failed to fetch item transactions' });
+  }
+});
+
+// Upload item image
+router.post('/:id/upload-image', upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No image file provided' });
+    }
+    const db = database.getDb();
+    const imageUrl = `/uploads/items/${req.file.filename}`;
+
+    await db.query('UPDATE items SET image_url = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2', [imageUrl, req.params.id]);
+
+    const result = await db.query('SELECT * FROM items WHERE id = $1', [req.params.id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Item not found' });
+    }
+    res.json({ image_url: imageUrl, item: result.rows[0] });
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    res.status(500).json({ error: 'Failed to upload image' });
+  }
+});
+
+// Remove item image
+router.delete('/:id/remove-image', async (req, res) => {
+  try {
+    const db = database.getDb();
+    await db.query('UPDATE items SET image_url = NULL, updated_at = CURRENT_TIMESTAMP WHERE id = $1', [req.params.id]);
+    res.json({ message: 'Image removed' });
+  } catch (error) {
+    console.error('Error removing image:', error);
+    res.status(500).json({ error: 'Failed to remove image' });
   }
 });
 

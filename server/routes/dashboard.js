@@ -126,17 +126,20 @@ router.get('/top-stocked', async (req, res) => {
       orderBy = '(i.stock_quantity * i.purchase_cost) DESC';
     }
 
+    const dateFilter = buildDateFilter(req, 'i.created_at');
+
     const result = await db.query(`
       SELECT 
         i.id,
         i.name,
         i.sku,
         i.barcode,
+        i.image_url,
         i.stock_quantity,
         i.purchase_cost,
         (i.stock_quantity * i.purchase_cost) as total_value
       FROM items i
-      WHERE i.stock_quantity > 0
+      WHERE i.stock_quantity > 0 ${dateFilter}
       ORDER BY ${orderBy}
       LIMIT 10
     `);
@@ -148,23 +151,52 @@ router.get('/top-stocked', async (req, res) => {
   }
 });
 
-// Sales by channel (for dashboard) - currently all sales are Direct Sales
+// Sales by channel (for dashboard) - combines POS sales, invoices, and sales receipts
 router.get('/sales-by-channel', async (req, res) => {
   try {
     const db = database.getDb();
-    const dateFilter = buildDateFilter(req, 'date');
+    const salesDateFilter = buildDateFilter(req, 's.date');
+    const invoiceDateFilter = buildDateFilter(req, 'inv.invoice_date');
+    const receiptDateFilter = buildDateFilter(req, 'sr.receipt_date');
 
-    // Since there's no channel column, group all sales as 'Direct Sales'
-    const result = await db.query(`
+    // Get POS Direct Sales
+    const posResult = await db.query(`
       SELECT 
         'Direct Sales' as channel,
         COUNT(*) as sale_count,
-        COALESCE(SUM(total_amount), 0) as total_revenue
-      FROM sales
-      WHERE status = 'completed' ${dateFilter}
+        COALESCE(SUM(s.total_amount), 0) as total_revenue
+      FROM sales s
+      WHERE s.status = 'completed' ${salesDateFilter}
     `);
 
-    res.json(result.rows);
+    // Get Invoice Sales
+    const invResult = await db.query(`
+      SELECT 
+        'Invoice Sales' as channel,
+        COUNT(*) as sale_count,
+        COALESCE(SUM(inv.total), 0) as total_revenue
+      FROM invoices inv
+      WHERE 1=1 ${invoiceDateFilter}
+    `);
+
+    // Get Sales Receipt Sales
+    const srResult = await db.query(`
+      SELECT 
+        'Sales Receipts' as channel,
+        COUNT(*) as sale_count,
+        COALESCE(SUM(sr.total), 0) as total_revenue
+      FROM sales_receipts sr
+      WHERE 1=1 ${receiptDateFilter}
+    `);
+
+    // Combine and filter out channels with 0 revenue
+    const channels = [
+      ...posResult.rows,
+      ...invResult.rows,
+      ...srResult.rows
+    ].filter(c => parseFloat(c.total_revenue) > 0);
+
+    res.json(channels);
   } catch (error) {
     console.error('Error fetching sales by channel:', error);
     res.status(500).json({ error: 'Failed to fetch sales by channel' });
@@ -269,23 +301,24 @@ router.get('/top-vendors', async (req, res) => {
 router.get('/receive-history', async (req, res) => {
   try {
     const db = database.getDb();
-    const dateFilter = buildDateFilter(req, 'p.date');
+    const dateFilter = buildDateFilter(req, 'pr.receive_date');
 
     const result = await db.query(`
       SELECT 
-        p.id,
-        p.date,
-        COALESCE(p.invoice_number, p.po_number) as reference_number,
-        COALESCE(s.name, p.supplier_name, 'Unknown') as vendor_name,
-        COALESCE(SUM(pi.quantity), 0) as total_items,
-        p.total_amount,
-        p.status
-      FROM purchases p
-      LEFT JOIN suppliers s ON p.supplier_id = s.id
-      LEFT JOIN purchase_items pi ON p.id = pi.purchase_id
-      WHERE p.status = 'received' ${dateFilter}
-      GROUP BY p.id, p.date, p.invoice_number, p.po_number, s.name, p.supplier_name, p.total_amount, p.status
-      ORDER BY p.date DESC
+        pr.id,
+        pr.purchase_id,
+        pr.receive_number,
+        pr.receive_date as date,
+        p.po_number,
+        COALESCE(pr.supplier_name, p.supplier_name, 'Unknown') as vendor_name,
+        COALESCE(SUM(pri.quantity_to_receive), 0) as total_items,
+        pr.status
+      FROM purchase_receives pr
+      LEFT JOIN purchases p ON pr.purchase_id = p.id
+      LEFT JOIN purchase_receive_items pri ON pr.id = pri.receive_id
+      WHERE 1=1 ${dateFilter}
+      GROUP BY pr.id, pr.purchase_id, pr.receive_number, pr.receive_date, p.po_number, pr.supplier_name, p.supplier_name, pr.status
+      ORDER BY pr.receive_date DESC, pr.created_at DESC
       LIMIT 20
     `);
 
@@ -392,12 +425,12 @@ router.get('/sales-pending-actions', async (req, res) => {
   try {
     const db = database.getDb();
 
-    // To Be Packed: confirmed sales orders that have NO packages at all
+    // To Be Packed: sales orders that are CONFIRMED and have NO packages created yet
     let toBePacked = 0;
     try {
       const r = await db.query(`
         SELECT COUNT(*) as count FROM sales_orders so
-        WHERE so.status = 'CONFIRMED'
+        WHERE UPPER(so.status) = 'CONFIRMED'
         AND NOT EXISTS (SELECT 1 FROM packages p WHERE p.sales_order_id = so.id)
       `);
       toBePacked = parseInt(r.rows[0].count) || 0;
@@ -443,5 +476,50 @@ router.get('/sales-pending-actions', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch sales pending actions' });
   }
 });
+
+// ===== Recent Activities =====
+// Helper function to log activity
+async function logActivity(entityType, entityId, entityName, action, description) {
+  try {
+    const db = database.getDb();
+    await db.query(
+      `INSERT INTO activity_log (entity_type, entity_id, entity_name, action, description) VALUES ($1, $2, $3, $4, $5)`,
+      [entityType, entityId, entityName, action, description]
+    );
+  } catch (error) {
+    console.error('Error logging activity:', error.message);
+  }
+}
+
+// Get recent activities
+router.get('/recent-activities', async (req, res) => {
+  try {
+    const db = database.getDb();
+    const limit = parseInt(req.query.limit) || 30;
+    const result = await db.query(`
+      SELECT * FROM activity_log 
+      ORDER BY created_at DESC 
+      LIMIT $1
+    `, [limit]);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching recent activities:', error);
+    res.status(500).json({ error: 'Failed to fetch recent activities' });
+  }
+});
+
+// Log activity endpoint
+router.post('/log-activity', async (req, res) => {
+  try {
+    const { entity_type, entity_id, entity_name, action, description } = req.body;
+    await logActivity(entity_type, entity_id, entity_name, action, description);
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to log activity' });
+  }
+});
+
+// Export logActivity for use in other routes
+router.logActivity = logActivity;
 
 module.exports = router;

@@ -774,9 +774,10 @@
             const q = (query || '').toLowerCase();
             const vendorPOs = allPurchases.filter(p => {
                 const nameMatch = p.supplier_name === selectedVendor.name;
-                const notReceived = p.status !== 'received';
+                const recvStatus = (p.receive_status || 'NOT RECEIVED').toUpperCase();
+                const notFullyReceived = recvStatus !== 'RECEIVED';
                 const searchMatch = !q || (p.po_number || '').toLowerCase().includes(q);
-                return nameMatch && notReceived && searchMatch;
+                return nameMatch && notFullyReceived && searchMatch;
             });
 
             if (vendorPOs.length === 0) {

@@ -1429,6 +1429,7 @@
         // ===== Salesperson Custom Dropdown =====
         let salespersonsList = [];
         let selectedSalesperson = '';
+        let selectedSalespersonName = '';
 
         async function loadSalespersons() {
             try {
@@ -1481,6 +1482,7 @@
 
         function selectSpDd(id, name) {
             selectedSalesperson = id;
+            selectedSalespersonName = name;
             document.getElementById('salesperson').value = id;
             const label = document.getElementById('spDdLabel');
             label.textContent = name;
@@ -1995,7 +1997,7 @@
             overlay.innerHTML = `
                 <div class="sp-password-modal">
                     <h3>🔒 Salesperson Verification</h3>
-                    <p>Enter password for <strong>${selectedSalesperson}</strong> to save this credit note.</p>
+                    <p>Enter password for <strong>${selectedSalespersonName}</strong> to save this credit note.</p>
                     <input type="password" id="spPasswordInput" placeholder="Enter password" autofocus>
                     <div class="sp-error" id="spPasswordError" style="display:none;"></div>
                     <div class="modal-btns">
@@ -2030,7 +2032,7 @@
                     const res = await fetch('/api/salespersons/verify-password', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ name: selectedSalesperson, password: password })
+                        body: JSON.stringify({ name: selectedSalespersonName, password: password })
                     });
                     const result = await res.json();
 

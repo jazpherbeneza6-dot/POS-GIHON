@@ -100,17 +100,20 @@ router.post('/', async (req, res) => {
                 ]);
             }
 
-            // Update PO status to 'billed' if linked to a PO
-            // BUT only if PO has NOT already been received or partially received
+            // Update PO bill_status when a bill is created
             if (purchase_order_id) {
-                const poStatus = await client.query('SELECT status FROM purchases WHERE id = $1', [purchase_order_id]);
-                const currentStatus = poStatus.rows.length > 0 ? poStatus.rows[0].status : null;
-                // Don't overwrite 'received' or 'partially_received' with 'billed'
-                if (currentStatus && currentStatus !== 'received' && currentStatus !== 'partially_received') {
-                    await client.query(
-                        `UPDATE purchases SET status = 'billed' WHERE id = $1`,
-                        [purchase_order_id]
-                    );
+                await client.query(
+                    `UPDATE purchases SET bill_status = 'BILLED' WHERE id = $1`,
+                    [purchase_order_id]
+                );
+
+                // Auto-close: PO becomes CLOSED when billed
+                const poResult = await client.query('SELECT * FROM purchases WHERE id = $1', [purchase_order_id]);
+                if (poResult.rows.length > 0) {
+                    const po = poResult.rows[0];
+                    if (po.status !== 'CLOSED' && po.status !== 'CANCELLED') {
+                        await client.query(`UPDATE purchases SET status = 'CLOSED' WHERE id = $1`, [purchase_order_id]);
+                    }
                 }
             }
         });
@@ -194,12 +197,27 @@ router.delete('/:id', async (req, res) => {
             return res.status(404).json({ error: 'Bill not found' });
         }
 
-        // If linked to PO, revert PO status
+        // If linked to PO, revert bill_status and possibly reopen
         if (existing.rows[0].purchase_order_id) {
-            await db.query(
-                `UPDATE purchases SET status = 'received' WHERE id = $1`,
-                [existing.rows[0].purchase_order_id]
+            const poId = existing.rows[0].purchase_order_id;
+            // Check if there are other bills for this PO
+            const otherBills = await db.query(
+                'SELECT COUNT(*) as cnt FROM bills WHERE purchase_order_id = $1 AND id != $2',
+                [poId, req.params.id]
             );
+            const remainingBills = parseInt(otherBills.rows[0].cnt) || 0;
+            const newBillStatus = remainingBills > 0 ? 'BILLED' : 'UNBILLED';
+            await db.query(
+                `UPDATE purchases SET bill_status = $1 WHERE id = $2`,
+                [newBillStatus, poId]
+            );
+            // If PO was auto-closed, reopen to ISSUED
+            if (newBillStatus === 'UNBILLED') {
+                await db.query(
+                    `UPDATE purchases SET status = 'ISSUED' WHERE id = $1 AND status = 'CLOSED'`,
+                    [poId]
+                );
+            }
         }
 
         await db.query('DELETE FROM bills WHERE id = $1', [req.params.id]);
