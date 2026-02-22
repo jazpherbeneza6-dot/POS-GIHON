@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Aging Summary - Reports</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', 'Source Sans Pro', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f5f6fa;
+            font-size: 13px;
+        }
+
+        .main-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 0;
+            background: #fff;
+        }
+
+        /* ===== TOP HEADER BAR ===== */
+        .report-top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+            min-height: 44px;
+        }
+
+        .report-top-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .hamburger-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #555;
+            padding: 4px 8px;
+        }
+
+        .breadcrumb-area {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .breadcrumb-category {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .breadcrumb-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #222;
+        }
+
+        .breadcrumb-date {
+            font-size: 11px;
+            color: #999;
+            font-weight: 400;
+            margin-left: 6px;
+        }
+
+        .top-bar-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .top-bar-actions button {
+            background: none;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .top-bar-actions button:hover {
+            background: #f5f5f5;
+        }
+
+        .btn-export {
+            font-size: 12px !important;
+            font-weight: 500;
+        }
+
+        .btn-close-report {
+            color: #e53935 !important;
+            font-weight: bold;
+        }
+
+        /* ===== FILTER BAR ===== */
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 20px;
+            background: #f9fafb;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .filter-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .filter-dropdown {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 5px 10px;
+            font-size: 12px;
+            color: #333;
+        }
+
+        .filter-dropdown select {
+            border: none;
+            outline: none;
+            font-size: 12px;
+            color: #2563eb;
+            font-weight: 500;
+            cursor: pointer;
+            background: transparent;
+        }
+
+        .filter-more {
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 5px 12px;
+            font-size: 12px;
+            color: #2563eb;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-run-report {
+            background: #e53935;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 7px 20px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-run-report:hover {
+            background: #c62828;
+        }
+
+        /* ===== OPTIONS BAR ===== */
+        .options-bar {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 20px;
+            padding: 8px 20px;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+            font-size: 12px;
+            color: #555;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .option-bold {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .option-icon {
+            font-size: 14px;
+        }
+
+        .customize-count {
+            background: #2563eb;
+            color: #fff;
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-size: 10px;
+            font-weight: 700;
+            margin-left: 4px;
+        }
+
+        /* ===== REPORT BODY ===== */
+        .report-body {
+            padding: 30px 20px 60px;
+        }
+
+        .report-header-section {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .company-name {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+
+        .report-main-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #222;
+        }
+
+        .report-date-range {
+            font-size: 12px;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .date-highlight {
+            color: #2563eb;
+            font-weight: 500;
+        }
+
+        /* ===== REPORT TABLE ===== */
+        .report-table-wrapper {
+            overflow-x: auto;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            min-width: 1600px;
+        }
+
+        .report-table thead th {
+            text-align: left;
+            font-size: 10px;
+            font-weight: 700;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+            padding: 8px 8px;
+            border-bottom: 2px solid #ddd;
+            background: #fafafa;
+            white-space: nowrap;
+        }
+
+        .report-table tbody td {
+            padding: 8px 8px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #333;
+            white-space: nowrap;
+        }
+
+        .report-table tfoot td {
+            padding: 10px 8px;
+            font-weight: 700;
+            border-top: 2px solid #ddd;
+            background: #fafafa;
+            color: #222;
+        }
+
+        .report-table tbody tr:hover {
+            background: #f8f9ff;
+        }
+
+        .align-right {
+            text-align: right !important;
+        }
+
+        .align-center {
+            text-align: center !important;
+        }
+
+        .item-link {
+            color: #2563eb;
+            cursor: pointer;
+        }
+
+        .item-link:hover {
+            text-decoration: underline;
+        }
+
+        .fifo-note {
+            font-size: 11px;
+            color: #888;
+            margin-top: 16px;
+        }
+
+        .nav-arrows {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .nav-arrows button {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            font-size: 16px;
+            color: #555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-arrows button:hover {
+            background: #f5f5f5;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="sidebarContainer"></div>
+
+    <div class="main-layout">
+        <div class="content" id="content">
+
+            <!-- TOP HEADER BAR -->
+            <div class="report-top-bar">
+                <div class="report-top-left">
+                    <button class="hamburger-btn" onclick="window.location.href='/reports.html'">☰</button>
+                    <div class="breadcrumb-area">
+                        <span class="breadcrumb-category">Inventory</span>
+                        <span class="breadcrumb-title">
+                            Inventory Aging Summary
+                            <span class="breadcrumb-date" id="breadcrumbDate">•</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="top-bar-actions">
+                    <button title="Schedule"><span>📅</span></button>
+                    <button title="Refresh" onclick="runReport()"><span>🔄</span></button>
+                    <button title="Share"><span>📤</span></button>
+                    <button class="btn-export" title="Export">Export ▾</button>
+                    <button title="Print" onclick="window.print()"><span>🖨</span></button>
+                    <button class="btn-close-report" title="Close"
+                        onclick="window.location.href='/reports.html'">✕</button>
+                </div>
+            </div>
+
+            <!-- FILTER BAR -->
+            <div class="filter-bar">
+                <span class="filter-label">🔽 Filters :</span>
+
+                <div class="filter-dropdown">
+                    <span>As of :</span>
+                    <select id="dateRangeSelect" title="Date Filter">
+                        <option value="today" selected>Today</option>
+                    </select>
+                </div>
+
+                <div class="filter-dropdown">
+                    <span>Stock Type :</span>
+                    <select id="stockType" title="Stock Type">
+                        <option value="no-criteria" selected>⊘ No criteria</option>
+                    </select>
+                </div>
+
+                <button class="filter-more">⊕ More Filters</button>
+
+                <button class="btn-run-report" onclick="runReport()">Run Report</button>
+            </div>
+
+            <!-- OPTIONS BAR -->
+            <div class="options-bar">
+                <div class="option-item">
+                    <span class="option-icon">📊</span>
+                    Aging Intervals : <span class="option-bold">6 X 3 Days</span> ▾
+                </div>
+                <div class="option-item">
+                    <span class="option-icon">⚙️</span>
+                    Customize Report Columns
+                    <span class="customize-count">13</span>
+                </div>
+            </div>
+
+            <!-- REPORT BODY -->
+            <div class="report-body">
+                <div class="report-header-section">
+                    <div class="company-name">SOLO</div>
+                    <div class="report-main-title">Inventory Aging Summary</div>
+                    <div class="report-date-range">
+                        As of <span class="date-highlight" id="asOfDateDisplay">-</span>
+                    </div>
+                </div>
+
+                <div class="report-table-wrapper">
+                    <table class="report-table">
+                        <thead>
+                            <tr>
+                                <th>ITEM NAME</th>
+                                <th class="align-right">1 - 3 DAYS</th>
+                                <th class="align-right">ASSET VALUE (1 - 3 DAYS)</th>
+                                <th class="align-right">4 - 6 DAYS</th>
+                                <th class="align-right">ASSET VALUE (4 - 6 DAYS)</th>
+                                <th class="align-right">7 - 9 DAYS</th>
+                                <th class="align-right">ASSET VALUE (7 - 9 DAYS)</th>
+                                <th class="align-right">10 - 12 DAYS</th>
+                                <th class="align-right">ASSET VALUE (10 - 12 DAYS)</th>
+                                <th class="align-right">13 - 15 DAYS</th>
+                                <th class="align-right">ASSET VALUE (13 - 15 DAYS)</th>
+                                <th class="align-right">&gt; 15 DAYS</th>
+                                <th class="align-right">ASSET VALUE (&gt; 15 DAYS)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportTableBody">
+                            <tr>
+                                <td colspan="13" class="align-center" style="padding:40px;color:#999;">Loading...</td>
+                            </tr>
+                        </tbody>
+                        <tfoot id="reportTableFoot" style="display:none;">
+                            <tr>
+                                <td><strong>Total</strong></td>
+                                <td class="align-right" id="tot_d1_3_qty"></td>
+                                <td class="align-right" id="tot_d1_3_val"></td>
+                                <td class="align-right" id="tot_d4_6_qty"></td>
+                                <td class="align-right" id="tot_d4_6_val"></td>
+                                <td class="align-right" id="tot_d7_9_qty"></td>
+                                <td class="align-right" id="tot_d7_9_val"></td>
+                                <td class="align-right" id="tot_d10_12_qty"></td>
+                                <td class="align-right" id="tot_d10_12_val"></td>
+                                <td class="align-right" id="tot_d13_15_qty"></td>
+                                <td class="align-right" id="tot_d13_15_val"></td>
+                                <td class="align-right" id="tot_d15plus_qty"></td>
+                                <td class="align-right" id="tot_d15plus_val"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="fifo-note">
+                    *The stock and asset values displayed in this report are organized according to the FIFO method.
+                </div>
+
+                <div class="nav-arrows">
+                    <button title="Previous">‹</button>
+                    <button title="Next">›</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="/js/layout.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            updateAsOfDate();
+            runReport();
+        });
+
+        function updateAsOfDate() {
+            const now = new Date();
+            const formatted = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+            document.getElementById('asOfDateDisplay').textContent = formatted;
+            document.getElementById('breadcrumbDate').textContent = `• As of ${formatted}`;
+        }
+
+        function fmtPHP(val) {
+            const v = parseFloat(val) || 0;
+            return 'PHP' + v.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function fmtNum(val) {
+            return parseFloat(val).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        async function runReport() {
+            const tbody = document.getElementById('reportTableBody');
+            tbody.innerHTML = '<tr><td colspan="13" class="align-center" style="padding:40px;color:#999;">Loading...</td></tr>';
+            document.getElementById('reportTableFoot').style.display = 'none';
+
+            try {
+                const res = await fetch('/api/inventory/reports/inventory-aging-summary');
+                if (!res.ok) throw new Error('API error');
+                const data = await res.json();
+
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="13" class="align-center" style="padding:60px;color:#999;font-size:14px;">No inventory aging data found.</td></tr>';
+                    return;
+                }
+
+                // Totals
+                const totals = {
+                    d1_3: { qty: 0, value: 0 },
+                    d4_6: { qty: 0, value: 0 },
+                    d7_9: { qty: 0, value: 0 },
+                    d10_12: { qty: 0, value: 0 },
+                    d13_15: { qty: 0, value: 0 },
+                    d15plus: { qty: 0, value: 0 }
+                };
+
+                tbody.innerHTML = data.map(row => {
+                    const buckets = ['d1_3', 'd4_6', 'd7_9', 'd10_12', 'd13_15', 'd15plus'];
+                    buckets.forEach(b => {
+                        totals[b].qty += row[b].qty;
+                        totals[b].value += row[b].value;
+                    });
+
+                    return `
+                        <tr>
+                            <td class="item-link">${row.item_name}</td>
+                            <td class="align-right">${fmtNum(row.d1_3.qty)}</td>
+                            <td class="align-right">${fmtPHP(row.d1_3.value)}</td>
+                            <td class="align-right">${fmtNum(row.d4_6.qty)}</td>
+                            <td class="align-right">${fmtPHP(row.d4_6.value)}</td>
+                            <td class="align-right">${fmtNum(row.d7_9.qty)}</td>
+                            <td class="align-right">${fmtPHP(row.d7_9.value)}</td>
+                            <td class="align-right">${fmtNum(row.d10_12.qty)}</td>
+                            <td class="align-right">${fmtPHP(row.d10_12.value)}</td>
+                            <td class="align-right">${fmtNum(row.d13_15.qty)}</td>
+                            <td class="align-right">${fmtPHP(row.d13_15.value)}</td>
+                            <td class="align-right">${fmtNum(row.d15plus.qty)}</td>
+                            <td class="align-right">${fmtPHP(row.d15plus.value)}</td>
+                        </tr>
+                    `;
+                }).join('');
+
+                // Update totals row
+                const bucketIds = [
+                    ['d1_3', 'tot_d1_3'],
+                    ['d4_6', 'tot_d4_6'],
+                    ['d7_9', 'tot_d7_9'],
+                    ['d10_12', 'tot_d10_12'],
+                    ['d13_15', 'tot_d13_15'],
+                    ['d15plus', 'tot_d15plus']
+                ];
+
+                bucketIds.forEach(([bkey, tid]) => {
+                    document.getElementById(`${tid}_qty`).textContent = fmtNum(totals[bkey].qty);
+                    document.getElementById(`${tid}_val`).textContent = fmtPHP(totals[bkey].value);
+                });
+
+                document.getElementById('reportTableFoot').style.display = '';
+
+            } catch (e) {
+                console.error('Error:', e);
+                tbody.innerHTML = '<tr><td colspan="13" class="align-center" style="padding:40px;color:#e53935;">Error loading report data.</td></tr>';
+            }
+        }
+    </script>
+</body>
+
+</html>

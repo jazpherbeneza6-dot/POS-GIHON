@@ -817,5 +817,257 @@ router.get('/fifo-report', async (req, res) => {
   }
 });
 
+// ==================== INVENTORY AGING SUMMARY REPORT ====================
+
+// Inventory Aging Summary report (FIFO method)
+router.get('/reports/inventory-aging-summary', async (req, res) => {
+  try {
+    const db = database.getDb();
+
+    // 1. Get all items with their current stock and purchase cost
+    const itemsResult = await db.query(`
+      SELECT id, name, stock_quantity, purchase_cost, unit
+      FROM items
+      ORDER BY name ASC
+    `);
+
+    const items = itemsResult.rows;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const reportData = [];
+
+    for (const item of items) {
+      const currentStock = parseFloat(item.stock_quantity) || 0;
+      if (currentStock <= 0) continue; // Skip items with no stock
+
+      const unitCost = parseFloat(item.purchase_cost) || 0;
+
+      // 2. Get all incoming stock lots for this item, sorted by date DESC (most recent first = FIFO)
+      let incomingLots = [];
+
+      // From inventory_transactions (type IN or positive ADJUSTMENT)
+      try {
+        const txResult = await db.query(`
+          SELECT date AS lot_date, quantity
+          FROM inventory_transactions
+          WHERE item_id = $1 AND ((type = 'IN') OR (type = 'ADJUSTMENT' AND quantity > 0))
+          ORDER BY date DESC
+        `, [item.id]);
+        incomingLots = incomingLots.concat(txResult.rows.map(r => ({
+          date: new Date(r.lot_date),
+          quantity: parseFloat(r.quantity) || 0
+        })));
+      } catch (e) { /* ignore */ }
+
+      // From purchase_receive_items
+      try {
+        const prResult = await db.query(`
+          SELECT pr.receive_date AS lot_date, pri.quantity_to_receive AS quantity
+          FROM purchase_receive_items pri
+          JOIN purchase_receives pr ON pri.receive_id = pr.id
+          WHERE pri.item_id = $1
+          ORDER BY pr.receive_date DESC
+        `, [item.id]);
+        incomingLots = incomingLots.concat(prResult.rows.map(r => ({
+          date: new Date(r.lot_date),
+          quantity: parseFloat(r.quantity) || 0
+        })));
+      } catch (e) { /* ignore */ }
+
+      // Sort all lots by date DESC (most recent first for FIFO)
+      incomingLots.sort((a, b) => b.date - a.date);
+
+      // 3. Allocate current stock to lots using FIFO (most recent first)
+      let remaining = currentStock;
+      const allocatedLots = [];
+
+      for (const lot of incomingLots) {
+        if (remaining <= 0) break;
+        const allocated = Math.min(remaining, lot.quantity);
+        if (allocated > 0) {
+          allocatedLots.push({
+            date: lot.date,
+            quantity: allocated
+          });
+          remaining -= allocated;
+        }
+      }
+
+      // If there's still remaining stock not matched to any lot, assign it to today
+      if (remaining > 0) {
+        allocatedLots.push({
+          date: today,
+          quantity: remaining
+        });
+      }
+
+      // 4. Bucket allocated lots into aging intervals
+      const buckets = {
+        d1_3: { qty: 0, value: 0 },
+        d4_6: { qty: 0, value: 0 },
+        d7_9: { qty: 0, value: 0 },
+        d10_12: { qty: 0, value: 0 },
+        d13_15: { qty: 0, value: 0 },
+        d15plus: { qty: 0, value: 0 }
+      };
+
+      for (const lot of allocatedLots) {
+        const lotDate = new Date(lot.date);
+        lotDate.setHours(0, 0, 0, 0);
+        const ageDays = Math.floor((today - lotDate) / (1000 * 60 * 60 * 24));
+
+        let bucket;
+        if (ageDays <= 3) bucket = 'd1_3';
+        else if (ageDays <= 6) bucket = 'd4_6';
+        else if (ageDays <= 9) bucket = 'd7_9';
+        else if (ageDays <= 12) bucket = 'd10_12';
+        else if (ageDays <= 15) bucket = 'd13_15';
+        else bucket = 'd15plus';
+
+        buckets[bucket].qty += lot.quantity;
+        buckets[bucket].value += lot.quantity * unitCost;
+      }
+
+      reportData.push({
+        item_name: item.name,
+        ...buckets
+      });
+    }
+
+    res.json(reportData);
+  } catch (error) {
+    console.error('Error generating inventory aging summary report:', error);
+    res.status(500).json({ error: 'Failed to generate report' });
+  }
+});
+
+// ==================== COMMITTED STOCK DETAILS REPORT ====================
+
+// Committed Stock Details report
+router.get('/reports/committed-stock-details', async (req, res) => {
+  try {
+    const { from, to } = req.query;
+    const db = database.getDb();
+
+    let dateFilter = '';
+    const params = [];
+    let paramCount = 1;
+
+    if (from && to) {
+      dateFilter = `AND so.order_date >= $${paramCount} AND so.order_date <= $${paramCount + 1}`;
+      params.push(from, to);
+      paramCount += 2;
+    }
+
+    const result = await db.query(`
+      SELECT 
+        so.order_number AS transaction_number,
+        soi.item_name,
+        COALESCE(soi.quantity, 0) AS committed_stock
+      FROM sales_order_items soi
+      JOIN sales_orders so ON soi.sales_order_id = so.id
+      WHERE so.status IN ('CONFIRMED', 'OPEN') ${dateFilter}
+      ORDER BY so.order_number ASC
+    `, params);
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error generating committed stock details report:', error);
+    res.status(500).json({ error: 'Failed to generate report' });
+  }
+});
+
+// ==================== INVENTORY SUMMARY REPORT ====================
+
+// Inventory Summary report
+router.get('/reports/inventory-summary', async (req, res) => {
+  try {
+    const db = database.getDb();
+
+    const result = await db.query(`
+      SELECT 
+        it.id,
+        it.name AS item_name,
+        it.sku,
+        it.reorder_point AS reorder_level,
+        COALESCE(it.stock_quantity, 0) AS stock_on_hand,
+        it.unit AS usage_unit,
+
+        -- Quantity Ordered: total qty from purchase orders that are still open/ordered
+        COALESCE((
+          SELECT SUM(pi.quantity)
+          FROM purchase_items pi
+          JOIN purchases p ON pi.purchase_id = p.id
+          WHERE pi.item_id = it.id
+            AND p.status IN ('ordered', 'partially_received')
+        ), 0) AS quantity_ordered,
+
+        -- Quantity In: total received from purchase receives
+        COALESCE((
+          SELECT SUM(pri.quantity_to_receive)
+          FROM purchase_receive_items pri
+          JOIN purchase_receives pr ON pri.receive_id = pr.id
+          WHERE pri.item_id = it.id
+        ), 0) AS quantity_in,
+
+        -- Quantity Out: total sold from invoices (non-void)
+        COALESCE((
+          SELECT SUM(ii.quantity)
+          FROM invoice_items ii
+          JOIN invoices inv ON ii.invoice_id = inv.id
+          WHERE LOWER(TRIM(ii.item_name)) = LOWER(TRIM(it.name))
+            AND inv.status != 'VOID'
+        ), 0) AS quantity_out,
+
+        -- Committed Stock: qty from confirmed sales orders not yet fulfilled
+        COALESCE((
+          SELECT SUM(soi.quantity)
+          FROM sales_order_items soi
+          JOIN sales_orders so ON soi.sales_order_id = so.id
+          WHERE soi.item_id = it.id
+            AND so.status IN ('CONFIRMED', 'OPEN')
+        ), 0) AS committed_stock,
+
+        -- In-Transit: from shipments that are shipped but not delivered
+        COALESCE((
+          SELECT SUM(si.quantity)
+          FROM shipment_items si
+          JOIN shipments sh ON si.shipment_id = sh.id
+          WHERE si.item_id = it.id
+            AND sh.status = 'shipped'
+        ), 0) AS in_transit
+
+      FROM items it
+      ORDER BY it.name ASC
+    `);
+
+    const rows = result.rows.map(row => {
+      const stockOnHand = parseFloat(row.stock_on_hand) || 0;
+      const committed = parseFloat(row.committed_stock) || 0;
+      const availableForSale = stockOnHand - committed;
+
+      return {
+        item_name: row.item_name,
+        sku: row.sku || '',
+        reorder_level: parseFloat(row.reorder_level) || 0,
+        quantity_ordered: parseFloat(row.quantity_ordered) || 0,
+        quantity_in: parseFloat(row.quantity_in) || 0,
+        quantity_out: parseFloat(row.quantity_out) || 0,
+        stock_on_hand: stockOnHand,
+        committed_stock: committed,
+        available_for_sale: availableForSale,
+        in_transit: parseFloat(row.in_transit) || 0,
+        usage_unit: row.usage_unit || 'pcs'
+      };
+    });
+
+    res.json(rows);
+  } catch (error) {
+    console.error('Error generating inventory summary report:', error);
+    res.status(500).json({ error: 'Failed to generate report' });
+  }
+});
+
 module.exports = router;
 

@@ -83,14 +83,16 @@ router.post('/', async (req, res) => {
             sales_order_number,
             customer_name,
             status,
+            receive_status,
+            refund_status,
             items
         } = req.body;
 
         const result = await pool.query(
-            `INSERT INTO sales_returns (rma_number, return_date, warehouse_location, reason, credit_only, sales_order_id, sales_order_number, customer_name, status)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            `INSERT INTO sales_returns (rma_number, return_date, warehouse_location, reason, credit_only, sales_order_id, sales_order_number, customer_name, status, receive_status, refund_status)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
              RETURNING *`,
-            [rma_number, return_date || new Date(), warehouse_location || 'Head Office', reason || '', credit_only || false, sales_order_id, sales_order_number, customer_name, status || 'DRAFT']
+            [rma_number, return_date || new Date(), warehouse_location || 'Head Office', reason || '', credit_only || false, sales_order_id, sales_order_number, customer_name, status || 'DRAFT', receive_status || 'Received', refund_status || 'Pending']
         );
 
         const salesReturn = result.rows[0];

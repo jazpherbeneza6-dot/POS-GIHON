@@ -871,4 +871,257 @@ router.get('/items-list/all', async (req, res) => {
   }
 });
 
+
+
+
+// Profit By Item report
+router.get('/reports/profit-by-item', async (req, res) => {
+  try {
+    const { from, to } = req.query;
+    const db = database.getDb();
+
+    let dateFilter = '';
+    const params = [];
+    if (from && to) {
+      dateFilter = 'AND i.invoice_date >= $1 AND i.invoice_date <= $2';
+      params.push(from, to);
+    }
+
+    const result = await db.query(`
+      SELECT 
+        ii.item_name,
+        it.sku,
+        it.purchase_cost,
+        SUM(ii.quantity) AS qty_sold,
+        SUM(ii.amount) AS total_sales,
+        ii.tax
+      FROM invoice_items ii
+      JOIN invoices i ON ii.invoice_id = i.id
+      LEFT JOIN items it ON LOWER(TRIM(ii.item_name)) = LOWER(TRIM(it.name))
+      WHERE i.status != 'VOID' ${dateFilter}
+      GROUP BY ii.item_name, it.sku, it.purchase_cost, ii.tax
+      ORDER BY ii.item_name ASC
+    `, params);
+
+    // Consolidate rows by item_name (in case same item has different tax rates)
+    const itemMap = {};
+    result.rows.forEach(row => {
+      const key = row.item_name;
+      if (!itemMap[key]) {
+        itemMap[key] = {
+          item_name: row.item_name,
+          sku: row.sku || '',
+          purchase_cost: parseFloat(row.purchase_cost) || 0,
+          qty_sold: 0,
+          total_sales: 0,
+          total_sales_with_tax: 0
+        };
+      }
+      const qty = parseFloat(row.qty_sold) || 0;
+      const sales = parseFloat(row.total_sales) || 0;
+
+      // Parse tax percentage from the tax field (e.g., "12%", "VAT 12%", etc.)
+      let taxRate = 0;
+      if (row.tax) {
+        const match = row.tax.match(/(\d+(?:\.\d+)?)/);
+        if (match) taxRate = parseFloat(match[1]) / 100;
+      }
+      const salesWithTax = sales + (sales * taxRate);
+
+      itemMap[key].qty_sold += qty;
+      itemMap[key].total_sales += sales;
+      itemMap[key].total_sales_with_tax += salesWithTax;
+    });
+
+    const rows = Object.values(itemMap).map(item => {
+      const totalCost = item.purchase_cost * item.qty_sold;
+      const margin = item.total_sales !== 0
+        ? ((item.total_sales - totalCost) / item.total_sales * 100)
+        : 0;
+
+      return {
+        item_name: item.item_name,
+        sku: item.sku,
+        margin: Math.round(margin * 100) / 100,
+        qty_sold: item.qty_sold,
+        total_sales: item.total_sales,
+        total_sales_with_tax: item.total_sales_with_tax
+      };
+    }).sort((a, b) => a.item_name.localeCompare(b.item_name));
+
+    res.json(rows);
+  } catch (error) {
+    console.error('Error generating profit by item report:', error);
+    res.status(500).json({ error: 'Failed to generate report' });
+  }
+});
+
+// Sales Summary report
+router.get('/reports/sales-summary', async (req, res) => {
+  try {
+    const { from, to } = req.query;
+    const db = database.getDb();
+
+    let dateFilter = '';
+    const params = [];
+    if (from && to) {
+      dateFilter = 'AND i.invoice_date >= $1 AND i.invoice_date <= $2';
+      params.push(from, to);
+    }
+
+    const result = await db.query(`
+      SELECT 
+        i.invoice_date AS date,
+        COUNT(i.id) AS invoice_count,
+        COALESCE(SUM(i.sub_total), 0) AS total_sales,
+        COALESCE(SUM(i.total), 0) AS total_sales_with_tax
+      FROM invoices i
+      WHERE i.status != 'VOID' ${dateFilter}
+      GROUP BY i.invoice_date
+      ORDER BY i.invoice_date ASC
+    `, params);
+
+    const rows = result.rows.map(row => {
+      const totalSales = parseFloat(row.total_sales) || 0;
+      const totalSalesWithTax = parseFloat(row.total_sales_with_tax) || 0;
+      return {
+        date: row.date,
+        invoice_count: parseInt(row.invoice_count) || 0,
+        total_sales: totalSales,
+        total_sales_with_tax: totalSalesWithTax,
+        total_tax_amount: totalSalesWithTax - totalSales
+      };
+    });
+
+    res.json(rows);
+  } catch (error) {
+    console.error('Error generating sales summary report:', error);
+    res.status(500).json({ error: 'Failed to generate report' });
+  }
+});
+
+// Sales by Sales Person report
+router.get('/reports/sales-by-salesperson', async (req, res) => {
+  try {
+    const { from, to } = req.query;
+    const db = database.getDb();
+
+    let dateFilter = '';
+    const params = [];
+    if (from && to) {
+      dateFilter = 'AND i.invoice_date >= $1 AND i.invoice_date <= $2';
+      params.push(from, to);
+    }
+
+    // Get invoice data grouped by salesperson
+    const result = await db.query(`
+      SELECT 
+        COALESCE(i.salesperson_name, 'Unassigned') AS salesperson_name,
+        COUNT(i.id) AS invoice_count,
+        COALESCE(SUM(i.sub_total), 0) AS invoice_sales,
+        COALESCE(SUM(i.total), 0) AS invoice_sales_with_tax
+      FROM invoices i
+      WHERE i.status != 'VOID' ${dateFilter}
+      GROUP BY COALESCE(i.salesperson_name, 'Unassigned')
+      ORDER BY salesperson_name ASC
+    `, params);
+
+    const rows = result.rows.map(row => {
+      const invoiceSales = parseFloat(row.invoice_sales) || 0;
+      const invoiceSalesWithTax = parseFloat(row.invoice_sales_with_tax) || 0;
+      // Credit notes - no credit_notes table yet, so 0
+      const cnCount = 0;
+      const cnSales = 0;
+      const cnSalesWithTax = 0;
+
+      return {
+        salesperson_name: row.salesperson_name,
+        invoice_count: parseInt(row.invoice_count) || 0,
+        invoice_sales: invoiceSales,
+        invoice_sales_with_tax: invoiceSalesWithTax,
+        cn_count: cnCount,
+        cn_sales: cnSales,
+        cn_sales_with_tax: cnSalesWithTax,
+        total_sales: invoiceSales - cnSales,
+        total_sales_with_tax: invoiceSalesWithTax - cnSalesWithTax
+      };
+    });
+
+    res.json(rows);
+  } catch (error) {
+    console.error('Error generating sales by salesperson report:', error);
+    res.status(500).json({ error: 'Failed to generate report' });
+  }
+});
+
+// Sales Return History report
+router.get('/reports/sales-return-history', async (req, res) => {
+  try {
+    const { from, to } = req.query;
+    const db = database.getDb();
+
+    let dateFilter = '';
+    const params = [];
+    if (from && to) {
+      dateFilter = 'AND so.order_date >= $1 AND so.order_date <= $2';
+      params.push(from, to);
+    }
+
+    const result = await db.query(`
+      SELECT 
+        sr.id,
+        sr.rma_number,
+        sr.customer_name,
+        sr.sales_order_number,
+        sr.sales_order_id,
+        sr.return_date,
+        sr.status,
+        sr.receive_status,
+        sr.refund_status,
+        so.order_date AS sales_order_date,
+        COALESCE(SUM(sri.return_quantity), 0) AS return_quantity,
+        COALESCE(SUM(sri.amount), 0) AS requested_refund,
+        COALESCE(SUM(sri.rate * sri.return_quantity), 0) AS return_amount
+      FROM sales_returns sr
+      LEFT JOIN sales_orders so ON sr.sales_order_id = so.id
+      LEFT JOIN sales_return_items sri ON sri.sales_return_id = sr.id
+      WHERE 1=1 ${dateFilter}
+      GROUP BY sr.id, sr.rma_number, sr.customer_name, sr.sales_order_number,
+               sr.sales_order_id, sr.return_date, sr.status, sr.receive_status,
+               sr.refund_status, so.order_date
+      ORDER BY sr.return_date DESC, sr.id DESC
+    `, params);
+
+    // For each return, calculate invoiced amount from linked invoice
+    const rows = result.rows.map(row => {
+      const requestedRefund = parseFloat(row.requested_refund) || 0;
+      const returnAmount = parseFloat(row.return_amount) || 0;
+      const pendingRefund = Math.max(requestedRefund - returnAmount, 0);
+
+      return {
+        id: row.id,
+        customer_name: row.customer_name || '',
+        rma_number: row.rma_number || '',
+        return_date: row.return_date,
+        sales_order_date: row.sales_order_date || row.return_date,
+        sales_order_number: row.sales_order_number || '',
+        pending_refund: pendingRefund,
+        requested_refund: requestedRefund,
+        return_quantity: parseFloat(row.return_quantity) || 0,
+        status: row.status || 'DRAFT',
+        return_amount: returnAmount,
+        invoiced_amount: returnAmount,
+        receive_status: row.receive_status || 'Received',
+        refund_status: row.refund_status || 'Pending'
+      };
+    });
+
+    res.json(rows);
+  } catch (error) {
+    console.error('Error generating sales return history report:', error);
+    res.status(500).json({ error: 'Failed to generate report' });
+  }
+});
+
 module.exports = router;
+
