@@ -817,6 +817,544 @@ router.get('/fifo-report', async (req, res) => {
   }
 });
 
+// ==================== STOCK SUMMARY REPORT ====================
+
+// Stock Summary report
+router.get('/reports/stock-summary', async (req, res) => {
+  try {
+    const { from, to } = req.query;
+    const db = database.getDb();
+
+    // Get all items
+    const itemsResult = await db.query(`
+      SELECT id, name, sku, stock_quantity
+      FROM items
+      ORDER BY name ASC
+    `);
+
+    const reportData = [];
+
+    for (const item of itemsResult.rows) {
+      const currentStock = parseFloat(item.stock_quantity) || 0;
+
+      // Get Quantity In during the period (type IN + positive ADJUSTMENT)
+      let qtyIn = 0;
+      try {
+        let inQuery = `
+          SELECT COALESCE(SUM(quantity), 0) AS total
+          FROM inventory_transactions
+          WHERE item_id = $1 AND ((type = 'IN') OR (type = 'ADJUSTMENT' AND quantity > 0))
+        `;
+        const inParams = [item.id];
+        if (from && to) {
+          inQuery += ` AND date >= $2 AND date <= $3`;
+          inParams.push(from, to + 'T23:59:59');
+        }
+        const inResult = await db.query(inQuery, inParams);
+        qtyIn = parseFloat(inResult.rows[0].total) || 0;
+      } catch (e) { /* ignore */ }
+
+      // Get Quantity Out during the period (type OUT + negative ADJUSTMENT)
+      let qtyOut = 0;
+      try {
+        let outQuery = `
+          SELECT COALESCE(SUM(ABS(quantity)), 0) AS total
+          FROM inventory_transactions
+          WHERE item_id = $1 AND ((type = 'OUT') OR (type = 'ADJUSTMENT' AND quantity < 0))
+        `;
+        const outParams = [item.id];
+        if (from && to) {
+          outQuery += ` AND date >= $2 AND date <= $3`;
+          outParams.push(from, to + 'T23:59:59');
+        }
+        const outResult = await db.query(outQuery, outParams);
+        qtyOut = parseFloat(outResult.rows[0].total) || 0;
+      } catch (e) { /* ignore */ }
+
+      // Opening Stock = Current Stock - Qty In + Qty Out (reverse the period's changes)
+      const openingStock = currentStock - qtyIn + qtyOut;
+      // Closing Stock = Opening Stock + Qty In - Qty Out = current stock
+      const closingStock = openingStock + qtyIn - qtyOut;
+
+      reportData.push({
+        item_name: item.name,
+        sku: item.sku || '',
+        opening_stock: openingStock,
+        quantity_in: qtyIn,
+        quantity_out: qtyOut,
+        closing_stock: closingStock
+      });
+    }
+
+    res.json(reportData);
+  } catch (error) {
+    console.error('Error generating stock summary report:', error);
+    res.status(500).json({ error: 'Failed to generate report' });
+  }
+});
+
+// ==================== INVENTORY ADJUSTMENT SUMMARY REPORT ====================
+
+// Inventory Adjustment Summary report
+router.get('/reports/inventory-adjustment-summary', async (req, res) => {
+  try {
+    const { from, to } = req.query;
+    const db = database.getDb();
+
+    let dateFilter = '';
+    const params = [];
+    let paramCount = 1;
+
+    if (from && to) {
+      dateFilter = `WHERE a.adjustment_date >= $${paramCount} AND a.adjustment_date <= $${paramCount + 1}`;
+      params.push(from, to + 'T23:59:59');
+      paramCount += 2;
+    }
+
+    const result = await db.query(`
+      SELECT 
+        a.reference_number,
+        a.adjustment_date,
+        a.status,
+        a.reason,
+        a.mode AS adjustment_type,
+        COALESCE(SUM(CASE WHEN ai.quantity_adjusted > 0 THEN ai.quantity_adjusted ELSE 0 END), 0) AS quantity_increased,
+        COALESCE(SUM(CASE WHEN ai.quantity_adjusted < 0 THEN ABS(ai.quantity_adjusted) ELSE 0 END), 0) AS quantity_decreased,
+        COALESCE(SUM(CASE WHEN ai.value_change > 0 THEN ai.value_change ELSE 0 END), 0) AS value_increased,
+        COALESCE(SUM(CASE WHEN ai.value_change < 0 THEN ABS(ai.value_change) ELSE 0 END), 0) AS value_decreased
+      FROM inventory_adjustments a
+      LEFT JOIN inventory_adjustment_items ai ON ai.adjustment_id = a.id
+      ${dateFilter}
+      GROUP BY a.id, a.reference_number, a.adjustment_date, a.status, a.reason, a.mode
+      ORDER BY a.adjustment_date ASC
+    `, params);
+
+    const rows = result.rows.map(row => ({
+      reference_number: row.reference_number || '',
+      date: row.adjustment_date,
+      status: row.status || 'draft',
+      reason: row.reason || '',
+      adjustment_type: row.adjustment_type === 'quantity' ? 'Quantity' : 'Value',
+      quantity_increased: parseFloat(row.quantity_increased) || 0,
+      quantity_decreased: parseFloat(row.quantity_decreased) || 0,
+      value_increased: parseFloat(row.value_increased) || 0,
+      value_decreased: parseFloat(row.value_decreased) || 0
+    }));
+
+    res.json(rows);
+  } catch (error) {
+    console.error('Error generating inventory adjustment summary report:', error);
+    res.status(500).json({ error: 'Failed to generate report' });
+  }
+});
+
+// ==================== INVENTORY ADJUSTMENT DETAILS REPORT ====================
+
+// Inventory Adjustment Details report (line-item level)
+router.get('/reports/inventory-adjustment-details', async (req, res) => {
+  try {
+    const { from, to } = req.query;
+    const db = database.getDb();
+
+    let dateFilter = '';
+    const params = [];
+    let paramCount = 1;
+
+    if (from && to) {
+      dateFilter = `WHERE a.adjustment_date >= $${paramCount} AND a.adjustment_date <= $${paramCount + 1}`;
+      params.push(from, to + 'T23:59:59');
+      paramCount += 2;
+    }
+
+    const result = await db.query(`
+      SELECT 
+        a.reference_number,
+        a.adjustment_date,
+        a.status,
+        a.reason,
+        a.mode AS adjustment_type,
+        ai.item_name AS product_name,
+        ai.quantity_adjusted,
+        ai.value_change
+      FROM inventory_adjustment_items ai
+      JOIN inventory_adjustments a ON ai.adjustment_id = a.id
+      ${dateFilter}
+      ORDER BY a.adjustment_date ASC, a.id ASC
+    `, params);
+
+    const rows = result.rows.map(row => ({
+      reference_number: row.reference_number || '',
+      date: row.adjustment_date,
+      status: row.status || 'draft',
+      reason: row.reason || '',
+      adjustment_type: row.adjustment_type === 'quantity' ? 'Quantity' : 'Value',
+      product_name: row.product_name || '',
+      quantity_adjusted: row.adjustment_type === 'quantity' ? (parseFloat(row.quantity_adjusted) || 0) : null,
+      value_adjusted: row.adjustment_type === 'value' ? (parseFloat(row.value_change) || 0) : null
+    }));
+
+    res.json(rows);
+  } catch (error) {
+    console.error('Error generating inventory adjustment details report:', error);
+    res.status(500).json({ error: 'Failed to generate report' });
+  }
+});
+
+// ==================== PACKING HISTORY REPORT ====================
+
+// Packing History report
+router.get('/reports/packing-history', async (req, res) => {
+  try {
+    const { from, to, status } = req.query;
+    const db = database.getDb();
+
+    let conditions = [];
+    const params = [];
+    let paramCount = 1;
+
+    if (from && to) {
+      conditions.push(`p.package_date >= $${paramCount} AND p.package_date <= $${paramCount + 1}`);
+      params.push(from, to);
+      paramCount += 2;
+    }
+
+    if (status && status !== 'all' && status !== 'All') {
+      conditions.push(`UPPER(p.status) = UPPER($${paramCount})`);
+      params.push(status);
+      paramCount++;
+    }
+
+    const whereClause = conditions.length > 0 ? 'WHERE ' + conditions.join(' AND ') : '';
+
+    const result = await db.query(`
+      SELECT 
+        p.id,
+        p.package_date,
+        p.package_number,
+        p.sales_order_number,
+        p.status,
+        s.tracking_number,
+        COALESCE(SUM(pi.packed_quantity), 0) AS quantity
+      FROM packages p
+      LEFT JOIN shipments s ON s.package_id = p.id
+      LEFT JOIN package_items pi ON pi.package_id = p.id
+      ${whereClause}
+      GROUP BY p.id, p.package_date, p.package_number, p.sales_order_number, p.status, s.tracking_number
+      ORDER BY p.package_date ASC, p.id ASC
+    `, params);
+
+    // Determine effective status: if shipment exists and is delivered, override
+    const rows = result.rows.map(row => {
+      let effectiveStatus = row.status || 'Not Shipped';
+      // Normalize status display
+      const upper = effectiveStatus.toUpperCase();
+      if (upper === 'NOT SHIPPED' || upper === 'NOT_SHIPPED') {
+        effectiveStatus = 'Not Shipped';
+      } else if (upper === 'SHIPPED') {
+        effectiveStatus = 'Shipped';
+      } else if (upper === 'DELIVERED') {
+        effectiveStatus = 'Delivered';
+      }
+
+      return {
+        date: row.package_date,
+        package_number: row.package_number || '',
+        sales_order_number: row.sales_order_number || '',
+        status: effectiveStatus,
+        tracking_number: row.tracking_number || '',
+        quantity: parseFloat(row.quantity) || 0
+      };
+    });
+
+    res.json(rows);
+  } catch (error) {
+    console.error('Error generating packing history report:', error);
+    res.status(500).json({ error: 'Failed to generate report' });
+  }
+});
+
+// ==================== INVENTORY TURNOVER BY QUANTITY REPORT ====================
+
+// Inventory Turnover By Quantity report
+router.get('/reports/inventory-turnover-quantity', async (req, res) => {
+  try {
+    const { from, to } = req.query;
+    const db = database.getDb();
+
+    // Get all items
+    const itemsResult = await db.query(`SELECT id, name, stock_quantity FROM items ORDER BY name ASC`);
+
+    // Calculate days in the period
+    let daysInPeriod = 30; // default
+    if (from && to) {
+      const d1 = new Date(from);
+      const d2 = new Date(to);
+      daysInPeriod = Math.max(1, Math.round((d2 - d1) / (1000 * 60 * 60 * 24)) + 1);
+    }
+
+    const rows = [];
+
+    for (const item of itemsResult.rows) {
+      const currentStock = parseFloat(item.stock_quantity) || 0;
+
+      // Get Quantity In during the period
+      let qtyIn = 0;
+      try {
+        let inQuery = `SELECT COALESCE(SUM(quantity), 0) AS total FROM inventory_transactions WHERE item_id = $1 AND ((type = 'IN') OR (type = 'ADJUSTMENT' AND quantity > 0))`;
+        const inParams = [item.id];
+        if (from && to) {
+          inQuery += ` AND date >= $2 AND date <= $3`;
+          inParams.push(from, to + 'T23:59:59');
+        }
+        const inResult = await db.query(inQuery, inParams);
+        qtyIn = parseFloat(inResult.rows[0].total) || 0;
+      } catch (e) { /* ignore */ }
+
+      // Get Quantity Out during the period
+      let qtyOut = 0;
+      try {
+        let outQuery = `SELECT COALESCE(SUM(ABS(quantity)), 0) AS total FROM inventory_transactions WHERE item_id = $1 AND ((type = 'OUT') OR (type = 'ADJUSTMENT' AND quantity < 0))`;
+        const outParams = [item.id];
+        if (from && to) {
+          outQuery += ` AND date >= $2 AND date <= $3`;
+          outParams.push(from, to + 'T23:59:59');
+        }
+        const outResult = await db.query(outQuery, outParams);
+        qtyOut = parseFloat(outResult.rows[0].total) || 0;
+      } catch (e) { /* ignore */ }
+
+      // Opening Stock = Current Stock - Qty In + Qty Out
+      const openingStock = currentStock - qtyIn + qtyOut;
+      // Closing Stock = current stock
+      const closingStock = currentStock;
+
+      // Get Quantity Sold during the period (from sales_items)
+      let qtySold = 0;
+      try {
+        let soldQuery = `
+          SELECT COALESCE(SUM(si.quantity), 0) AS total
+          FROM sales_items si
+          JOIN sales s ON si.sale_id = s.id
+          WHERE si.item_id = $1
+        `;
+        const soldParams = [item.id];
+        if (from && to) {
+          soldQuery += ` AND s.date >= $2 AND s.date <= $3`;
+          soldParams.push(from, to + 'T23:59:59');
+        }
+        const soldResult = await db.query(soldQuery, soldParams);
+        qtySold = parseFloat(soldResult.rows[0].total) || 0;
+      } catch (e) {
+        // Try matching by item_name if item_id doesn't work
+        try {
+          let soldQuery2 = `
+            SELECT COALESCE(SUM(si.quantity), 0) AS total
+            FROM sales_items si
+            JOIN sales s ON si.sale_id = s.id
+            WHERE si.item_name = $1
+          `;
+          const soldParams2 = [item.name];
+          if (from && to) {
+            soldQuery2 += ` AND s.date >= $2 AND s.date <= $3`;
+            soldParams2.push(from, to + 'T23:59:59');
+          }
+          const soldResult2 = await db.query(soldQuery2, soldParams2);
+          qtySold = parseFloat(soldResult2.rows[0].total) || 0;
+        } catch (e2) { /* ignore */ }
+      }
+
+      // Average Quantity = (Opening + Closing) / 2
+      const avgQty = (openingStock + closingStock) / 2;
+
+      // Turnover Ratio = Quantity Sold / Average Quantity
+      const turnoverRatio = avgQty > 0 ? qtySold / avgQty : 0;
+
+      // Average Turnover Days = Days in period / Turnover Ratio
+      const avgTurnoverDays = turnoverRatio > 0 ? Math.round(daysInPeriod / turnoverRatio) : 0;
+
+      rows.push({
+        item_name: item.name,
+        opening_stock: openingStock,
+        closing_stock: closingStock,
+        quantity_sold: qtySold,
+        average_quantity: avgQty,
+        turnover_ratio: Math.round(turnoverRatio * 100) / 100,
+        average_turnover_days: avgTurnoverDays
+      });
+    }
+
+    res.json(rows);
+  } catch (error) {
+    console.error('Error generating inventory turnover by quantity report:', error);
+    res.status(500).json({ error: 'Failed to generate report' });
+  }
+});
+
+// ==================== INVENTORY VALUATION SUMMARY REPORT ====================
+
+// Inventory Valuation Summary report
+router.get('/reports/inventory-valuation-summary', async (req, res) => {
+  try {
+    const { stock_filter } = req.query;
+    const db = database.getDb();
+
+    let query = `
+      SELECT 
+        name,
+        sku,
+        unit,
+        stock_quantity,
+        purchase_cost,
+        (stock_quantity * purchase_cost) AS asset_value
+      FROM items
+      ORDER BY name ASC
+    `;
+
+    const result = await db.query(query);
+
+    let rows = result.rows.map(row => ({
+      item_name: row.name,
+      sku: row.sku || '',
+      unit: row.unit || 'pcs',
+      stock_on_hand: parseFloat(row.stock_quantity) || 0,
+      asset_value: parseFloat(row.asset_value) || 0
+    }));
+
+    // Apply stock availability filter
+    if (stock_filter === 'in_stock') {
+      rows = rows.filter(r => r.stock_on_hand > 0);
+    } else if (stock_filter === 'out_of_stock') {
+      rows = rows.filter(r => r.stock_on_hand <= 0);
+    }
+
+    res.json(rows);
+  } catch (error) {
+    console.error('Error generating inventory valuation summary report:', error);
+    res.status(500).json({ error: 'Failed to generate report' });
+  }
+});
+
+// ==================== INVENTORY TURNOVER BY AMOUNT REPORT ====================
+
+// Inventory Turnover By Amount report
+router.get('/reports/inventory-turnover-amount', async (req, res) => {
+  try {
+    const { from, to } = req.query;
+    const db = database.getDb();
+
+    // Get all items
+    const itemsResult = await db.query(`SELECT id, name, sku, stock_quantity, purchase_cost FROM items ORDER BY name ASC`);
+
+    // Calculate days in the period
+    let daysInPeriod = 30;
+    if (from && to) {
+      const d1 = new Date(from);
+      const d2 = new Date(to);
+      daysInPeriod = Math.max(1, Math.round((d2 - d1) / (1000 * 60 * 60 * 24)) + 1);
+    }
+
+    const rows = [];
+
+    for (const item of itemsResult.rows) {
+      const currentStock = parseFloat(item.stock_quantity) || 0;
+      const cost = parseFloat(item.purchase_cost) || 0;
+
+      // Get Quantity In during the period
+      let qtyIn = 0;
+      try {
+        let inQuery = `SELECT COALESCE(SUM(quantity), 0) AS total FROM inventory_transactions WHERE item_id = $1 AND ((type = 'IN') OR (type = 'ADJUSTMENT' AND quantity > 0))`;
+        const inParams = [item.id];
+        if (from && to) {
+          inQuery += ` AND date >= $2 AND date <= $3`;
+          inParams.push(from, to + 'T23:59:59');
+        }
+        const inResult = await db.query(inQuery, inParams);
+        qtyIn = parseFloat(inResult.rows[0].total) || 0;
+      } catch (e) { /* ignore */ }
+
+      // Get Quantity Out during the period
+      let qtyOut = 0;
+      try {
+        let outQuery = `SELECT COALESCE(SUM(ABS(quantity)), 0) AS total FROM inventory_transactions WHERE item_id = $1 AND ((type = 'OUT') OR (type = 'ADJUSTMENT' AND quantity < 0))`;
+        const outParams = [item.id];
+        if (from && to) {
+          outQuery += ` AND date >= $2 AND date <= $3`;
+          outParams.push(from, to + 'T23:59:59');
+        }
+        const outResult = await db.query(outQuery, outParams);
+        qtyOut = parseFloat(outResult.rows[0].total) || 0;
+      } catch (e) { /* ignore */ }
+
+      const openingStock = currentStock - qtyIn + qtyOut;
+      const closingStock = currentStock;
+
+      // Get Quantity Sold during the period
+      let qtySold = 0;
+      try {
+        let soldQuery = `
+          SELECT COALESCE(SUM(si.quantity), 0) AS total
+          FROM sales_items si
+          JOIN sales s ON si.sale_id = s.id
+          WHERE si.item_id = $1
+        `;
+        const soldParams = [item.id];
+        if (from && to) {
+          soldQuery += ` AND s.date >= $2 AND s.date <= $3`;
+          soldParams.push(from, to + 'T23:59:59');
+        }
+        const soldResult = await db.query(soldQuery, soldParams);
+        qtySold = parseFloat(soldResult.rows[0].total) || 0;
+      } catch (e) {
+        try {
+          let soldQuery2 = `
+            SELECT COALESCE(SUM(si.quantity), 0) AS total
+            FROM sales_items si
+            JOIN sales s ON si.sale_id = s.id
+            WHERE si.item_name = $1
+          `;
+          const soldParams2 = [item.name];
+          if (from && to) {
+            soldQuery2 += ` AND s.date >= $2 AND s.date <= $3`;
+            soldParams2.push(from, to + 'T23:59:59');
+          }
+          const soldResult2 = await db.query(soldQuery2, soldParams2);
+          qtySold = parseFloat(soldResult2.rows[0].total) || 0;
+        } catch (e2) { /* ignore */ }
+      }
+
+      // Convert to monetary values
+      const openingBalance = openingStock * cost;
+      const closingBalance = closingStock * cost;
+      const cogs = qtySold * cost;
+
+      // Average Price = (Opening Balance + Closing Balance) / 2
+      const avgPrice = (openingBalance + closingBalance) / 2;
+
+      // Turnover Ratio = COGS / Average Price
+      const turnoverRatio = avgPrice > 0 ? cogs / avgPrice : 0;
+
+      // Average Turnover Days = Days in period / Turnover Ratio
+      const avgTurnoverDays = turnoverRatio > 0 ? Math.round(daysInPeriod / turnoverRatio) : 0;
+
+      rows.push({
+        item_name: item.name,
+        sku: item.sku || '',
+        opening_balance: Math.round(openingBalance * 100) / 100,
+        closing_balance: Math.round(closingBalance * 100) / 100,
+        cogs: Math.round(cogs * 100) / 100,
+        average_price: Math.round(avgPrice * 100) / 100,
+        turnover_ratio: Math.round(turnoverRatio * 100) / 100,
+        average_turnover_days: avgTurnoverDays
+      });
+    }
+
+    res.json(rows);
+  } catch (error) {
+    console.error('Error generating inventory turnover by amount report:', error);
+    res.status(500).json({ error: 'Failed to generate report' });
+  }
+});
+
 // ==================== INVENTORY AGING SUMMARY REPORT ====================
 
 // Inventory Aging Summary report (FIFO method)
@@ -985,6 +1523,7 @@ router.get('/reports/inventory-summary', async (req, res) => {
   try {
     const db = database.getDb();
 
+    // Main query without shipment_items (which may not exist)
     const result = await db.query(`
       SELECT 
         it.id,
@@ -1018,34 +1557,51 @@ router.get('/reports/inventory-summary', async (req, res) => {
           JOIN invoices inv ON ii.invoice_id = inv.id
           WHERE LOWER(TRIM(ii.item_name)) = LOWER(TRIM(it.name))
             AND inv.status != 'VOID'
-        ), 0) AS quantity_out,
-
-        -- Committed Stock: qty from confirmed sales orders not yet fulfilled
-        COALESCE((
-          SELECT SUM(soi.quantity)
-          FROM sales_order_items soi
-          JOIN sales_orders so ON soi.sales_order_id = so.id
-          WHERE soi.item_id = it.id
-            AND so.status IN ('CONFIRMED', 'OPEN')
-        ), 0) AS committed_stock,
-
-        -- In-Transit: from shipments that are shipped but not delivered
-        COALESCE((
-          SELECT SUM(si.quantity)
-          FROM shipment_items si
-          JOIN shipments sh ON si.shipment_id = sh.id
-          WHERE si.item_id = it.id
-            AND sh.status = 'shipped'
-        ), 0) AS in_transit
+        ), 0) AS quantity_out
 
       FROM items it
       ORDER BY it.name ASC
     `);
 
+    // Try to get committed stock data (item_id column may not exist in sales_order_items)
+    let committedMap = {};
+    try {
+      const committedResult = await db.query(`
+        SELECT soi.item_name, SUM(soi.quantity) AS committed_stock
+        FROM sales_order_items soi
+        JOIN sales_orders so ON soi.sales_order_id = so.id
+        WHERE so.status IN ('CONFIRMED', 'OPEN')
+        GROUP BY soi.item_name
+      `);
+      committedResult.rows.forEach(r => {
+        committedMap[r.item_name.trim().toLowerCase()] = parseFloat(r.committed_stock) || 0;
+      });
+    } catch (e) {
+      // sales_order_items may not have expected columns
+    }
+
+    // Try to get in-transit data (shipment_items may not exist)
+    let inTransitMap = {};
+    try {
+      const transitResult = await db.query(`
+        SELECT si.item_id, SUM(si.quantity) AS in_transit
+        FROM shipment_items si
+        JOIN shipments sh ON si.shipment_id = sh.id
+        WHERE sh.status = 'shipped'
+        GROUP BY si.item_id
+      `);
+      transitResult.rows.forEach(r => {
+        inTransitMap[r.item_id] = parseFloat(r.in_transit) || 0;
+      });
+    } catch (e) {
+      // shipment_items table may not exist, default to 0
+    }
+
     const rows = result.rows.map(row => {
       const stockOnHand = parseFloat(row.stock_on_hand) || 0;
-      const committed = parseFloat(row.committed_stock) || 0;
+      const committed = committedMap[row.item_name.trim().toLowerCase()] || 0;
       const availableForSale = stockOnHand - committed;
+      const inTransit = inTransitMap[row.id] || 0;
 
       return {
         item_name: row.item_name,
@@ -1057,7 +1613,7 @@ router.get('/reports/inventory-summary', async (req, res) => {
         stock_on_hand: stockOnHand,
         committed_stock: committed,
         available_for_sale: availableForSale,
-        in_transit: parseFloat(row.in_transit) || 0,
+        in_transit: inTransit,
         usage_unit: row.usage_unit || 'pcs'
       };
     });

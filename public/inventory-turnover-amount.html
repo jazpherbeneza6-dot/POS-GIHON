@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Turnover By Amount - Reports</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', 'Source Sans Pro', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f5f6fa;
+            font-size: 13px;
+        }
+
+        .main-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 0;
+            background: #fff;
+        }
+
+        /* ===== TOP HEADER BAR ===== */
+        .report-top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+            min-height: 44px;
+        }
+
+        .report-top-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .hamburger-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #555;
+            padding: 4px 8px;
+        }
+
+        .breadcrumb-area {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .breadcrumb-category {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .breadcrumb-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #222;
+        }
+
+        .breadcrumb-date {
+            font-size: 11px;
+            color: #999;
+            font-weight: 400;
+            margin-left: 6px;
+        }
+
+        .top-bar-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .top-bar-actions button {
+            background: none;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .top-bar-actions button:hover {
+            background: #f5f5f5;
+        }
+
+        .btn-export {
+            font-size: 12px !important;
+            font-weight: 500;
+        }
+
+        .btn-close-report {
+            color: #e53935 !important;
+            font-weight: bold;
+        }
+
+        /* ===== FILTER BAR ===== */
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 20px;
+            background: #f9fafb;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .filter-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .filter-dropdown {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 5px 10px;
+            font-size: 12px;
+            color: #333;
+        }
+
+        .filter-dropdown select {
+            border: none;
+            outline: none;
+            font-size: 12px;
+            color: #2563eb;
+            font-weight: 500;
+            cursor: pointer;
+            background: transparent;
+        }
+
+        .filter-more {
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 5px 12px;
+            font-size: 12px;
+            color: #2563eb;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-run-report {
+            background: #e53935;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 7px 20px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-run-report:hover {
+            background: #c62828;
+        }
+
+        /* ===== OPTIONS BAR ===== */
+        .options-bar {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 20px;
+            padding: 8px 20px;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+            font-size: 12px;
+            color: #555;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .option-bold {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .customize-count {
+            background: #2563eb;
+            color: #fff;
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-size: 10px;
+            font-weight: 700;
+            margin-left: 4px;
+        }
+
+        /* ===== REPORT BODY ===== */
+        .report-body {
+            padding: 30px 20px 60px;
+            overflow-x: auto;
+        }
+
+        .report-header-section {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .company-name {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+
+        .report-main-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #222;
+        }
+
+        .report-date-range {
+            font-size: 12px;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .date-highlight {
+            color: #2563eb;
+            font-weight: 500;
+        }
+
+        /* ===== REPORT TABLE ===== */
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            min-width: 1000px;
+        }
+
+        .report-table thead th {
+            text-align: left;
+            font-size: 10px;
+            font-weight: 700;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            padding: 10px 10px;
+            border-bottom: 2px solid #ddd;
+            background: #fafafa;
+            white-space: nowrap;
+        }
+
+        .report-table tbody td {
+            padding: 10px 10px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #333;
+            white-space: nowrap;
+        }
+
+        .report-table tfoot td {
+            padding: 10px 10px;
+            font-weight: 700;
+            border-top: 2px solid #ddd;
+            background: #fafafa;
+            color: #222;
+        }
+
+        .report-table tbody tr:hover {
+            background: #f8f9ff;
+        }
+
+        .align-right {
+            text-align: right !important;
+        }
+
+        .align-center {
+            text-align: center !important;
+        }
+
+        .item-link {
+            color: #2563eb;
+            cursor: pointer;
+        }
+
+        .item-link:hover {
+            text-decoration: underline;
+        }
+
+        .info-icon {
+            font-size: 10px;
+            color: #999;
+            cursor: help;
+            margin-left: 3px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="sidebarContainer"></div>
+
+    <div class="main-layout">
+        <div class="content" id="content">
+
+            <!-- TOP HEADER BAR -->
+            <div class="report-top-bar">
+                <div class="report-top-left">
+                    <button class="hamburger-btn" onclick="window.location.href='/reports.html'">☰</button>
+                    <div class="breadcrumb-area">
+                        <span class="breadcrumb-category">Inventory Valuation</span>
+                        <span class="breadcrumb-title">
+                            Inventory Turnover By Amount
+                            <span class="breadcrumb-date" id="breadcrumbDate">•</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="top-bar-actions">
+                    <button title="Schedule"><span>📅</span></button>
+                    <button title="Refresh" onclick="runReport()"><span>🔄</span></button>
+                    <button title="Share"><span>📤</span></button>
+                    <button class="btn-export" title="Export">Export ▾</button>
+                    <button title="Print" onclick="window.print()"><span>🖨</span></button>
+                    <button class="btn-close-report" title="Close"
+                        onclick="window.location.href='/reports.html'">✕</button>
+                </div>
+            </div>
+
+            <!-- FILTER BAR -->
+            <div class="filter-bar">
+                <span class="filter-label">🔽 Filters :</span>
+
+                <div class="filter-dropdown">
+                    <span>Date Range :</span>
+                    <select id="dateRangeSelect" onchange="runReport()" title="Date Range">
+                        <option value="this-month" selected>This Month</option>
+                        <option value="last-month">Last Month</option>
+                        <option value="this-quarter">This Quarter</option>
+                        <option value="this-year">This Year</option>
+                        <option value="all">All Time</option>
+                    </select>
+                </div>
+
+                <button class="filter-more">⊕ More Filters</button>
+
+                <button class="btn-run-report" onclick="runReport()">Run Report</button>
+            </div>
+
+            <!-- OPTIONS BAR -->
+            <div class="options-bar">
+                <div class="option-item">
+                    <span>📁</span>
+                    Group By : <span class="option-bold">None</span> ▾
+                </div>
+                <div class="option-item">
+                    <span>⚙️</span>
+                    Customize Report Columns
+                    <span class="customize-count">8</span>
+                </div>
+            </div>
+
+            <!-- REPORT BODY -->
+            <div class="report-body">
+                <div class="report-header-section">
+                    <div class="company-name">SOLO</div>
+                    <div class="report-main-title">Inventory Turnover By Amount</div>
+                    <div class="report-date-range" id="reportDateRange">
+                        From <span class="date-highlight" id="fromDateDisplay">-</span>
+                        To <span class="date-highlight" id="toDateDisplay">-</span>
+                    </div>
+                </div>
+
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>ITEM NAME</th>
+                            <th class="align-right">OPENING BALANCE</th>
+                            <th class="align-right">CLOSING BALANCE</th>
+                            <th class="align-right">COST OF GOODS SOLD</th>
+                            <th class="align-right">AVERAGE PRICE <span class="info-icon"
+                                    title="(Opening Balance + Closing Balance) / 2">ⓘ</span></th>
+                            <th class="align-right">TURN OVER RATIO <span class="info-icon"
+                                    title="COGS / Average Price">ⓘ</span></th>
+                            <th class="align-right">AVERAGE TURNOVER DAYS <span class="info-icon"
+                                    title="Days in Period / Turn Over Ratio">ⓘ</span></th>
+                            <th>SKU</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reportTableBody">
+                        <tr>
+                            <td colspan="8" class="align-center" id="loadingCell">Loading...</td>
+                        </tr>
+                    </tbody>
+                    <tfoot id="reportTableFoot">
+                        <tr>
+                            <td><strong>Total</strong></td>
+                            <td class="align-right" id="totOpening"></td>
+                            <td class="align-right" id="totClosing"></td>
+                            <td class="align-right" id="totCogs"></td>
+                            <td class="align-right"></td>
+                            <td class="align-right"></td>
+                            <td class="align-right"></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="/js/layout.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            runReport();
+        });
+
+        function getDateRange() {
+            const sel = document.getElementById('dateRangeSelect').value;
+            const now = new Date();
+            let from, to;
+
+            switch (sel) {
+                case 'this-month':
+                    from = new Date(now.getFullYear(), now.getMonth(), 1);
+                    to = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+                    break;
+                case 'last-month':
+                    from = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+                    to = new Date(now.getFullYear(), now.getMonth(), 0);
+                    break;
+                case 'this-quarter': {
+                    const q = Math.floor(now.getMonth() / 3);
+                    from = new Date(now.getFullYear(), q * 3, 1);
+                    to = new Date(now.getFullYear(), q * 3 + 3, 0);
+                    break;
+                }
+                case 'this-year':
+                    from = new Date(now.getFullYear(), 0, 1);
+                    to = new Date(now.getFullYear(), 11, 31);
+                    break;
+                case 'all':
+                    return { from: null, to: null };
+            }
+
+            return {
+                from: from.toISOString().split('T')[0],
+                to: to.toISOString().split('T')[0]
+            };
+        }
+
+        function fmtDate(dateStr) {
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+        }
+
+        function fmtCurrency(val) {
+            return 'PHP' + parseFloat(val).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function fmtNum(val) {
+            return parseFloat(val).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        async function runReport() {
+            const tbody = document.getElementById('reportTableBody');
+            const tfoot = document.getElementById('reportTableFoot');
+            tbody.innerHTML = '<tr><td colspan="8" class="align-center" id="loadingCell">Loading...</td></tr>';
+            tfoot.style.display = 'none';
+
+            const { from, to } = getDateRange();
+
+            // Update header dates
+            if (from && to) {
+                document.getElementById('fromDateDisplay').textContent = fmtDate(from);
+                document.getElementById('toDateDisplay').textContent = fmtDate(to);
+                document.getElementById('breadcrumbDate').textContent = `• From ${fmtDate(from)} To ${fmtDate(to)}`;
+            } else {
+                document.getElementById('fromDateDisplay').textContent = 'All Time';
+                document.getElementById('toDateDisplay').textContent = '';
+                document.getElementById('breadcrumbDate').textContent = '• All Time';
+            }
+
+            try {
+                let url = '/api/inventory/reports/inventory-turnover-amount';
+                if (from && to) {
+                    url += `?from=${from}&to=${to}`;
+                }
+
+                const res = await fetch(url);
+                if (!res.ok) throw new Error('API error');
+                const data = await res.json();
+
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" class="align-center" id="emptyCell">No data found for this period.</td></tr>';
+                    return;
+                }
+
+                let totOpening = 0, totClosing = 0, totCogs = 0;
+
+                tbody.innerHTML = data.map(row => {
+                    totOpening += row.opening_balance;
+                    totClosing += row.closing_balance;
+                    totCogs += row.cogs;
+
+                    return `
+                        <tr>
+                            <td class="item-link">${row.item_name}</td>
+                            <td class="align-right">${fmtCurrency(row.opening_balance)}</td>
+                            <td class="align-right">${fmtCurrency(row.closing_balance)}</td>
+                            <td class="align-right">${fmtCurrency(row.cogs)}</td>
+                            <td class="align-right">${fmtCurrency(row.average_price)}</td>
+                            <td class="align-right">${fmtCurrency(row.turnover_ratio)}</td>
+                            <td class="align-right">${row.average_turnover_days > 0 ? row.average_turnover_days : ''}</td>
+                            <td>${row.sku}</td>
+                        </tr>
+                    `;
+                }).join('');
+
+                document.getElementById('totOpening').textContent = fmtCurrency(totOpening);
+                document.getElementById('totClosing').textContent = fmtCurrency(totClosing);
+                document.getElementById('totCogs').textContent = fmtCurrency(totCogs);
+                tfoot.style.display = '';
+
+            } catch (e) {
+                console.error('Error:', e);
+                tbody.innerHTML = '<tr><td colspan="8" class="align-center" id="errorCell">Error loading report data.</td></tr>';
+            }
+        }
+    </script>
+</body>
+
+</html>
