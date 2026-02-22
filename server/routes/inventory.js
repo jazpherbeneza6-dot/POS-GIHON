@@ -854,22 +854,40 @@ router.get('/reports/stock-summary', async (req, res) => {
         qtyIn = parseFloat(inResult.rows[0].total) || 0;
       } catch (e) { /* ignore */ }
 
-      // Get Quantity Out during the period (type OUT + negative ADJUSTMENT)
+      // Get Quantity Out during the period - only from sales/invoices (converted from sales orders)
       let qtyOut = 0;
       try {
         let outQuery = `
-          SELECT COALESCE(SUM(ABS(quantity)), 0) AS total
-          FROM inventory_transactions
-          WHERE item_id = $1 AND ((type = 'OUT') OR (type = 'ADJUSTMENT' AND quantity < 0))
+          SELECT COALESCE(SUM(si.quantity), 0) AS total
+          FROM sales_items si
+          JOIN sales s ON si.sale_id = s.id
+          WHERE si.item_id = $1
         `;
         const outParams = [item.id];
         if (from && to) {
-          outQuery += ` AND date >= $2 AND date <= $3`;
+          outQuery += ` AND s.date >= $2 AND s.date <= $3`;
           outParams.push(from, to + 'T23:59:59');
         }
         const outResult = await db.query(outQuery, outParams);
         qtyOut = parseFloat(outResult.rows[0].total) || 0;
-      } catch (e) { /* ignore */ }
+      } catch (e) {
+        // Fallback: try matching by item_name
+        try {
+          let outQuery2 = `
+            SELECT COALESCE(SUM(si.quantity), 0) AS total
+            FROM sales_items si
+            JOIN sales s ON si.sale_id = s.id
+            WHERE si.item_name = $1
+          `;
+          const outParams2 = [item.name];
+          if (from && to) {
+            outQuery2 += ` AND s.date >= $2 AND s.date <= $3`;
+            outParams2.push(from, to + 'T23:59:59');
+          }
+          const outResult2 = await db.query(outQuery2, outParams2);
+          qtyOut = parseFloat(outResult2.rows[0].total) || 0;
+        } catch (e2) { /* ignore */ }
+      }
 
       // Opening Stock = Current Stock - Qty In + Qty Out (reverse the period's changes)
       const openingStock = currentStock - qtyIn + qtyOut;

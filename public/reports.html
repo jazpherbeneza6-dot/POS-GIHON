@@ -583,8 +583,14 @@
             <a class="reports-sidebar-item" onclick="filterReports('inventory')">
               <span>📂</span> Inventory
             </a>
+            <a class="reports-sidebar-item" onclick="filterReports('advanced-inventory')">
+              <span>📂</span> Advanced Inventory
+            </a>
             <a class="reports-sidebar-item" onclick="filterReports('inventory-valuation')">
               <span>📂</span> Inventory Valuation
+            </a>
+            <a class="reports-sidebar-item" onclick="filterReports('location')">
+              <span>📂</span> Location
             </a>
             <a class="reports-sidebar-item" onclick="filterReports('receivables')">
               <span>📂</span> Receivables
@@ -596,10 +602,13 @@
               <span>📂</span> Payables
             </a>
             <a class="reports-sidebar-item" onclick="filterReports('purchases')">
-              <span>📂</span> Purchases and Expenses
+              <span>📂</span> Purchases
             </a>
             <a class="reports-sidebar-item" onclick="filterReports('activity')">
               <span>📂</span> Activity
+            </a>
+            <a class="reports-sidebar-item" onclick="filterReports('automation')">
+              <span>📂</span> Automation
             </a>
           </div>
 
@@ -608,7 +617,7 @@
             <div class="reports-content-header">
               <div class="reports-content-title">
                 <h2>All Reports</h2>
-                <span class="reports-count" id="reportsCount">22</span>
+                <span class="reports-count" id="reportsCount">40</span>
               </div>
             </div>
 
@@ -802,6 +811,155 @@
                   <td><a class="report-name-link" onclick="loadReport('purchases-item')"><span
                         class="report-icon">📋</span> Purchases by Item</a></td>
                   <td>Purchases and Expenses</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <!-- Advanced Inventory Reports -->
+                <tr data-category="advanced-inventory">
+                  <td><a class="report-name-link" onclick="loadReport('abc-classification')"><span
+                        class="report-icon">📋</span>
+                      ABC Classification</a></td>
+                  <td>Advanced Inventory</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <tr data-category="advanced-inventory">
+                  <td><a class="report-name-link" onclick="loadReport('demand-forecasting')"><span
+                        class="report-icon">📋</span>
+                      Demand Forecasting</a></td>
+                  <td>Advanced Inventory</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <!-- Location Reports -->
+                <tr data-category="location">
+                  <td><a class="report-name-link" onclick="loadReport('warehouse-report')"><span
+                        class="report-icon">📋</span>
+                      Warehouse Report</a></td>
+                  <td>Location</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <tr data-category="location">
+                  <td><a class="report-name-link" onclick="loadReport('stock-transfer')"><span
+                        class="report-icon">📋</span>
+                      Stock Transfer Report</a></td>
+                  <td>Location</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <!-- Receivables Reports -->
+                <tr data-category="receivables">
+                  <td><a class="report-name-link" onclick="loadReport('ar-aging')"><span class="report-icon">📋</span>
+                      AR Aging Summary</a></td>
+                  <td>Receivables</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <tr data-category="receivables">
+                  <td><a class="report-name-link" onclick="loadReport('ar-aging-details')"><span
+                        class="report-icon">📋</span>
+                      AR Aging Details</a></td>
+                  <td>Receivables</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <tr data-category="receivables">
+                  <td><a class="report-name-link" onclick="loadReport('invoice-details')"><span
+                        class="report-icon">📋</span>
+                      Invoice Details</a></td>
+                  <td>Receivables</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <tr data-category="receivables">
+                  <td><a class="report-name-link" onclick="loadReport('customer-balance')"><span
+                        class="report-icon">📋</span>
+                      Customer Balances</a></td>
+                  <td>Receivables</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <!-- Payments Received Reports -->
+                <tr data-category="payments">
+                  <td><a class="report-name-link" onclick="loadReport('payments-received')"><span
+                        class="report-icon">📋</span>
+                      Payments Received</a></td>
+                  <td>Payments Received</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <tr data-category="payments">
+                  <td><a class="report-name-link" onclick="loadReport('credit-note-details')"><span
+                        class="report-icon">📋</span>
+                      Credit Note Details</a></td>
+                  <td>Payments Received</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <tr data-category="payments">
+                  <td><a class="report-name-link" onclick="loadReport('refund-history')"><span
+                        class="report-icon">📋</span>
+                      Refund History</a></td>
+                  <td>Payments Received</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <!-- Payables Reports -->
+                <tr data-category="payables">
+                  <td><a class="report-name-link" onclick="loadReport('ap-aging')"><span class="report-icon">📋</span>
+                      AP Aging Summary</a></td>
+                  <td>Payables</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <tr data-category="payables">
+                  <td><a class="report-name-link" onclick="loadReport('ap-aging-details')"><span
+                        class="report-icon">📋</span>
+                      AP Aging Details</a></td>
+                  <td>Payables</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <tr data-category="payables">
+                  <td><a class="report-name-link" onclick="loadReport('bill-details')"><span
+                        class="report-icon">📋</span>
+                      Bill Details</a></td>
+                  <td>Payables</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <tr data-category="payables">
+                  <td><a class="report-name-link" onclick="loadReport('vendor-balance')"><span
+                        class="report-icon">📋</span>
+                      Vendor Balances</a></td>
+                  <td>Payables</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <!-- Activity Reports -->
+                <tr data-category="activity">
+                  <td><a class="report-name-link" onclick="loadReport('activity-log')"><span
+                        class="report-icon">📋</span>
+                      Activity Logs</a></td>
+                  <td>Activity</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <!-- Automation Reports -->
+                <tr data-category="automation">
+                  <td><a class="report-name-link" onclick="loadReport('auto-reorder')"><span
+                        class="report-icon">📋</span>
+                      Auto Reorder History</a></td>
+                  <td>Automation</td>
+                  <td>System Generated</td>
+                  <td>-</td>
+                </tr>
+                <tr data-category="automation">
+                  <td><a class="report-name-link" onclick="loadReport('workflow-history')"><span
+                        class="report-icon">📋</span>
+                      Workflow Execution History</a></td>
+                  <td>Automation</td>
                   <td>System Generated</td>
                   <td>-</td>
                 </tr>
