@@ -176,7 +176,19 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            color: #6b7280;
+            transition: all 0.15s;
+        }
+
+        .btn-edit-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .btn-edit-icon:hover {
+            background: #f9fafb;
+            border-color: #d1d5db;
+            color: #3b82f6;
         }
 
         .btn-add-item {
@@ -435,7 +447,10 @@
         }
 
         .folder-icon {
-            font-size: 18px;
+            width: 20px;
+            height: 20px;
+            color: #f59e0b;
+            flex-shrink: 0;
         }
 
         .group-name-link {
@@ -449,7 +464,6 @@
             font-size: 13px;
         }
 
-        /* Header */
         .page-header {
             display: flex;
             justify-content: space-between;
@@ -457,6 +471,71 @@
             padding: 12px 24px;
             background: white;
             border-bottom: 1px solid #e5e7eb;
+            position: relative;
+        }
+
+        /* Selection Action Toolbar */
+        .ig-selection-bar {
+            display: none;
+            background: white;
+            padding: 8px 16px;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .ig-selection-bar.show {
+            display: flex;
+        }
+
+        .ig-selection-bar .sel-btn {
+            padding: 7px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            background: white;
+            color: #374151;
+            transition: all 0.15s;
+        }
+
+        .ig-selection-bar .sel-btn:hover {
+            background: #f3f4f6;
+            border-color: #9ca3af;
+        }
+
+        .ig-selection-bar .sel-btn.delete {
+            background: #ef4444;
+            color: white;
+            border-color: #ef4444;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .ig-selection-bar .sel-btn.delete:hover {
+            background: #dc2626;
+            border-color: #dc2626;
+        }
+
+        .ig-selection-bar .sel-more {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            background: white;
+            color: #6b7280;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            margin-left: auto;
+        }
+
+        .ig-selection-bar .sel-more:hover {
+            background: #f3f4f6;
         }
 
         .page-title-dropdown {
@@ -467,6 +546,12 @@
             padding: 6px 10px;
             border-radius: 4px;
             position: relative;
+            flex-wrap: nowrap;
+            white-space: nowrap;
+        }
+
+        .groups-list-title .page-title-dropdown .page-title {
+            font-size: 13px;
         }
 
         .page-title-dropdown:hover {
@@ -477,12 +562,16 @@
             font-size: 15px;
             font-weight: 600;
             color: #1a1f3a;
+            line-height: 1;
         }
 
         .page-title-arrow {
             font-size: 10px;
             color: #3b82f6;
             transition: transform 0.2s;
+            line-height: 1;
+            display: flex;
+            align-items: center;
         }
 
         .page-title-dropdown.open .page-title-arrow {
@@ -535,11 +624,14 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            margin-left: auto;
         }
 
         /* Groups Search Bar */
         .groups-search-container {
-            position: relative;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
             align-items: center;
         }
@@ -571,6 +663,7 @@
             font-size: 14px;
             color: #9ca3af;
             pointer-events: none;
+            z-index: 1;
         }
 
         .btn-icon {
@@ -782,6 +875,55 @@
             }
         }
 
+        /* Item Suggestions Dropdown */
+        .item-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 0 0 6px 6px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            max-height: 220px;
+            overflow-y: auto;
+            z-index: 9999;
+        }
+
+        .item-suggestion-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            border-bottom: 1px solid #f3f4f6;
+            transition: background 0.1s;
+        }
+
+        .item-suggestion-item:hover {
+            background: #eff6ff;
+        }
+
+        .item-suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-suggestion-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1a1f3a;
+        }
+
+        .item-suggestion-meta {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+
+        .item-suggestions-empty {
+            padding: 14px;
+            text-align: center;
+            color: #9ca3af;
+            font-size: 13px;
+        }
+
         /* Modal */
         .modal {
             position: fixed;
@@ -900,12 +1042,12 @@
                         </div>
                     </div>
                 </div>
+                <div class="groups-search-container">
+                    <span class="groups-search-icon">🔍</span>
+                    <input type="text" id="groupSearch" class="groups-search-input" placeholder="Search item groups..."
+                        oninput="searchGroups()">
+                </div>
                 <div class="header-actions">
-                    <div class="groups-search-container">
-                        <span class="groups-search-icon">🔍</span>
-                        <input type="text" id="groupSearch" class="groups-search-input"
-                            placeholder="Search item groups..." oninput="searchGroups()">
-                    </div>
                     <button class="btn-icon" title="Filter">☰</button>
                     <button class="btn-new" onclick="window.location.href='/new-item-group.html'">+ New</button>
                     <div class="more-dropdown-wrapper">
@@ -948,19 +1090,29 @@
                 </div>
             </div>
 
+            <!-- Selection Action Toolbar -->
+            <div class="ig-selection-bar" id="igSelectionBar">
+                <button class="sel-btn delete" onclick="deleteSelectedGroups()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+                    </svg>
+                    Delete
+                </button>
+                <button class="sel-btn" onclick="markSelectedGroupsStatus('active')">Mark as Active</button>
+                <button class="sel-btn" onclick="markSelectedGroupsStatus('inactive')">Mark as Inactive</button>
+                <button class="sel-more" title="More actions">⋯</button>
+            </div>
+
             <!-- Split Layout -->
             <div class="split-layout" id="splitLayout">
                 <!-- Groups List Panel -->
                 <div class="groups-list-panel" id="groupsListPanel">
                     <div class="groups-list-header">
-                        <div class="groups-list-title">
-                            <span>Active Item Gro...</span>
-                            <span style="font-size: 10px;">▼</span>
-                        </div>
+                        <div class="groups-list-title"></div>
                         <div class="groups-list-actions">
                             <button class="btn-icon-small" onclick="window.location.href='/new-item-group.html'"
                                 title="Add Group">+</button>
-                            <button class="btn-icon-small secondary" title="More">⋯</button>
                         </div>
                     </div>
                     <div class="groups-list-items" id="groupsListItems">
@@ -974,9 +1126,14 @@
                 <div class="detail-panel" id="detailPanel">
                     <div class="detail-header">
                         <div class="detail-header-left">
-                            <button class="btn-edit-icon" title="Edit">✏️</button>
+                            <button class="btn-edit-icon" onclick="editCurrentGroup()" title="Edit Group">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+                                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                </svg>
+                            </button>
                             <button class="btn-add-item" onclick="openAddItemModal()">Add Item</button>
-                            <button class="btn-more-dropdown">More ▼</button>
                         </div>
                         <button class="detail-close" onclick="closeDetailPanel()">×</button>
                     </div>
@@ -990,7 +1147,8 @@
                     <table class="groups-table">
                         <thead>
                             <tr>
-                                <th style="width: 40px;"><input type="checkbox" title="Select all groups"></th>
+                                <th style="width: 40px;"><input type="checkbox" id="igSelectAll"
+                                        onchange="toggleSelectAllGroups(this)" title="Select all groups"></th>
                                 <th>NAME</th>
                                 <th>SKU</th>
                                 <th>STOCK ON HAND</th>
@@ -1032,12 +1190,15 @@
             </div>
             <div class="modal-body" style="padding: 24px;">
                 <form id="addItemForm">
-                    <div style="margin-bottom: 16px;">
+                    <div style="margin-bottom: 16px; position: relative;">
                         <label style="display: block; font-size: 14px; color: #ef4444; margin-bottom: 6px;">Item
                             Name*</label>
-                        <input type="text" id="newItemName" class="form-input"
+                        <input type="text" id="newItemName" class="form-input" autocomplete="off"
                             style="width: 100%; padding: 10px 14px; border: 1px solid #3b82f6; border-radius: 4px; font-size: 14px;"
-                            placeholder="Enter item name" required>
+                            placeholder="Search existing items or enter new name" required
+                            oninput="filterUngroupedItems()" onfocus="filterUngroupedItems()">
+                        <input type="hidden" id="selectedExistingItemId" value="">
+                        <div id="itemSuggestions" class="item-suggestions" style="display:none;"></div>
                     </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
                         <div>
@@ -1246,6 +1407,7 @@
 
                 renderGroupsList();
                 renderGroupsTable();
+                filterAndRenderGroups();
 
                 // Table is visible by default (CSS), no need to add classes
             } catch (error) {
@@ -1266,7 +1428,7 @@
             container.innerHTML = itemGroups.map(group => `
                 <div class="group-list-item ${selectedGroupId === group.id ? 'active' : ''}" onclick="selectGroup(${group.id})">
                     <input type="checkbox" onclick="event.stopPropagation()">
-                    <span class="folder-icon">📁</span>
+                    <span class="folder-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg></span>
                     <div class="group-list-item-info">
                         <div class="group-list-item-name">${group.name}</div>
                         <div class="group-list-item-count">(${group.item_count} Items)</div>
@@ -1295,10 +1457,10 @@
 
             tbody.innerHTML = itemGroups.map(group => `
                 <tr onclick="selectGroup(${group.id})">
-                    <td onclick="event.stopPropagation()"><input type="checkbox" title="Select ${group.name}"></td>
+                    <td onclick="event.stopPropagation()"><input type="checkbox" class="ig-row-check" data-group-id="${group.id}" onchange="updateGroupSelectionBar()" title="Select ${group.name}"></td>
                     <td>
                         <div class="group-name-cell">
-                            <span class="folder-icon">📁</span>
+                            <span class="folder-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg></span>
                             <span class="group-name-link">${group.name}</span>
                             <span class="item-count">(${group.item_count} Items)</span>
                         </div>
@@ -1321,6 +1483,13 @@
             document.getElementById('groupsTableContainer').classList.add('hidden');
             document.getElementById('detailPanel').classList.add('active');
 
+            // Move page-title-dropdown into the left panel header
+            const dropdown = document.querySelector('.page-title-dropdown');
+            const panelTitle = document.querySelector('.groups-list-title');
+            if (dropdown && panelTitle) {
+                panelTitle.appendChild(dropdown);
+            }
+
             renderGroupsList();
             renderDetailPanel(group);
         }
@@ -1328,11 +1497,115 @@
         // Close detail panel
         function closeDetailPanel() {
             selectedGroupId = null;
+
+            // Move page-title-dropdown back to the page header
+            const dropdown = document.querySelector('.page-title-dropdown');
+            const pageHeader = document.querySelector('.page-header');
+            if (dropdown && pageHeader) {
+                pageHeader.insertBefore(dropdown, pageHeader.firstChild);
+            }
+
             // Switch back to table view: hide left panel + detail, show table
             document.getElementById('detailPanel').classList.remove('active');
             document.getElementById('groupsListPanel').classList.remove('active');
             document.getElementById('groupsTableContainer').classList.remove('hidden');
             renderGroupsList();
+        }
+
+        // Edit current group inline
+        function editCurrentGroup() {
+            if (!selectedGroupId) return;
+            const group = itemGroups.find(g => g.id === selectedGroupId);
+            if (!group) return;
+
+            // Collect all unique brands from items and groups
+            const brands = new Set();
+            allItems.forEach(i => { if (i.brand) brands.add(i.brand); });
+            itemGroups.forEach(g => { if (g.brand) brands.add(g.brand); });
+            const brandOptions = [...brands].sort().map(b => `<option value="${b}">`).join('');
+
+            // Collect all unique manufacturers from items and groups
+            const mfrs = new Set();
+            allItems.forEach(i => { if (i.manufacturer) mfrs.add(i.manufacturer); });
+            itemGroups.forEach(g => { if (g.manufacturer) mfrs.add(g.manufacturer); });
+            const mfrOptions = [...mfrs].sort().map(m => `<option value="${m}">`).join('');
+
+            // Collect all unique units
+            const units = new Set(['pcs', 'kg', 'lbs', 'box', 'pack', 'unit', 'set', 'pair', 'dozen', 'meter', 'liter', 'gallon', 'roll', 'sheet', 'bag', 'can', 'bottle', 'carton']);
+            allItems.forEach(i => { if (i.unit) units.add(i.unit); });
+            itemGroups.forEach(g => { if (g.unit) units.add(g.unit); });
+            const unitOptions = [...units].sort().map(u => `<option value="${u}">`).join('');
+
+            const content = document.getElementById('detailContent');
+            content.innerHTML = `
+                <div style="padding: 24px;">
+                    <h3 style="margin: 0 0 20px; font-size: 16px; color: #1a1f3a;">Edit Item Group</h3>
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; font-size: 13px; color: #374151; margin-bottom: 6px; font-weight: 500;">Group Name *</label>
+                        <input type="text" id="editGroupName" value="${group.name}" style="width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px; box-sizing: border-box;" required>
+                    </div>
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; font-size: 13px; color: #374151; margin-bottom: 6px; font-weight: 500;">Description</label>
+                        <textarea id="editGroupDesc" rows="3" style="width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px; resize: vertical; box-sizing: border-box;">${group.description || ''}</textarea>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 16px;">
+                        <div>
+                            <label style="display: block; font-size: 13px; color: #374151; margin-bottom: 6px; font-weight: 500;">Unit</label>
+                            <input type="text" id="editGroupUnit" value="${group.unit || 'pcs'}" list="unitList" style="width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px; box-sizing: border-box;" placeholder="Select or type unit">
+                            <datalist id="unitList">${unitOptions}</datalist>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 13px; color: #374151; margin-bottom: 6px; font-weight: 500;">Brand</label>
+                            <input type="text" id="editGroupBrand" value="${group.brand || ''}" list="brandList" style="width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px; box-sizing: border-box;" placeholder="Select or type brand">
+                            <datalist id="brandList">${brandOptions}</datalist>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 13px; color: #374151; margin-bottom: 6px; font-weight: 500;">Manufacturer</label>
+                            <input type="text" id="editGroupMfr" value="${group.manufacturer || ''}" list="mfrList" style="width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px; box-sizing: border-box;" placeholder="Select or type manufacturer">
+                            <datalist id="mfrList">${mfrOptions}</datalist>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-top: 24px;">
+                        <button onclick="saveGroupEdit()" style="flex: 1; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 4px; font-size: 14px; font-weight: 500; cursor: pointer;">Save Changes</button>
+                        <button onclick="cancelGroupEdit()" style="flex: 1; padding: 12px; background: #6b7280; color: white; border: none; border-radius: 4px; font-size: 14px; font-weight: 500; cursor: pointer;">Cancel</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function saveGroupEdit() {
+            const name = document.getElementById('editGroupName').value.trim();
+            if (!name) { showToast('Group name is required', 'error'); return; }
+
+            try {
+                const res = await fetch(`/api/items/groups/${selectedGroupId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name,
+                        description: document.getElementById('editGroupDesc').value.trim() || null,
+                        unit: document.getElementById('editGroupUnit').value,
+                        brand: document.getElementById('editGroupBrand').value.trim() || null,
+                        manufacturer: document.getElementById('editGroupMfr').value.trim() || null
+                    })
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.error || 'Failed to update group');
+                }
+                showToast('Group updated successfully!', 'success');
+                await loadItemGroups();
+                const updatedGroup = itemGroups.find(g => g.id === selectedGroupId);
+                if (updatedGroup) renderDetailPanel(updatedGroup);
+            } catch (err) {
+                console.error('Error updating group:', err);
+                showToast(err.message, 'error');
+            }
+        }
+
+        function cancelGroupEdit() {
+            const group = itemGroups.find(g => g.id === selectedGroupId);
+            if (group) renderDetailPanel(group);
         }
 
         // Render detail panel content
@@ -1479,6 +1752,8 @@
             document.getElementById('addItemForm').reset();
             document.getElementById('newItemStock').value = '0';
             document.getElementById('newItemReorder').value = '10';
+            document.getElementById('selectedExistingItemId').value = '';
+            document.getElementById('itemSuggestions').style.display = 'none';
 
             // Show modal
             document.getElementById('addItemModal').classList.add('active');
@@ -1486,7 +1761,75 @@
 
         function closeAddItemModal() {
             document.getElementById('addItemModal').classList.remove('active');
+            document.getElementById('itemSuggestions').style.display = 'none';
         }
+
+        // Filter and show ungrouped items dropdown
+        function filterUngroupedItems() {
+            const term = document.getElementById('newItemName').value.toLowerCase().trim();
+            const suggestionsDiv = document.getElementById('itemSuggestions');
+
+            // Clear existing item selection when user types
+            document.getElementById('selectedExistingItemId').value = '';
+
+            // Get items without a group
+            const ungrouped = allItems.filter(item => !item.group_id);
+
+            // Filter by search term
+            const filtered = term.length > 0
+                ? ungrouped.filter(item => item.name.toLowerCase().includes(term) || (item.sku && item.sku.toLowerCase().includes(term)))
+                : ungrouped;
+
+            if (filtered.length === 0 && term.length > 0) {
+                suggestionsDiv.innerHTML = '<div class="item-suggestions-empty">No ungrouped items found. A new item will be created.</div>';
+                suggestionsDiv.style.display = 'block';
+                return;
+            }
+            if (filtered.length === 0) {
+                suggestionsDiv.style.display = 'none';
+                return;
+            }
+
+            suggestionsDiv.innerHTML = filtered.slice(0, 10).map(item => `
+                <div class="item-suggestion-item" onclick="selectSuggestionItem(${item.id})">
+                    <div class="item-suggestion-name">${item.name}</div>
+                    <div class="item-suggestion-meta">SKU: ${item.sku || '-'} &nbsp;|&nbsp; Price: ₱${parseFloat(item.selling_price || 0).toFixed(2)} &nbsp;|&nbsp; Stock: ${item.stock_quantity || 0}</div>
+                </div>
+            `).join('');
+            suggestionsDiv.style.display = 'block';
+        }
+
+        // Select item from suggestions and auto-fill form
+        function selectSuggestionItem(itemId) {
+            const item = allItems.find(i => i.id === itemId);
+            if (!item) return;
+
+            document.getElementById('newItemName').value = item.name;
+            document.getElementById('selectedExistingItemId').value = item.id;
+            document.getElementById('newItemSku').value = item.sku || '';
+            document.getElementById('newItemCost').value = parseFloat(item.purchase_cost || 0).toFixed(2);
+            document.getElementById('newItemPrice').value = parseFloat(item.selling_price || 0).toFixed(2);
+            document.getElementById('newItemStock').value = item.stock_quantity || 0;
+            document.getElementById('newItemReorder').value = item.reorder_point || 10;
+
+            // Set unit dropdown
+            const unitSelect = document.getElementById('newItemUnit');
+            const unitValue = item.unit || 'pcs';
+            for (let opt of unitSelect.options) {
+                if (opt.value === unitValue) { opt.selected = true; break; }
+            }
+
+            // Hide suggestions
+            document.getElementById('itemSuggestions').style.display = 'none';
+        }
+
+        // Close suggestions when clicking outside
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('#newItemName') && !e.target.closest('#itemSuggestions')) {
+                const sug = document.getElementById('itemSuggestions');
+                if (sug) sug.style.display = 'none';
+            }
+        });
 
         // Handle Add Item form submission
         document.addEventListener('DOMContentLoaded', () => {
@@ -1495,35 +1838,52 @@
                 addItemForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
 
-                    const itemData = {
-                        name: document.getElementById('newItemName').value.trim(),
-                        sku: document.getElementById('newItemSku').value.trim() || null,
-                        unit: document.getElementById('newItemUnit').value,
-                        quantity: parseInt(document.getElementById('newItemStock').value) || 0,
-                        reorder_point: parseInt(document.getElementById('newItemReorder').value) || 10,
-                        price: parseFloat(document.getElementById('newItemPrice').value) || 0,
-                        cost: parseFloat(document.getElementById('newItemCost').value) || 0,
-                        group_id: selectedGroupId
-                    };
-
-                    if (!itemData.name) {
-                        showToast('Please enter an item name', 'error');
-                        return;
-                    }
+                    const existingItemId = document.getElementById('selectedExistingItemId').value;
 
                     try {
-                        const response = await fetch('/api/items', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(itemData)
-                        });
+                        if (existingItemId) {
+                            // Assign existing item to this group
+                            const response = await fetch(`/api/items/${existingItemId}`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ group_id: selectedGroupId })
+                            });
+                            if (!response.ok) {
+                                const error = await response.json();
+                                throw new Error(error.error || 'Failed to assign item');
+                            }
+                            showToast('Item added to group successfully!', 'success');
+                        } else {
+                            // Create a new item
+                            const itemData = {
+                                name: document.getElementById('newItemName').value.trim(),
+                                sku: document.getElementById('newItemSku').value.trim() || null,
+                                unit: document.getElementById('newItemUnit').value,
+                                quantity: parseInt(document.getElementById('newItemStock').value) || 0,
+                                reorder_point: parseInt(document.getElementById('newItemReorder').value) || 10,
+                                price: parseFloat(document.getElementById('newItemPrice').value) || 0,
+                                cost: parseFloat(document.getElementById('newItemCost').value) || 0,
+                                group_id: selectedGroupId
+                            };
 
-                        if (!response.ok) {
-                            const error = await response.json();
-                            throw new Error(error.error || 'Failed to create item');
+                            if (!itemData.name) {
+                                showToast('Please enter an item name', 'error');
+                                return;
+                            }
+
+                            const response = await fetch('/api/items', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(itemData)
+                            });
+
+                            if (!response.ok) {
+                                const error = await response.json();
+                                throw new Error(error.error || 'Failed to create item');
+                            }
+                            showToast('Item created and added to group!', 'success');
                         }
 
-                        showToast('Item created successfully!', 'success');
                         closeAddItemModal();
 
                         // Reload items data and refresh the detail view
@@ -1559,7 +1919,7 @@
                         }
 
                     } catch (error) {
-                        console.error('Error creating item:', error);
+                        console.error('Error adding item:', error);
                         showToast(error.message, 'error');
                     }
                 });
@@ -1632,6 +1992,83 @@
         document.addEventListener('DOMContentLoaded', () => {
             document.addEventListener('layoutReady', loadItemGroups);
         });
+        // ========== SELECTION TOOLBAR FUNCTIONS ==========
+        function toggleSelectAllGroups(headerCheckbox) {
+            const checks = document.querySelectorAll('.ig-row-check');
+            checks.forEach(cb => cb.checked = headerCheckbox.checked);
+            updateGroupSelectionBar();
+        }
+
+        function updateGroupSelectionBar() {
+            const checks = document.querySelectorAll('.ig-row-check:checked');
+            const bar = document.getElementById('igSelectionBar');
+            const count = document.getElementById('igSelCount');
+            if (checks.length > 0) {
+                bar.classList.add('show');
+                count.textContent = checks.length + ' Selected';
+            } else {
+                bar.classList.remove('show');
+            }
+            // Sync header checkbox
+            const allChecks = document.querySelectorAll('.ig-row-check');
+            const headerCb = document.getElementById('igSelectAll');
+            if (headerCb) headerCb.checked = allChecks.length > 0 && checks.length === allChecks.length;
+        }
+
+        function clearGroupSelection() {
+            const checks = document.querySelectorAll('.ig-row-check');
+            checks.forEach(cb => cb.checked = false);
+            const headerCb = document.getElementById('igSelectAll');
+            if (headerCb) headerCb.checked = false;
+            document.getElementById('igSelectionBar').classList.remove('show');
+        }
+
+        function getSelectedGroupIds() {
+            return Array.from(document.querySelectorAll('.ig-row-check:checked')).map(cb => parseInt(cb.dataset.groupId));
+        }
+
+        async function deleteSelectedGroups() {
+            const ids = getSelectedGroupIds();
+            if (ids.length === 0) return;
+            if (!confirm(`Are you sure you want to delete ${ids.length} item group(s)?`)) return;
+
+            let deleted = 0;
+            for (const id of ids) {
+                try {
+                    const res = await fetch(`/api/items/groups/${id}`, { method: 'DELETE' });
+                    if (res.ok) deleted++;
+                } catch (err) {
+                    console.error('Delete error:', err);
+                }
+            }
+            clearGroupSelection();
+            showToast(`Deleted ${deleted} group(s)`, 'success');
+            loadItemGroups();
+        }
+
+        async function markSelectedGroupsStatus(status) {
+            const ids = getSelectedGroupIds();
+            if (ids.length === 0) return;
+
+            let updated = 0;
+            for (const id of ids) {
+                try {
+                    const res = await fetch(`/api/items/groups/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status: status })
+                    });
+                    if (res.ok) updated++;
+                } catch (err) {
+                    console.error('Status update error:', err);
+                }
+            }
+            clearGroupSelection();
+            const label = status === 'active' ? 'Active' : 'Inactive';
+            showToast(`Marked ${updated} group(s) as ${label}`, 'success');
+            loadItemGroups();
+        }
+
     </script>
 </body>
 

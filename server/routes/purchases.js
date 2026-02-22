@@ -68,9 +68,13 @@ router.post('/', async (req, res) => {
     let purchaseId;
     await database.transaction(async (client) => {
       // Create purchase record
+      // Map incoming status to new 3-column system
+      const mainStatus = (status === 'received' || status === 'ordered') ? 'ISSUED' : (status || 'ISSUED');
+      const recvStatus = status === 'received' ? 'RECEIVED' : 'NOT RECEIVED';
+
       const purchaseResult = await client.query(`
-        INSERT INTO purchases (supplier_id, supplier_name, total_amount, invoice_number, po_number, expected_date, payment_terms, notes, status, date, delivery_address, reference_number, discount_percent, adjustment, terms_conditions, shipment_preference)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, COALESCE($10, CURRENT_TIMESTAMP), $11, $12, $13, $14, $15, $16)
+        INSERT INTO purchases (supplier_id, supplier_name, total_amount, invoice_number, po_number, expected_date, payment_terms, notes, status, receive_status, bill_status, date, delivery_address, reference_number, discount_percent, adjustment, terms_conditions, shipment_preference)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'UNBILLED', COALESCE($11, CURRENT_TIMESTAMP), $12, $13, $14, $15, $16, $17)
         RETURNING id
       `, [
         finalSupplierId,
@@ -81,7 +85,8 @@ router.post('/', async (req, res) => {
         expected_date || null,
         payment_terms || null,
         notes || null,
-        status || 'ordered',
+        mainStatus,
+        recvStatus,
         date || null,
         delivery_address || null,
         reference_number || null,
@@ -291,7 +296,7 @@ router.get('/:id', async (req, res) => {
 // Update purchase (full edit)
 router.put('/:id', async (req, res) => {
   try {
-    const { supplier_id, supplier_name, items, po_number, expected_date, payment_terms, notes, status, date, delivery_address, reference_number, discount_percent, adjustment, terms_conditions, shipment_preference, received_date, receiving_notes } = req.body;
+    const { supplier_id, supplier_name, items, po_number, expected_date, payment_terms, notes, status, receive_status, bill_status, date, delivery_address, reference_number, discount_percent, adjustment, terms_conditions, shipment_preference, received_date, receiving_notes } = req.body;
     const db = database.getDb();
 
     // Check if purchase exists
@@ -414,6 +419,8 @@ router.put('/:id', async (req, res) => {
     }
 
     if (status !== undefined) { updates.push(`status = $${paramIndex++}`); values.push(status); }
+    if (receive_status !== undefined) { updates.push(`receive_status = $${paramIndex++}`); values.push(receive_status); }
+    if (bill_status !== undefined) { updates.push(`bill_status = $${paramIndex++}`); values.push(bill_status); }
     if (received_date !== undefined) { updates.push(`received_date = $${paramIndex++}`); values.push(received_date); }
     if (receiving_notes !== undefined) { updates.push(`notes = $${paramIndex++}`); values.push(receiving_notes); }
 
@@ -425,8 +432,10 @@ router.put('/:id', async (req, res) => {
     const query = `UPDATE purchases SET ${updates.join(', ')} WHERE id = $${paramIndex} RETURNING *`;
     const result = await db.query(query, values);
 
-    // If status changed to 'received' from 'ordered', update stock
-    if (status === 'received' && existingPurchase.status !== 'received') {
+    // If receive_status changed to RECEIVED (or legacy status='received'), update stock
+    const isReceiving = (receive_status === 'RECEIVED' || receive_status === 'PARTIALLY RECEIVED' || status === 'received');
+    const wasNotReceived = existingPurchase.receive_status !== 'RECEIVED' && existingPurchase.status !== 'received';
+    if (isReceiving && wasNotReceived) {
       const itemsResult = await db.query('SELECT * FROM purchase_items WHERE purchase_id = $1', [req.params.id]);
 
       for (const purchaseItem of itemsResult.rows) {
@@ -463,6 +472,13 @@ router.put('/:id', async (req, res) => {
           );
         }
       }
+    }
+
+    // Auto-close: if both fully received and fully billed, close the PO
+    const updatedPO = result.rows[0];
+    if (updatedPO.bill_status === 'BILLED' && updatedPO.status !== 'CLOSED' && updatedPO.status !== 'CANCELLED') {
+      await db.query(`UPDATE purchases SET status = 'CLOSED' WHERE id = $1`, [req.params.id]);
+      updatedPO.status = 'CLOSED';
     }
 
     res.json(result.rows[0]);

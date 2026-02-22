@@ -224,9 +224,9 @@
         }
 
         .status-issued {
-            background: #e0cffc;
-            color: #3d0a91;
-            border: 1px solid #c8b6fe;
+            background: #cfe2ff;
+            color: #084298;
+            border: 1px solid #b6d4fe;
         }
 
         .status-received {
@@ -239,6 +239,12 @@
             background: #fff3cd;
             color: #664d03;
             border: 1px solid #ffda6a;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #842029;
+            border: 1px solid #f5c2c7;
         }
 
         .po-header-right {
@@ -486,7 +492,7 @@
             background: white;
             border: 1px solid #e0e0e0;
             border-radius: 6px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
             z-index: 500;
             min-width: 160px;
             overflow: hidden;
@@ -498,8 +504,15 @@
         }
 
         @keyframes menuSlide {
-            from { opacity: 0; transform: translateY(-6px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .pdf-print-menu-item {
@@ -681,6 +694,17 @@
             if (currentPOId) {
                 await loadPODetail(currentPOId);
             }
+            // Auto-print if redirected from "Save and Print"
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('print') === '1' && currentPOId) {
+                setTimeout(() => {
+                    printPO();
+                    // Remove print param from URL so refresh won't re-trigger
+                    urlParams.delete('print');
+                    const newUrl = window.location.pathname + '?id=' + currentPOId;
+                    window.history.replaceState({}, '', newUrl);
+                }, 800);
+            }
         });
 
         // Load sidebar list of POs
@@ -699,20 +723,20 @@
                 purchases.forEach(po => {
                     const isActive = po.id == currentPOId;
                     const date = po.date ? new Date(po.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
-                    const statusClass = (po.status || 'draft').toLowerCase();
+                    const mainStatus = (po.status || 'DRAFT').toUpperCase();
                     const statusColors = {
-                        'draft': '#856404',
-                        'ordered': '#084298',
-                        'received': '#0a3622',
-                        'partially_received': '#664d03',
-                        'issued': '#3d0a91'
+                        'DRAFT': '#856404',
+                        'ISSUED': '#084298',
+                        'CLOSED': '#0a3622',
+                        'CANCELLED': '#842029',
+                        'APPROVED': '#0d6efd'
                     };
 
                     html += `<div class="sidebar-list-item ${isActive ? 'active' : ''}" onclick="navigateToPO(${po.id})">
                         <div>
                             <div class="sidebar-vendor">${po.supplier_name || 'Unknown Vendor'}</div>
                             <div class="sidebar-po-number">${po.po_number || 'PO-' + po.id} • ${date}</div>
-                            <div class="sidebar-status" style="color: ${statusColors[statusClass] || '#666'}">${(po.status || 'DRAFT').toUpperCase()}</div>
+                            <div class="sidebar-status" style="color: ${statusColors[mainStatus] || '#666'}">${mainStatus}</div>
                         </div>
                         <div>
                             <div class="sidebar-amount">PHP${parseFloat(po.total_amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</div>
@@ -746,37 +770,42 @@
                 document.getElementById('detailPONumber').textContent = 'Purchase Order# ' + (po.po_number || 'PO-' + po.id);
 
                 // Status badge
-                const status = (po.status || 'draft').toLowerCase();
-                const statusLabels = { 'draft': 'DRAFT', 'ordered': 'ORDERED', 'issued': 'ISSUED', 'received': 'RECEIVED', 'partially_received': 'PARTIALLY RECEIVED' };
-                document.getElementById('detailStatusBadge').innerHTML =
-                    `<span class="status-badge status-${status}">${statusLabels[status] || status.toUpperCase()}</span>`;
+                const mainStatus = (po.status || 'DRAFT').toUpperCase();
+                const recvStatus = (po.receive_status || 'NOT RECEIVED').toUpperCase();
+                const billSt = (po.bill_status || 'UNBILLED').toUpperCase();
 
-                // Show/hide Receive button based on status
+                const statusBadgeColors = {
+                    'DRAFT': 'status-draft',
+                    'ISSUED': 'status-issued',
+                    'CLOSED': 'status-received',
+                    'CANCELLED': 'status-cancelled',
+                    'APPROVED': 'status-issued'
+                };
+                const badgeClass = statusBadgeColors[mainStatus] || 'status-draft';
+                document.getElementById('detailStatusBadge').innerHTML =
+                    `<span class="status-badge ${badgeClass}">${mainStatus}</span>`;
+
+                // Show/hide Receive button based on receive_status
                 const receiveBtn = document.getElementById('receiveBtn');
-                if (status === 'received') {
+                if (recvStatus === 'RECEIVED') {
                     receiveBtn.style.display = 'none';
                 } else {
                     receiveBtn.style.display = 'flex';
                 }
 
-                // Show/hide "What's Next?" banner based on status
+                // Show/hide "What's Next?" banner — hide for ISSUED, CLOSED, CANCELLED
                 const infoBanner = document.getElementById('infoBanner');
-                if (status === 'issued' || status === 'received' || status === 'billed') {
+                if (mainStatus === 'ISSUED' || mainStatus === 'CLOSED' || mainStatus === 'CANCELLED') {
                     infoBanner.style.display = 'none';
                 } else {
                     infoBanner.style.display = 'flex';
                 }
 
-                // Show/hide Convert to Bill button - check if bills exist
+                // Show/hide Convert to Bill button based on bill_status
                 const convertBillBtn = document.getElementById('convertBillBtn');
-                try {
-                    const billsRes = await fetch('/api/bills');
-                    if (billsRes.ok) {
-                        const allBills = await billsRes.json();
-                        const hasBill = allBills.some(b => b.purchase_order_id === parseInt(poId));
-                        convertBillBtn.style.display = hasBill ? 'none' : 'inline-flex';
-                    }
-                } catch (e) {
+                if (billSt === 'BILLED') {
+                    convertBillBtn.style.display = 'none';
+                } else {
                     convertBillBtn.style.display = 'inline-flex';
                 }
 
@@ -908,7 +937,7 @@
                 fetch('/api/purchases/' + currentPOId, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ status: 'issued' })
+                    body: JSON.stringify({ status: 'ISSUED' })
                 }).then(() => {
                     loadPODetail(currentPOId);
                     loadPOList();
@@ -992,9 +1021,9 @@
                                 <strong>${item.item_name || '-'}</strong>
                                 ${desc ? '<br><span style="color:#888;font-size:12px;">' + desc + '</span>' : ''}
                             </td>
-                            <td style="padding: 12px 10px; text-align: right; font-size: 13px; border-bottom: 1px solid #eee;">${qty.toLocaleString('en-PH', {maximumFractionDigits:6})}<br><span style="color:#888;font-size:11px;">${unit}</span></td>
-                            <td style="padding: 12px 10px; text-align: right; font-size: 13px; border-bottom: 1px solid #eee;">${rate.toLocaleString('en-PH', {minimumFractionDigits:2})}</td>
-                            <td style="padding: 12px 10px; text-align: right; font-size: 13px; border-bottom: 1px solid #eee;">${amount.toLocaleString('en-PH', {minimumFractionDigits:2})}</td>
+                            <td style="padding: 12px 10px; text-align: right; font-size: 13px; border-bottom: 1px solid #eee;">${qty.toLocaleString('en-PH', { maximumFractionDigits: 6 })}<br><span style="color:#888;font-size:11px;">${unit}</span></td>
+                            <td style="padding: 12px 10px; text-align: right; font-size: 13px; border-bottom: 1px solid #eee;">${rate.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+                            <td style="padding: 12px 10px; text-align: right; font-size: 13px; border-bottom: 1px solid #eee;">${amount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
                         </tr>
                     `;
                 });
@@ -1009,7 +1038,7 @@
                 <tr>
                     <td colspan="3"></td>
                     <td style="padding:8px 10px; text-align:right; font-weight:600; font-size:13px; color:#555;">Sub Total</td>
-                    <td style="padding:8px 10px; text-align:right; font-size:13px;">${subtotal.toLocaleString('en-PH', {minimumFractionDigits:2})}</td>
+                    <td style="padding:8px 10px; text-align:right; font-size:13px;">${subtotal.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
                 </tr>
             `;
 
@@ -1018,7 +1047,7 @@
                     <tr>
                         <td colspan="3"></td>
                         <td style="padding:6px 10px; text-align:right; font-size:13px; color:#555;">${po.discount_label || 'Discount'} (${discPct}%)</td>
-                        <td style="padding:6px 10px; text-align:right; font-size:13px;">${discAmt.toLocaleString('en-PH', {minimumFractionDigits:2})}</td>
+                        <td style="padding:6px 10px; text-align:right; font-size:13px;">${discAmt.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
                     </tr>
                 `;
             }
@@ -1028,7 +1057,7 @@
                     <tr>
                         <td colspan="3"></td>
                         <td style="padding:6px 10px; text-align:right; font-size:13px; color:#555;">Adjustment</td>
-                        <td style="padding:6px 10px; text-align:right; font-size:13px;">${adj.toLocaleString('en-PH', {minimumFractionDigits:2})}</td>
+                        <td style="padding:6px 10px; text-align:right; font-size:13px;">${adj.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
                     </tr>
                 `;
             }
@@ -1037,7 +1066,7 @@
                 <tr>
                     <td colspan="3"></td>
                     <td style="padding:12px 10px; text-align:right; font-weight:700; font-size:14px; border-top:2px solid #333;">Total</td>
-                    <td style="padding:12px 10px; text-align:right; font-weight:700; font-size:14px; border-top:2px solid #333;">PHP${total.toLocaleString('en-PH', {minimumFractionDigits:2})}</td>
+                    <td style="padding:12px 10px; text-align:right; font-weight:700; font-size:14px; border-top:2px solid #333;">PHP${total.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
                 </tr>
             `;
 

@@ -1181,29 +1181,6 @@
                         </div>
                     </div>
 
-<<<<<<< HEAD
-                <!-- Form Fields Section -->
-                <div class="form-section">
-                    <div class="form-row">
-                        <label class="form-label required">Bill#*</label>
-                        <input type="text" class="form-input" id="billNumber">
-                    </div>
-
-                    <div class="form-row">
-                        <label class="form-label">Order Number</label>
-                        <input type="text" class="form-input" id="orderNumber">
-                    </div>
-
-                    <div class="form-row">
-                        <label class="form-label required">Bill Date*</label>
-                        <input type="date" class="form-input" id="billDate">
-                    </div>
-
-                    <div class="form-row-inline">
-                        <div class="form-group">
-                            <label class="form-label">Due Date</label>
-                            <input type="date" class="form-input" id="dueDate" style="width: 150px;">
-=======
                     <!-- Bill Details Section -->
                     <div class="form-section">
                         <div class="form-row">
@@ -1221,179 +1198,51 @@
                         <div class="form-row">
                             <label class="form-label">Due Date</label>
                             <input type="date" class="form-input" id="dueDate">
->>>>>>> 85a98fa927b279290f406e310b68fe2ad91c7893
                         </div>
                         <div class="form-row">
                             <label class="form-label">Payment Terms</label>
-<<<<<<< HEAD
-                            <!-- Custom Payment Terms Dropdown -->
-                            <div class="payment-terms-wrapper" id="paymentTermsWrapper">
-                                <div class="pt-trigger" id="ptTrigger" onclick="togglePaymentTerms()">
-                                    <span id="ptSelectedText">Due on Receipt</span>
-                                    <span class="arrow">▼</span>
-                                </div>
-                                <div class="pt-dropdown" id="ptDropdown">
-                                    <div class="pt-search-box">
-                                        <input type="text" placeholder="Search" id="ptSearchInput"
-                                            oninput="filterPaymentTerms()">
-                                    </div>
-                                    <div class="pt-options" id="ptOptions">
-                                        <!-- Options rendered dynamically -->
-                                    </div>
-                                    <div class="pt-configure" onclick="openConfigureTerms()">
-                                        <span class="gear-icon">⚙</span>
-                                        Configure Terms
-                                    </div>
-                                </div>
-                            </div>
-                            <input type="hidden" id="paymentTerms" value="Due on Receipt">
+                            <select class="form-select" id="paymentTerms">
+                                <option value="Due on Receipt">Due on Receipt</option>
+                                <option value="Net 15">Net 15</option>
+                                <option value="Net 30">Net 30</option>
+                                <option value="Net 45">Net 45</option>
+                                <option value="Net 60">Net 60</option>
+                            </select>
                         </div>
                     </div>
 
-                    <div class="form-row">
-                        <label class="form-label">Subject <span class="info-icon">ⓘ</span></label>
-                        <input type="text" class="form-textarea" id="subject"
-                            placeholder="Enter a subject within 250 characters" style="min-height: 40px;">
-                    </div>
-                </div>
-
-                <!-- Tax Options -->
-                <div class="tax-options">
-                    <div class="tax-option">
-                        🏷️ Tax Exclusive
-                        <select id="taxType">
-                            <option value="exclusive">Tax Exclusive</option>
-                            <option value="inclusive">Tax Inclusive</option>
-                        </select>
-                    </div>
-                    <div class="tax-option">
-                        ⏱️ At Line Item Level
-                        <select id="taxLevel">
-                            <option value="item">At Line Item Level</option>
-                            <option value="transaction">At Transaction Level</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Item Table Section -->
-                <div class="item-table-section">
-                    <div class="section-header">
-                        <span class="section-title">Item Table</span>
-                        <a href="#" class="bulk-actions-link">🔄 Bulk Actions</a>
-                    </div>
-
-                    <table class="item-table">
-                        <thead>
-                            <tr>
-                                <th style="width: 40px;"></th>
-                                <th>ITEM DETAILS</th>
-                                <th>ACCOUNT</th>
-                                <th style="width: 80px;">QUANTITY</th>
-                                <th style="width: 80px;">RATE 💲</th>
-                                <th style="width: 80px;">DISCOUNT</th>
-                                <th>TAX</th>
-                                <th>CUSTOMER DETAILS</th>
-                                <th style="width: 80px;">AMOUNT</th>
-                                <th style="width: 40px;"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="itemTableBody">
-                            <tr>
-                                <td>
-                                    <div class="item-image">🖼️</div>
-                                </td>
-                                <td>
-                                    <div class="item-input-wrapper">
-                                        <input type="text" class="item-detail-input"
-                                            placeholder="Type or click to select an item."
-                                            onfocus="openItemDropdown(this)" oninput="filterItemDropdown(this)">
-                                        <div class="item-dropdown">
-                                            <div class="item-dropdown-list"></div>
-                                            <div class="item-dropdown-footer"
-                                                onclick="window.location.href='/items.html'">
-                                                ⊕ Add New Item
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <select>
-                                        <option value="">Select an account</option>
-                                        <option value="inventory">Inventory Asset</option>
-                                        <option value="expense">Expense</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <input type="number" value="1.00" step="0.01">
-                                </td>
-                                <td>
-                                    <input type="number" value="0.00" step="0.01">
-                                </td>
-                                <td>
-                                    <div style="display: flex; align-items: center; gap: 2px;">
-                                        <input type="number" value="0" style="width: 40px;">
-                                        <span>%</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <select>
-                                        <option value="">Select a Tax</option>
-                                        <option value="12">VAT 12%</option>
-                                        <option value="0">Exempt</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <select class="customer-select">
-                                        <option value="">Select Customer</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <span style="font-weight: 500;">0.00</span>
-                                </td>
-                                <td>
-                                    <button class="delete-row-btn" onclick="deleteRow(this)">⋮ ✕</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <div class="filter-tags">
-                        <span class="filter-tag">📋 Purchase Discounts ▼</span>
-                        <span class="filter-tag">🏷️ Reporting Tags ▼</span>
-                    </div>
-
-                    <div class="add-row-actions">
-                        <button class="add-row-btn" onclick="addNewRow()">
-                            ⊕ Add New Row <span>▼</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Totals Section -->
-                <div class="totals-section">
-                    <div class="totals-box">
-                        <div class="total-row">
-                            <span>Sub Total</span>
-                            <span id="subTotal">0.00</span>
-=======
-                            <select class="form-select" id="paymentTerms">
-                                <option value="due-on-receipt">Due on Receipt</option>
-                                <option value="net-15">Net 15</option>
-                                <option value="net-30">Net 30</option>
-                                <option value="net-45">Net 45</option>
-                                <option value="net-60">Net 60</option>
-                            </select>
+                    <!-- Subject -->
+                    <div class="form-section">
+                        <div class="form-row">
+                            <label class="form-label">Subject <span style="color:#4285f4;cursor:help;">ⓘ</span></label>
+                            <input type="text" class="form-input" id="subject"
+                                placeholder="Enter a subject within 250 characters" style="max-width:100%;">
                         </div>
                     </div>
 
                     <!-- Notes Section -->
                     <div class="notes-section">
                         <div class="notes-row">
-                            <div class="notes-label">Notes</div>
-                            <div class="notes-sublabel">Notes will not be shown in PDF</div>
+                            <div class="notes-label">Customer Notes</div>
+                            <div class="notes-sublabel">Enter any notes to be displayed in your transaction</div>
                             <textarea class="form-textarea" id="notes" rows="3"></textarea>
->>>>>>> 85a98fa927b279290f406e310b68fe2ad91c7893
                         </div>
+                        <div class="notes-row">
+                            <div class="notes-label">Terms & Conditions</div>
+                            <div class="notes-sublabel">Enter the terms and conditions of your business</div>
+                            <textarea class="form-textarea" id="termsConditions" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Attach Files -->
+                    <div class="form-section" style="border-bottom:none;">
+                        <div style="font-size:11px;font-weight:600;color:#555;margin-bottom:6px;">Attach File(s) to
+                            Invoice</div>
+                        <div style="display:flex;align-items:center;gap:4px;font-size:12px;color:#555;cursor:pointer;"
+                            onclick="attachFiles()">
+                            🖼️ Upload File ▾
+                        </div>
+                        <div style="font-size:10px;color:#bbb;margin-top:4px;">Max 10 files, 10MB each</div>
                     </div>
                 </div>
 
@@ -1403,32 +1252,30 @@
                     <div class="item-table-section">
                         <div class="item-table-header">
                             <span class="item-table-title">Item Table</span>
+                            <a href="#" style="color:#4285f4;font-size:12px;text-decoration:none;">🔄 Bulk Actions</a>
                         </div>
                         <table class="item-table">
                             <thead>
                                 <tr>
                                     <th style="width: 32px;"></th>
                                     <th>ITEM DETAILS</th>
-                                    <th>ACCOUNT</th>
                                     <th class="center" style="width: 70px;">QTY</th>
                                     <th class="center" style="width: 80px;">RATE ₱</th>
+                                    <th style="width: 90px;">DISCOUNT <span
+                                            style="display:inline-block;width:14px;height:14px;background:#4285f4;border-radius:50%;color:white;text-align:center;line-height:14px;font-size:9px;">%</span>
+                                    </th>
                                     <th style="width: 80px;">TAX</th>
                                     <th class="center" style="width: 80px;">AMOUNT</th>
                                     <th style="width: 30px;"></th>
                                 </tr>
                             </thead>
                             <tbody id="itemTableBody">
-                                <!-- Items populated from PO -->
+                                <!-- Items populated from PO or added manually -->
                             </tbody>
                         </table>
                         <div class="add-row-actions">
                             <button class="add-row-btn primary" onclick="addNewRow()">+ Add New Row</button>
-                        </div>
-
-                        <!-- Open POs link -->
-                        <div class="open-po-link" id="openPOsLink" style="display: none;"
-                            onclick="alert('Feature coming soon!')">
-                            📦 Include <span id="openPOCount">0</span> Open Purchase Orders
+                            <button class="add-row-btn" onclick="addNewRow()">+ Add Items in Bulk</button>
                         </div>
                     </div>
 
@@ -1437,26 +1284,33 @@
                         <div class="totals-box">
                             <div class="totals-row">
                                 <span class="totals-label">Sub Total</span>
-                                <span class="totals-value" id="subTotal">0.00</span>
+                                <span class="totals-value" id="subTotal">0</span>
                             </div>
                             <div class="totals-row">
                                 <span class="totals-label">Discount</span>
                                 <div class="totals-input">
                                     <input type="number" id="discountValue" value="0" oninput="recalculateTotals()">
                                     <span>%</span>
-                                    <span class="totals-value" id="discountAmount">0.00</span>
+                                    <span class="totals-value" id="discountAmount">0</span>
+                                </div>
+                            </div>
+                            <div class="totals-row">
+                                <span class="totals-label">Shipping Charges</span>
+                                <div class="totals-input">
+                                    <input type="number" id="shippingCharges" value="0" oninput="recalculateTotals()">
+                                    <span class="totals-value" id="shippingAmount">0</span>
                                 </div>
                             </div>
                             <div class="totals-row">
                                 <span class="totals-label">Adjustment</span>
                                 <div class="totals-input">
                                     <input type="number" id="adjustmentValue" value="0" oninput="recalculateTotals()">
-                                    <span class="totals-value" id="adjustmentAmount">0.00</span>
+                                    <span class="totals-value" id="adjustmentAmount">0</span>
                                 </div>
                             </div>
                             <div class="totals-row total">
                                 <span class="totals-label">Total ( PHP )</span>
-                                <span class="totals-value" id="total">0.00</span>
+                                <span class="totals-value" id="total">0</span>
                             </div>
                         </div>
                     </div>
@@ -1471,473 +1325,14 @@
                     <button class="btn-cancel" onclick="goBack()">Cancel</button>
                 </div>
                 <div class="footer-right">
-                    <div><span>Total:</span> <span class="amount" id="footerTotal">PHP 0.00</span></div>
+                    <div>Total Amount: <span class="amount" id="footerTotal">PHP 0.00</span></div>
+                    <div style="font-size:11px;color:#999;">Total Quantity: <span id="footerQty">0</span></div>
                 </div>
             </div>
         </div>
     </div>
 
-<<<<<<< HEAD
-    <!-- Configure Payment Terms Modal -->
-    <div class="modal-overlay" id="configureTermsModal">
-        <div class="modal-box">
-            <div class="modal-header">
-                <h2>Configure Payment Terms</h2>
-                <button class="modal-close" onclick="closeConfigureTerms()">✕</button>
-            </div>
-            <div class="modal-body">
-                <table class="terms-table" id="termsTable">
-                    <thead>
-                        <tr>
-                            <th>TERM NAME</th>
-                            <th style="width: 140px; text-align: right;">NUMBER OF DAYS</th>
-                            <th style="width: 40px;"></th>
-                        </tr>
-                    </thead>
-                    <tbody id="termsTableBody">
-                        <!-- Rows rendered dynamically -->
-                    </tbody>
-                </table>
-                <button class="add-new-term" onclick="addNewTerm()">
-                    ⊕ Add New
-                </button>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-save-modal" onclick="saveConfiguredTerms()">Save</button>
-                <button class="btn-cancel-modal" onclick="closeConfigureTerms()">Cancel</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Layout Script -->
-    <script src="/js/layout.js"></script>
-    <script>
-        // ===========================
-        // Default Payment Terms
-        // ===========================
-        const DEFAULT_TERMS = [
-            { name: 'Due end of next month', days: 'N/A' },
-            { name: 'Due end of the month', days: 'N/A' },
-            { name: 'Due on Receipt', days: '0' },
-            { name: 'Net 15', days: '15' },
-            { name: 'Net 30', days: '30' },
-            { name: 'Net 45', days: '45' },
-            { name: 'Net 60', days: '60' }
-        ];
-
-        let paymentTermsList = [];
-        let selectedPaymentTerm = 'Due on Receipt';
-        let customersList = [];
-
-        // ===========================
-        // Initialize on page load
-        // ===========================
-        document.addEventListener('DOMContentLoaded', function () {
-            // Set dates to today
-            const today = new Date();
-            const todayStr = today.toISOString().split('T')[0];
-            document.getElementById('billDate').value = todayStr;
-            document.getElementById('dueDate').value = todayStr;
-
-            // Load vendors
-            loadVendors();
-
-            // Load customers
-            loadCustomers();
-
-            // Load items
-            loadItems();
-
-            // Load payment terms
-            loadPaymentTerms();
-
-            // Close dropdown on outside click
-            document.addEventListener('click', function (e) {
-                const wrapper = document.getElementById('paymentTermsWrapper');
-                if (wrapper && !wrapper.contains(e.target)) {
-                    closePaymentTermsDropdown();
-                }
-            });
-        });
-
-        // ===========================
-        // Vendor Dropdown
-        // ===========================
-        async function loadVendors() {
-            try {
-                const res = await fetch('/api/suppliers');
-                const vendors = await res.json();
-                const select = document.getElementById('vendorName');
-                // Keep the first "Select a Vendor" option
-                select.innerHTML = '<option value="">Select a Vendor</option>';
-                vendors.forEach(v => {
-                    const opt = document.createElement('option');
-                    opt.value = v.id || v.name;
-                    opt.textContent = v.name || v.display_name;
-                    select.appendChild(opt);
-                });
-            } catch (err) {
-                console.error('Error loading vendors:', err);
-            }
-        }
-
-        // ===========================
-        // Customer Details Dropdown
-        // ===========================
-        async function loadCustomers() {
-            try {
-                const res = await fetch('/api/customers');
-                customersList = await res.json();
-                populateAllCustomerSelects();
-            } catch (err) {
-                console.error('Error loading customers:', err);
-            }
-        }
-
-        function populateAllCustomerSelects() {
-            const selects = document.querySelectorAll('.customer-select');
-            selects.forEach(sel => populateCustomerSelect(sel));
-        }
-
-        function populateCustomerSelect(selectEl) {
-            const currentVal = selectEl.value;
-            selectEl.innerHTML = '<option value="">Select Customer</option>';
-            customersList.forEach(c => {
-                const opt = document.createElement('option');
-                opt.value = c.id || c.display_name;
-                opt.textContent = c.display_name || (c.first_name + ' ' + c.last_name);
-                selectEl.appendChild(opt);
-            });
-            // Restore previous selection if any
-            if (currentVal) selectEl.value = currentVal;
-        }
-
-        // ===========================
-        // Payment Terms - Custom Dropdown
-        // ===========================
-        function loadPaymentTerms() {
-            const stored = localStorage.getItem('billPaymentTerms');
-            if (stored) {
-                try {
-                    paymentTermsList = JSON.parse(stored);
-                } catch (e) {
-                    paymentTermsList = [...DEFAULT_TERMS];
-                }
-            } else {
-                paymentTermsList = [...DEFAULT_TERMS];
-            }
-            renderPaymentTermsOptions();
-        }
-
-        function renderPaymentTermsOptions() {
-            const container = document.getElementById('ptOptions');
-            const searchVal = (document.getElementById('ptSearchInput')?.value || '').toLowerCase();
-            container.innerHTML = '';
-
-            const filtered = paymentTermsList.filter(t =>
-                t.name.toLowerCase().includes(searchVal)
-            );
-
-            filtered.forEach(term => {
-                const div = document.createElement('div');
-                div.className = 'pt-option' + (term.name === selectedPaymentTerm ? ' selected' : '');
-                div.innerHTML = `
-                    <span>${term.name}</span>
-                    ${term.name === selectedPaymentTerm ? '<span class="check">✓</span>' : ''}
-                `;
-                div.addEventListener('click', function () {
-                    selectPaymentTerm(term.name, term.days);
-                });
-                container.appendChild(div);
-            });
-        }
-
-        function togglePaymentTerms() {
-            const dropdown = document.getElementById('ptDropdown');
-            const trigger = document.getElementById('ptTrigger');
-            const isOpen = dropdown.classList.contains('show');
-
-            if (isOpen) {
-                closePaymentTermsDropdown();
-            } else {
-                dropdown.classList.add('show');
-                trigger.classList.add('open');
-                document.getElementById('ptSearchInput').value = '';
-                renderPaymentTermsOptions();
-                document.getElementById('ptSearchInput').focus();
-            }
-        }
-
-        function closePaymentTermsDropdown() {
-            document.getElementById('ptDropdown').classList.remove('show');
-            document.getElementById('ptTrigger').classList.remove('open');
-        }
-
-        function filterPaymentTerms() {
-            renderPaymentTermsOptions();
-        }
-
-        function selectPaymentTerm(termName, days) {
-            selectedPaymentTerm = termName;
-            document.getElementById('ptSelectedText').textContent = termName;
-            document.getElementById('paymentTerms').value = termName;
-            closePaymentTermsDropdown();
-
-            // Auto-calculate due date based on bill date
-            const billDateInput = document.getElementById('billDate');
-            if (billDateInput.value && days !== 'N/A') {
-                const billDate = new Date(billDateInput.value);
-                const numDays = parseInt(days) || 0;
-                const dueDate = new Date(billDate);
-                dueDate.setDate(dueDate.getDate() + numDays);
-                document.getElementById('dueDate').value = dueDate.toISOString().split('T')[0];
-            } else if (billDateInput.value && termName === 'Due end of the month') {
-                const billDate = new Date(billDateInput.value);
-                const endOfMonth = new Date(billDate.getFullYear(), billDate.getMonth() + 1, 0);
-                document.getElementById('dueDate').value = endOfMonth.toISOString().split('T')[0];
-            } else if (billDateInput.value && termName === 'Due end of next month') {
-                const billDate = new Date(billDateInput.value);
-                const endOfNextMonth = new Date(billDate.getFullYear(), billDate.getMonth() + 2, 0);
-                document.getElementById('dueDate').value = endOfNextMonth.toISOString().split('T')[0];
-            }
-        }
-
-        // ===========================
-        // Configure Terms Modal
-        // ===========================
-        function openConfigureTerms() {
-            closePaymentTermsDropdown();
-            const modal = document.getElementById('configureTermsModal');
-            modal.classList.add('show');
-            renderTermsTable();
-        }
-
-        function closeConfigureTerms() {
-            document.getElementById('configureTermsModal').classList.remove('show');
-        }
-
-        function renderTermsTable() {
-            const tbody = document.getElementById('termsTableBody');
-            tbody.innerHTML = '';
-            paymentTermsList.forEach((term, index) => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${term.name}</td>
-                    <td style="text-align: right;">${term.days}</td>
-                    <td>
-                        ${index >= DEFAULT_TERMS.length ?
-                        `<button class="delete-term-btn" onclick="deleteConfiguredTerm(${index})" title="Delete">✕</button>` : ''}
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function addNewTerm() {
-            const tbody = document.getElementById('termsTableBody');
-            const tr = document.createElement('tr');
-            tr.className = 'new-term-row';
-            tr.innerHTML = `
-                <td><input type="text" placeholder="Term name" class="new-term-name" style="padding:6px 8px;border:1px solid #e0e0e0;border-radius:4px;font-size:13px;width:100%;"></td>
-                <td style="text-align:right;"><input type="number" placeholder="Days" class="new-term-days days-input" min="0" style="padding:6px 8px;border:1px solid #e0e0e0;border-radius:4px;font-size:13px;width:70px;text-align:right;"></td>
-                <td>
-                    <button class="delete-term-btn" onclick="this.closest('tr').remove()" title="Remove">✕</button>
-                </td>
-            `;
-            tbody.appendChild(tr);
-            tr.querySelector('.new-term-name').focus();
-        }
-
-        function deleteConfiguredTerm(index) {
-            if (index < DEFAULT_TERMS.length) return; // Prevent deleting defaults
-            paymentTermsList.splice(index, 1);
-            renderTermsTable();
-        }
-
-        function saveConfiguredTerms() {
-            // Collect new rows
-            const newRows = document.querySelectorAll('.new-term-row');
-            newRows.forEach(row => {
-                const name = row.querySelector('.new-term-name')?.value?.trim();
-                const days = row.querySelector('.new-term-days')?.value?.trim();
-                if (name) {
-                    paymentTermsList.push({
-                        name: name,
-                        days: days || '0'
-                    });
-                }
-            });
-
-            // Save to localStorage
-            localStorage.setItem('billPaymentTerms', JSON.stringify(paymentTermsList));
-
-            // Re-render dropdown options
-            renderPaymentTermsOptions();
-
-            closeConfigureTerms();
-        }
-
-        // ===========================
-        // Item Details Dropdown
-        // ===========================
-        let itemsList = [];
-
-        async function loadItems() {
-            try {
-                const res = await fetch('/api/items');
-                itemsList = await res.json();
-            } catch (err) {
-                console.error('Error loading items:', err);
-            }
-        }
-
-        function openItemDropdown(inputEl) {
-            // Close any other open item dropdowns first
-            document.querySelectorAll('.item-dropdown.show').forEach(d => d.classList.remove('show'));
-            const wrapper = inputEl.closest('.item-input-wrapper');
-            const dropdown = wrapper.querySelector('.item-dropdown');
-            renderItemDropdownList(wrapper, inputEl.value);
-            dropdown.classList.add('show');
-        }
-
-        function filterItemDropdown(inputEl) {
-            const wrapper = inputEl.closest('.item-input-wrapper');
-            renderItemDropdownList(wrapper, inputEl.value);
-        }
-
-        function renderItemDropdownList(wrapper, searchVal) {
-            const list = wrapper.querySelector('.item-dropdown-list');
-            const query = (searchVal || '').toLowerCase();
-            list.innerHTML = '';
-
-            const filtered = itemsList.filter(item =>
-                (item.name || '').toLowerCase().includes(query) ||
-                (item.sku || '').toLowerCase().includes(query)
-            );
-
-            if (filtered.length === 0) {
-                list.innerHTML = '<div style="padding:12px 14px;font-size:13px;color:#999;">No items found</div>';
-                return;
-            }
-
-            filtered.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'item-dropdown-item';
-                const purchaseRate = parseFloat(item.purchase_cost || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
-                const stockQty = parseFloat(item.stock_quantity || 0).toLocaleString('en-PH', { maximumFractionDigits: 6 });
-                const unit = item.unit || 'pcs';
-                div.innerHTML = `
-                    <div class="item-info-left">
-                        <div class="item-name-main">${item.name}</div>
-                        <div class="item-meta">SKU: ${item.sku || 'N/A'}  Purchase Rate: PHP${purchaseRate}</div>
-                    </div>
-                    <div class="item-stock-right">
-                        <div class="item-stock-label">Stock on Hand</div>
-                        <div class="item-stock-qty">${stockQty} ${unit}</div>
-                    </div>
-                `;
-                div.addEventListener('click', function () {
-                    selectItem(wrapper, item);
-                });
-                list.appendChild(div);
-            });
-        }
-
-        function selectItem(wrapper, item) {
-            const input = wrapper.querySelector('.item-detail-input');
-            input.value = item.name;
-            input.dataset.itemId = item.id;
-
-            // Auto-fill rate in the same row
-            const row = wrapper.closest('tr');
-            if (row) {
-                const rateInput = row.querySelectorAll('input[type="number"]')[1]; // second number input = rate
-                if (rateInput && item.purchase_cost) {
-                    rateInput.value = parseFloat(item.purchase_cost).toFixed(2);
-                }
-            }
-
-            // Close dropdown
-            wrapper.querySelector('.item-dropdown').classList.remove('show');
-        }
-
-        // Close item dropdowns on outside click
-        document.addEventListener('click', function (e) {
-            if (!e.target.closest('.item-input-wrapper')) {
-                document.querySelectorAll('.item-dropdown.show').forEach(d => d.classList.remove('show'));
-            }
-        });
-
-        // ===========================
-        // Row Management
-        // ===========================
-        function getCustomerOptionsHTML() {
-            let html = '<option value="">Select Customer</option>';
-            customersList.forEach(c => {
-                const displayName = c.display_name || (c.first_name + ' ' + c.last_name);
-                html += `<option value="${c.id || displayName}">${displayName}</option>`;
-            });
-            return html;
-        }
-
-        function addNewRow() {
-            const tbody = document.getElementById('itemTableBody');
-            const newRow = document.createElement('tr');
-            newRow.innerHTML = `
-                <td>
-                    <div class="item-image">🖼️</div>
-                </td>
-                <td>
-                    <div class="item-input-wrapper">
-                        <input type="text" class="item-detail-input" placeholder="Type or click to select an item." onfocus="openItemDropdown(this)" oninput="filterItemDropdown(this)">
-                        <div class="item-dropdown">
-                            <div class="item-dropdown-list"></div>
-                            <div class="item-dropdown-footer" onclick="window.location.href='/items.html'">
-                                ⊕ Add New Item
-                            </div>
-                        </div>
-                    </div>
-                </td>
-                <td>
-                    <select>
-                        <option value="">Select an account</option>
-                        <option value="inventory">Inventory Asset</option>
-                        <option value="expense">Expense</option>
-                    </select>
-                </td>
-                <td>
-                    <input type="number" value="1.00" step="0.01">
-                </td>
-                <td>
-                    <input type="number" value="0.00" step="0.01">
-                </td>
-                <td>
-                    <div style="display: flex; align-items: center; gap: 2px;">
-                        <input type="number" value="0" style="width: 40px;">
-                        <span>%</span>
-                    </div>
-                </td>
-                <td>
-                    <select>
-                        <option value="">Select a Tax</option>
-                        <option value="12">VAT 12%</option>
-                        <option value="0">Exempt</option>
-                    </select>
-                </td>
-                <td>
-                    <select class="customer-select">
-                        ${getCustomerOptionsHTML()}
-                    </select>
-                </td>
-                <td>
-                    <span style="font-weight: 500;">0.00</span>
-                </td>
-                <td>
-                    <button class="delete-row-btn" onclick="deleteRow(this)">⋮ ✕</button>
-                </td>
-            `;
-            tbody.appendChild(newRow);
-=======
     <script src="/js/layout.js"></script>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
@@ -2023,6 +1418,7 @@
             }
         }
 
+        // ===== PAGE INIT =====
         document.addEventListener('DOMContentLoaded', async function () {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('billDate').value = today;
@@ -2049,19 +1445,6 @@
             } else {
                 addNewRow();
             }
-
-            // Check open POs count
-            try {
-                const posRes = await fetch('/api/purchases');
-                if (posRes.ok) {
-                    const allPOs = await posRes.json();
-                    const openPOs = allPOs.filter(p => p.status === 'ordered' || p.status === 'partially_received' || p.status === 'received');
-                    if (openPOs.length > 0) {
-                        document.getElementById('openPOsLink').style.display = 'flex';
-                        document.getElementById('openPOCount').textContent = openPOs.length;
-                    }
-                }
-            } catch (e) { }
         });
 
         async function loadPOData(poId) {
@@ -2115,31 +1498,21 @@
             }
         }
 
-        function buildRowHTML(name, qty, rate, amt, accountVal) {
-            const acct = accountVal || 'inventory';
-            const isExpense = acct !== 'inventory';
-            return `<td><div class="item-image">${isExpense ? '💡' : '🖼️'}</div></td>
+        // ===== ITEM TABLE =====
+        function buildRowHTML(name, qty, rate, amt) {
+            return `<td><div class="item-image">🖼️</div></td>
                 <td><div class="item-autocomplete-wrap">
-                    <input type="text" value="${name}" placeholder="${isExpense ? 'Enter description (e.g. Electricity - Jan 2026)' : 'Type or click to select an item.'}" class="item-name-input" ${isExpense ? '' : 'onfocus="openItemDropdown(this)" oninput="filterItemDropdown(this)"'}>
+                    <input type="text" value="${name}" placeholder="Type or click to select an item." class="item-name-input" onfocus="openItemDropdown(this)" oninput="filterItemDropdown(this)">
                     <div class="item-autocomplete-dropdown"></div>
                 </div></td>
-                <td><select class="account-select" onchange="onAccountChange(this)">
-                    <option value="" disabled>── Assets ──</option>
-                    <option value="inventory" ${acct === 'inventory' ? 'selected' : ''}>Inventory Asset</option>
-                    <option value="" disabled>── Expenses ──</option>
-                    <option value="electricity-expense" ${acct === 'electricity-expense' ? 'selected' : ''}>Electricity Expense</option>
-                    <option value="utilities-expense" ${acct === 'utilities-expense' ? 'selected' : ''}>Utilities</option>
-                    <option value="rent-expense" ${acct === 'rent-expense' ? 'selected' : ''}>Rent Expense</option>
-                    <option value="office-supplies" ${acct === 'office-supplies' ? 'selected' : ''}>Office Supplies</option>
-                    <option value="repairs-maintenance" ${acct === 'repairs-maintenance' ? 'selected' : ''}>Repairs & Maintenance</option>
-                    <option value="telecommunications" ${acct === 'telecommunications' ? 'selected' : ''}>Telecommunications</option>
-                    <option value="transportation" ${acct === 'transportation' ? 'selected' : ''}>Transportation</option>
-                    <option value="professional-fees" ${acct === 'professional-fees' ? 'selected' : ''}>Professional Fees</option>
-                    <option value="miscellaneous-expense" ${acct === 'miscellaneous-expense' ? 'selected' : ''}>Miscellaneous Expense</option>
-                </select></td>
                 <td class="center"><input type="number" value="${qty}" style="text-align:center;" class="qty-input" onchange="updateRowAmount(this)"></td>
                 <td class="center"><input type="number" value="${parseFloat(rate).toFixed(2)}" style="text-align:right;" class="rate-input" onchange="updateRowAmount(this)"></td>
-                <td><select>
+                <td><div style="display:flex;align-items:center;gap:2px;">
+                    <input type="number" value="0" style="width:40px;" class="disc-input" onchange="updateRowAmount(this)">
+                    <span>%</span>
+                    <select style="width:40px;padding:4px;font-size:10px;"><option>%</option><option>₱</option></select>
+                </div></td>
+                <td><select class="tax-select" onchange="updateRowAmount(this)">
                     <option value="">Select Tax</option>
                     <option value="12">VAT 12%</option>
                     <option value="0">Exempt</option>
@@ -2152,7 +1525,6 @@
             const tr = document.createElement('tr');
             tr.innerHTML = buildRowHTML('', 1, 0, '0.00');
             document.getElementById('itemTableBody').appendChild(tr);
->>>>>>> 85a98fa927b279290f406e310b68fe2ad91c7893
         }
 
         function deleteRow(btn) {
@@ -2163,21 +1535,6 @@
             }
         }
 
-<<<<<<< HEAD
-        // ===========================
-        // Utility Functions
-        // ===========================
-        function goBack() {
-            window.location.href = '/bills.html';
-        }
-
-        function attachFiles() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.pdf,.doc,.docx,.jpg,.png';
-            input.multiple = true;
-            input.click();
-=======
         function updateRowAmount(input) {
             const row = input.closest('tr');
             const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
@@ -2185,66 +1542,38 @@
             const ac = row.querySelector('.row-amount');
             if (ac) ac.textContent = (qty * rate).toFixed(2);
             recalculateTotals();
->>>>>>> 85a98fa927b279290f406e310b68fe2ad91c7893
         }
 
         function recalculateTotals() {
             const rows = document.getElementById('itemTableBody').rows;
             let sub = 0;
+            let totalQty = 0;
             for (let i = 0; i < rows.length; i++) {
                 const a = rows[i].querySelector('.row-amount');
                 if (a) sub += parseFloat(a.textContent) || 0;
+                const q = rows[i].querySelector('.qty-input');
+                if (q) totalQty += parseFloat(q.value) || 0;
             }
-            document.getElementById('subTotal').textContent = sub.toFixed(2);
+            document.getElementById('subTotal').textContent = sub.toFixed(0);
 
             const dp = parseFloat(document.getElementById('discountValue').value) || 0;
             const da = sub * (dp / 100);
-            document.getElementById('discountAmount').textContent = da.toFixed(2);
+            document.getElementById('discountAmount').textContent = da.toFixed(0);
+
+            const shipping = parseFloat(document.getElementById('shippingCharges').value) || 0;
+            document.getElementById('shippingAmount').textContent = shipping.toFixed(0);
 
             const adj = parseFloat(document.getElementById('adjustmentValue').value) || 0;
-            const total = sub - da + adj;
-            document.getElementById('total').textContent = total.toFixed(2);
+            document.getElementById('adjustmentAmount').textContent = adj.toFixed(0);
+
+            const total = sub - da + shipping + adj;
+            document.getElementById('total').textContent = total.toFixed(0);
             document.getElementById('footerTotal').textContent = 'PHP ' + total.toFixed(2);
+            document.getElementById('footerQty').textContent = totalQty;
         }
 
-        // Account change handler
-        function onAccountChange(sel) {
-            const row = sel.closest('tr');
-            const input = row.querySelector('.item-name-input');
-            const dropdown = row.querySelector('.item-autocomplete-dropdown');
-            const icon = row.querySelector('.item-image');
-            const isExpense = sel.value !== 'inventory';
-
-            // Clear current value
-            input.value = '';
-            row.removeAttribute('data-item-id');
-            dropdown.classList.remove('open');
-            dropdown.innerHTML = '';
-
-            if (isExpense) {
-                // Switch to manual entry mode
-                input.placeholder = 'Enter description (e.g. Electricity - Jan 2026)';
-                input.removeAttribute('onfocus');
-                input.removeAttribute('oninput');
-                input.onfocus = null;
-                input.oninput = null;
-                if (icon) icon.textContent = '💡';
-            } else {
-                // Switch to inventory autocomplete mode
-                input.placeholder = 'Type or click to select an item.';
-                input.setAttribute('onfocus', 'openItemDropdown(this)');
-                input.setAttribute('oninput', 'filterItemDropdown(this)');
-                if (icon) icon.textContent = '🖼️';
-            }
-        }
-
-        // Item Autocomplete
+        // ===== ITEM AUTOCOMPLETE =====
         function openItemDropdown(input) {
-            // Only open if account is inventory
-            const row = input.closest('tr');
-            const acctSel = row.querySelector('.account-select');
-            if (acctSel && acctSel.value !== 'inventory') return;
-
             document.querySelectorAll('.item-autocomplete-dropdown.open').forEach(d => d.classList.remove('open'));
             const wrap = input.closest('.item-autocomplete-wrap');
             const dropdown = wrap.querySelector('.item-autocomplete-dropdown');
@@ -2313,7 +1642,7 @@
             }
         });
 
-        // Save Bill
+        // ===== SAVE BILL =====
         async function saveBill(status) {
             const billNumber = document.getElementById('billNumber').value.trim();
             if (!billNumber) { alert('Please enter a bill number'); return; }
@@ -2325,18 +1654,13 @@
                 const nameIn = r.querySelector('.item-name-input');
                 if (!nameIn || !nameIn.value.trim()) continue;
 
-                const accountSel = r.querySelector('.account-select');
-                const accountVal = accountSel ? accountSel.value : 'inventory';
-                const isExpenseItem = accountVal !== 'inventory';
-
                 items.push({
-                    item_id: isExpenseItem ? null : (r.getAttribute('data-item-id') ? parseInt(r.getAttribute('data-item-id')) : null),
+                    item_id: r.getAttribute('data-item-id') ? parseInt(r.getAttribute('data-item-id')) : null,
                     item_name: nameIn.value.trim(),
-                    account: accountVal,
-                    account_type: isExpenseItem ? 'expense' : 'inventory',
                     quantity: parseFloat(r.querySelector('.qty-input')?.value) || 1,
                     rate: parseFloat(r.querySelector('.rate-input')?.value) || 0,
-                    tax_percent: parseFloat(r.querySelectorAll('select')[1]?.value) || 0
+                    discount_percent: parseFloat(r.querySelector('.disc-input')?.value) || 0,
+                    tax_percent: parseFloat(r.querySelector('.tax-select')?.value) || 0
                 });
             }
 
@@ -2377,6 +1701,7 @@
             }
         }
 
+        // ===== UTILITIES =====
         function showToast(msg) {
             const t = document.createElement('div');
             t.textContent = msg;
@@ -2386,6 +1711,14 @@
             style.textContent = '@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(-20px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}';
             document.head.appendChild(style);
             setTimeout(() => t.remove(), 3000);
+        }
+
+        function attachFiles() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.pdf,.doc,.docx,.jpg,.png,.xlsx';
+            input.multiple = true;
+            input.click();
         }
 
         function goBack() {

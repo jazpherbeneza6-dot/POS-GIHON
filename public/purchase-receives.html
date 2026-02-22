@@ -147,11 +147,12 @@
             left: 0;
             background: white;
             border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            min-width: 180px;
+            border-radius: 6px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            min-width: 200px;
             z-index: 100;
             margin-top: 4px;
+            overflow: hidden;
         }
 
         .filter-menu.show {
@@ -163,17 +164,44 @@
             font-size: 13px;
             color: #333;
             cursor: pointer;
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             text-decoration: none;
         }
 
         .filter-menu-item:hover {
-            background: #f5f5f5;
+            background: #f5f7fa;
         }
 
         .filter-menu-item.active {
             background: #e8f0fe;
             color: #4285f4;
+            font-weight: 500;
+        }
+
+        .filter-menu-item .star-icon {
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        .filter-menu-item:hover .star-icon {
+            color: #bbb;
+        }
+
+        .filter-menu-footer {
+            padding: 10px 16px;
+            font-size: 13px;
+            color: #4285f4;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .filter-menu-footer:hover {
+            background: #f5f7fa;
         }
 
         /* Table Container */
@@ -301,14 +329,24 @@
                 <div class="page-title-wrapper">
                     <div class="filter-dropdown">
                         <h1 class="page-title" onclick="toggleFilterMenu()">
-                            All Purchase Receives
-                            <span class="dropdown-arrow">▼</span>
+                            <span id="filterTitle">In Transit</span>
+                            <span class="dropdown-arrow" id="filterArrow">▲</span>
                         </h1>
                         <div class="filter-menu" id="filterMenu">
-                            <a href="#" class="filter-menu-item" onclick="setFilter('in-transit')">In Transit</a>
-                            <a href="#" class="filter-menu-item" onclick="setFilter('received')">Received</a>
-                            <a href="#" class="filter-menu-item active" onclick="setFilter('all')">All Purchase
-                                Receives</a>
+                            <a href="#" class="filter-menu-item" onclick="setFilter('all', event)">All <span
+                                    class="star-icon">☆</span></a>
+                            <a href="#" class="filter-menu-item active" onclick="setFilter('in-transit', event)">In
+                                Transit <span class="star-icon">☆</span></a>
+                            <a href="#" class="filter-menu-item" onclick="setFilter('received', event)">Received <span
+                                    class="star-icon">☆</span></a>
+                            <a href="#" class="filter-menu-item" onclick="setFilter('billed', event)">Billed <span
+                                    class="star-icon">☆</span></a>
+                            <a href="#" class="filter-menu-item"
+                                onclick="setFilter('partially-billed', event)">Partially Billed <span
+                                    class="star-icon">☆</span></a>
+                            <div class="filter-menu-footer" onclick="alert('Custom view feature coming soon!')">
+                                <span style="color:#4285f4;font-weight:600;">⊕</span> New Custom View
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -359,12 +397,14 @@
     <!-- Layout Script -->
     <script src="/js/layout.js"></script>
     <script>
-        let currentFilter = 'all';
+        let currentFilter = 'in-transit';
         let allReceives = [];
 
         function toggleFilterMenu() {
             const menu = document.getElementById('filterMenu');
+            const isOpen = menu.classList.contains('show');
             menu.classList.toggle('show');
+            document.getElementById('filterArrow').textContent = isOpen ? '▲' : '▼';
         }
 
         // Close menu when clicking outside
@@ -372,31 +412,36 @@
             const dropdown = document.querySelector('.filter-dropdown');
             if (!dropdown.contains(e.target)) {
                 document.getElementById('filterMenu').classList.remove('show');
+                document.getElementById('filterArrow').textContent = '▲';
             }
         });
 
-        function setFilter(filter) {
+        function setFilter(filter, e) {
+            if (e) e.preventDefault();
             currentFilter = filter;
 
             // Update active state
             document.querySelectorAll('.filter-menu-item').forEach(item => {
                 item.classList.remove('active');
             });
-            event.target.classList.add('active');
+            if (e && e.target.closest) {
+                const item = e.target.closest('.filter-menu-item');
+                if (item) item.classList.add('active');
+            }
 
             // Update title
             const titles = {
+                'all': 'All',
                 'in-transit': 'In Transit',
                 'received': 'Received',
-                'all': 'All Purchase Receives'
+                'billed': 'Billed',
+                'partially-billed': 'Partially Billed'
             };
-            document.querySelector('.page-title').innerHTML = `
-                ${titles[filter]}
-                <span class="dropdown-arrow">▼</span>
-            `;
+            document.getElementById('filterTitle').textContent = titles[filter] || filter;
 
             // Close menu
             document.getElementById('filterMenu').classList.remove('show');
+            document.getElementById('filterArrow').textContent = '▲';
 
             // Re-render with filter
             renderReceives();
@@ -451,6 +496,10 @@
                 filtered = allReceives.filter(r => r.status === 'received');
             } else if (currentFilter === 'in-transit') {
                 filtered = allReceives.filter(r => r.status === 'draft');
+            } else if (currentFilter === 'billed') {
+                filtered = allReceives.filter(r => r.po_billed === true);
+            } else if (currentFilter === 'partially-billed') {
+                filtered = allReceives.filter(r => r.po_billed === true); // same for now
             }
 
             if (filtered.length === 0) {
@@ -477,8 +526,8 @@
                         statusClass = 'status-received';
                         statusLabel = 'Received';
                     } else if (statusLabel === 'draft') {
-                        statusClass = 'status-draft';
-                        statusLabel = 'Draft';
+                        statusClass = 'status-in-transit';
+                        statusLabel = 'In Transit';
                     }
 
                     const billedCell = r.po_billed

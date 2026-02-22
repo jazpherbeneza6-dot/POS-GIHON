@@ -2060,24 +2060,17 @@ function openItemDetailView(itemId) {
   document.getElementById('detailItemType').textContent = typeMap[item.type] || 'Inventory Items';
 
   // Show item image or placeholder
-  const imageArea = document.getElementById('detailImageArea');
-  if (imageArea) {
+  const imgPreview = document.getElementById('detailImagePreview');
+  const imgPlaceholder = document.getElementById('detailImagePlaceholder');
+  const imgEl = document.getElementById('detailImageImg');
+  if (imgPreview && imgPlaceholder && imgEl) {
     if (item.image_url) {
-      imageArea.innerHTML = `
-        <img src="${item.image_url}" alt="${item.name}" style="max-width: 100%; max-height: 200px; object-fit: contain; border-radius: 8px;">
-      `;
-      imageArea.style.border = 'none';
-      imageArea.style.padding = '16px';
+      imgEl.src = item.image_url;
+      imgPreview.style.display = 'block';
+      imgPlaceholder.style.display = 'none';
     } else {
-      imageArea.innerHTML = `
-        <div class="detail-image-icon">🖼️</div>
-        <div class="detail-image-text">
-          Drag image(s) here or<br>
-          <span class="detail-image-link">Browse Images</span>
-        </div>
-      `;
-      imageArea.style.border = '2px dashed #e5e7eb';
-      imageArea.style.padding = '24px';
+      imgPreview.style.display = 'none';
+      imgPlaceholder.style.display = 'block';
     }
   }
 
@@ -2088,6 +2081,71 @@ function openItemDetailView(itemId) {
 function closeItemDetailView() {
   document.getElementById('itemDetailOverlay').classList.remove('active');
   currentDetailItemId = null;
+}
+
+// Upload image for current detail item
+async function uploadDetailImage(file) {
+  if (!file || !currentDetailItemId) return;
+  if (!file.type.startsWith('image/')) {
+    showToast('Please select an image file', 'error');
+    return;
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    showToast('Image must be less than 5MB', 'error');
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('image', file);
+
+  try {
+    const res = await fetch(`/api/items/${currentDetailItemId}/upload-image`, {
+      method: 'POST',
+      body: formData
+    });
+    const result = await res.json();
+    if (res.ok && result.image_url) {
+      // Update UI
+      const imgEl = document.getElementById('detailImageImg');
+      const imgPreview = document.getElementById('detailImagePreview');
+      const imgPlaceholder = document.getElementById('detailImagePlaceholder');
+      imgEl.src = result.image_url;
+      imgPreview.style.display = 'block';
+      imgPlaceholder.style.display = 'none';
+      // Update local items array
+      const item = items.find(i => i.id === currentDetailItemId);
+      if (item) item.image_url = result.image_url;
+      showToast('Image uploaded successfully', 'success');
+    } else {
+      showToast(result.error || 'Failed to upload image', 'error');
+    }
+  } catch (err) {
+    console.error('Error uploading image:', err);
+    showToast('Error uploading image', 'error');
+  }
+  // Reset file input
+  const fileInput = document.getElementById('detailImageInput');
+  if (fileInput) fileInput.value = '';
+}
+
+// Remove image from current detail item
+async function removeDetailImage() {
+  if (!currentDetailItemId) return;
+  try {
+    const res = await fetch(`/api/items/${currentDetailItemId}/remove-image`, { method: 'DELETE' });
+    if (res.ok) {
+      const imgPreview = document.getElementById('detailImagePreview');
+      const imgPlaceholder = document.getElementById('detailImagePlaceholder');
+      imgPreview.style.display = 'none';
+      imgPlaceholder.style.display = 'block';
+      const item = items.find(i => i.id === currentDetailItemId);
+      if (item) item.image_url = null;
+      showToast('Image removed', 'success');
+    }
+  } catch (err) {
+    console.error('Error removing image:', err);
+    showToast('Error removing image', 'error');
+  }
 }
 
 // Opening Stock Details Modal

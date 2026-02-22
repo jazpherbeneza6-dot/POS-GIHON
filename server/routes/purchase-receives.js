@@ -17,9 +17,8 @@ router.post('/', async (req, res) => {
         const db = database.getDb();
         const finalStatus = status || 'draft';
 
-        // Check if PO is already fully received
-        const poCheck = await db.query('SELECT status FROM purchases WHERE id = $1', [purchase_id]);
-        if (poCheck.rows.length > 0 && poCheck.rows[0].status === 'received') {
+        const poCheck = await db.query('SELECT status, receive_status FROM purchases WHERE id = $1', [purchase_id]);
+        if (poCheck.rows.length > 0 && (poCheck.rows[0].receive_status || '').toUpperCase() === 'RECEIVED') {
             return res.status(400).json({ error: 'This Purchase Order has already been fully received.' });
         }
 
@@ -99,15 +98,15 @@ router.post('/', async (req, res) => {
                 const totalOrdered = parseFloat(orderedResult.rows[0].total_ordered) || 0;
                 const totalReceived = parseFloat(receivedResult.rows[0].total_received) || 0;
 
-                let newPOStatus;
+                let newReceiveStatus;
                 if (totalReceived >= totalOrdered) {
-                    newPOStatus = 'received';
+                    newReceiveStatus = 'RECEIVED';
                 } else if (totalReceived > 0) {
-                    newPOStatus = 'partially_received';
+                    newReceiveStatus = 'PARTIALLY RECEIVED';
                 }
 
-                if (newPOStatus) {
-                    await client.query('UPDATE purchases SET status = $1 WHERE id = $2', [newPOStatus, purchase_id]);
+                if (newReceiveStatus) {
+                    await client.query('UPDATE purchases SET receive_status = $1 WHERE id = $2', [newReceiveStatus, purchase_id]);
                 }
             }
         });
@@ -257,15 +256,15 @@ router.patch('/:id/mark-received', async (req, res) => {
                 const totalOrdered = parseFloat(orderedResult.rows[0].total_ordered) || 0;
                 const totalReceived = parseFloat(receivedResult.rows[0].total_received) || 0;
 
-                let newPOStatus;
+                let newReceiveStatus;
                 if (totalReceived >= totalOrdered) {
-                    newPOStatus = 'received';
+                    newReceiveStatus = 'RECEIVED';
                 } else if (totalReceived > 0) {
-                    newPOStatus = 'partially_received';
+                    newReceiveStatus = 'PARTIALLY RECEIVED';
                 }
 
-                if (newPOStatus) {
-                    await client.query('UPDATE purchases SET status = $1 WHERE id = $2', [newPOStatus, pr.purchase_id]);
+                if (newReceiveStatus) {
+                    await client.query('UPDATE purchases SET receive_status = $1 WHERE id = $2', [newReceiveStatus, pr.purchase_id]);
                 }
             }
         });

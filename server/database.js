@@ -84,6 +84,9 @@ async function init() {
       await pool.query(`
         ALTER TABLE item_groups ADD COLUMN IF NOT EXISTS manufacturer VARCHAR(255);
       `);
+      await pool.query(`
+        ALTER TABLE item_groups ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'active';
+      `);
 
       // Add suppliers table migration
       await pool.query(`
@@ -670,9 +673,60 @@ async function init() {
         );
       `);
       console.log('Vendor Credits tables created');
+
+      // ========== PO 3-column status tracking migration ==========
+      await pool.query(`ALTER TABLE purchases ADD COLUMN IF NOT EXISTS receive_status VARCHAR(50) DEFAULT 'NOT RECEIVED';`);
+      await pool.query(`ALTER TABLE purchases ADD COLUMN IF NOT EXISTS bill_status VARCHAR(50) DEFAULT 'UNBILLED';`);
+
+      // Backfill: convert old single-status to new 3-column system
+      // ordered → ISSUED
+      await pool.query(`UPDATE purchases SET status = 'ISSUED' WHERE status = 'ordered' AND receive_status = 'NOT RECEIVED';`);
+      // received → ISSUED + RECEIVED
+      await pool.query(`UPDATE purchases SET status = 'ISSUED', receive_status = 'RECEIVED' WHERE status = 'received';`);
+      // partially_received → ISSUED + PARTIALLY RECEIVED
+      await pool.query(`UPDATE purchases SET status = 'ISSUED', receive_status = 'PARTIALLY RECEIVED' WHERE status = 'partially_received' OR status = 'partial';`);
+      // draft stays draft but uppercase
+      await pool.query(`UPDATE purchases SET status = 'DRAFT' WHERE LOWER(status) = 'draft';`);
+      // billed (old status) → ISSUED
+      await pool.query(`UPDATE purchases SET status = 'ISSUED' WHERE LOWER(status) = 'billed';`);
+
+      // Set bill_status BILLED for POs that have bills
+      await pool.query(`
+        UPDATE purchases SET bill_status = 'BILLED'
+        WHERE id IN (SELECT DISTINCT purchase_order_id FROM bills WHERE purchase_order_id IS NOT NULL)
+        AND bill_status = 'UNBILLED';
+      `);
+
+      // Auto-close: if both fully received and fully billed
+      await pool.query(`
+        UPDATE purchases SET status = 'CLOSED'
+        WHERE receive_status = 'RECEIVED' AND bill_status = 'BILLED' AND status != 'CLOSED' AND status != 'CANCELLED';
+      `);
+
+      console.log('PO 3-column status migration completed');
     } catch (migrationError) {
       // Column might already exist, ignore error
       console.log('Migration note:', migrationError.message);
+    }
+
+    // Activity Log table
+    try {
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS activity_log (
+          id SERIAL PRIMARY KEY,
+          entity_type VARCHAR(50) NOT NULL,
+          entity_id INTEGER,
+          entity_name VARCHAR(255),
+          action VARCHAR(50) NOT NULL,
+          description TEXT,
+          user_name VARCHAR(100) DEFAULT 'project final',
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        CREATE INDEX IF NOT EXISTS idx_activity_log_created ON activity_log(created_at DESC);
+      `);
+      console.log('Activity log table created');
+    } catch (migrationError) {
+      console.log('Activity log migration note:', migrationError.message);
     }
   } catch (error) {
     console.error('Database initialization error:', error);
