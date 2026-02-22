@@ -1054,7 +1054,7 @@ router.get('/reports/packing-history', async (req, res) => {
         p.sales_order_number,
         p.status,
         s.tracking_number,
-        COALESCE(SUM(pi.packed_quantity), 0) AS quantity
+        COALESCE(SUM(CASE WHEN pi.packed_quantity > 0 THEN pi.packed_quantity ELSE COALESCE(pi.ordered_quantity, pi.quantity_to_pack, 0) END), 0) AS quantity
       FROM packages p
       LEFT JOIN shipments s ON s.package_id = p.id
       LEFT JOIN package_items pi ON pi.package_id = p.id
@@ -1641,6 +1641,115 @@ router.get('/reports/inventory-summary', async (req, res) => {
     res.json(rows);
   } catch (error) {
     console.error('Error generating inventory summary report:', error);
+    res.status(500).json({ error: 'Failed to generate report' });
+  }
+});
+
+// ==================== PAYMENTS RECEIVED REPORT ====================
+
+// Payments Received report
+router.get('/reports/payments-received', async (req, res) => {
+  try {
+    const { from, to } = req.query;
+    const db = database.getDb();
+
+    let dateFilter = '';
+    const params = [];
+    let paramCount = 1;
+
+    if (from && to) {
+      dateFilter = `WHERE pr.payment_date >= $${paramCount} AND pr.payment_date <= $${paramCount + 1}`;
+      params.push(from, to);
+      paramCount += 2;
+    }
+
+    const result = await db.query(`
+      SELECT 
+        pr.id,
+        pr.payment_number,
+        pr.payment_date,
+        pr.status,
+        pr.reference_number,
+        pr.customer_name,
+        pr.payment_mode,
+        pr.notes,
+        pr.invoice_number,
+        pr.deposit_to,
+        pr.amount_received
+      FROM payments_received pr
+      ${dateFilter}
+      ORDER BY pr.payment_date DESC, pr.id DESC
+    `, params);
+
+    const rows = result.rows.map(row => ({
+      payment_number: row.payment_number || '',
+      date: row.payment_date,
+      status: row.status || 'Paid',
+      reference_number: row.reference_number || '',
+      customer_name: row.customer_name || '',
+      payment_mode: row.payment_mode || 'Cash',
+      notes: row.notes || '',
+      invoice_number: row.invoice_number || '',
+      deposit_to: row.deposit_to || 'Petty Cash',
+      amount: parseFloat(row.amount_received) || 0,
+      unused_amount: 0
+    }));
+
+    res.json(rows);
+  } catch (error) {
+    console.error('Error generating payments received report:', error);
+    res.status(500).json({ error: 'Failed to generate report' });
+  }
+});
+
+// ==================== REFUND HISTORY REPORT ====================
+
+// Refund History report
+router.get('/reports/refund-history', async (req, res) => {
+  try {
+    const { from, to } = req.query;
+    const db = database.getDb();
+
+    let dateFilter = '';
+    const params = [];
+    let paramCount = 1;
+
+    if (from && to) {
+      dateFilter = `WHERE sr.return_date >= $${paramCount} AND sr.return_date <= $${paramCount + 1}`;
+      params.push(from, to);
+      paramCount += 2;
+    }
+
+    const result = await db.query(`
+      SELECT 
+        sr.id,
+        sr.rma_number,
+        sr.return_date,
+        sr.customer_name,
+        sr.reason,
+        sr.sales_order_number,
+        COALESCE(SUM(sri.amount), 0) AS total_amount
+      FROM sales_returns sr
+      LEFT JOIN sales_return_items sri ON sri.sales_return_id = sr.id
+      ${dateFilter}
+      GROUP BY sr.id, sr.rma_number, sr.return_date, sr.customer_name, sr.reason, sr.sales_order_number
+      ORDER BY sr.return_date ASC, sr.id ASC
+    `, params);
+
+    const rows = result.rows.map((row, idx) => ({
+      date: row.return_date,
+      reference_number: '',
+      transaction_number: row.rma_number || '',
+      customer_name: row.customer_name || '',
+      mode: 'Cash',
+      notes: row.reason || '',
+      amount_fcy: parseFloat(row.total_amount) || 0,
+      amount_bcy: parseFloat(row.total_amount) || 0
+    }));
+
+    res.json(rows);
+  } catch (error) {
+    console.error('Error generating refund history report:', error);
     res.status(500).json({ error: 'Failed to generate report' });
   }
 });
