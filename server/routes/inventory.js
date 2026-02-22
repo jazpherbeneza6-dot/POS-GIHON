@@ -854,19 +854,20 @@ router.get('/reports/stock-summary', async (req, res) => {
         qtyIn = parseFloat(inResult.rows[0].total) || 0;
       } catch (e) { /* ignore */ }
 
-      // Get Quantity Out during the period - only from sales/invoices (converted from sales orders)
+      // Get Quantity Out during the period - only from CONFIRMED invoices
       let qtyOut = 0;
       try {
         let outQuery = `
-          SELECT COALESCE(SUM(si.quantity), 0) AS total
-          FROM sales_items si
-          JOIN sales s ON si.sale_id = s.id
-          WHERE si.item_id = $1
+          SELECT COALESCE(SUM(ii.quantity), 0) AS total
+          FROM invoice_items ii
+          JOIN invoices inv ON ii.invoice_id = inv.id
+          WHERE ii.item_id = $1
+            AND UPPER(inv.status) = 'CONFIRMED'
         `;
         const outParams = [item.id];
         if (from && to) {
-          outQuery += ` AND s.date >= $2 AND s.date <= $3`;
-          outParams.push(from, to + 'T23:59:59');
+          outQuery += ` AND inv.invoice_date >= $2 AND inv.invoice_date <= $3`;
+          outParams.push(from, to);
         }
         const outResult = await db.query(outQuery, outParams);
         qtyOut = parseFloat(outResult.rows[0].total) || 0;
@@ -874,15 +875,16 @@ router.get('/reports/stock-summary', async (req, res) => {
         // Fallback: try matching by item_name
         try {
           let outQuery2 = `
-            SELECT COALESCE(SUM(si.quantity), 0) AS total
-            FROM sales_items si
-            JOIN sales s ON si.sale_id = s.id
-            WHERE si.item_name = $1
+            SELECT COALESCE(SUM(ii.quantity), 0) AS total
+            FROM invoice_items ii
+            JOIN invoices inv ON ii.invoice_id = inv.id
+            WHERE ii.item_name = $1
+              AND UPPER(inv.status) = 'CONFIRMED'
           `;
           const outParams2 = [item.name];
           if (from && to) {
-            outQuery2 += ` AND s.date >= $2 AND s.date <= $3`;
-            outParams2.push(from, to + 'T23:59:59');
+            outQuery2 += ` AND inv.invoice_date >= $2 AND inv.invoice_date <= $3`;
+            outParams2.push(from, to);
           }
           const outResult2 = await db.query(outQuery2, outParams2);
           qtyOut = parseFloat(outResult2.rows[0].total) || 0;
