@@ -1833,7 +1833,7 @@
                     renderCustDdOptions();
                 }
             } catch (err) {
-                console.error('Error loading customers:', err)  ;
+                console.error('Error loading customers:', err);
             }
         })();
 
@@ -2723,6 +2723,126 @@
             closeConfigureTerms();
             updateDueDate();
         }
+
+        // ===== Pre-fill from Sales Order =====
+        (async function prefillFromSalesOrder() {
+            const params = new URLSearchParams(window.location.search);
+            const soId = params.get('from_so');
+            if (!soId) return;
+
+            try {
+                const res = await fetch('/api/sales-orders/' + soId);
+                if (!res.ok) return;
+                const order = await res.json();
+
+                // Wait for customers and items to load
+                await new Promise(r => setTimeout(r, 500));
+
+                // Set customer
+                if (order.customer_name) {
+                    selectCustDd(order.customer_id || '', order.customer_name);
+                }
+
+                // Set order number (SO reference)
+                document.getElementById('orderNumber').value = order.order_number || '';
+
+                // Set payment terms
+                if (order.payment_terms) {
+                    const termsMap = {
+                        'Due on Receipt': 'due_on_receipt',
+                        'Net 15': 'net_15',
+                        'Net 30': 'net_30',
+                        'Net 45': 'net_45',
+                        'Net 60': 'net_60',
+                        'End of Month': 'end_of_month',
+                        'End of Next Month': 'due_end_of_next_month'
+                    };
+                    const termVal = termsMap[order.payment_terms] || order.payment_terms;
+                    document.getElementById('terms').value = termVal;
+                    document.getElementById('termsDdLabel').textContent = order.payment_terms;
+                    updateDueDate();
+                }
+
+                // Set salesperson
+                if (order.salesperson_name) {
+                    document.getElementById('salesperson').value = order.salesperson_name;
+                    document.getElementById('spDdLabel').textContent = order.salesperson_name;
+                    document.getElementById('spDdLabel').style.color = '#333';
+                }
+
+                // Set subject
+                if (order.notes) {
+                    document.getElementById('subject').value = order.notes;
+                }
+
+                // Set customer notes & terms
+                if (order.customer_notes) {
+                    document.getElementById('customerNotes').value = order.customer_notes;
+                }
+                if (order.terms_conditions) {
+                    document.getElementById('termsConditions').value = order.terms_conditions;
+                }
+
+                // Populate items
+                const items = order.items || [];
+                if (items.length > 0) {
+                    const tbody = document.getElementById('itemsBody');
+                    tbody.innerHTML = ''; // Clear default empty row
+
+                    items.forEach(item => {
+                        const rate = parseFloat(item.rate || 0).toFixed(2);
+                        const qty = parseFloat(item.quantity || 1);
+                        const amount = parseFloat(item.amount || (qty * rate)).toFixed(2);
+                        const itemId = item.item_id || '';
+
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td class="item-picker-cell">
+                                <input type="text" class="item-picker-input" value="${item.item_name || ''}"
+                                    onfocus="openItemPicker(this)" oninput="filterItemPicker(this)">
+                                <input type="hidden" class="item-id-hidden" value="${itemId}">
+                                <div class="item-picker-dropdown"></div>
+                            </td>
+                            <td class="center"><input type="number" value="${qty}" style="text-align: center;" class="qty-input" onchange="recalcRow(this)"></td>
+                            <td class="center"><input type="number" value="${rate}" style="text-align: right;" class="rate-input" onchange="recalcRow(this)"></td>
+                            ${getDiscColumnsHTML()}
+                            <td><select><option value="">Select Tax</option></select></td>
+                            <td class="center amount-cell">${formatNum(parseFloat(amount))}</td>
+                            <td class="center"><button class="delete-row-btn" onclick="deleteItemRow(this)">×</button></td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                }
+
+                // Set discount
+                if (order.discount && parseFloat(order.discount) > 0) {
+                    document.getElementById('totalDiscInput').value = parseFloat(order.discount_value || order.discount);
+                    if (order.discount_type === '%') {
+                        document.getElementById('totalDiscToggle').dataset.type = '%';
+                        document.getElementById('totalDiscToggle').textContent = '%';
+                    } else {
+                        document.getElementById('totalDiscToggle').dataset.type = '₱';
+                        document.getElementById('totalDiscToggle').textContent = '₱';
+                    }
+                }
+
+                // Set shipping charges
+                if (order.shipping_charges && parseFloat(order.shipping_charges) > 0) {
+                    document.getElementById('shippingInput').value = parseFloat(order.shipping_charges);
+                }
+
+                // Set adjustment
+                if (order.adjustment && parseFloat(order.adjustment) !== 0) {
+                    document.getElementById('adjustmentInput').value = parseFloat(order.adjustment);
+                }
+
+                // Recalculate totals
+                recalcTotals();
+
+            } catch (err) {
+                console.error('Error pre-filling from sales order:', err);
+            }
+        })();
     </script>
 </body>
 

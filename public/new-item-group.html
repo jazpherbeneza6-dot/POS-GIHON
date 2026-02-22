@@ -1300,6 +1300,90 @@
                 overflow-x: auto;
             }
         }
+
+        /* Item Picker Dropdown */
+        .item-picker-cell {
+            position: relative;
+        }
+
+        .item-picker-dd {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 320px;
+            max-height: 260px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .item-picker-dd.open {
+            display: block;
+        }
+
+        .item-picker-dd-search {
+            padding: 8px 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .item-picker-dd-search input {
+            width: 100%;
+            padding: 6px 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 12px;
+            outline: none;
+        }
+
+        .item-picker-dd-search input:focus {
+            border-color: #8e1616;
+        }
+
+        .item-picker-dd-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .item-picker-dd-option {
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f8f8f8;
+        }
+
+        .item-picker-dd-option:hover {
+            background: #fef2f2;
+        }
+
+        .item-picker-dd-option .ipd-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .item-picker-dd-option .ipd-sku {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .item-picker-dd-option .ipd-price {
+            font-size: 11px;
+            color: #666;
+            white-space: nowrap;
+        }
+
+        .item-picker-dd-empty {
+            padding: 16px;
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+        }
     </style>
 </head>
 
@@ -1678,8 +1762,19 @@
                                 </thead>
                                 <tbody id="itemsTableBody">
                                     <tr>
-                                        <td><input type="text" class="table-input item-name"
-                                                placeholder="Enter item name"></td>
+                                        <td class="item-picker-cell">
+                                            <input type="text" class="table-input item-name"
+                                                placeholder="Type to search items..." autocomplete="off"
+                                                onfocus="openItemPickerDD(this)" oninput="filterItemPickerDD(this)">
+                                            <input type="hidden" class="item-id-hidden" value="">
+                                            <div class="item-picker-dd">
+                                                <div class="item-picker-dd-search">
+                                                    <input type="text" placeholder="Search items..."
+                                                        oninput="filterItemPickerDDFromSearch(this)">
+                                                </div>
+                                                <div class="item-picker-dd-list"></div>
+                                            </div>
+                                        </td>
                                         <td><input type="text" class="table-input item-sku" placeholder="Auto-generate">
                                         </td>
                                         <td><input type="text" class="table-input item-description"
@@ -2655,6 +2750,110 @@
                 itemsTable.classList.remove('hide-cost-price');
             } else {
                 itemsTable.classList.add('hide-cost-price');
+            }
+        });
+
+        // ===== Item Picker for ITEM NAME field =====
+        let ungroupedItems = [];
+
+        async function loadUngroupedItems() {
+            try {
+                const res = await fetch('/api/items');
+                if (!res.ok) return;
+                const allItems = await res.json();
+                ungroupedItems = allItems.filter(item => !item.group_id);
+            } catch (err) {
+                console.error('Error loading items:', err);
+            }
+        }
+        loadUngroupedItems();
+
+        function openItemPickerDD(input) {
+            // Close any other open pickers
+            document.querySelectorAll('.item-picker-dd.open').forEach(d => {
+                if (d !== input.closest('.item-picker-cell').querySelector('.item-picker-dd')) {
+                    d.classList.remove('open');
+                }
+            });
+            const cell = input.closest('.item-picker-cell');
+            const dd = cell.querySelector('.item-picker-dd');
+            const searchInput = dd.querySelector('.item-picker-dd-search input');
+            searchInput.value = '';
+            renderItemPickerDDOptions(dd, input.value);
+            dd.classList.add('open');
+            setTimeout(() => searchInput.focus(), 50);
+        }
+
+        function filterItemPickerDD(input) {
+            const cell = input.closest('.item-picker-cell');
+            const dd = cell.querySelector('.item-picker-dd');
+            if (!dd.classList.contains('open')) dd.classList.add('open');
+            renderItemPickerDDOptions(dd, input.value);
+        }
+
+        function filterItemPickerDDFromSearch(searchInput) {
+            const dd = searchInput.closest('.item-picker-dd');
+            renderItemPickerDDOptions(dd, searchInput.value);
+        }
+
+        function renderItemPickerDDOptions(dd, filter = '') {
+            const list = dd.querySelector('.item-picker-dd-list');
+            // Also exclude items already picked in other rows
+            const pickedIds = new Set();
+            document.querySelectorAll('.item-id-hidden').forEach(h => {
+                if (h.value) pickedIds.add(parseInt(h.value));
+            });
+            const filtered = ungroupedItems.filter(item => {
+                if (pickedIds.has(item.id)) return false;
+                const q = (filter || '').toLowerCase();
+                return item.name.toLowerCase().includes(q) ||
+                    (item.sku || '').toLowerCase().includes(q);
+            });
+            if (filtered.length === 0) {
+                list.innerHTML = '<div class="item-picker-dd-empty">No ungrouped items found</div>';
+                return;
+            }
+            list.innerHTML = filtered.map(item => {
+                const price = parseFloat(item.selling_price || item.price || 0).toFixed(2);
+                return `<div class="item-picker-dd-option" onclick="selectItemPickerDD(this, ${item.id}, '${item.name.replace(/'/g, "\\'")}'` +
+                    `, '${(item.sku || '').replace(/'/g, "\\'")}'` +
+                    `, '${(item.description || '').replace(/'/g, "\\'")}'` +
+                    `, ${parseFloat(item.cost || 0)}` +
+                    `, ${parseFloat(item.selling_price || item.price || 0)})"` +
+                    `>` +
+                    `<div><span class="ipd-name">${item.name}</span>` +
+                    `${item.sku ? '<br><span class="ipd-sku">SKU: ' + item.sku + '</span>' : ''}</div>` +
+                    `<span class="ipd-price">₱${price}</span>` +
+                    `</div>`;
+            }).join('');
+        }
+
+        function selectItemPickerDD(optionEl, id, name, sku, desc, cost, price) {
+            const cell = optionEl.closest('.item-picker-cell');
+            const nameInput = cell.querySelector('.item-name');
+            const hiddenInput = cell.querySelector('.item-id-hidden');
+            const dd = cell.querySelector('.item-picker-dd');
+
+            nameInput.value = name;
+            hiddenInput.value = id;
+            dd.classList.remove('open');
+
+            // Auto-fill other fields in the same row
+            const row = cell.closest('tr');
+            const skuInput = row.querySelector('.item-sku');
+            const descInput = row.querySelector('.item-description');
+            const costInput = row.querySelector('.item-cost');
+            const priceInput = row.querySelector('.item-price');
+            if (skuInput && sku) skuInput.value = sku;
+            if (descInput && desc) descInput.value = desc;
+            if (costInput && cost) costInput.value = cost.toFixed(2);
+            if (priceInput && price) priceInput.value = price.toFixed(2);
+        }
+
+        // Close item picker on outside click
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.item-picker-cell')) {
+                document.querySelectorAll('.item-picker-dd.open').forEach(d => d.classList.remove('open'));
             }
         });
     </script>

@@ -2679,28 +2679,8 @@
         // ===== CONVERT TO INVOICE =====
         async function convertToInvoice() {
             if (!selectedOrderId) return;
-            if (!confirm('Are you sure you want to convert this Sales Order to an Invoice?')) return;
-
-            try {
-                const res = await fetch(`/api/sales-orders/${selectedOrderId}/convert-to-invoice`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-
-                if (!res.ok) {
-                    const err = await res.json();
-                    alert('Error: ' + (err.error || 'Failed to convert'));
-                    return;
-                }
-
-                const data = await res.json();
-                // Refresh orders list, then show invoice detail
-                await loadOrders();
-                showInvoiceDetail(data.invoice_id, data.invoice_number);
-            } catch (err) {
-                console.error('Error converting to invoice:', err);
-                alert('Failed to convert sales order to invoice.');
-            }
+            // Open the New Invoice form pre-filled with sales order data
+            window.location.href = '/new-invoice.html?from_so=' + selectedOrderId;
         }
 
         // ===== INVOICE DETAIL VIEW =====

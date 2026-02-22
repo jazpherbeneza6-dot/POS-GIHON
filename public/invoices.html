@@ -1136,6 +1136,7 @@
                     <button class="inv-action-btn">✏️ Edit</button>
                     <button class="inv-action-btn">📄 PDF/Print ▾</button>
                     <div class="inv-action-separator"></div>
+                    ${statusLabel === 'DRAFT' ? '<button class="inv-action-btn" style="color:#2563eb;font-weight:600;" onclick="markAsConfirmed()">✅ Mark as Confirmed</button><div class="inv-action-separator"></div>' : ''}
                     <button class="inv-action-btn" onclick="recordPayment()">💳 Record Payment</button>
                     <div class="inv-action-separator"></div>
                     <button class="inv-action-btn">📧 Send ▾</button>
@@ -1221,6 +1222,39 @@
                     </div>
                 </div>
             `;
+        }
+
+        // ===== MARK AS CONFIRMED =====
+        async function markAsConfirmed() {
+            if (!selectedInvoiceId) return;
+            try {
+                const res = await fetch(`/api/invoices/${selectedInvoiceId}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'CONFIRMED' })
+                });
+                if (!res.ok) {
+                    alert('Failed to update invoice status.');
+                    return;
+                }
+                // Update the local data
+                const idx = allInvoices.findIndex(inv => inv.id === selectedInvoiceId);
+                if (idx !== -1) allInvoices[idx].status = 'CONFIRMED';
+                // Update left sidebar item status
+                const leftItem = document.querySelector(`.inv-left-item[data-id="${selectedInvoiceId}"]`);
+                if (leftItem) {
+                    const statusEl = leftItem.querySelector('.inv-left-item-status');
+                    if (statusEl) {
+                        statusEl.className = 'inv-left-item-status confirmed';
+                        statusEl.textContent = 'CONFIRMED';
+                    }
+                }
+                // Re-render detail
+                selectInvoice(selectedInvoiceId);
+            } catch (err) {
+                console.error('Error marking invoice as confirmed:', err);
+                alert('Failed to mark invoice as confirmed.');
+            }
         }
 
         // ===== BACK TO LIST =====
