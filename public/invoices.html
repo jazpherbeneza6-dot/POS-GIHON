@@ -244,6 +244,12 @@
             font-size: 12px;
         }
 
+        .status-paid {
+            color: #16a34a;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
         .th-checkbox {
             width: 16px;
             height: 16px;
@@ -897,6 +903,7 @@
         function getStatusClass(status) {
             const s = (status || '').toUpperCase();
             if (s === 'DRAFT') return 'draft';
+            if (s === 'PAID') return 'paid';
             return 'confirmed';
         }
 
@@ -1068,14 +1075,12 @@
             // Ribbon class
             let ribbonClass = 'draft';
             let ribbonText = 'Draft';
-            if (statusLabel === 'CONFIRMED') {
-                ribbonClass = 'confirmed';
-                ribbonText = 'Confirmed';
-            }
-            // Paid status (for future: if balanceDue === 0, show "Paid")
-            if (balanceDue <= 0 && statusLabel !== 'DRAFT') {
+            if (statusLabel === 'PAID') {
                 ribbonClass = 'paid';
                 ribbonText = 'Paid';
+            } else if (statusLabel === 'CONFIRMED') {
+                ribbonClass = 'confirmed';
+                ribbonText = 'Confirmed';
             }
 
             // Format payment terms
@@ -1137,8 +1142,7 @@
                     <button class="inv-action-btn">📄 PDF/Print ▾</button>
                     <div class="inv-action-separator"></div>
                     ${statusLabel === 'DRAFT' ? '<button class="inv-action-btn" style="color:#2563eb;font-weight:600;" onclick="markAsConfirmed()">✅ Mark as Confirmed</button><div class="inv-action-separator"></div>' : ''}
-                    <button class="inv-action-btn" onclick="recordPayment()">💳 Record Payment</button>
-                    <div class="inv-action-separator"></div>
+                    ${statusLabel !== 'PAID' ? '<button class="inv-action-btn" onclick="recordPayment()">💳 Record Payment</button><div class="inv-action-separator"></div>' : ''}
                     <button class="inv-action-btn">📧 Send ▾</button>
                     <div class="inv-action-separator"></div>
                     <button class="inv-action-btn">⋯</button>

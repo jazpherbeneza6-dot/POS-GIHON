@@ -724,6 +724,20 @@
                 }
 
                 const data = await res.json();
+
+                // Update the invoice status to PAID
+                if (invoiceData && invoiceData.id) {
+                    try {
+                        await fetch(`/api/invoices/${invoiceData.id}/status`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ status: 'PAID' })
+                        });
+                    } catch (e) {
+                        console.error('Error updating invoice status:', e);
+                    }
+                }
+
                 alert(`Payment #${data.payment_number} saved as ${status} successfully!`);
                 window.location.href = '/payments-received.html';
             } catch (err) {
