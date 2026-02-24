@@ -56,6 +56,40 @@ router.get('/next-number', async (req, res) => {
     }
 });
 
+// GET Sales Order Details Report (must be before /:id)
+router.get('/reports/sales-order-details', async (req, res) => {
+    try {
+        const pool = database.getDb();
+        const { from, to } = req.query;
+
+        let dateFilter = '';
+        const params = [];
+
+        if (from && to) {
+            dateFilter = 'WHERE so.order_date >= $1 AND so.order_date <= $2';
+            params.push(from, to + 'T23:59:59.999');
+        }
+
+        const result = await pool.query(`
+            SELECT so.id,
+                   so.status,
+                   so.order_date,
+                   so.expected_shipment_date,
+                   so.order_number,
+                   so.customer_name,
+                   COALESCE(so.total, 0) AS amount
+            FROM sales_orders so
+            ${dateFilter}
+            ORDER BY so.created_at DESC
+        `, params);
+
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Error fetching sales order details report:', err);
+        res.status(500).json({ error: 'Failed to fetch sales order details report' });
+    }
+});
+
 // GET single sales order by ID (with customer address data)
 router.get('/:id', async (req, res) => {
     try {
