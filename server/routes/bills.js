@@ -2,6 +2,101 @@ const express = require('express');
 const router = express.Router();
 const database = require('../database');
 
+// GET Vendor Balance Summary Report
+router.get('/reports/vendor-balance-summary', async (req, res) => {
+    try {
+        const db = database.getDb();
+        const { from, to } = req.query;
+
+        let params = [];
+        let billRangeFilter = '';
+        let paymentRangeFilter = '';
+        let billAllFilter = '';
+        let paymentAllFilter = '';
+
+        if (from && to) {
+            billRangeFilter = 'AND bill_date >= $1 AND bill_date <= $2';
+            paymentRangeFilter = 'AND payment_date >= $1 AND payment_date <= $2';
+            billAllFilter = 'AND bill_date <= $2';
+            paymentAllFilter = 'AND payment_date <= $2';
+            params.push(from, to + 'T23:59:59.999');
+        }
+
+        const result = await db.query(`
+            SELECT
+                vendor.supplier_name AS vendor_name,
+                COALESCE(bill_range.total, 0) AS billed_amount,
+                COALESCE(pay_range.total, 0) AS amount_paid,
+                COALESCE(bill_all.total, 0) - COALESCE(pay_all.total, 0) AS closing_balance
+            FROM (
+                SELECT DISTINCT supplier_name FROM bills WHERE supplier_name IS NOT NULL AND supplier_name <> ''
+                UNION
+                SELECT DISTINCT supplier_name FROM payments_made WHERE supplier_name IS NOT NULL AND supplier_name <> ''
+            ) vendor
+            LEFT JOIN (
+                SELECT supplier_name, SUM(COALESCE(total_amount, 0)) AS total
+                FROM bills WHERE supplier_name IS NOT NULL ${billRangeFilter}
+                GROUP BY supplier_name
+            ) bill_range ON bill_range.supplier_name = vendor.supplier_name
+            LEFT JOIN (
+                SELECT supplier_name, SUM(COALESCE(amount_paid, 0)) AS total
+                FROM payments_made WHERE supplier_name IS NOT NULL ${paymentRangeFilter}
+                GROUP BY supplier_name
+            ) pay_range ON pay_range.supplier_name = vendor.supplier_name
+            LEFT JOIN (
+                SELECT supplier_name, SUM(COALESCE(total_amount, 0)) AS total
+                FROM bills WHERE supplier_name IS NOT NULL ${billAllFilter}
+                GROUP BY supplier_name
+            ) bill_all ON bill_all.supplier_name = vendor.supplier_name
+            LEFT JOIN (
+                SELECT supplier_name, SUM(COALESCE(amount_paid, 0)) AS total
+                FROM payments_made WHERE supplier_name IS NOT NULL ${paymentAllFilter}
+                GROUP BY supplier_name
+            ) pay_all ON pay_all.supplier_name = vendor.supplier_name
+            ORDER BY vendor.supplier_name ASC
+        `, params);
+
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Error fetching vendor balance summary report:', err);
+        res.status(500).json({ error: 'Failed to fetch vendor balance summary report' });
+    }
+});
+
+// GET Bill Details Report
+router.get('/reports/bill-details', async (req, res) => {
+    try {
+        const db = database.getDb();
+        const { from, to } = req.query;
+
+        let dateFilter = '';
+        let params = [];
+
+        if (from && to) {
+            dateFilter = 'WHERE b.bill_date >= $1 AND b.bill_date <= $2';
+            params = [from, to + 'T23:59:59.999'];
+        }
+
+        const result = await db.query(`
+            SELECT b.id, b.status, b.bill_date, b.due_date, b.bill_number,
+                   b.supplier_name, b.total_amount,
+                   COALESCE(SUM(pm.amount_paid), 0) AS total_paid,
+                   (b.total_amount - COALESCE(SUM(pm.amount_paid), 0)) AS balance
+            FROM bills b
+            LEFT JOIN payments_made pm ON b.id = pm.bill_id
+            ${dateFilter}
+            GROUP BY b.id, b.status, b.bill_date, b.due_date, b.bill_number,
+                     b.supplier_name, b.total_amount
+            ORDER BY b.bill_date ASC
+        `, params);
+
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Error fetching bill details report:', err);
+        res.status(500).json({ error: 'Failed to fetch bill details report' });
+    }
+});
+
 // Get next bill number
 router.get('/next-number', async (req, res) => {
     try {
