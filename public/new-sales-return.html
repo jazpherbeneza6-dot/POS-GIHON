@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Sales Return - Inventory Management</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', 'Source Sans Pro', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #fff;
+            font-size: 13px;
+        }
+
+        .main-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 0;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .sr-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 32px;
+            border-bottom: 1px solid #e9ecef;
+            background: #fff;
+        }
+
+        .sr-header h1 {
+            font-size: 20px;
+            font-weight: 500;
+            color: #333;
+            margin: 0;
+        }
+
+        .sr-close {
+            font-size: 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #999;
+            padding: 4px 8px;
+            line-height: 1;
+        }
+
+        .sr-close:hover {
+            color: #333;
+        }
+
+        /* Form */
+        .sr-form {
+            padding: 24px 40px;
+            flex: 1;
+        }
+
+        .sr-form-grid {
+            display: grid;
+            grid-template-columns: 150px 280px;
+            gap: 14px 20px;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .sr-label {
+            font-size: 13px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .sr-label.required {
+            color: #dc2626;
+        }
+
+        .sr-input {
+            padding: 9px 12px;
+            border: 1px solid #d0d5dd;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+            color: #333;
+            background: #fff;
+            outline: none;
+            width: 100%;
+        }
+
+        .sr-input:focus {
+            border-color: #1a73e8;
+        }
+
+        .sr-select {
+            padding: 9px 12px;
+            border: 1px solid #d0d5dd;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+            color: #333;
+            background: #fff;
+            outline: none;
+            width: 100%;
+            -webkit-appearance: auto;
+        }
+
+        .sr-select:focus {
+            border-color: #1a73e8;
+        }
+
+        .sr-input-wrap {
+            position: relative;
+        }
+
+        .sr-input-wrap .sr-settings-icon {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #1a73e8;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* Checkbox */
+        .sr-checkbox-row {
+            margin: 16px 0 24px 170px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .sr-checkbox-row input[type="checkbox"] {
+            width: 15px;
+            height: 15px;
+        }
+
+        .sr-help-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            font-size: 11px;
+            color: #999;
+            cursor: help;
+        }
+
+        /* Notice */
+        .sr-notice {
+            background: #fef9e7;
+            border: 1px solid #fce5a0;
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin: 0 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #6b5900;
+        }
+
+        .sr-notice a {
+            color: #1a73e8;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .sr-notice a:hover {
+            text-decoration: underline;
+        }
+
+        /* Items table */
+        .sr-items-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .sr-items-table thead th {
+            background: #fafbfc;
+            padding: 10px 14px;
+            font-size: 10px;
+            font-weight: 700;
+            color: #555;
+            text-transform: uppercase;
+            text-align: left;
+            border-top: 1px solid #e0e0e0;
+            border-bottom: 1px solid #e0e0e0;
+            letter-spacing: 0.5px;
+        }
+
+        .sr-items-table thead th:nth-child(2),
+        .sr-items-table thead th:nth-child(3) {
+            text-align: center;
+        }
+
+        .sr-items-table tbody td {
+            padding: 12px 14px;
+            font-size: 13px;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: top;
+        }
+
+        .sr-items-table tbody td:nth-child(2),
+        .sr-items-table tbody td:nth-child(3) {
+            text-align: center;
+        }
+
+        .sr-item-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .sr-item-sku {
+            font-size: 12px;
+            color: #1a73e8;
+            margin-top: 2px;
+        }
+
+        .sr-item-desc {
+            font-size: 12px;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .sr-return-qty-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .sr-return-qty-input {
+            width: 80px;
+            padding: 6px 10px;
+            border: 1px solid #d0d5dd;
+            border-radius: 4px;
+            font-size: 14px;
+            text-align: right;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .sr-return-qty-input:focus {
+            border-color: #1a73e8;
+        }
+
+        .sr-available {
+            font-size: 11px;
+            color: #888;
+            text-align: right;
+        }
+
+        .sr-warehouse-link {
+            font-size: 11px;
+            color: #1a73e8;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            justify-content: flex-end;
+        }
+
+        .sr-remove-btn {
+            background: none;
+            border: none;
+            color: #e53935;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .sr-remove-btn:hover {
+            color: #c62828;
+        }
+
+        /* Footer */
+        .sr-footer {
+            position: sticky;
+            bottom: 0;
+            background: #fff;
+            border-top: 1px solid #e0e0e0;
+            padding: 14px 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sr-btn {
+            padding: 8px 20px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+            cursor: pointer;
+            font-weight: 500;
+            border: 1px solid #d0d5dd;
+            background: #fff;
+            color: #333;
+        }
+
+        .sr-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .sr-btn.primary {
+            background: #1a73e8;
+            color: #fff;
+            border-color: #1a73e8;
+        }
+
+        .sr-btn.primary:hover {
+            background: #1557b0;
+        }
+
+        .sr-btn.cancel {
+            background: #333;
+            color: #fff;
+            border-color: #333;
+        }
+
+        .sr-btn.cancel:hover {
+            background: #444;
+        }
+
+        .sr-total-items {
+            margin-left: auto;
+            font-size: 13px;
+            color: #555;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer"></div>
+
+    <div class="main-layout">
+        <div class="content">
+            <!-- Header -->
+            <div class="sr-header">
+                <h1 id="pageTitle">New Sales Return</h1>
+                <button class="sr-close" onclick="goBack()" title="Close">×</button>
+            </div>
+
+            <!-- Form -->
+            <div class="sr-form">
+                <div class="sr-form-grid">
+                    <label class="sr-label required">RMA#*</label>
+                    <div class="sr-input-wrap">
+                        <input type="text" class="sr-input" id="rmaNumber" readonly>
+                        <span class="sr-settings-icon">⚙</span>
+                    </div>
+
+                    <label class="sr-label required">Date*</label>
+                    <input type="text" class="sr-input" id="returnDate" readonly>
+
+                    <label class="sr-label required">Warehouse Location*</label>
+                    <select class="sr-select" id="warehouseLocation">
+                        <option value="Head Office">Head Office</option>
+                    </select>
+
+                    <label class="sr-label">Reason</label>
+                    <input type="text" class="sr-input" id="returnReason" placeholder="">
+                </div>
+
+                <div class="sr-checkbox-row">
+                    <input type="checkbox" id="creditOnly">
+                    <label for="creditOnly">This sales return contains credit-only goods</label>
+                    <span class="sr-help-icon">?</span>
+                </div>
+
+                <div class="sr-notice">
+                    <span style="font-size:16px;">💡</span>
+                    <span>You can also select or scan the items to be included from the package. <a
+                            href="javascript:void(0)">Select or Scan items</a></span>
+                </div>
+
+                <!-- Items Table -->
+                <table class="sr-items-table">
+                    <thead>
+                        <tr>
+                            <th style="width:30%;">Items & Description</th>
+                            <th style="width:15%;">Shipped / Fulfilled</th>
+                            <th style="width:12%;">Returned</th>
+                            <th style="width:25%;">Return Quantity</th>
+                            <th style="width:5%;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="returnItemsBody">
+                        <tr>
+                            <td colspan="5" style="text-align:center;padding:30px;color:#999;">Loading items...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Footer -->
+            <div class="sr-footer">
+                <button class="sr-btn primary" id="btnSaveDraft" onclick="saveSalesReturn('DRAFT')">Save as
+                    Draft</button>
+                <button class="sr-btn" onclick="saveSalesReturn('APPROVED')">Save and Approve</button>
+                <button class="sr-btn cancel" onclick="goBack()">Cancel</button>
+                <span class="sr-total-items" id="totalItemsLabel">Total Items : 0</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/layout.js"></script>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const fromSoId = params.get('from_so');
+        const editId = params.get('edit_id');
+        let salesOrderData = null;
+        let orderItems = [];
+        let editReturnData = null;
+
+        function goBack() {
+            if (editId) {
+                window.location.href = '/sales-returns.html?view_id=' + editId;
+            } else if (fromSoId) {
+                window.location.href = '/sales-orders.html';
+            } else {
+                window.history.back();
+            }
+        }
+
+        function formatDateDisplay(d) {
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            return d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+        }
+
+        async function init() {
+            document.getElementById('returnDate').value = formatDateDisplay(new Date());
+
+            // EDIT MODE
+            if (editId) {
+                document.getElementById('pageTitle').textContent = 'Edit Sales Return';
+                document.getElementById('btnSaveDraft').textContent = 'Save';
+                document.title = 'Edit Sales Return - Inventory Management';
+
+                try {
+                    const res = await fetch('/api/sales-returns/' + editId);
+                    if (res.ok) {
+                        editReturnData = await res.json();
+                        document.getElementById('rmaNumber').value = editReturnData.rma_number || '';
+                        document.getElementById('returnDate').value = formatDateDisplay(new Date(editReturnData.return_date));
+                        document.getElementById('warehouseLocation').value = editReturnData.warehouse_location || 'Head Office';
+                        document.getElementById('returnReason').value = editReturnData.reason || '';
+                        document.getElementById('creditOnly').checked = editReturnData.credit_only || false;
+
+                        // Use existing items as orderItems for saving
+                        const retItems = editReturnData.items || [];
+                        orderItems = retItems.map(ri => ({
+                            item_name: ri.item_name,
+                            item_id: ri.item_id,
+                            quantity: parseFloat(ri.shipped_quantity || ri.return_quantity || 0),
+                            sku: ri.item_id || '',
+                            description: '',
+                            rate: parseFloat(ri.rate || 0)
+                        }));
+
+                        // Render items in edit mode
+                        renderEditItems(retItems);
+                    }
+                } catch (e) { console.error('Error loading return for edit:', e); }
+                return;
+            }
+
+            // NEW MODE — fetch next RMA number
+            try {
+                const rmaRes = await fetch('/api/sales-returns/next-number');
+                if (rmaRes.ok) {
+                    const rmaData = await rmaRes.json();
+                    document.getElementById('rmaNumber').value = rmaData.rma_number;
+                }
+            } catch (e) { console.error('Error fetching RMA number:', e); }
+
+            // Fetch sales order data
+            if (fromSoId) {
+                try {
+                    const soRes = await fetch('/api/sales-orders/' + fromSoId);
+                    if (soRes.ok) {
+                        salesOrderData = await soRes.json();
+                        orderItems = salesOrderData.items || [];
+
+                        let returnedMap = {};
+                        try {
+                            const retRes = await fetch('/api/sales-returns/by-order/' + fromSoId);
+                            if (retRes.ok) {
+                                const existingReturns = await retRes.json();
+                                for (const ret of existingReturns) {
+                                    try {
+                                        const retDetail = await fetch('/api/sales-returns/' + ret.id);
+                                        if (retDetail.ok) {
+                                            const retData = await retDetail.json();
+                                            (retData.items || []).forEach(ri => {
+                                                const key = ri.item_id || ri.item_name;
+                                                returnedMap[key] = (returnedMap[key] || 0) + parseFloat(ri.return_quantity || 0);
+                                            });
+                                        }
+                                    } catch (e) { }
+                                }
+                            }
+                        } catch (e) { }
+
+                        let stockMap = {};
+                        for (const item of orderItems) {
+                            if (item.item_id) {
+                                try {
+                                    const itemRes = await fetch('/api/items/' + item.item_id);
+                                    if (itemRes.ok) {
+                                        const itemData = await itemRes.json();
+                                        stockMap[item.item_id] = parseFloat(itemData.stock_quantity || 0);
+                                    }
+                                } catch (e) { }
+                            }
+                        }
+
+                        renderItems(orderItems, returnedMap, stockMap);
+                    }
+                } catch (e) { console.error('Error fetching SO:', e); }
+            }
+        }
+
+        function renderItems(items, returnedMap, stockMap) {
+            const tbody = document.getElementById('returnItemsBody');
+            if (!items || items.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:30px;color:#999;">No items found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = items.map((item, idx) => {
+                const shippedQty = parseFloat(item.quantity || 0);
+                const key = item.item_id || item.item_name;
+                const alreadyReturned = returnedMap[key] || 0;
+                const maxReturn = shippedQty - alreadyReturned;
+                const defaultReturn = maxReturn > 0 ? maxReturn : 0;
+                const stock = stockMap[item.item_id] || 0;
+                const sku = item.sku || item.item_id || '';
+
+                return `<tr data-idx="${idx}">
+                    <td>
+                        <div class="sr-item-name">${item.item_name || ''}</div>
+                        ${sku ? '<div class="sr-item-sku">SKU: ' + sku + '</div>' : ''}
+                        ${item.description ? '<div class="sr-item-desc">' + item.description + '</div>' : ''}
+                    </td>
+                    <td>${shippedQty}</td>
+                    <td>${alreadyReturned}</td>
+                    <td>
+                        <div class="sr-return-qty-wrap">
+                            <input type="number" class="sr-return-qty-input" value="${defaultReturn}" min="0" max="${maxReturn}" data-idx="${idx}" onchange="updateTotalItems()">
+                            <div class="sr-available">Available for Sale:<br>${stock} pcs</div>
+                            <a href="javascript:void(0)" class="sr-warehouse-link">🏭 Warehouse mo to</a>
+                        </div>
+                    </td>
+                    <td><button class="sr-remove-btn" onclick="removeItem(${idx})" title="Remove">✕</button></td>
+                </tr>`;
+            }).join('');
+
+            updateTotalItems();
+        }
+
+        function renderEditItems(retItems) {
+            const tbody = document.getElementById('returnItemsBody');
+            if (!retItems || retItems.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:30px;color:#999;">No items found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = retItems.map((item, idx) => {
+                const shippedQty = parseFloat(item.shipped_quantity || item.return_quantity || 0);
+                const alreadyReturned = parseFloat(item.returned_quantity || 0);
+                const returnQty = parseFloat(item.return_quantity || 0);
+                const sku = item.item_id || '';
+
+                return `<tr data-idx="${idx}">
+                    <td>
+                        <div class="sr-item-name">${item.item_name || ''}</div>
+                        ${sku ? '<div class="sr-item-sku">SKU: ' + sku + '</div>' : ''}
+                    </td>
+                    <td>${shippedQty}</td>
+                    <td>${alreadyReturned}</td>
+                    <td>
+                        <div class="sr-return-qty-wrap">
+                            <input type="number" class="sr-return-qty-input" value="${returnQty}" min="0" data-idx="${idx}" onchange="updateTotalItems()">
+                            <a href="javascript:void(0)" class="sr-warehouse-link">🏭 Head Office</a>
+                        </div>
+                    </td>
+                    <td><button class="sr-remove-btn" onclick="removeItem(${idx})" title="Remove">✕</button></td>
+                </tr>`;
+            }).join('');
+
+            updateTotalItems();
+        }
+
+        function removeItem(idx) {
+            const row = document.querySelector('tr[data-idx="' + idx + '"]');
+            if (row) row.remove();
+            updateTotalItems();
+        }
+
+        function updateTotalItems() {
+            let total = 0;
+            document.querySelectorAll('.sr-return-qty-input').forEach(inp => {
+                total += parseFloat(inp.value || 0);
+            });
+            document.getElementById('totalItemsLabel').textContent = 'Total Items : ' + total;
+        }
+
+        async function saveSalesReturn(status) {
+            const rmaNumber = document.getElementById('rmaNumber').value;
+            const reason = document.getElementById('returnReason').value;
+            const creditOnly = document.getElementById('creditOnly').checked;
+            const warehouseLocation = document.getElementById('warehouseLocation').value;
+
+            const items = [];
+            document.querySelectorAll('.sr-return-qty-input').forEach(inp => {
+                const idx = parseInt(inp.dataset.idx);
+                const item = orderItems[idx];
+                if (!item) return;
+                const returnQty = parseFloat(inp.value || 0);
+                if (returnQty <= 0) return;
+                items.push({
+                    item_name: item.item_name,
+                    item_id: item.item_id || null,
+                    shipped_quantity: parseFloat(item.quantity || 0),
+                    returned_quantity: 0,
+                    return_quantity: returnQty,
+                    rate: parseFloat(item.rate || 0),
+                    amount: returnQty * parseFloat(item.rate || 0)
+                });
+            });
+
+            if (items.length === 0) {
+                alert('Please add at least one item with a return quantity.');
+                return;
+            }
+
+            const body = {
+                rma_number: rmaNumber,
+                return_date: new Date().toISOString(),
+                warehouse_location: warehouseLocation,
+                reason: reason,
+                credit_only: creditOnly,
+                sales_order_id: editReturnData ? editReturnData.sales_order_id : (fromSoId ? parseInt(fromSoId) : null),
+                sales_order_number: editReturnData ? editReturnData.sales_order_number : (salesOrderData ? salesOrderData.order_number : ''),
+                customer_name: editReturnData ? editReturnData.customer_name : (salesOrderData ? salesOrderData.customer_name : ''),
+                status: status,
+                receive_status: (status === 'DRAFT' || status === 'APPROVED') ? '' : 'Received',
+                refund_status: (status === 'DRAFT' || status === 'APPROVED') ? '' : 'Pending',
+                items: items
+            };
+
+            try {
+                let res;
+                if (editId) {
+                    // Update existing — delete old items, update return, re-insert items
+                    res = await fetch('/api/sales-returns/' + editId, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(body)
+                    });
+                    if (res.ok) {
+                        // Re-insert items via a dedicated endpoint or use the existing approach
+                        // For now, delete old items and re-create the return
+                        await fetch('/api/sales-returns/' + editId, { method: 'DELETE' });
+                        body.rma_number = rmaNumber; // Keep same RMA
+                        res = await fetch('/api/sales-returns', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(body)
+                        });
+                    }
+                } else {
+                    res = await fetch('/api/sales-returns', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(body)
+                    });
+                }
+                if (!res.ok) {
+                    const err = await res.json();
+                    alert('Error: ' + (err.error || 'Failed to save'));
+                    return;
+                }
+                const result = await res.json();
+                window.location.href = '/sales-returns.html?view_id=' + result.id;
+            } catch (e) {
+                console.error('Save error:', e);
+                alert('Failed to save sales return.');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+
+</html>
