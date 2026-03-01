@@ -827,35 +827,11 @@
                                 <button class="toggle-tab" data-type="value"
                                     onclick="handleToggleTab(this, 'salesSummary')">By Value</button>
                             </div>
-                            <div class="line-chart-container" id="salesSummaryChart">
-                                <div class="line-chart-grid">
-                                    <div class="line-chart-row"><span class="line-chart-label">5K</span></div>
-                                    <div class="line-chart-row"><span class="line-chart-label">4K</span></div>
-                                    <div class="line-chart-row"><span class="line-chart-label">3K</span></div>
-                                    <div class="line-chart-row"><span class="line-chart-label">2K</span></div>
-                                    <div class="line-chart-row"><span class="line-chart-label">1K</span></div>
-                                    <div class="line-chart-row"><span class="line-chart-label">0</span></div>
-                                </div>
-                                <div class="line-chart-empty" id="salesSummaryEmpty">
+                            <div style="position:relative;height:320px;" id="salesSummaryChartWrap">
+                                <canvas id="salesSummaryCanvas"></canvas>
+                                <div class="line-chart-empty" id="salesSummaryEmpty"
+                                    style="position:absolute;top:40%;left:50%;transform:translate(-50%,-50%);font-size:14px;color:#9ca3af;text-align:center;white-space:nowrap;z-index:2;">
                                     No sales orders created during this period.
-                                </div>
-                                <div class="line-chart-dates">
-                                    <span class="line-chart-date">01<br>Jan</span>
-                                    <span class="line-chart-date">03<br>Jan</span>
-                                    <span class="line-chart-date">05<br>Jan</span>
-                                    <span class="line-chart-date">07<br>Jan</span>
-                                    <span class="line-chart-date">09<br>Jan</span>
-                                    <span class="line-chart-date">11<br>Jan</span>
-                                    <span class="line-chart-date">13<br>Jan</span>
-                                    <span class="line-chart-date">15<br>Jan</span>
-                                    <span class="line-chart-date">17<br>Jan</span>
-                                    <span class="line-chart-date">19<br>Jan</span>
-                                    <span class="line-chart-date">21<br>Jan</span>
-                                    <span class="line-chart-date">23<br>Jan</span>
-                                    <span class="line-chart-date">25<br>Jan</span>
-                                    <span class="line-chart-date">27<br>Jan</span>
-                                    <span class="line-chart-date">29<br>Jan</span>
-                                    <span class="line-chart-date">31<br>Jan</span>
                                 </div>
                             </div>
                         </div>
@@ -1624,26 +1600,131 @@
             }
         }
 
-        // Load Sales Order Summary data
-        async function loadSalesOrderSummary(period = 'thisMonth', sort = 'quantity') {
+        // Sales Order Summary Chart instance
+        let salesSummaryChartInstance = null;
+
+        // Load Sales Order Summary data with Chart.js
+        async function loadSalesOrderSummary(period = 'thisMonth', sort) {
+            // Use stored sort if not explicitly provided
+            sort = sort || currentSorts.salesSummary || 'quantity';
             try {
-                console.log('Fetching sales summary for period:', period, 'sort:', sort);
-                const response = await fetch(`/api/dashboard/sales-summary?period=${period}`);
+                const response = await fetch(`/api/dashboard/sales-trend?period=${period}`);
                 const data = await response.json();
 
-                // Update chart empty state
                 const emptyState = document.getElementById('salesSummaryEmpty');
-                const totalSales = parseInt(data.total_sales) || 0;
+                const canvas = document.getElementById('salesSummaryCanvas');
 
-                if (emptyState) {
-                    if (totalSales === 0) {
-                        emptyState.style.display = 'block';
-                    } else {
-                        emptyState.style.display = 'none';
+                if (!data || data.length === 0) {
+                    if (emptyState) emptyState.style.display = 'block';
+                    if (salesSummaryChartInstance) {
+                        salesSummaryChartInstance.destroy();
+                        salesSummaryChartInstance = null;
                     }
+                    return;
                 }
 
-                console.log('Sales Order Summary loaded for period:', period, 'sort:', sort, data);
+                if (emptyState) emptyState.style.display = 'none';
+
+                // Prepare chart data
+                const labels = data.map(d => d.label);
+                const values = sort === 'value'
+                    ? data.map(d => parseFloat(d.total_revenue) || 0)
+                    : data.map(d => parseInt(d.sale_count) || 0);
+
+                const isValue = sort === 'value';
+                const chartColor = isValue ? '#22c55e' : '#2563eb';
+                const chartBgColor = isValue ? 'rgba(34,197,94,0.1)' : 'rgba(37,99,235,0.1)';
+
+                // Destroy previous chart
+                if (salesSummaryChartInstance) {
+                    salesSummaryChartInstance.destroy();
+                }
+
+                const ctx = canvas.getContext('2d');
+
+                // Create gradient fill
+                const gradient = ctx.createLinearGradient(0, 0, 0, canvas.parentElement.offsetHeight);
+                gradient.addColorStop(0, isValue ? 'rgba(34,197,94,0.25)' : 'rgba(37,99,235,0.25)');
+                gradient.addColorStop(1, 'rgba(255,255,255,0)');
+
+                salesSummaryChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: isValue ? 'Revenue (PHP)' : 'Orders',
+                            data: values,
+                            borderColor: chartColor,
+                            backgroundColor: gradient,
+                            borderWidth: 2.5,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: values.length > 20 ? 0 : 4,
+                            pointHoverRadius: 6,
+                            pointBackgroundColor: '#fff',
+                            pointBorderColor: chartColor,
+                            pointBorderWidth: 2,
+                            pointHitRadius: 10
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: '#1a1f3a',
+                                titleFont: { size: 12, weight: '600', family: 'Inter' },
+                                bodyFont: { size: 13, family: 'Inter' },
+                                padding: 12,
+                                cornerRadius: 8,
+                                displayColors: false,
+                                callbacks: {
+                                    label: function (ctx) {
+                                        if (isValue) {
+                                            return 'PHP ' + ctx.parsed.y.toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                                        }
+                                        return ctx.parsed.y + ' order' + (ctx.parsed.y !== 1 ? 's' : '');
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { display: false },
+                                ticks: {
+                                    font: { size: 11, family: 'Inter' },
+                                    color: '#9ca3af',
+                                    maxRotation: 0,
+                                    autoSkip: true,
+                                    maxTicksLimit: 12
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                grid: { color: '#f0f0f0', drawBorder: false },
+                                ticks: {
+                                    font: { size: 11, family: 'Inter' },
+                                    color: '#9ca3af',
+                                    callback: function (value) {
+                                        if (isValue) {
+                                            if (value >= 1000000) return (value / 1000000).toFixed(1) + 'M';
+                                            if (value >= 1000) return (value / 1000).toFixed(0) + 'K';
+                                            return value;
+                                        }
+                                        return value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                console.log('Sales Order Summary chart rendered:', data.length, 'points, mode:', sort);
             } catch (error) {
                 console.error('Error loading sales order summary:', error);
             }
