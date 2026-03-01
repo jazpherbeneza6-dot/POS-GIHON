@@ -2,6 +2,36 @@ const express = require('express');
 const router = express.Router();
 const database = require('../database');
 
+// GET Payments Made Report
+router.get('/reports/payments-made', async (req, res) => {
+    try {
+        const pool = database.getDb();
+        const { from, to } = req.query;
+
+        let dateFilter = '';
+        let params = [];
+
+        if (from && to) {
+            dateFilter = 'WHERE pm.payment_date >= $1 AND pm.payment_date <= $2';
+            params = [from, to + 'T23:59:59.999'];
+        }
+
+        const result = await pool.query(`
+            SELECT pm.id, pm.payment_date, pm.reference_number, pm.bill_number,
+                   pm.supplier_name, pm.payment_mode, pm.notes, pm.paid_through,
+                   pm.status, pm.amount_paid
+            FROM payments_made pm
+            ${dateFilter}
+            ORDER BY pm.payment_date ASC
+        `, params);
+
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Error fetching payments made report:', err);
+        res.status(500).json({ error: 'Failed to fetch payments made report' });
+    }
+});
+
 // GET all payments made
 router.get('/', async (req, res) => {
     try {

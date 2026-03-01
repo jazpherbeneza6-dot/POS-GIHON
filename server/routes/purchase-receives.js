@@ -2,6 +2,43 @@ const express = require('express');
 const router = express.Router();
 const database = require('../database');
 
+// GET Receive History Report
+router.get('/reports/receive-history', async (req, res) => {
+    try {
+        const db = database.getDb();
+        const { from, to } = req.query;
+
+        let dateFilter = '';
+        let params = [];
+
+        if (from && to) {
+            dateFilter = 'AND pr.receive_date >= $1 AND pr.receive_date <= $2';
+            params = [from, to + 'T23:59:59.999'];
+        }
+
+        const result = await db.query(`
+            SELECT pr.id, pr.receive_date, pr.receive_number,
+                   p.po_number AS purchase_order_number,
+                   COALESCE(pr.supplier_name, s.name) AS vendor_name,
+                   pr.status,
+                   COALESCE(SUM(pri.quantity_to_receive), 0) AS quantity_received
+            FROM purchase_receives pr
+            LEFT JOIN purchases p ON pr.purchase_id = p.id
+            LEFT JOIN suppliers s ON pr.supplier_id = s.id
+            LEFT JOIN purchase_receive_items pri ON pri.receive_id = pr.id
+            WHERE 1=1 ${dateFilter}
+            GROUP BY pr.id, pr.receive_date, pr.receive_number, p.po_number,
+                     pr.supplier_name, s.name, pr.status
+            ORDER BY pr.receive_date ASC
+        `, params);
+
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Error fetching receive history report:', err);
+        res.status(500).json({ error: 'Failed to fetch receive history report' });
+    }
+});
+
 // Create purchase receive
 router.post('/', async (req, res) => {
     try {

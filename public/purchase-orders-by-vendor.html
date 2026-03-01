@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Committed Stock Details - Reports</title>
+    <title>Purchase Orders by Vendor - Reports</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/sidebar.css">
     <link rel="stylesheet" href="/css/report-export.css">
@@ -36,7 +36,6 @@
             background: #fff;
         }
 
-        /* ===== TOP HEADER BAR ===== */
         .report-top-bar {
             display: flex;
             align-items: center;
@@ -115,7 +114,6 @@
             font-weight: bold;
         }
 
-        /* ===== FILTER BAR ===== */
         .filter-bar {
             display: flex;
             align-items: center;
@@ -153,17 +151,6 @@
             background: transparent;
         }
 
-        .filter-more {
-            background: #fff;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            padding: 5px 12px;
-            font-size: 12px;
-            color: #2563eb;
-            font-weight: 500;
-            cursor: pointer;
-        }
-
         .btn-run-report {
             background: #e53935;
             color: #fff;
@@ -173,54 +160,16 @@
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
+            margin-left: 8px;
         }
 
         .btn-run-report:hover {
             background: #c62828;
         }
 
-        /* ===== OPTIONS BAR ===== */
-        .options-bar {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 20px;
-            padding: 8px 20px;
-            background: #fff;
-            border-bottom: 1px solid #eee;
-            font-size: 12px;
-            color: #555;
-        }
-
-        .option-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            cursor: pointer;
-        }
-
-        .option-bold {
-            font-weight: 600;
-            color: #333;
-        }
-
-        .option-icon {
-            font-size: 14px;
-        }
-
-        .customize-count {
-            background: #2563eb;
-            color: #fff;
-            border-radius: 4px;
-            padding: 1px 6px;
-            font-size: 10px;
-            font-weight: 700;
-            margin-left: 4px;
-        }
-
-        /* ===== REPORT BODY ===== */
         .report-body {
-            padding: 30px 40px 60px;
+            padding: 30px 20px 60px;
+            overflow-x: auto;
         }
 
         .report-header-section {
@@ -251,30 +200,39 @@
             font-weight: 500;
         }
 
-        /* ===== REPORT TABLE ===== */
         .report-table {
             width: 100%;
             border-collapse: collapse;
             font-size: 13px;
+            min-width: 500px;
         }
 
         .report-table thead th {
             text-align: left;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 700;
             color: #555;
             text-transform: uppercase;
             letter-spacing: 0.3px;
-            padding: 10px 12px;
+            padding: 10px 10px;
             border-bottom: 2px solid #ddd;
             background: #fafafa;
             white-space: nowrap;
         }
 
         .report-table tbody td {
-            padding: 10px 12px;
+            padding: 10px 10px;
             border-bottom: 1px solid #f0f0f0;
             color: #333;
+            white-space: nowrap;
+        }
+
+        .report-table tfoot td {
+            padding: 10px 10px;
+            font-weight: 700;
+            border-top: 2px solid #ddd;
+            background: #fafafa;
+            color: #222;
         }
 
         .report-table tbody tr:hover {
@@ -289,22 +247,24 @@
             text-align: center !important;
         }
 
-        .transaction-link {
+        .vendor-link {
             color: #2563eb;
             cursor: pointer;
+            font-weight: 500;
         }
 
-        .transaction-link:hover {
+        .vendor-link:hover {
             text-decoration: underline;
         }
 
-        .item-link {
+        .count-cell {
             color: #2563eb;
-            cursor: pointer;
+            font-weight: 500;
         }
 
-        .item-link:hover {
-            text-decoration: underline;
+        .amount-cell {
+            color: #2563eb;
+            font-weight: 500;
         }
     </style>
 </head>
@@ -315,14 +275,13 @@
     <div class="main-layout">
         <div class="content" id="content">
 
-            <!-- TOP HEADER BAR -->
             <div class="report-top-bar">
                 <div class="report-top-left">
                     <button class="hamburger-btn" onclick="window.location.href='/reports.html'">☰</button>
                     <div class="breadcrumb-area">
-                        <span class="breadcrumb-category">Inventory</span>
+                        <span class="breadcrumb-category">Payables</span>
                         <span class="breadcrumb-title">
-                            Committed Stock Details
+                            Purchase Orders by Vendor
                             <span class="breadcrumb-date" id="breadcrumbDate">•</span>
                         </span>
                     </div>
@@ -338,51 +297,26 @@
                 </div>
             </div>
 
-            <!-- FILTER BAR -->
             <div class="filter-bar">
                 <span class="filter-label">🔽 Filters :</span>
-
                 <div class="filter-dropdown">
                     <span>Date Range :</span>
-                    <select id="dateRangeSelect" onchange="handleDateRangeChange()" title="Date Range">
+                    <select id="dateRangeSelect" onchange="handleFilterChange()" title="Date Range">
                         <option value="this-month" selected>This Month</option>
+                        <option value="yesterday">Yesterday</option>
                         <option value="last-month">Last Month</option>
                         <option value="this-quarter">This Quarter</option>
                         <option value="this-year">This Year</option>
                         <option value="all">All Time</option>
                     </select>
                 </div>
-
-                <div class="filter-dropdown">
-                    <span>Mode of Stock tracking :</span>
-                    <select id="stockMode" title="Stock Tracking Mode">
-                        <option value="bills-invoices" selected>Bills & Invoices</option>
-                    </select>
-                </div>
-
-                <button class="filter-more">⊕ More Filters</button>
-
                 <button class="btn-run-report" onclick="runReport()">Run Report</button>
             </div>
 
-            <!-- OPTIONS BAR -->
-            <div class="options-bar">
-                <div class="option-item">
-                    <span class="option-icon">📁</span>
-                    Group By : <span class="option-bold">None</span> ▾
-                </div>
-                <div class="option-item">
-                    <span class="option-icon">⚙️</span>
-                    Customize Report Columns
-                    <span class="customize-count">3</span>
-                </div>
-            </div>
-
-            <!-- REPORT BODY -->
             <div class="report-body">
                 <div class="report-header-section">
                     <div class="company-name">SOLO</div>
-                    <div class="report-main-title">Committed Stock Details</div>
+                    <div class="report-main-title">Purchase Orders by Vendor</div>
                     <div class="report-date-range" id="reportDateRange">
                         From <span class="date-highlight" id="fromDateDisplay">-</span>
                         To <span class="date-highlight" id="toDateDisplay">-</span>
@@ -392,83 +326,68 @@
                 <table class="report-table">
                     <thead>
                         <tr>
-                            <th>TRANSACTION#</th>
-                            <th>ITEM NAME</th>
-                            <th class="align-right">COMMITTED STOCK</th>
+                            <th>VENDOR NAME ↑</th>
+                            <th class="align-center">PURCHASE ORDER COUNT</th>
+                            <th class="align-right">AMOUNT</th>
                         </tr>
                     </thead>
                     <tbody id="reportTableBody">
                         <tr>
-                            <td colspan="3" class="align-center" style="padding:40px;color:#999;">Loading...</td>
+                            <td colspan="3" class="align-center">Loading...</td>
                         </tr>
                     </tbody>
+                    <tfoot id="reportTableFoot" style="display:none;">
+                        <tr>
+                            <td><strong>Total</strong></td>
+                            <td class="align-center" id="totCount"></td>
+                            <td class="align-right" id="totAmount"></td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
-
         </div>
     </div>
 
     <script src="/js/layout.js"></script>
     <script src="/js/report-export.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            runReport();
-        });
+        document.addEventListener('DOMContentLoaded', () => { runReport(); });
 
         function getDateRange() {
             const sel = document.getElementById('dateRangeSelect').value;
             const now = new Date();
             let from, to;
-
             switch (sel) {
-                case 'this-month':
-                    from = new Date(now.getFullYear(), now.getMonth(), 1);
-                    to = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-                    break;
-                case 'last-month':
-                    from = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-                    to = new Date(now.getFullYear(), now.getMonth(), 0);
-                    break;
-                case 'this-quarter': {
-                    const q = Math.floor(now.getMonth() / 3);
-                    from = new Date(now.getFullYear(), q * 3, 1);
-                    to = new Date(now.getFullYear(), q * 3 + 3, 0);
-                    break;
-                }
-                case 'this-year':
-                    from = new Date(now.getFullYear(), 0, 1);
-                    to = new Date(now.getFullYear(), 11, 31);
-                    break;
-                case 'all':
-                    return { from: null, to: null };
+                case 'this-month': from = new Date(now.getFullYear(), now.getMonth(), 1); to = new Date(now.getFullYear(), now.getMonth() + 1, 0); break;
+                case 'yesterday': { const y = new Date(now); y.setDate(y.getDate() - 1); from = new Date(y.getFullYear(), y.getMonth(), y.getDate()); to = new Date(y.getFullYear(), y.getMonth(), y.getDate()); break; }
+                case 'last-month': from = new Date(now.getFullYear(), now.getMonth() - 1, 1); to = new Date(now.getFullYear(), now.getMonth(), 0); break;
+                case 'this-quarter': { const q = Math.floor(now.getMonth() / 3); from = new Date(now.getFullYear(), q * 3, 1); to = new Date(now.getFullYear(), q * 3 + 3, 0); break; }
+                case 'this-year': from = new Date(now.getFullYear(), 0, 1); to = new Date(now.getFullYear(), 11, 31); break;
+                case 'all': return { from: null, to: null };
             }
-
-            return {
-                from: from.toISOString().split('T')[0],
-                to: to.toISOString().split('T')[0]
-            };
+            return { from: from.toISOString().split('T')[0], to: to.toISOString().split('T')[0] };
         }
 
         function fmtDate(dateStr) {
+            if (!dateStr) return '-';
             const d = new Date(dateStr);
             return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
         }
 
-        function fmtNum(val) {
-            return parseFloat(val).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        function fmtPHP(val) {
+            const num = parseFloat(val) || 0;
+            return 'PHP' + num.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
-        function handleDateRangeChange() {
-            runReport();
-        }
+        function handleFilterChange() { runReport(); }
 
         async function runReport() {
             const tbody = document.getElementById('reportTableBody');
-            tbody.innerHTML = '<tr><td colspan="3" class="align-center" style="padding:40px;color:#999;">Loading...</td></tr>';
+            const tfoot = document.getElementById('reportTableFoot');
+            tbody.innerHTML = '<tr><td colspan="3" class="align-center">Loading...</td></tr>';
+            tfoot.style.display = 'none';
 
             const { from, to } = getDateRange();
-
-            // Update header dates
             if (from && to) {
                 document.getElementById('fromDateDisplay').textContent = fmtDate(from);
                 document.getElementById('toDateDisplay').textContent = fmtDate(to);
@@ -480,31 +399,39 @@
             }
 
             try {
-                let url = '/api/inventory/reports/committed-stock-details';
-                if (from && to) {
-                    url += `?from=${from}&to=${to}`;
-                }
+                let url = '/api/purchases/reports/purchase-orders-by-vendor?';
+                if (from && to) url += `from=${from}&to=${to}`;
 
                 const res = await fetch(url);
                 if (!res.ok) throw new Error('API error');
                 const data = await res.json();
 
                 if (data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="3" class="align-center" style="padding:60px;color:#999;font-size:14px;">No committed stock data found.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="3" class="align-center">No purchase order data found for this period.</td></tr>';
                     return;
                 }
 
-                tbody.innerHTML = data.map(row => `
-                    <tr>
-                        <td class="transaction-link">${row.transaction_number || ''}</td>
-                        <td class="item-link">${row.item_name || ''}</td>
-                        <td class="align-right">${fmtNum(row.committed_stock)}</td>
-                    </tr>
-                `).join('');
+                let totCount = 0, totAmount = 0;
 
+                tbody.innerHTML = data.map(row => {
+                    const count = parseInt(row.purchase_order_count) || 0;
+                    const amt = parseFloat(row.amount) || 0;
+                    totCount += count;
+                    totAmount += amt;
+
+                    return `<tr>
+                        <td class="vendor-link">${row.vendor_name || '-'}</td>
+                        <td class="align-center count-cell">${count}</td>
+                        <td class="align-right amount-cell">${fmtPHP(amt)}</td>
+                    </tr>`;
+                }).join('');
+
+                document.getElementById('totCount').textContent = totCount;
+                document.getElementById('totAmount').innerHTML = `<span class="amount-cell">${fmtPHP(totAmount)}</span>`;
+                tfoot.style.display = '';
             } catch (e) {
                 console.error('Error:', e);
-                tbody.innerHTML = '<tr><td colspan="3" class="align-center" style="padding:40px;color:#e53935;">Error loading report data.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="3" class="align-center">Error loading report data.</td></tr>';
             }
         }
     </script>

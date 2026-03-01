@@ -2,6 +2,37 @@ const express = require('express');
 const router = express.Router();
 const database = require('../database');
 
+// GET Vendor Credit Details Report
+router.get('/reports/vendor-credit-details', async (req, res) => {
+    try {
+        const db = database.getDb();
+        const { from, to } = req.query;
+
+        let dateFilter = '';
+        let params = [];
+
+        if (from && to) {
+            dateFilter = 'WHERE credit_date >= $1 AND credit_date <= $2';
+            params = [from, to + 'T23:59:59.999'];
+        }
+
+        const result = await db.query(`
+            SELECT id, status, credit_date, credit_number, supplier_name,
+                   total_amount,
+                   CASE WHEN LOWER(status) = 'closed' OR LOWER(status) = 'applied' THEN 0
+                        ELSE total_amount END AS balance
+            FROM vendor_credits
+            ${dateFilter}
+            ORDER BY credit_date ASC
+        `, params);
+
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Error fetching vendor credit details report:', err);
+        res.status(500).json({ error: 'Failed to fetch vendor credit details report' });
+    }
+});
+
 // GET next vendor credit number
 router.get('/next-number', async (req, res) => {
     try {
