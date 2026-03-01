@@ -22,6 +22,9 @@
         .page-container {
             background: #ffffff;
             min-height: calc(100vh - 60px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-bottom: 60px;
         }
 
         /* Page Header */
@@ -89,6 +92,7 @@
             background: white;
             flex: 1;
             min-width: 0;
+            width: 100%;
         }
 
         /* Form Row */
@@ -360,11 +364,13 @@
         /* Items Table */
         .items-table-container {
             margin-top: 16px;
+            margin-bottom: 0;
             border: none;
             border-radius: 0;
             overflow-x: auto;
             width: 100%;
-            max-width: 100%;
+            max-width: calc(100vw - 300px);
+            -webkit-overflow-scrolling: touch;
         }
 
         .items-table {
@@ -380,7 +386,7 @@
         }
 
         .items-table th {
-            padding: 10px 12px;
+            padding: 8px 10px;
             text-align: left;
             font-size: 11px;
             font-weight: 600;
@@ -390,6 +396,7 @@
             border: none;
             background: transparent;
             vertical-align: bottom;
+            white-space: nowrap;
         }
 
         .items-table th .copy-link {
@@ -438,39 +445,43 @@
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
-        /* Optimize column widths */
         .items-table th:nth-child(1),
         .items-table td:nth-child(1) {
-            min-width: 180px;
+            min-width: 200px;
         }
 
         .items-table th:nth-child(2),
         .items-table td:nth-child(2) {
-            width: 140px;
+            min-width: 110px;
         }
 
         .items-table th:nth-child(3),
         .items-table td:nth-child(3) {
-            width: 120px;
+            min-width: 120px;
         }
 
         .items-table th:nth-child(4),
         .items-table td:nth-child(4) {
-            width: 130px;
+            min-width: 130px;
         }
 
         .items-table th:nth-child(5),
-        .items-table td:nth-child(5),
+        .items-table td:nth-child(5) {
+            min-width: 130px;
+        }
+
         .items-table th:nth-child(6),
         .items-table td:nth-child(6),
         .items-table th:nth-child(7),
-        .items-table td:nth-child(7) {
-            width: 110px;
-        }
-
+        .items-table td:nth-child(7),
         .items-table th:nth-child(8),
         .items-table td:nth-child(8) {
-            width: 120px;
+            min-width: 90px;
+        }
+
+        .items-table th:nth-child(9),
+        .items-table td:nth-child(9) {
+            min-width: 110px;
         }
 
         /* Image Upload Section */
@@ -551,15 +562,17 @@
             justify-content: center;
         }
 
-        /* Form Footer */
         .form-footer {
             display: flex;
             gap: 10px;
             padding: 14px 24px;
             background: #f8f9fa;
             border-top: 1px solid #e9ecef;
-            position: sticky;
+            position: fixed;
             bottom: 0;
+            left: 260px;
+            right: 0;
+            z-index: 100;
         }
 
         .btn-save {
@@ -597,45 +610,86 @@
         /* Toast Notification */
         .toast-container {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
             z-index: 10000;
             display: flex;
-            flex-direction: column-reverse;
+            flex-direction: column;
             gap: 10px;
+            align-items: center;
+            pointer-events: none;
         }
 
         .toast {
-            padding: 16px 24px;
-            border-radius: 8px;
-            color: white;
+            pointer-events: auto;
+            padding: 18px 32px;
+            border-radius: 10px;
+            color: #333;
             font-weight: 500;
-            font-size: 14px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            font-size: 15px;
+            background: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            border: 1px solid #e5e7eb;
             display: flex;
             align-items: center;
-            gap: 12px;
-            animation: slideIn 0.3s ease;
-            min-width: 280px;
+            gap: 14px;
+            animation: slideDown 0.3s ease;
+            min-width: 340px;
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
 
         .toast.success {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: white;
+            border-left: 4px solid #10b981;
         }
 
         .toast.error {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            background: white;
+            border-left: 4px solid #ef4444;
         }
 
-        @keyframes slideIn {
+        .toast.info {
+            background: white;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .toast.warning {
+            background: white;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .toast-icon {
+            font-size: 20px;
+        }
+
+        .toast-message {
+            flex: 1;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 18px;
+            opacity: 0.8;
+        }
+
+        .toast-close:hover {
+            opacity: 1;
+            color: #333;
+        }
+
+        @keyframes slideDown {
             from {
-                transform: translateX(100%);
                 opacity: 0;
+                transform: translateY(-20px);
             }
 
             to {
-                transform: translateX(0);
                 opacity: 1;
+                transform: translateY(0);
             }
         }
 
@@ -654,6 +708,338 @@
 
         .hide-selling-price .selling-price-column {
             display: none;
+        }
+
+        /* Item Action Buttons */
+        .item-actions-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 4px;
+            margin-bottom: 16px;
+        }
+
+        .btn-add-row {
+            padding: 6px 16px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 12.5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-add-row:hover {
+            background: #2563eb;
+        }
+
+        .btn-bulk-add {
+            padding: 6px 16px;
+            background: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 12.5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-bulk-add:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+        }
+
+        .btn-remove-row {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: transparent;
+            color: #9ca3af;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+        }
+
+        .btn-remove-row:hover {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        /* Bulk Add Modal */
+        .bulk-add-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+        }
+
+        .bulk-add-modal.active {
+            display: flex;
+        }
+
+        .bulk-add-modal-content {
+            background: white;
+            border-radius: 10px;
+            width: 820px;
+            max-width: 92%;
+            height: 520px;
+            max-height: 85vh;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bulk-add-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .bulk-add-modal-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+        }
+
+        .bulk-add-modal-close {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: transparent;
+            color: #ef4444;
+            font-size: 22px;
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .bulk-add-modal-close:hover {
+            background: #fee2e2;
+        }
+
+        .bulk-add-modal-body {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Left pane - items list */
+        .bulk-left-pane {
+            width: 50%;
+            border-right: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bulk-search-box {
+            padding: 12px 16px;
+        }
+
+        .bulk-search-input {
+            width: 100%;
+            padding: 9px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #374151;
+        }
+
+        .bulk-search-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .bulk-search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+        .bulk-items-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .bulk-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #f3f4f6;
+            transition: background 0.15s ease;
+        }
+
+        .bulk-item-row:hover {
+            background: #f9fafb;
+        }
+
+        .bulk-item-row.selected {
+            background: #eff6ff;
+        }
+
+        .bulk-item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .bulk-item-name {
+            font-size: 13.5px;
+            font-weight: 500;
+            color: #1f2937;
+        }
+
+        .bulk-item-row.selected .bulk-item-name {
+            color: #3b82f6;
+        }
+
+        .bulk-item-meta {
+            font-size: 11.5px;
+            color: #9ca3af;
+        }
+
+        .bulk-item-stock {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+        }
+
+        .bulk-item-stock-label {
+            font-size: 11px;
+            color: #9ca3af;
+        }
+
+        .bulk-item-stock-value {
+            font-size: 13px;
+            font-weight: 500;
+            color: #10b981;
+        }
+
+        .bulk-item-row.selected .bulk-item-stock-label,
+        .bulk-item-row.selected .bulk-item-stock-value {
+            color: #10b981;
+        }
+
+        .bulk-item-check {
+            margin-left: 10px;
+            color: #3b82f6;
+            font-size: 18px;
+        }
+
+        /* Right pane - selected items */
+        .bulk-right-pane {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bulk-selected-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .bulk-selected-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bulk-selected-badge {
+            background: #e0f2fe;
+            color: #0284c7;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .bulk-selected-total {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .bulk-selected-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        .bulk-selected-empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #9ca3af;
+            font-size: 13px;
+            text-align: center;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .bulk-selected-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .bulk-selected-item-name {
+            font-size: 13px;
+            color: #1f2937;
+            font-weight: 500;
+        }
+
+        .bulk-selected-item-meta {
+            font-size: 11px;
+            color: #9ca3af;
+        }
+
+        .bulk-selected-remove {
+            background: none;
+            border: none;
+            color: #ef4444;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .bulk-selected-remove:hover {
+            background: #fee2e2;
+        }
+
+        .bulk-add-modal-footer {
+            display: flex;
+            gap: 10px;
+            padding: 14px 20px;
+            border-top: 1px solid #e5e7eb;
         }
 
         /* Searchable Dropdown */
@@ -1308,16 +1694,14 @@
 
         .item-picker-dd {
             display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            width: 320px;
-            max-height: 260px;
+            position: fixed;
+            width: 380px;
+            max-height: 320px;
             background: #fff;
             border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-            z-index: 1000;
+            border-radius: 8px;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
+            z-index: 9999;
             overflow: hidden;
         }
 
@@ -1344,27 +1728,58 @@
         }
 
         .item-picker-dd-list {
-            max-height: 200px;
+            max-height: 260px;
             overflow-y: auto;
         }
 
         .item-picker-dd-option {
-            padding: 8px 12px;
+            padding: 10px 14px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 13px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #f8f8f8;
+            gap: 12px;
+            border-bottom: 1px solid #f3f3f3;
+            transition: background 0.15s;
         }
 
         .item-picker-dd-option:hover {
             background: #fef2f2;
         }
 
+        .item-picker-dd-option .ipd-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            object-fit: cover;
+            border: 1px solid #e5e5e5;
+            flex-shrink: 0;
+            background: #f8f8f8;
+        }
+
+        .item-picker-dd-option .ipd-img-placeholder {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            border: 1px solid #e5e5e5;
+            flex-shrink: 0;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #ccc;
+        }
+
+        .item-picker-dd-option .ipd-info {
+            flex: 1;
+            min-width: 0;
+        }
+
         .item-picker-dd-option .ipd-name {
             font-weight: 500;
             color: #333;
+            display: block;
         }
 
         .item-picker-dd-option .ipd-sku {
@@ -1373,10 +1788,12 @@
         }
 
         .item-picker-dd-option .ipd-price {
-            font-size: 11px;
+            font-size: 12px;
             color: #666;
             white-space: nowrap;
+            font-weight: 500;
         }
+
 
         .item-picker-dd-empty {
             padding: 16px;
@@ -1551,14 +1968,89 @@
                             <textarea class="form-input form-textarea" id="groupDescription"></textarea>
                         </div>
 
+                        <!-- Items Table -->
+                        <div class="items-table-container" id="itemsTableContainer">
+                            <table class="items-table">
+                                <thead>
+                                    <tr>
+                                        <th>ITEM NAME*</th>
+                                        <th>
+                                            SKU
+                                        </th>
+                                        <th>DESCRIPTION</th>
+                                        <th class="cost-price-column">
+                                            COST PRICE (PHP)*
+                                            <span class="copy-link" onclick="copyToAllCost()">PER UNIT<br>COPY TO
+                                                ALL</span>
+                                        </th>
+                                        <th class="selling-price-column">
+                                            SELLING PRICE (PHP)*
+                                            <span class="copy-link" onclick="copyToAllPrice()">PER UNIT<br>COPY TO
+                                                ALL</span>
+                                        </th>
+                                        <th>
+                                            UPC
+                                        </th>
+                                        <th>
+                                            EAN
+                                        </th>
+                                        <th>
+                                            ISBN
+                                        </th>
+                                        <th>
+                                            REORDER POINT
+                                            <span class="copy-link" onclick="copyToAllReorder()">COPY TO ALL</span>
+                                        </th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="itemsTableBody">
+                                    <tr>
+                                        <td class="item-picker-cell">
+                                            <input type="text" class="table-input item-name"
+                                                placeholder="Type to search items..." autocomplete="off"
+                                                onfocus="openItemPickerDD(this)" oninput="filterItemPickerDD(this)">
+                                            <input type="hidden" class="item-id-hidden" value="">
+                                            <div class="item-picker-dd">
+                                                <div class="item-picker-dd-search">
+                                                    <input type="text" placeholder="Search items..."
+                                                        oninput="filterItemPickerDDFromSearch(this)">
+                                                </div>
+                                                <div class="item-picker-dd-list"></div>
+                                            </div>
+                                        </td>
+                                        <td><input type="text" class="table-input item-sku" placeholder="Auto-generate">
+                                        </td>
+                                        <td><input type="text" class="table-input item-description"
+                                                placeholder="Description"></td>
+                                        <td class="cost-price-column"><input type="number" class="table-input item-cost"
+                                                placeholder="0.00" step="0.01"></td>
+                                        <td class="selling-price-column"><input type="number"
+                                                class="table-input item-price" placeholder="0.00" step="0.01"></td>
+                                        <td><input type="text" class="table-input item-upc" placeholder=""></td>
+                                        <td><input type="text" class="table-input item-ean" placeholder=""></td>
+                                        <td><input type="text" class="table-input item-isbn" placeholder=""></td>
+                                        <td><input type="number" class="table-input item-reorder" placeholder="10"></td>
+                                        <td><button type="button" class="btn-remove-row" onclick="removeItemRow(this)"
+                                                title="Remove row">×</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Add Row / Bulk Add Buttons -->
+                        <div class="item-actions-row">
+                            <button type="button" class="btn-add-row" onclick="addNewItemRow()">+ Add New Row</button>
+                            <button type="button" class="btn-bulk-add" onclick="showBulkAddModal()">+ Add Items in
+                                Bulk</button>
+                        </div>
+
                         <!-- Returnable Item -->
                         <div class="form-row">
                             <div></div>
                             <div class="checkbox-wrapper">
                                 <input type="checkbox" id="returnableItem">
                                 <label for="returnableItem">Returnable Item</label>
-                                <span class="form-label-help"
-                                    title="Check if items in this group can be returned">?</span>
                             </div>
                         </div>
 
@@ -1568,7 +2060,6 @@
                         <div class="form-row-dual">
                             <div class="form-label required form-label-inline">
                                 Unit
-                                <span class="form-label-help" title="Unit of measurement">?</span>
                             </div>
                             <div class="searchable-dropdown" id="unitDropdown">
                                 <input type="text" class="searchable-dropdown-input" id="unitType"
@@ -1584,7 +2075,6 @@
                             </div>
                             <div class="form-label form-label-inline">
                                 Tax
-                                <span class="form-label-help" title="Tax rate for this group">?</span>
                             </div>
                             <div class="searchable-dropdown" id="taxDropdown">
                                 <input type="text" class="searchable-dropdown-input" id="taxRate"
@@ -1658,156 +2148,8 @@
                             </div>
                         </div>
 
-                        <div class="section-divider"></div>
-
-                        <!-- Multiple Items Section -->
-                        <div class="multiple-items-section">
-                            <div class="multiple-items-header">
-                                <span class="multiple-items-label required">Multiple Items?</span>
-                            </div>
-
-                            <div class="checkbox-wrapper">
-                                <input type="checkbox" id="createAttributes" checked>
-                                <label for="createAttributes">Create Attributes and Options</label>
-                            </div>
-
-                            <!-- Attributes Container -->
-                            <div class="attributes-container" id="attributesContainer">
-                                <div class="attribute-row" data-index="0">
-                                    <div>
-                                        <div class="attribute-label">Attribute*</div>
-                                        <input type="text" class="form-input attribute-select" list="attributeList"
-                                            placeholder="e.g., Color, Size">
-                                        <datalist id="attributeList">
-                                            <option value="Color">
-                                            <option value="Size">
-                                            <option value="Material">
-                                            <option value="Style">
-                                            <option value="Weight">
-                                            <option value="Length">
-                                        </datalist>
-                                    </div>
-                                    <div>
-                                        <div class="attribute-label">Options*</div>
-                                        <input type="text" class="form-input attribute-options"
-                                            placeholder="Enter options separated by comma (e.g., Red, Blue, Green)">
-                                    </div>
-                                    <button type="button" class="remove-attribute-btn" onclick="removeAttribute(this)"
-                                        title="Remove">🗑️</button>
-                                </div>
-                            </div>
-
-                            <button type="button" class="add-attribute-btn" onclick="addAttribute()">
-                                <span>➕</span> Add more attributes
-                            </button>
-                        </div>
-
-                        <!-- Item Type Checkboxes -->
-                        <div class="item-type-row">
-                            <span class="item-type-label">Select your Item Type:</span>
-                            <div class="checkbox-wrapper">
-                                <input type="checkbox" id="sellable" checked>
-                                <label for="sellable">Sellable</label>
-                            </div>
-                            <div class="checkbox-wrapper">
-                                <input type="checkbox" id="purchasable" checked>
-                                <label for="purchasable">Purchasable</label>
-                            </div>
-                            <div class="checkbox-wrapper">
-                                <input type="checkbox" id="trackInventory" checked>
-                                <label for="trackInventory">Track Inventory</label>
-                            </div>
-                        </div>
-
-                        <!-- Items Table -->
-                        <div class="items-table-container" id="itemsTableContainer">
-                            <table class="items-table">
-                                <thead>
-                                    <tr>
-                                        <th>ITEM NAME*</th>
-                                        <th>
-                                            SKU
-                                            <span class="form-label-help" title="Stock Keeping Unit">?</span>
-                                        </th>
-                                        <th>DESCRIPTION</th>
-                                        <th class="cost-price-column">
-                                            COST PRICE (PHP)*
-                                            <span class="copy-link" onclick="copyToAllCost()">PER UNIT<br>COPY TO ALL
-                                                <span class="form-label-help">?</span></span>
-                                        </th>
-                                        <th class="selling-price-column">
-                                            SELLING PRICE (PHP)*
-                                            <span class="copy-link" onclick="copyToAllPrice()">PER UNIT<br>COPY TO ALL
-                                                <span class="form-label-help">?</span></span>
-                                        </th>
-                                        <th>
-                                            UPC
-                                            <span class="form-label-help" title="Universal Product Code">?</span>
-                                        </th>
-                                        <th>
-                                            EAN
-                                            <span class="form-label-help" title="European Article Number">?</span>
-                                        </th>
-                                        <th>
-                                            ISBN
-                                            <span class="form-label-help"
-                                                title="International Standard Book Number">?</span>
-                                        </th>
-                                        <th>
-                                            REORDER POINT
-                                            <span class="form-label-help" title="Minimum stock level">?</span>
-                                            <span class="copy-link" onclick="copyToAllReorder()">COPY TO ALL</span>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody id="itemsTableBody">
-                                    <tr>
-                                        <td class="item-picker-cell">
-                                            <input type="text" class="table-input item-name"
-                                                placeholder="Type to search items..." autocomplete="off"
-                                                onfocus="openItemPickerDD(this)" oninput="filterItemPickerDD(this)">
-                                            <input type="hidden" class="item-id-hidden" value="">
-                                            <div class="item-picker-dd">
-                                                <div class="item-picker-dd-search">
-                                                    <input type="text" placeholder="Search items..."
-                                                        oninput="filterItemPickerDDFromSearch(this)">
-                                                </div>
-                                                <div class="item-picker-dd-list"></div>
-                                            </div>
-                                        </td>
-                                        <td><input type="text" class="table-input item-sku" placeholder="Auto-generate">
-                                        </td>
-                                        <td><input type="text" class="table-input item-description"
-                                                placeholder="Description"></td>
-                                        <td class="cost-price-column"><input type="number" class="table-input item-cost"
-                                                placeholder="0.00" step="0.01"></td>
-                                        <td class="selling-price-column"><input type="number"
-                                                class="table-input item-price" placeholder="0.00" step="0.01"></td>
-                                        <td><input type="text" class="table-input item-upc" placeholder=""></td>
-                                        <td><input type="text" class="table-input item-ean" placeholder=""></td>
-                                        <td><input type="text" class="table-input item-isbn" placeholder=""></td>
-                                        <td><input type="number" class="table-input item-reorder" placeholder="10"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
                     </div>
 
-                    <!-- Right Side - Image Upload -->
-                    <div class="form-image-section" onclick="document.getElementById('imageInput').click()">
-                        <div class="image-upload-icon">🖼️</div>
-                        <div class="image-upload-text">
-                            Drag image(s) here or <span class="image-upload-link">Browse images</span>
-                        </div>
-                        <div class="image-upload-hint">
-                            ℹ️ You can add up to 15 images, each not exceeding 5 MB in size and 7000 x 7000 pixels
-                            resolution.
-                        </div>
-                        <input type="file" id="imageInput" multiple accept="image/*" style="display: none;"
-                            onchange="handleImageUpload(event)">
-                        <div class="image-preview-container" id="imagePreviewContainer"></div>
-                    </div>
                 </div>
 
                 <!-- Form Footer -->
@@ -1816,6 +2158,48 @@
                     <button type="button" class="btn-cancel" onclick="goBack()">Cancel</button>
                 </div>
             </form>
+
+            <!-- Bulk Add Modal -->
+            <div class="bulk-add-modal" id="bulkAddModal">
+                <div class="bulk-add-modal-content">
+                    <div class="bulk-add-modal-header">
+                        <h3 class="bulk-add-modal-title">Add Items in Bulk</h3>
+                        <button type="button" class="bulk-add-modal-close"
+                            onclick="closeBulkAddModal()">&times;</button>
+                    </div>
+                    <div class="bulk-add-modal-body">
+                        <!-- Left pane: all items -->
+                        <div class="bulk-left-pane">
+                            <div class="bulk-search-box">
+                                <input type="text" class="bulk-search-input" id="bulkSearchInput"
+                                    placeholder="Type to search or scan the barcode of the item"
+                                    oninput="filterBulkItems()">
+                            </div>
+                            <div class="bulk-items-list" id="bulkItemsList">
+                                <!-- Items loaded dynamically -->
+                            </div>
+                        </div>
+                        <!-- Right pane: selected items -->
+                        <div class="bulk-right-pane">
+                            <div class="bulk-selected-header">
+                                <span class="bulk-selected-title">
+                                    Selected Items <span class="bulk-selected-badge" id="bulkSelectedCount">0</span>
+                                </span>
+                                <span class="bulk-selected-total" id="bulkSelectedTotal">Total Quantity: 0</span>
+                            </div>
+                            <div class="bulk-selected-list" id="bulkSelectedList">
+                                <div class="bulk-selected-empty" id="bulkSelectedEmpty">
+                                    Click the item names from the left pane to select them
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bulk-add-modal-footer">
+                        <button type="button" class="btn-save" onclick="addBulkItems()">Add Items</button>
+                        <button type="button" class="btn-cancel" onclick="closeBulkAddModal()">Cancel</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -2452,20 +2836,259 @@
             window.location.href = '/item-groups.html';
         }
 
+        // Add new item row to the table
+        function addNewItemRow() {
+            const tbody = document.getElementById('itemsTableBody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td class="item-picker-cell">
+                    <input type="text" class="table-input item-name"
+                        placeholder="Type to search items..." autocomplete="off"
+                        onfocus="openItemPickerDD(this)" oninput="filterItemPickerDD(this)">
+                    <input type="hidden" class="item-id-hidden" value="">
+                    <div class="item-picker-dd">
+                        <div class="item-picker-dd-search">
+                            <input type="text" placeholder="Search items..."
+                                oninput="filterItemPickerDDFromSearch(this)">
+                        </div>
+                        <div class="item-picker-dd-list"></div>
+                    </div>
+                </td>
+                <td><input type="text" class="table-input item-sku" placeholder="Auto-generate"></td>
+                <td><input type="text" class="table-input item-description" placeholder="Description"></td>
+                <td class="cost-price-column"><input type="number" class="table-input item-cost" placeholder="0.00" step="0.01"></td>
+                <td class="selling-price-column"><input type="number" class="table-input item-price" placeholder="0.00" step="0.01"></td>
+                <td><input type="text" class="table-input item-upc" placeholder=""></td>
+                <td><input type="text" class="table-input item-ean" placeholder=""></td>
+                <td><input type="text" class="table-input item-isbn" placeholder=""></td>
+                <td><input type="number" class="table-input item-reorder" placeholder="10"></td>
+                <td><button type="button" class="btn-remove-row" onclick="removeItemRow(this)" title="Remove row">×</button></td>
+            `;
+            tbody.appendChild(newRow);
+
+            // Focus the new row's name input
+            const nameInput = newRow.querySelector('.item-name');
+            if (nameInput) nameInput.focus();
+        }
+
+        // Remove an item row from the table
+        function removeItemRow(btn) {
+            const row = btn.closest('tr');
+            const tbody = document.getElementById('itemsTableBody');
+            if (tbody.children.length > 1) {
+                row.remove();
+            } else {
+                showToast('At least one item row is required', 'error');
+            }
+        }
+
+        // ========== BULK ADD MODAL ==========
+        let bulkAllItems = [];
+        let bulkSelectedItems = [];
+
+        // Show bulk add modal - fetch items from API
+        async function showBulkAddModal() {
+            document.getElementById('bulkAddModal').classList.add('active');
+            document.getElementById('bulkSearchInput').value = '';
+            bulkSelectedItems = [];
+
+            // Fetch items from API
+            try {
+                const response = await fetch('/api/items/ungrouped');
+                const data = await response.json();
+                bulkAllItems = Array.isArray(data) ? data : [];
+            } catch (err) {
+                console.error('Error fetching items:', err);
+                bulkAllItems = [];
+            }
+
+            renderBulkItemsList();
+            renderBulkSelectedList();
+            document.getElementById('bulkSearchInput').focus();
+        }
+
+        // Close bulk add modal
+        function closeBulkAddModal() {
+            document.getElementById('bulkAddModal').classList.remove('active');
+            bulkSelectedItems = [];
+        }
+
+        // Render the left pane items list
+        function renderBulkItemsList(filter = '') {
+            const container = document.getElementById('bulkItemsList');
+            const search = filter.toLowerCase();
+            let filtered = bulkAllItems;
+
+            if (search) {
+                filtered = bulkAllItems.filter(item =>
+                    (item.name || '').toLowerCase().includes(search) ||
+                    (item.sku || '').toLowerCase().includes(search) ||
+                    (item.upc || '').toLowerCase().includes(search) ||
+                    (item.ean || '').toLowerCase().includes(search)
+                );
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div style="text-align:center;padding:24px;color:#9ca3af;font-size:13px;">No items found</div>';
+                return;
+            }
+
+            container.innerHTML = filtered.map(item => {
+                const isSelected = bulkSelectedItems.some(s => s.id === item.id);
+                const sku = item.sku ? `SKU: ${item.sku}  ` : '';
+                const rate = item.price ? `Rate: PHP${parseFloat(item.price).toFixed(2)}` : '';
+                const meta = sku + rate;
+                const stock = parseFloat(item.quantity || 0).toFixed(2);
+                const unit = item.unit || 'pcs';
+
+                return `
+                    <div class="bulk-item-row ${isSelected ? 'selected' : ''}" onclick="toggleBulkItem(${item.id})">
+                        <div class="bulk-item-info">
+                            <span class="bulk-item-name">${item.name || 'Unnamed'}</span>
+                            <span class="bulk-item-meta">${meta || 'No details'}</span>
+                        </div>
+                        <div style="display:flex;align-items:center;">
+                            <div class="bulk-item-stock">
+                                <span class="bulk-item-stock-label">Stock on Hand</span>
+                                <span class="bulk-item-stock-value">${stock} ${unit}</span>
+                            </div>
+                            ${isSelected ? '<span class="bulk-item-check">✔</span>' : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Toggle item selection
+        function toggleBulkItem(itemId) {
+            const idx = bulkSelectedItems.findIndex(s => s.id === itemId);
+            if (idx >= 0) {
+                bulkSelectedItems.splice(idx, 1);
+            } else {
+                const item = bulkAllItems.find(i => i.id === itemId);
+                if (item) bulkSelectedItems.push(item);
+            }
+            renderBulkItemsList(document.getElementById('bulkSearchInput').value);
+            renderBulkSelectedList();
+        }
+
+        // Render the right pane selected items list
+        function renderBulkSelectedList() {
+            const container = document.getElementById('bulkSelectedList');
+            const countEl = document.getElementById('bulkSelectedCount');
+            const totalEl = document.getElementById('bulkSelectedTotal');
+            const emptyEl = document.getElementById('bulkSelectedEmpty');
+
+            countEl.textContent = bulkSelectedItems.length;
+
+            const totalQty = bulkSelectedItems.reduce((sum, i) => sum + parseFloat(i.quantity || 0), 0);
+            totalEl.textContent = `Total Quantity: ${totalQty.toFixed(0)}`;
+
+            if (bulkSelectedItems.length === 0) {
+                container.innerHTML = '<div class="bulk-selected-empty">Click the item names from the left pane to select them</div>';
+                return;
+            }
+
+            container.innerHTML = bulkSelectedItems.map(item => `
+                <div class="bulk-selected-item">
+                    <div>
+                        <div class="bulk-selected-item-name">${item.name || 'Unnamed'}</div>
+                        <div class="bulk-selected-item-meta">${item.sku ? 'SKU: ' + item.sku : ''} Rate: PHP${parseFloat(item.price || 0).toFixed(2)}</div>
+                    </div>
+                    <button class="bulk-selected-remove" onclick="toggleBulkItem(${item.id})" title="Remove">×</button>
+                </div>
+            `).join('');
+        }
+
+        // Search filter for bulk items
+        function filterBulkItems() {
+            const search = document.getElementById('bulkSearchInput').value;
+            renderBulkItemsList(search);
+        }
+
+        // Add selected items as rows in the table
+        function addBulkItems() {
+            if (bulkSelectedItems.length === 0) {
+                showToast('Please select at least one item', 'error');
+                return;
+            }
+
+            const tbody = document.getElementById('itemsTableBody');
+
+            // Check if the first/only row is empty — fill it first
+            const firstRow = tbody.querySelector('tr');
+            const firstNameInput = firstRow ? firstRow.querySelector('.item-name') : null;
+            let startIdx = 0;
+
+            if (firstNameInput && firstNameInput.value.trim() === '' && tbody.children.length === 1) {
+                const item = bulkSelectedItems[0];
+                populateTableRow(firstRow, item);
+                startIdx = 1;
+            }
+
+            // Add remaining items as new rows
+            for (let i = startIdx; i < bulkSelectedItems.length; i++) {
+                addNewItemRow();
+                const lastRow = tbody.lastElementChild;
+                populateTableRow(lastRow, bulkSelectedItems[i]);
+            }
+
+            closeBulkAddModal();
+            showToast(`Added ${bulkSelectedItems.length} item(s) to the table`, 'success');
+        }
+
+        // Helper: populate a table row with item data
+        function populateTableRow(row, item) {
+            const nameInput = row.querySelector('.item-name');
+            const idInput = row.querySelector('.item-id-hidden');
+            const skuInput = row.querySelector('.item-sku');
+            const descInput = row.querySelector('.item-description');
+            const costInput = row.querySelector('.item-cost');
+            const priceInput = row.querySelector('.item-price');
+            const reorderInput = row.querySelector('.item-reorder');
+            const upcInput = row.querySelector('.item-upc');
+            const eanInput = row.querySelector('.item-ean');
+            const isbnInput = row.querySelector('.item-isbn');
+
+            if (nameInput) nameInput.value = item.name || '';
+            if (idInput) idInput.value = item.id || '';
+            if (skuInput) skuInput.value = item.sku || '';
+            if (descInput) descInput.value = item.description || '';
+            if (costInput) costInput.value = item.cost || '';
+            if (priceInput) priceInput.value = item.price || '';
+            if (reorderInput) reorderInput.value = item.reorder_point || '10';
+            if (upcInput) upcInput.value = item.upc || '';
+            if (eanInput) eanInput.value = item.ean || '';
+            if (isbnInput) isbnInput.value = item.isbn || '';
+        }
+
         // Show toast notification
         function showToast(message, type = 'success') {
             const container = document.getElementById('toastContainer');
+            if (!container) {
+                console.log(`[${type.toUpperCase()}] ${message}`);
+                return;
+            }
+
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
+
+            const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️';
+
             toast.innerHTML = `
-        <span class="toast-icon">${type === 'success' ? '✓' : '✕'}</span>
-        <span class="toast-message">${message}</span>
-      `;
+                <span class="toast-icon">${icon}</span>
+                <span class="toast-message">${message}</span>
+                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+            `;
+
             container.appendChild(toast);
 
             setTimeout(() => {
-                toast.style.animation = 'slideIn 0.3s ease reverse';
-                setTimeout(() => toast.remove(), 300);
+                if (toast.parentElement) {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateY(-20px)';
+                    setTimeout(() => toast.remove(), 300);
+                }
             }, 3000);
         }
 
@@ -2680,6 +3303,8 @@
 
                 for (const row of rows) {
                     const itemName = row.querySelector('.item-name').value.trim();
+                    const itemIdHidden = row.querySelector('.item-id-hidden');
+                    const existingItemId = itemIdHidden ? itemIdHidden.value.trim() : '';
                     const cost = parseFloat(row.querySelector('.item-cost').value) || 0;
                     const price = parseFloat(row.querySelector('.item-price').value) || 0;
                     const reorder = parseInt(row.querySelector('.item-reorder').value) || 10;
@@ -2690,29 +3315,41 @@
                     const isbn = row.querySelector('.item-isbn')?.value.trim() || null;
 
                     if (itemName) {
-                        // Create each item with all fields
-                        await fetch('/api/items', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                name: itemName,
-                                sku: sku || null,
-                                unit: unit,
-                                quantity: 0,
-                                reorder_point: reorder,
-                                price: price,
-                                cost: cost,
-                                group_id: group.id,
-                                image_url: uploadedImages[0] || null,
-                                manufacturer: groupManufacturer,
-                                brand: groupBrand,
-                                tax_rate: groupTaxRate,
-                                description: description,
-                                upc: upc,
-                                ean: ean,
-                                isbn: isbn
-                            })
-                        });
+                        if (existingItemId) {
+                            // Existing item — just update its group_id
+                            await fetch(`/api/items/${existingItemId}`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    group_id: group.id,
+                                    _partialUpdate: true
+                                })
+                            });
+                        } else {
+                            // New item — create it with group_id
+                            await fetch('/api/items', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    name: itemName,
+                                    sku: sku || null,
+                                    unit: unit,
+                                    quantity: 0,
+                                    reorder_point: reorder,
+                                    price: price,
+                                    cost: cost,
+                                    group_id: group.id,
+                                    image_url: uploadedImages[0] || null,
+                                    manufacturer: groupManufacturer,
+                                    brand: groupBrand,
+                                    tax_rate: groupTaxRate,
+                                    description: description,
+                                    upc: upc,
+                                    ean: ean,
+                                    isbn: isbn
+                                })
+                            });
+                        }
                     }
                 }
 
@@ -2727,41 +3364,16 @@
             }
         });
 
-        // Toggle attributes section based on checkbox
-        document.getElementById('createAttributes').addEventListener('change', (e) => {
-            document.getElementById('attributesContainer').style.display = e.target.checked ? 'block' : 'none';
-        });
-
-        // Toggle column visibility based on item type checkboxes
-        const itemsTable = document.querySelector('.items-table-container');
-
-        // Toggle Selling Price column
-        document.getElementById('sellable').addEventListener('change', (e) => {
-            if (e.target.checked) {
-                itemsTable.classList.remove('hide-selling-price');
-            } else {
-                itemsTable.classList.add('hide-selling-price');
-            }
-        });
-
-        // Toggle Cost Price column
-        document.getElementById('purchasable').addEventListener('change', (e) => {
-            if (e.target.checked) {
-                itemsTable.classList.remove('hide-cost-price');
-            } else {
-                itemsTable.classList.add('hide-cost-price');
-            }
-        });
 
         // ===== Item Picker for ITEM NAME field =====
         let ungroupedItems = [];
 
         async function loadUngroupedItems() {
             try {
-                const res = await fetch('/api/items');
+                const res = await fetch('/api/items/ungrouped');
                 if (!res.ok) return;
                 const allItems = await res.json();
-                ungroupedItems = allItems.filter(item => !item.group_id);
+                ungroupedItems = allItems;
             } catch (err) {
                 console.error('Error loading items:', err);
             }
@@ -2780,6 +3392,12 @@
             const searchInput = dd.querySelector('.item-picker-dd-search input');
             searchInput.value = '';
             renderItemPickerDDOptions(dd, input.value);
+
+            // Position the fixed dropdown below the input
+            const rect = input.getBoundingClientRect();
+            dd.style.top = (rect.bottom + 4) + 'px';
+            dd.style.left = rect.left + 'px';
+
             dd.classList.add('open');
             setTimeout(() => searchInput.focus(), 50);
         }
@@ -2815,14 +3433,18 @@
             }
             list.innerHTML = filtered.map(item => {
                 const price = parseFloat(item.selling_price || item.price || 0).toFixed(2);
+                const imgHtml = item.image_url
+                    ? `<img class="ipd-img" src="${item.image_url}" alt="">`
+                    : `<div class="ipd-img-placeholder">📦</div>`;
                 return `<div class="item-picker-dd-option" onclick="selectItemPickerDD(this, ${item.id}, '${item.name.replace(/'/g, "\\'")}'` +
                     `, '${(item.sku || '').replace(/'/g, "\\'")}'` +
                     `, '${(item.description || '').replace(/'/g, "\\'")}'` +
                     `, ${parseFloat(item.cost || 0)}` +
                     `, ${parseFloat(item.selling_price || item.price || 0)})"` +
                     `>` +
-                    `<div><span class="ipd-name">${item.name}</span>` +
-                    `${item.sku ? '<br><span class="ipd-sku">SKU: ' + item.sku + '</span>' : ''}</div>` +
+                    imgHtml +
+                    `<div class="ipd-info"><span class="ipd-name">${item.name}</span>` +
+                    `${item.sku ? '<span class="ipd-sku">SKU: ' + item.sku + '</span>' : ''}</div>` +
                     `<span class="ipd-price">₱${price}</span>` +
                     `</div>`;
             }).join('');
@@ -2855,6 +3477,14 @@
             if (!e.target.closest('.item-picker-cell')) {
                 document.querySelectorAll('.item-picker-dd.open').forEach(d => d.classList.remove('open'));
             }
+        });
+
+        // Close item picker on scroll
+        document.querySelector('.page-container')?.addEventListener('scroll', function () {
+            document.querySelectorAll('.item-picker-dd.open').forEach(d => d.classList.remove('open'));
+        });
+        window.addEventListener('scroll', function () {
+            document.querySelectorAll('.item-picker-dd.open').forEach(d => d.classList.remove('open'));
         });
     </script>
 </body>

@@ -495,7 +495,7 @@
             if (currentFilter === 'received') {
                 filtered = allReceives.filter(r => r.status === 'received');
             } else if (currentFilter === 'in-transit') {
-                filtered = allReceives.filter(r => r.status === 'draft');
+                filtered = allReceives.filter(r => r.status === 'draft' || r.status === 'in_transit');
             } else if (currentFilter === 'billed') {
                 filtered = allReceives.filter(r => r.po_billed === true);
             } else if (currentFilter === 'partially-billed') {
@@ -525,9 +525,12 @@
                     if (statusLabel === 'received') {
                         statusClass = 'status-received';
                         statusLabel = 'Received';
-                    } else if (statusLabel === 'draft') {
+                    } else if (statusLabel === 'in_transit') {
                         statusClass = 'status-in-transit';
                         statusLabel = 'In Transit';
+                    } else if (statusLabel === 'draft') {
+                        statusClass = 'status-draft';
+                        statusLabel = 'Draft';
                     }
 
                     const billedCell = r.po_billed

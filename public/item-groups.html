@@ -468,9 +468,10 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 24px;
+            padding: 16px 24px;
             background: white;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e8e8e8;
+            margin-bottom: 0;
             position: relative;
         }
 
@@ -541,7 +542,7 @@
         .page-title-dropdown {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             cursor: pointer;
             padding: 6px 10px;
             border-radius: 4px;
@@ -559,7 +560,7 @@
         }
 
         .page-title {
-            font-size: 15px;
+            font-size: 18px;
             font-weight: 600;
             color: #1a1f3a;
             line-height: 1;
@@ -567,7 +568,7 @@
 
         .page-title-arrow {
             font-size: 10px;
-            color: #3b82f6;
+            color: #6c757d;
             transition: transform 0.2s;
             line-height: 1;
             display: flex;
@@ -695,6 +696,129 @@
             background: #2563eb;
         }
 
+        /* View Toggle */
+        .ig-view-toggle {
+            display: flex;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .ig-view-btn {
+            padding: 8px 12px;
+            background: white;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: #6c757d;
+            transition: all 0.2s ease;
+        }
+
+        .ig-view-btn:first-child {
+            border-right: 1px solid #e8e8e8;
+        }
+
+        .ig-view-btn.active {
+            background: #f0f0f0;
+            color: #1a1f3a;
+        }
+
+        /* Grid View */
+        .ig-grid-wrapper {
+            padding: 20px;
+            background: #f9fafb;
+            display: none;
+        }
+
+        .ig-grid-wrapper.active {
+            display: block;
+        }
+
+        .ig-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .ig-grid-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .ig-grid-card:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+            border-color: #3b82f6;
+        }
+
+        .ig-grid-card-image {
+            width: 100%;
+            height: 160px;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f59e0b;
+        }
+
+        .ig-grid-card-image svg {
+            width: 64px;
+            height: 64px;
+        }
+
+        .ig-grid-card-body {
+            padding: 16px;
+        }
+
+        .ig-grid-card-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ig-grid-card-count {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 12px;
+        }
+
+        .ig-grid-card-stats {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 12px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .ig-grid-card-stat {
+            text-align: center;
+        }
+
+        .ig-grid-card-stat-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .ig-grid-card-stat-value.reorder {
+            color: #059669;
+        }
+
+        .ig-grid-card-stat-label {
+            font-size: 10px;
+            color: #9ca3af;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
         /* More Dropdown */
         .more-dropdown-wrapper {
             position: relative;
@@ -786,7 +910,7 @@
 
         .sort-submenu {
             position: absolute;
-            left: -180px;
+            right: 100%;
             top: 0;
             width: 160px;
             background: white;
@@ -794,6 +918,16 @@
             border-radius: 8px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
             display: none;
+            padding-right: 0;
+        }
+
+        .sort-submenu::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -10px;
+            width: 10px;
+            height: 100%;
         }
 
         .sort-submenu-wrapper:hover .sort-submenu {
@@ -841,37 +975,86 @@
         /* Toast */
         .toast-container {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
             z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            pointer-events: none;
         }
 
         .toast {
-            padding: 14px 20px;
-            border-radius: 6px;
-            color: white;
+            pointer-events: auto;
+            padding: 18px 32px;
+            border-radius: 10px;
+            color: #333;
             font-weight: 500;
-            font-size: 14px;
-            animation: slideIn 0.3s ease;
+            font-size: 15px;
+            background: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            border: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            animation: slideDown 0.3s ease;
+            min-width: 340px;
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
 
         .toast.success {
-            background: #10b981;
+            background: white;
+            border-left: 4px solid #10b981;
         }
 
         .toast.error {
-            background: #ef4444;
+            background: white;
+            border-left: 4px solid #ef4444;
         }
 
-        @keyframes slideIn {
+        .toast.info {
+            background: white;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .toast.warning {
+            background: white;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .toast-icon {
+            font-size: 20px;
+        }
+
+        .toast-message {
+            flex: 1;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 18px;
+            opacity: 0.8;
+        }
+
+        .toast-close:hover {
+            opacity: 1;
+            color: #333;
+        }
+
+        @keyframes slideDown {
             from {
-                transform: translateX(100%);
                 opacity: 0;
+                transform: translateY(-20px);
             }
 
             to {
-                transform: translateX(0);
                 opacity: 1;
+                transform: translateY(0);
             }
         }
 
@@ -1036,19 +1219,30 @@
                         <div class="filter-option selected" data-filter="all"
                             onclick="selectItemGroupsFilter('all', 'All Item Groups')">All Item Groups</div>
                         <div class="filter-option" data-filter="active"
-                            onclick="selectItemGroupsFilter('active', 'Active Item Groups')">Active Item Groups</div>
+                            onclick="selectItemGroupsFilter('active', 'Active Item Groups')">Active Item Groups
+                        </div>
                         <div class="filter-option" data-filter="inactive"
-                            onclick="selectItemGroupsFilter('inactive', 'Inactive Item Groups')">Inactive Item Groups
+                            onclick="selectItemGroupsFilter('inactive', 'Inactive Item Groups')">Inactive Item
+                            Groups
                         </div>
                     </div>
                 </div>
                 <div class="groups-search-container">
-                    <span class="groups-search-icon">🔍</span>
+                    <span class="groups-search-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                            stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8" />
+                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                        </svg></span>
                     <input type="text" id="groupSearch" class="groups-search-input" placeholder="Search item groups..."
                         oninput="searchGroups()">
                 </div>
                 <div class="header-actions">
-                    <button class="btn-icon" title="Filter">☰</button>
+                    <div class="ig-view-toggle">
+                        <button class="ig-view-btn active" id="igListViewBtn" title="List View"
+                            onclick="switchIgToListView()">☰</button>
+                        <button class="ig-view-btn" id="igGridViewBtn" title="Grid View"
+                            onclick="switchIgToGridView()">▦</button>
+                    </div>
                     <button class="btn-new" onclick="window.location.href='/new-item-group.html'">+ New</button>
                     <div class="more-dropdown-wrapper">
                         <button class="btn-icon" title="More" onclick="toggleGroupsMoreMenu(event)">⋯</button>
@@ -1076,10 +1270,6 @@
                             <div class="more-menu-item" onclick="exportItemGroups()">
                                 <span class="menu-icon">↑</span>
                                 <span>Export Item Groups</span>
-                            </div>
-                            <div class="more-menu-item" onclick="openGroupsPreferences()">
-                                <span class="menu-icon">⚙</span>
-                                <span>Preferences</span>
                             </div>
                             <div class="more-menu-item" onclick="refreshGroupsList()">
                                 <span class="menu-icon">↻</span>
@@ -1159,6 +1349,11 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+
+            <!-- Grid View (when grid mode selected) -->
+            <div class="ig-grid-wrapper" id="igGridWrapper">
+                <div class="ig-grid" id="igGridContainer"></div>
             </div>
         </div>
     </div>
@@ -1281,15 +1476,36 @@
         // Show toast notification
         function showToast(message, type = 'success') {
             const container = document.getElementById('toastContainer');
+            if (!container) {
+                console.log(`[${type.toUpperCase()}] ${message}`);
+                return;
+            }
+
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            toast.textContent = message;
+
+            const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️';
+
+            toast.innerHTML = `
+                <span class="toast-icon">${icon}</span>
+                <span class="toast-message">${message}</span>
+                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+            `;
+
             container.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateY(-20px)';
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, 3000);
         }
 
         // ========== MORE DROPDOWN FUNCTIONS ==========
         let currentGroupsSortBy = 'name';
+        let groupSortDirection = 'asc';
 
         function toggleGroupsMoreMenu(event) {
             event.stopPropagation();
@@ -1307,9 +1523,15 @@
         }
 
         function sortGroupsBy(field) {
+            // Toggle direction if same field clicked again
+            if (currentGroupsSortBy === field) {
+                groupSortDirection = groupSortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                groupSortDirection = 'asc';
+            }
             currentGroupsSortBy = field;
 
-            // Update UI to show selected
+            // Update UI to show selected + arrow
             document.querySelectorAll('.sort-submenu-item').forEach(item => {
                 item.classList.remove('selected');
                 const arrow = item.querySelector('.sort-arrow');
@@ -1320,44 +1542,197 @@
             sortItems.forEach(item => {
                 if (item.textContent.trim().toLowerCase().includes(field === 'created_at' ? 'created' : field)) {
                     item.classList.add('selected');
-                    if (!item.querySelector('.sort-arrow')) {
-                        const arrow = document.createElement('span');
-                        arrow.className = 'sort-arrow';
-                        arrow.textContent = '↓';
-                        item.appendChild(arrow);
-                    }
+                    const arrow = document.createElement('span');
+                    arrow.className = 'sort-arrow';
+                    arrow.textContent = groupSortDirection === 'asc' ? '↑' : '↓';
+                    item.appendChild(arrow);
                 }
             });
 
             // Sort the groups
             itemGroups.sort((a, b) => {
                 if (field === 'name') {
-                    return (a.name || '').localeCompare(b.name || '');
+                    const cmp = (a.name || '').localeCompare(b.name || '');
+                    return groupSortDirection === 'asc' ? cmp : -cmp;
                 } else if (field === 'created_at') {
-                    return new Date(b.created_at) - new Date(a.created_at);
+                    const cmp = new Date(a.created_at) - new Date(b.created_at);
+                    return groupSortDirection === 'asc' ? cmp : -cmp;
                 }
                 return 0;
             });
 
             renderGroupsList();
             renderGroupsTable();
+            if (igCurrentView === 'grid') renderGroupsGrid();
             closeGroupsMoreMenu();
-            showToast(`Sorted by ${field === 'created_at' ? 'Created Time' : 'Name'}`, 'success');
+
+            // Contextual direction labels
+            let dirLabel;
+            if (field === 'created_at') {
+                dirLabel = groupSortDirection === 'asc' ? 'Oldest→Newest' : 'Newest→Oldest';
+            } else {
+                dirLabel = groupSortDirection === 'asc' ? 'A→Z' : 'Z→A';
+            }
+            const fieldLabel = field === 'created_at' ? 'Created Time' : 'Name';
+            showToast(`Sorted by ${fieldLabel} (${dirLabel})`, 'success');
+        }
+
+        // CSV parser
+        function parseGroupsCSV(text) {
+            const rows = [];
+            let current = '';
+            let inQuotes = false;
+            const row = [];
+            for (let i = 0; i < text.length; i++) {
+                const ch = text[i];
+                if (inQuotes) {
+                    if (ch === '"' && text[i + 1] === '"') {
+                        current += '"';
+                        i++;
+                    } else if (ch === '"') {
+                        inQuotes = false;
+                    } else {
+                        current += ch;
+                    }
+                } else {
+                    if (ch === '"') {
+                        inQuotes = true;
+                    } else if (ch === ',') {
+                        row.push(current);
+                        current = '';
+                    } else if (ch === '\n' || ch === '\r') {
+                        if (ch === '\r' && text[i + 1] === '\n') i++;
+                        row.push(current);
+                        current = '';
+                        if (row.length > 0) rows.push([...row]);
+                        row.length = 0;
+                    } else {
+                        current += ch;
+                    }
+                }
+            }
+            row.push(current);
+            if (row.some(c => c.trim() !== '')) rows.push(row);
+            return rows;
         }
 
         function importItemGroups() {
             closeGroupsMoreMenu();
-            showToast('Import Item Groups feature coming soon', 'info');
+
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = '.csv';
+            fileInput.style.display = 'none';
+            document.body.appendChild(fileInput);
+
+            fileInput.addEventListener('change', async function () {
+                const file = this.files[0];
+                if (!file) return;
+
+                showToast('Reading CSV file...', 'info');
+
+                const reader = new FileReader();
+                reader.onload = async function (e) {
+                    try {
+                        const csvText = e.target.result;
+                        const rows = parseGroupsCSV(csvText);
+
+                        if (rows.length < 2) {
+                            showToast('CSV file is empty or has no data rows', 'error');
+                            return;
+                        }
+
+                        const headers = rows[0].map(h => h.trim().toLowerCase().replace(/\s+/g, '_'));
+                        const dataRows = rows.slice(1);
+
+                        let imported = 0;
+                        let failed = 0;
+
+                        for (const row of dataRows) {
+                            if (row.length === 0 || (row.length === 1 && row[0].trim() === '')) continue;
+
+                            const rowData = {};
+                            headers.forEach((header, idx) => {
+                                rowData[header] = row[idx]?.trim() || '';
+                            });
+
+                            const groupPayload = {
+                                name: rowData['name'] || rowData['group_name'] || rowData['item_group'] || '',
+                                description: rowData['description'] || '',
+                                unit: rowData['unit'] || 'pcs',
+                                brand: rowData['brand'] || '',
+                                manufacturer: rowData['manufacturer'] || ''
+                            };
+
+                            if (!groupPayload.name) {
+                                failed++;
+                                continue;
+                            }
+
+                            try {
+                                const response = await fetch('/api/items/groups', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify(groupPayload)
+                                });
+
+                                if (response.ok) {
+                                    imported++;
+                                } else {
+                                    const errorData = await response.json();
+                                    console.warn(`Failed to import "${groupPayload.name}":`, errorData.error);
+                                    failed++;
+                                }
+                            } catch (err) {
+                                console.error(`Error importing "${groupPayload.name}":`, err);
+                                failed++;
+                            }
+                        }
+
+                        await loadItemGroups();
+
+                        if (failed > 0) {
+                            showToast(`Imported ${imported} group(s). ${failed} failed.`, 'warning');
+                        } else {
+                            showToast(`Successfully imported ${imported} group(s)!`, 'success');
+                        }
+                    } catch (error) {
+                        console.error('CSV parse error:', error);
+                        showToast('Failed to parse CSV file', 'error');
+                    }
+                };
+                reader.readAsText(file);
+                document.body.removeChild(fileInput);
+            });
+
+            fileInput.click();
         }
 
         function exportItemGroups() {
             closeGroupsMoreMenu();
-            showToast('Export Item Groups feature coming soon', 'info');
-        }
-
-        function openGroupsPreferences() {
-            closeGroupsMoreMenu();
-            showToast('Preferences feature coming soon', 'info');
+            if (itemGroups.length === 0) {
+                showToast('No item groups to export', 'error');
+                return;
+            }
+            // Generate CSV
+            const headers = ['Name', 'Description', 'Item Count', 'Stock on Hand', 'Reorder Point', 'Status'];
+            const rows = itemGroups.map(g => [
+                `"${(g.name || '').replace(/"/g, '""')}"`,
+                `"${(g.description || '').replace(/"/g, '""')}"`,
+                g.item_count || 0,
+                g.total_stock || 0,
+                g.total_reorder || 0,
+                g.status || 'active'
+            ]);
+            const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'item_groups.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Item groups exported successfully', 'success');
         }
 
         function refreshGroupsList() {
@@ -1409,6 +1784,16 @@
                 renderGroupsTable();
                 filterAndRenderGroups();
 
+                // Auto-select group from URL parameter (e.g. ?groupId=5)
+                const urlParams = new URLSearchParams(window.location.search);
+                const autoGroupId = urlParams.get('groupId');
+                if (autoGroupId) {
+                    const gid = parseInt(autoGroupId);
+                    if (itemGroups.find(g => g.id === gid)) {
+                        selectGroup(gid);
+                    }
+                }
+
                 // Table is visible by default (CSS), no need to add classes
             } catch (error) {
                 console.error('Error loading groups:', error);
@@ -1416,16 +1801,112 @@
             }
         }
 
-        // Render groups list (left panel)
-        function renderGroupsList() {
-            const container = document.getElementById('groupsListItems');
+        // ========== SEARCH FUNCTIONALITY ==========
+        let groupSearchTerm = '';
 
-            if (itemGroups.length === 0) {
-                container.innerHTML = '<div style="text-align: center; padding: 40px; color: #6b7280;">No groups yet</div>';
+        function searchGroups() {
+            const searchInput = document.getElementById('groupSearch');
+            groupSearchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            filterAndRenderGroups();
+        }
+
+        // ========== VIEW TOGGLE ==========
+        let igCurrentView = 'list';
+
+        function switchIgToListView() {
+            igCurrentView = 'list';
+            document.getElementById('igListViewBtn').classList.add('active');
+            document.getElementById('igGridViewBtn').classList.remove('active');
+            document.getElementById('groupsTableContainer').style.display = '';
+            document.getElementById('splitLayout').style.display = '';
+            document.getElementById('igGridWrapper').classList.remove('active');
+        }
+
+        function switchIgToGridView() {
+            igCurrentView = 'grid';
+            document.getElementById('igGridViewBtn').classList.add('active');
+            document.getElementById('igListViewBtn').classList.remove('active');
+            document.getElementById('splitLayout').style.display = 'none';
+            document.getElementById('igGridWrapper').classList.add('active');
+            renderGroupsGrid();
+        }
+
+        function renderGroupsGrid() {
+            const container = document.getElementById('igGridContainer');
+            const filtered = getFilteredGroups();
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div style="text-align:center;padding:60px;color:#6b7280;"><div style="font-size:48px;margin-bottom:16px;">📦</div><div style="font-size:16px;font-weight:600;">No groups found</div></div>';
                 return;
             }
 
-            container.innerHTML = itemGroups.map(group => `
+            container.innerHTML = filtered.map(group => `
+                <div class="ig-grid-card" onclick="selectGroup(${group.id})">
+                    <div class="ig-grid-card-image">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+                    </div>
+                    <div class="ig-grid-card-body">
+                        <div class="ig-grid-card-name">${group.name}</div>
+                        <div class="ig-grid-card-count">${group.item_count} Items</div>
+                        <div class="ig-grid-card-stats">
+                            <div class="ig-grid-card-stat">
+                                <div class="ig-grid-card-stat-value">${group.total_stock.toFixed(2)}</div>
+                                <div class="ig-grid-card-stat-label">Stock</div>
+                            </div>
+                            <div class="ig-grid-card-stat">
+                                <div class="ig-grid-card-stat-value reorder">${group.total_reorder || '0'}</div>
+                                <div class="ig-grid-card-stat-label">Reorder</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getFilteredGroups() {
+            let filtered = itemGroups;
+
+            // Apply active/inactive filter
+            if (typeof currentGroupFilter !== 'undefined' && currentGroupFilter !== 'all') {
+                filtered = filtered.filter(group => {
+                    if (currentGroupFilter === 'active') return group.status === 'active' || !group.status;
+                    if (currentGroupFilter === 'inactive') return group.status === 'inactive';
+                    return true;
+                });
+            }
+
+            // Apply search term
+            if (groupSearchTerm) {
+                filtered = filtered.filter(g => {
+                    const name = (g.name || '').toLowerCase();
+                    const desc = (g.description || '').toLowerCase();
+                    const mfg = (g.manufacturer || '').toLowerCase();
+                    const brand = (g.brand || '').toLowerCase();
+                    const stock = String(g.total_stock || 0);
+                    const reorder = String(g.total_reorder || 0);
+                    return name.includes(groupSearchTerm) ||
+                        desc.includes(groupSearchTerm) ||
+                        mfg.includes(groupSearchTerm) ||
+                        brand.includes(groupSearchTerm) ||
+                        stock.includes(groupSearchTerm) ||
+                        reorder.includes(groupSearchTerm);
+                });
+            }
+
+            return filtered;
+        }
+
+        // Render groups list (left panel)
+        function renderGroupsList() {
+            const container = document.getElementById('groupsListItems');
+            const filtered = getFilteredGroups();
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 40px; color: #6b7280;">No groups found</div>';
+                return;
+            }
+
+            container.innerHTML = filtered.map(group => `
                 <div class="group-list-item ${selectedGroupId === group.id ? 'active' : ''}" onclick="selectGroup(${group.id})">
                     <input type="checkbox" onclick="event.stopPropagation()">
                     <span class="folder-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg></span>
@@ -1440,22 +1921,23 @@
         // Render groups table (full width view)
         function renderGroupsTable() {
             const tbody = document.getElementById('groupsTableBody');
+            const filtered = getFilteredGroups();
 
-            if (itemGroups.length === 0) {
+            if (filtered.length === 0) {
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="5" style="text-align: center; padding: 60px; color: #6b7280;">
                             <div style="font-size: 48px; margin-bottom: 16px;">📦</div>
-                            <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">No Item Groups Yet</div>
-                            <div style="font-size: 14px; margin-bottom: 20px;">Create your first item group using the + New button</div>
-                            <button class="btn-new" onclick="window.location.href='/new-item-group.html'">+ New Item Group</button>
+                            <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">${groupSearchTerm ? 'No matching groups found' : 'No Item Groups Yet'}</div>
+                            <div style="font-size: 14px; margin-bottom: 20px;">${groupSearchTerm ? 'Try a different search term' : 'Create your first item group using the + New button'}</div>
+                            ${!groupSearchTerm ? '<button class="btn-new" onclick="window.location.href=\'/new-item-group.html\'">+ New Item Group</button>' : ''}
                         </td>
                     </tr>
                 `;
                 return;
             }
 
-            tbody.innerHTML = itemGroups.map(group => `
+            tbody.innerHTML = filtered.map(group => `
                 <tr onclick="selectGroup(${group.id})">
                     <td onclick="event.stopPropagation()"><input type="checkbox" class="ig-row-check" data-group-id="${group.id}" onchange="updateGroupSelectionBar()" title="Select ${group.name}"></td>
                     <td>
@@ -1726,22 +2208,6 @@
             }
         }
 
-        // Search groups
-        function searchGroups() {
-            const searchInput = document.getElementById('groupSearch');
-            if (!searchInput) return;
-            const term = searchInput.value.toLowerCase();
-            const filtered = itemGroups.filter(g =>
-                g.name.toLowerCase().includes(term) ||
-                (g.description && g.description.toLowerCase().includes(term))
-            );
-            const original = itemGroups;
-            itemGroups = filtered;
-            renderGroupsList();
-            renderGroupsTable();
-            itemGroups = original;
-        }
-
         // Add item modal functions
         function openAddItemModal() {
             if (!selectedGroupId) {
@@ -1965,17 +2431,9 @@
         }
 
         function filterAndRenderGroups() {
-            const filtered = itemGroups.filter(group => {
-                if (currentGroupFilter === 'all') return true;
-                if (currentGroupFilter === 'active') return group.status === 'active' || !group.status;
-                if (currentGroupFilter === 'inactive') return group.status === 'inactive';
-                return true;
-            });
-            const original = itemGroups;
-            itemGroups = filtered;
             renderGroupsList();
             renderGroupsTable();
-            itemGroups = original;
+            if (igCurrentView === 'grid') renderGroupsGrid();
         }
 
         // Close filter dropdown when clicking outside

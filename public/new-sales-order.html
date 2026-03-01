@@ -1627,7 +1627,6 @@
                     <h1 class="page-title" id="pageTitle">New Sales Order</h1>
                 </div>
                 <div class="header-actions">
-                    <button class="header-icon-btn">⚙</button>
                     <button class="close-btn" onclick="goBack()">×</button>
                 </div>
             </div>
@@ -1661,6 +1660,26 @@
                                 </div>
                                 <button class="input-add-btn"
                                     onclick="window.location.href='/new-customer.html'">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Billing / Shipping Address -->
+                    <div id="addressSection" style="display:none; margin-top:8px;">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:500px;margin:0 auto;">
+                            <div>
+                                <div
+                                    style="font-size:12px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">
+                                    Billing Address</div>
+                                <div id="invBillingAddress"
+                                    style="font-size:13px;color:#333;line-height:1.6;min-height:40px;">—</div>
+                            </div>
+                            <div>
+                                <div
+                                    style="font-size:12px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">
+                                    Shipping Address</div>
+                                <div id="invShippingAddress"
+                                    style="font-size:13px;color:#333;line-height:1.6;min-height:40px;">—</div>
                             </div>
                         </div>
                     </div>
@@ -1786,15 +1805,18 @@
                         <!-- Attach Files -->
                         <div class="attach-section">
                             <div class="attach-title">Attach File(s) to Sales Order</div>
-                            <button class="upload-btn" type="button">📤 Upload File ▼</button>
+                            <button class="upload-btn" type="button" onclick="triggerFileUpload()">📤 Upload File
+                                ▼</button>
+                            <input type="file" id="soFileInput" multiple
+                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.xlsx,.csv,.txt" style="display:none;"
+                                onchange="handleFileUpload(this)">
                             <p class="upload-help">Max 10 files, 10MB each</p>
+                            <div id="soAttachedFiles" style="margin-top:8px;"></div>
                         </div>
                     </div>
 
-                    <div class="additional-link">
-                        <span style="color: #4285f4;">Additional Fields:</span>
-                        Add custom fields via <a href="#">Settings</a> >> <a href="#">Sales Orders</a>
-                    </div>
+
+
                 </div>
 
                 <!-- Right Column -->
@@ -1803,7 +1825,7 @@
                     <div class="item-table-section">
                         <div class="item-table-header">
                             <span class="item-table-title">Item Table</span>
-                            <a href="#" class="bulk-actions-link">⚡ Bulk Actions</a>
+
                         </div>
 
                         <table class="item-table">
@@ -1842,7 +1864,7 @@
                                                 class="disc-deduct"></span></div>
                                     </td>
                                     <td>
-                                        <select>
+                                        <select class="tax-select" onchange="recalcRow(this)">
                                             <option value="">Select Tax</option>
                                         </select>
                                     </td>
@@ -1855,7 +1877,7 @@
 
                         <div class="add-row-buttons">
                             <button class="add-row-btn primary">+ Add New Row</button>
-                            <button class="add-row-btn">+ Add Items in Bulk</button>
+                            <button class="add-row-btn" onclick="openBulkAddModal()">+ Add Items in Bulk</button>
                         </div>
                     </div>
 
@@ -2134,6 +2156,7 @@
                     });
                 };
                 await waitForData();
+                await loadTaxes();
                 loadOrderForEdit(editingOrderId);
             }
         })();
@@ -2151,11 +2174,11 @@
                 // Set dates
                 if (order.order_date) {
                     const d = new Date(order.order_date);
-                    document.getElementById('orderDate').value = d.toISOString().split('T')[0];
+                    document.getElementById('orderDate').value = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
                 }
                 if (order.expected_shipment_date) {
                     const d = new Date(order.expected_shipment_date);
-                    document.getElementById('shipmentDate').value = d.toISOString().split('T')[0];
+                    document.getElementById('shipmentDate').value = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
                 }
 
                 // Set reference number
@@ -2264,12 +2287,15 @@
                         <td class="center"><input type="number" value="${item.quantity || 1}" style="text-align: center;" class="qty-input" onchange="recalcRow(this)"></td>
                         <td class="center"><input type="number" value="${item.rate || 0}" style="text-align: right;" class="rate-input" onchange="recalcRow(this)"></td>
                         ${discCells}
-                        <td><select><option value="">Select Tax</option></select></td>
+                        <td>${buildTaxSelectHTML()}</td>
                         <td class="center amount-cell">${item.amount || 0}</td>
                         <td class="center"><button class="delete-row-btn" onclick="deleteItemRow(this)">×</button></td>
                     `;
                     tbody.appendChild(row);
                 });
+
+                // Populate tax selects for newly created edit rows
+                document.querySelectorAll('.tax-select').forEach(sel => populateTaxSelect(sel));
 
                 // Set totals discount
                 if (order.discount_value) {
@@ -2308,6 +2334,16 @@
                 if (res.ok) {
                     customersList = await res.json();
                     renderCustDdOptions();
+                    // Auto-select customer if URL has customerId
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const preselect = urlParams.get('customerId');
+                    if (preselect) {
+                        const c = customersList.find(x => String(x.id) === preselect);
+                        if (c) {
+                            const name = getCustomerDisplayName(c);
+                            selectCustDd(c.id, name);
+                        }
+                    }
                 }
             } catch (err) {
                 console.error('Error loading customers:', err);
@@ -2357,6 +2393,18 @@
             label.textContent = name;
             label.style.color = '#333';
             closeAllCustomDds();
+            populateCustomerAddress(id);
+        }
+
+        function populateCustomerAddress(customerId) {
+            const c = customersList.find(x => String(x.id) === String(customerId));
+            const section = document.getElementById('addressSection');
+            if (!c) { section.style.display = 'none'; return; }
+            const billingParts = [c.billing_street, c.billing_city, c.billing_state, c.billing_zip, c.billing_country].filter(Boolean);
+            const shippingParts = [c.shipping_street, c.shipping_city, c.shipping_state, c.shipping_zip, c.shipping_country].filter(Boolean);
+            document.getElementById('invBillingAddress').textContent = billingParts.length > 0 ? billingParts.join(', ') : '—';
+            document.getElementById('invShippingAddress').textContent = shippingParts.length > 0 ? shippingParts.join(', ') : '—';
+            section.style.display = 'block';
         }
 
         function filterCustDd() {
@@ -2656,6 +2704,101 @@
             alert('Password saved! Only this salesperson should know this password.');
         }
 
+        // ===== TOAST NOTIFICATION =====
+        function showToast(msg, type) {
+            const t = document.createElement('div');
+            t.textContent = msg;
+            const bg = type === 'error' ? '#dc2626' : '#16a34a';
+            t.style.cssText = `position:fixed;top:20px;left:50%;transform:translateX(-50%);background:${bg};color:white;padding:12px 28px;border-radius:8px;font-size:14px;font-weight:500;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.15);`;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 3000);
+        }
+
+        // ===== FILE UPLOAD =====
+        let soUploadedFiles = [];
+
+        function triggerFileUpload() {
+            document.getElementById('soFileInput').click();
+        }
+
+        async function handleFileUpload(input) {
+            const files = input.files;
+            if (!files || files.length === 0) return;
+
+            const maxSize = 10 * 1024 * 1024; // 10MB
+            const maxFiles = 10;
+
+            if (soUploadedFiles.length + files.length > maxFiles) {
+                showToast('Maximum 10 files allowed.', 'error');
+                input.value = '';
+                return;
+            }
+
+            for (const file of files) {
+                if (file.size > maxSize) {
+                    showToast(`${file.name} exceeds 10MB limit.`, 'error');
+                    input.value = '';
+                    return;
+                }
+            }
+
+            const formData = new FormData();
+            for (const file of files) {
+                formData.append('files', file);
+            }
+
+            try {
+                const res = await fetch('/api/uploads', {
+                    method: 'POST',
+                    body: formData
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    showToast('Upload failed: ' + (err.error || 'Unknown error'), 'error');
+                    return;
+                }
+                const data = await res.json();
+                soUploadedFiles.push(...data.files);
+                renderAttachedFiles();
+                showToast(`${data.files.length} file(s) uploaded successfully.`);
+            } catch (e) {
+                console.error('Upload error:', e);
+                showToast('Upload failed.', 'error');
+            }
+            input.value = '';
+        }
+
+        function renderAttachedFiles() {
+            const container = document.getElementById('soAttachedFiles');
+            if (soUploadedFiles.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+            container.innerHTML = soUploadedFiles.map((f, i) => {
+                const sizeKB = (f.size / 1024).toFixed(1);
+                const icon = f.name.match(/\.(jpg|jpeg|png|gif)$/i) ? '🖼️' :
+                    f.name.match(/\.(pdf)$/i) ? '📄' :
+                        f.name.match(/\.(doc|docx)$/i) ? '📝' :
+                            f.name.match(/\.(xlsx|csv)$/i) ? '📊' : '📎';
+                return `<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;margin-bottom:4px;font-size:12px;">
+                    <span>${icon}</span>
+                    <a href="${f.url}" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${f.name}</a>
+                    <span style="color:#999;font-size:11px;">${sizeKB} KB</span>
+                    <button type="button" onclick="removeAttachedFile(${i})" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:14px;padding:0 4px;" title="Remove">×</button>
+                </div>`;
+            }).join('');
+        }
+
+        async function removeAttachedFile(index) {
+            const file = soUploadedFiles[index];
+            if (file && file.url) {
+                const filename = file.url.split('/').pop();
+                try { await fetch('/api/uploads/' + filename, { method: 'DELETE' }); } catch (e) { /* ignore */ }
+            }
+            soUploadedFiles.splice(index, 1);
+            renderAttachedFiles();
+        }
+
         function goBack() {
             window.location.href = '/sales-orders.html';
         }
@@ -2811,8 +2954,7 @@
                 });
                 if (res.ok) {
                     const order = await res.json();
-                    alert(`Sales Order ${order.order_number} saved and ready to print!`);
-                    window.location.href = '/sales-orders.html?orderId=' + order.id;
+                    window.location.href = '/sales-orders.html?orderId=' + order.id + '&print=true';
                 } else {
                     const err = await res.json();
                     alert('Error saving: ' + (err.error || 'Unknown error'));
@@ -2900,6 +3042,36 @@
                 dd.classList.remove('open');
             }
         });
+
+        // ===== Tax System =====
+        let taxesData = [];
+
+        async function loadTaxes() {
+            try {
+                const res = await fetch('/api/taxes');
+                if (res.ok) taxesData = await res.json();
+            } catch (e) { console.error('Error loading taxes:', e); }
+            // Populate all existing tax selects
+            document.querySelectorAll('.tax-select').forEach(sel => populateTaxSelect(sel));
+        }
+
+        function populateTaxSelect(sel, selectedValue) {
+            const val = selectedValue || sel.value;
+            sel.innerHTML = '<option value="">Select Tax</option>' +
+                taxesData.map(t => {
+                    const label = t.name;
+                    const selected = (val === String(t.id) || val === t.name) ? ' selected' : '';
+                    return `<option value="${t.id}" data-rate="${t.rate}"${selected}>${label}</option>`;
+                }).join('');
+        }
+
+        function buildTaxSelectHTML() {
+            return `<select class="tax-select" onchange="recalcRow(this)"><option value="">Select Tax</option>` +
+                taxesData.map(t => `<option value="${t.id}" data-rate="${t.rate}">${t.name}</option>`).join('') +
+                `</select>`;
+        }
+
+        loadTaxes();
 
         // ===== Item Picker System =====
         let allItems = [];
@@ -3037,6 +3209,17 @@
             });
 
             if (amount < 0) amount = 0;
+
+            // Apply tax
+            const taxSelect = row.querySelector('.tax-select');
+            if (taxSelect && taxSelect.value) {
+                const selectedOption = taxSelect.options[taxSelect.selectedIndex];
+                const taxRate = parseFloat(selectedOption.getAttribute('data-rate')) || 0;
+                if (taxRate > 0) {
+                    amount = amount + (amount * taxRate / 100);
+                }
+            }
+
             row.querySelector('.amount-cell').textContent = formatNum(amount);
             recalcTotals();
         }
@@ -3224,7 +3407,7 @@
                 <td class="center"><input type="number" value="1" style="text-align: center;" class="qty-input" onchange="recalcRow(this)"></td>
                 <td class="center"><input type="number" value="0" style="text-align: right;" class="rate-input" onchange="recalcRow(this)"></td>
                 ${discCells}
-                <td><select><option value="">Select Tax</option></select></td>
+                <td>${buildTaxSelectHTML()}</td>
                 <td class="center amount-cell">0</td>
                 <td class="center"><button class="delete-row-btn" onclick="deleteItemRow(this)">×</button></td>
             `;
@@ -3401,6 +3584,189 @@
             }
             renderPtDropdownOptions();
             closeConfigureTerms();
+        }
+        // ===== BULK ADD ITEMS MODAL =====
+        let bulkSelectedItems = [];
+
+        function openBulkAddModal() {
+            bulkSelectedItems = [];
+            const modal = document.getElementById('bulkAddModal');
+            if (!modal) createBulkAddModal();
+            document.getElementById('bulkAddModal').style.display = 'flex';
+            document.getElementById('bulkSearchInput').value = '';
+            renderBulkItemList();
+            renderBulkSelectedList();
+        }
+
+        function closeBulkAddModal() {
+            document.getElementById('bulkAddModal').style.display = 'none';
+        }
+
+        function createBulkAddModal() {
+            const modal = document.createElement('div');
+            modal.id = 'bulkAddModal';
+            modal.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:10000;align-items:center;justify-content:center;';
+            modal.innerHTML = `
+                <div style="background:white;border-radius:8px;width:780px;max-width:95vw;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,0.2);">
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #e5e7eb;">
+                        <h2 style="margin:0;font-size:16px;font-weight:600;color:#333;">Add Items in Bulk</h2>
+                        <button onclick="closeBulkAddModal()" style="background:none;border:none;font-size:20px;color:#dc2626;cursor:pointer;padding:0 4px;">×</button>
+                    </div>
+                    <div style="display:flex;flex:1;min-height:0;max-height:70vh;">
+                        <!-- Left: Item List -->
+                        <div style="flex:1;display:flex;flex-direction:column;border-right:1px solid #e5e7eb;">
+                            <div style="padding:12px 16px;">
+                                <input type="text" id="bulkSearchInput" placeholder="Type to search or scan the barcode of the item"
+                                    style="width:100%;padding:9px 12px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;outline:none;box-sizing:border-box;"
+                                    oninput="renderBulkItemList()">
+                            </div>
+                            <div id="bulkItemList" style="flex:1;overflow-y:auto;padding:0 0 8px;"></div>
+                        </div>
+                        <!-- Right: Selected Items -->
+                        <div style="flex:1;display:flex;flex-direction:column;">
+                            <div style="padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #f0f0f0;">
+                                <h3 style="margin:0;font-size:15px;font-weight:600;color:#333;">Selected Items</h3>
+                                <span id="bulkSelectedCount" style="background:#e5e7eb;color:#555;padding:2px 8px;border-radius:10px;font-size:12px;font-weight:600;">0</span>
+                                <span id="bulkTotalQty" style="margin-left:auto;font-size:12px;color:#666;">Total Quantity: 0</span>
+                            </div>
+                            <div id="bulkSelectedList" style="flex:1;overflow-y:auto;padding:8px 0;"></div>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:10px;padding:14px 20px;border-top:1px solid #e5e7eb;justify-content:flex-start;">
+                        <button onclick="confirmBulkAdd()" style="padding:8px 20px;background:#2563eb;color:white;border:none;border-radius:5px;font-size:13px;font-weight:600;cursor:pointer;">Add Items</button>
+                        <button onclick="closeBulkAddModal()" style="padding:8px 20px;background:#f3f4f6;color:#333;border:1px solid #d1d5db;border-radius:5px;font-size:13px;font-weight:500;cursor:pointer;">Cancel</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.addEventListener('click', (e) => { if (e.target === modal) closeBulkAddModal(); });
+        }
+
+        function renderBulkItemList() {
+            const query = (document.getElementById('bulkSearchInput').value || '').toLowerCase();
+            const list = document.getElementById('bulkItemList');
+            let items = allItems.filter(item =>
+                (item.name || '').toLowerCase().includes(query) ||
+                (item.sku || '').toLowerCase().includes(query)
+            );
+            list.innerHTML = items.map(item => {
+                const isSelected = bulkSelectedItems.some(s => s.id === item.id);
+                const stock = parseFloat(item.stock_quantity) || 0;
+                const rate = parseFloat(item.selling_price) || 0;
+                const unit = item.unit || 'pcs';
+                const skuLine = item.sku ? `SKU: ${item.sku} ` : '';
+                return `<div onclick="toggleBulkItem(${item.id})" style="display:flex;align-items:center;padding:10px 16px;cursor:pointer;border-bottom:1px solid #f3f4f6;transition:background 0.15s;${isSelected ? 'background:#f0fdf4;' : ''}" onmouseover="this.style.background='${isSelected ? '#dcfce7' : '#f9fafb'}'" onmouseout="this.style.background='${isSelected ? '#f0fdf4' : ''}'">
+                    <div style="flex:1;min-width:0;">
+                        <div style="font-size:13px;font-weight:500;color:${isSelected ? '#16a34a' : '#333'};">${item.name}</div>
+                        <div style="font-size:11px;color:${isSelected ? '#16a34a' : '#999'};margin-top:2px;">${skuLine}Rate: PHP${rate.toFixed(2)}</div>
+                    </div>
+                    <div style="text-align:right;margin-right:10px;">
+                        <div style="font-size:11px;color:#999;">Stock on Hand</div>
+                        <div style="font-size:13px;font-weight:500;color:#16a34a;">${stock.toFixed(2)} ${unit}</div>
+                    </div>
+                    ${isSelected ? '<span style="font-size:18px;color:#16a34a;">✅</span>' : '<span style="width:18px;"></span>'}
+                </div>`;
+            }).join('');
+            if (items.length === 0) {
+                list.innerHTML = '<div style="padding:20px 16px;text-align:center;color:#999;font-size:13px;">No items found.</div>';
+            }
+        }
+
+        function toggleBulkItem(itemId) {
+            const idx = bulkSelectedItems.findIndex(s => s.id === itemId);
+            if (idx >= 0) {
+                bulkSelectedItems.splice(idx, 1);
+            } else {
+                const item = allItems.find(i => i.id === itemId);
+                if (item) {
+                    bulkSelectedItems.push({
+                        id: item.id,
+                        name: item.name,
+                        sku: item.sku || '',
+                        rate: parseFloat(item.selling_price) || 0,
+                        quantity: 1,
+                        unit: item.unit || 'pcs'
+                    });
+                }
+            }
+            renderBulkItemList();
+            renderBulkSelectedList();
+        }
+
+        function renderBulkSelectedList() {
+            const list = document.getElementById('bulkSelectedList');
+            document.getElementById('bulkSelectedCount').textContent = bulkSelectedItems.length;
+            const totalQty = bulkSelectedItems.reduce((s, i) => s + i.quantity, 0);
+            document.getElementById('bulkTotalQty').textContent = 'Total Quantity: ' + totalQty;
+
+            if (bulkSelectedItems.length === 0) {
+                list.innerHTML = '<div style="padding:30px;text-align:center;color:#ccc;font-size:13px;">Click items on the left to select them.</div>';
+                return;
+            }
+            list.innerHTML = bulkSelectedItems.map((item, i) => {
+                const label = item.sku ? `[${item.sku}] ${item.name}` : item.name;
+                return `<div style="display:flex;align-items:center;padding:10px 16px;border-bottom:1px solid #f3f4f6;">
+                    <div style="flex:1;font-size:13px;font-weight:500;color:#333;">${label}</div>
+                    <div style="display:flex;align-items:center;gap:0;">
+                        <button onclick="changeBulkQty(${i},-1)" style="width:28px;height:28px;border:1px solid #d1d5db;background:#f9fafb;border-radius:4px 0 0 4px;cursor:pointer;font-size:14px;color:#666;display:flex;align-items:center;justify-content:center;">−</button>
+                        <input type="number" value="${item.quantity}" min="1" style="width:40px;height:28px;border:1px solid #d1d5db;border-left:none;border-right:none;text-align:center;font-size:13px;outline:none;" onchange="setBulkQty(${i},this.value)">
+                        <button onclick="changeBulkQty(${i},1)" style="width:28px;height:28px;border:1px solid #d1d5db;background:#f9fafb;border-radius:0 4px 4px 0;cursor:pointer;font-size:14px;color:#16a34a;display:flex;align-items:center;justify-content:center;">+</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function changeBulkQty(index, delta) {
+            bulkSelectedItems[index].quantity = Math.max(1, bulkSelectedItems[index].quantity + delta);
+            renderBulkSelectedList();
+        }
+
+        function setBulkQty(index, val) {
+            bulkSelectedItems[index].quantity = Math.max(1, parseInt(val) || 1);
+            renderBulkSelectedList();
+        }
+
+        function confirmBulkAdd() {
+            if (bulkSelectedItems.length === 0) { closeBulkAddModal(); return; }
+            const tbody = document.querySelector('.item-table tbody');
+            // Remove empty first row if it exists
+            const firstRow = tbody.querySelector('tr');
+            if (firstRow) {
+                const nameInput = firstRow.querySelector('.item-picker-input');
+                const hiddenId = firstRow.querySelector('.item-id-hidden');
+                if (nameInput && !nameInput.value && hiddenId && !hiddenId.value) {
+                    firstRow.remove();
+                }
+            }
+
+            bulkSelectedItems.forEach(item => {
+                const discCells = `<td class="disc-col-td"><div class="disc-cell"><input type="number" value="0" class="disc-input" onchange="recalcRow(this)"><button class="disc-toggle" onclick="toggleDiscType(this)" data-type="%">%</button><span class="disc-deduct"></span></div></td>`;
+                const row = document.createElement('tr');
+                const imgHtml = item.image_url
+                    ? `<img src="${item.image_url}" class="item-thumb" style="width:32px;height:32px;object-fit:cover;border-radius:4px;">`
+                    : `<div class="item-thumb-placeholder" style="width:32px;height:32px;background:#f0f0f0;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#999;">📦</div>`;
+                row.innerHTML = `
+                    <td class="item-picker-cell">
+                        <div class="item-selected-display" style="display:flex;" onclick="this.style.display='none';this.nextElementSibling.style.display='';this.nextElementSibling.focus();">
+                            ${imgHtml}<span class="item-selected-name">${item.name}</span>
+                        </div>
+                        <input type="text" class="item-picker-input" value="${item.name}" placeholder="Type or click to select an item." onfocus="openItemPicker(this)" oninput="filterItemPicker(this)" style="display:none;">
+                        <input type="hidden" class="item-id-hidden" value="${item.id}">
+                        <div class="item-picker-dropdown"></div>
+                    </td>
+                    <td class="center"><input type="number" value="${item.quantity}" style="text-align: center;" class="qty-input" onchange="recalcRow(this)"></td>
+                    <td class="center"><input type="number" value="${item.rate}" style="text-align: right;" class="rate-input" onchange="recalcRow(this)"></td>
+                    ${discCells}
+                    <td>${buildTaxSelectHTML()}</td>
+                    <td class="center amount-cell">${(item.quantity * item.rate).toFixed(2)}</td>
+                    <td class="center"><button class="delete-row-btn" onclick="deleteItemRow(this)">×</button></td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            recalcTotals();
+            closeBulkAddModal();
+            showToast(`${bulkSelectedItems.length} item(s) added.`);
         }
     </script>
 </body>

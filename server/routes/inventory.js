@@ -159,8 +159,9 @@ router.post('/adjustments', async (req, res) => {
     let totalValueChange = 0;
 
     await database.transaction(async (client) => {
-      // Generate reference number if not provided
-      const finalReferenceNumber = reference_number || `ADJ-${Date.now()}`;
+      // If reference number is empty, set to null (UNIQUE constraint allows multiple NULLs)
+      let finalReferenceNumber = reference_number ? reference_number.trim() : null;
+      if (finalReferenceNumber === '') finalReferenceNumber = null;
 
       // Create adjustment record
       const adjustmentResult = await client.query(`
@@ -199,46 +200,68 @@ router.post('/adjustments', async (req, res) => {
         let valueChange = 0;
 
         if (mode === 'value') {
-          // Value adjustment: only change the value, NOT stock quantity
-          valueChange = quantityChange; // quantityChange here is the value delta
-          newQuantity = currentStock; // stock stays the same
+          // ─── VALUE ADJUSTMENT LOGIC ───
+          // quantityChange here is the VALUE DELTA (not a qty change)
+          valueChange = quantityChange;
+          newQuantity = currentStock; // stock stays the same — NEVER changes
+
+          // Calculate new average unit cost:
+          // Old Total Value = currentStock × unitCost
+          // New Total Value = Old Total Value + valueDelta
+          // New Unit Cost = New Total Value / currentStock
+          const oldTotalValue = currentStock * unitCost;
+          const newTotalValue = oldTotalValue + valueChange;
+          const newUnitCost = currentStock > 0 ? (newTotalValue / currentStock) : unitCost;
+
+          // Only apply changes if status is 'adjusted' (not draft)
+          if (status === 'adjusted') {
+            // Update ONLY purchase_cost (average cost)
+            // DO NOT touch selling_price or stock_quantity
+            await client.query(`
+              UPDATE items 
+              SET purchase_cost = $1, updated_at = CURRENT_TIMESTAMP
+              WHERE id = $2
+            `, [newUnitCost, item_id]);
+
+            // Create audit trail
+            await client.query(`
+              INSERT INTO inventory_transactions (item_id, type, quantity, reference, notes)
+              VALUES ($1, 'ADJUSTMENT', 0, $2, $3)
+            `, [item_id, finalReferenceNumber, `Value Adjustment: ${reason || 'N/A'} | Value change: ${valueChange >= 0 ? '+' : ''}${valueChange.toFixed(2)} | New avg cost: ${newUnitCost.toFixed(2)}`]);
+          }
+
+          // Create adjustment item record
+          await client.query(`
+            INSERT INTO inventory_adjustment_items 
+            (adjustment_id, item_id, item_name, quantity_on_hand, quantity_adjusted, new_quantity, unit_cost, value_change)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+          `, [adjustmentId, item_id, existingItem.name, currentStock, valueChange, currentStock, newUnitCost, valueChange]);
+
         } else {
-          // Quantity adjustment: change stock quantity
+          // ─── QUANTITY ADJUSTMENT LOGIC ───
           newQuantity = currentStock + quantityChange;
           valueChange = quantityChange * unitCost;
-        }
 
-        // Only update stock if status is 'adjusted' (not draft)
-        if (status === 'adjusted') {
-          if (mode === 'quantity') {
-            // Only update stock_quantity for quantity mode
+          if (status === 'adjusted') {
             await client.query(`
               UPDATE items 
               SET stock_quantity = $1, updated_at = CURRENT_TIMESTAMP
               WHERE id = $2
             `, [newQuantity, item_id]);
-          } else {
-            // For value mode, just update timestamp (stock stays same)
+
             await client.query(`
-              UPDATE items 
-              SET updated_at = CURRENT_TIMESTAMP
-              WHERE id = $2
-            `, [item_id]);
+              INSERT INTO inventory_transactions (item_id, type, quantity, reference, notes)
+              VALUES ($1, 'ADJUSTMENT', $2, $3, $4)
+            `, [item_id, quantityChange, finalReferenceNumber, `Quantity Adjustment: ${reason || 'N/A'}`]);
           }
 
-          // Create inventory transaction for audit trail
+          // Create adjustment item record
           await client.query(`
-            INSERT INTO inventory_transactions (item_id, type, quantity, reference, notes)
-            VALUES ($1, 'ADJUSTMENT', $2, $3, $4)
-          `, [item_id, mode === 'value' ? 0 : quantityChange, finalReferenceNumber, `${mode === 'value' ? 'Value' : 'Quantity'} Adjustment: ${reason || 'N/A'}`]);
+            INSERT INTO inventory_adjustment_items 
+            (adjustment_id, item_id, item_name, quantity_on_hand, quantity_adjusted, new_quantity, unit_cost, value_change)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+          `, [adjustmentId, item_id, existingItem.name, currentStock, quantityChange, newQuantity, unitCost, valueChange]);
         }
-
-        // Create adjustment item record
-        await client.query(`
-          INSERT INTO inventory_adjustment_items 
-          (adjustment_id, item_id, item_name, quantity_on_hand, quantity_adjusted, new_quantity, unit_cost, value_change)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-        `, [adjustmentId, item_id, existingItem.name, currentStock, quantityChange, newQuantity, unitCost, valueChange]);
 
         totalQuantityChange += quantityChange;
         totalValueChange += valueChange;
@@ -276,6 +299,33 @@ router.post('/adjustments', async (req, res) => {
   } catch (error) {
     console.error('Error creating inventory adjustment:', error);
     res.status(500).json({ error: error.message || 'Failed to create inventory adjustment' });
+  }
+});
+
+// Get next adjustment reference number
+router.get('/adjustments/next-number', async (req, res) => {
+  try {
+    const db = database.getDb();
+    const result = await db.query(`
+      SELECT reference_number FROM inventory_adjustments 
+      WHERE reference_number LIKE 'ADJ-%' 
+      ORDER BY reference_number DESC LIMIT 1
+    `);
+
+    let nextNum = 1;
+    if (result.rows.length > 0) {
+      const lastRef = result.rows[0].reference_number;
+      const match = lastRef.match(/ADJ-(\d+)/);
+      if (match) {
+        nextNum = parseInt(match[1]) + 1;
+      }
+    }
+
+    const nextRefNumber = 'ADJ-' + String(nextNum).padStart(5, '0');
+    res.json({ reference_number: nextRefNumber });
+  } catch (error) {
+    console.error('Error getting next adjustment number:', error);
+    res.json({ reference_number: 'ADJ-00001' });
   }
 });
 
@@ -457,31 +507,53 @@ router.put('/adjustments/:id/convert', async (req, res) => {
     );
 
     await database.transaction(async (client) => {
-      // Apply stock changes for each item
+      // Apply changes for each item
       for (const adjustmentItem of itemsResult.rows) {
         const quantityChange = parseFloat(adjustmentItem.quantity_adjusted);
 
         if (adjustment.mode === 'quantity') {
-          // Quantity mode: update stock quantity
+          // Quantity mode: update stock quantity only
           await client.query(`
             UPDATE items 
             SET stock_quantity = stock_quantity + $1, updated_at = CURRENT_TIMESTAMP
             WHERE id = $2
           `, [quantityChange, adjustmentItem.item_id]);
+
+          await client.query(`
+            INSERT INTO inventory_transactions (item_id, type, quantity, reference, notes)
+            VALUES ($1, 'ADJUSTMENT', $2, $3, $4)
+          `, [adjustmentItem.item_id, quantityChange, adjustment.reference_number, `Quantity Adjustment: ${adjustment.reason || 'N/A'}`]);
+
         } else {
-          // Value mode: do NOT change stock quantity
+          // ─── VALUE MODE: Update ONLY purchase_cost (avg cost) ───
+          // quantityChange here is the VALUE DELTA
+          const valueChange = quantityChange;
+
+          // Get current item data
+          const itemData = await client.query(
+            'SELECT stock_quantity, purchase_cost FROM items WHERE id = $1',
+            [adjustmentItem.item_id]
+          );
+          const currentStock = parseFloat(itemData.rows[0]?.stock_quantity || 0);
+          const currentUnitCost = parseFloat(itemData.rows[0]?.purchase_cost || 0);
+
+          // New avg cost = (old total value + value delta) / current qty
+          const oldTotalValue = currentStock * currentUnitCost;
+          const newTotalValue = oldTotalValue + valueChange;
+          const newUnitCost = currentStock > 0 ? (newTotalValue / currentStock) : currentUnitCost;
+
+          // Update ONLY purchase_cost — DO NOT touch selling_price or stock_quantity
           await client.query(`
             UPDATE items 
-            SET updated_at = CURRENT_TIMESTAMP
+            SET purchase_cost = $1, updated_at = CURRENT_TIMESTAMP
             WHERE id = $2
-          `, [adjustmentItem.item_id]);
-        }
+          `, [newUnitCost, adjustmentItem.item_id]);
 
-        // Create audit transaction
-        await client.query(`
-          INSERT INTO inventory_transactions (item_id, type, quantity, reference, notes)
-          VALUES ($1, 'ADJUSTMENT', $2, $3, $4)
-        `, [adjustmentItem.item_id, adjustment.mode === 'value' ? 0 : quantityChange, adjustment.reference_number, `${adjustment.mode === 'value' ? 'Value' : 'Quantity'} Adjustment: ${adjustment.reason || 'N/A'}`]);
+          await client.query(`
+            INSERT INTO inventory_transactions (item_id, type, quantity, reference, notes)
+            VALUES ($1, 'ADJUSTMENT', 0, $2, $3)
+          `, [adjustmentItem.item_id, adjustment.reference_number, `Value Adjustment: ${adjustment.reason || 'N/A'} | Value change: ${valueChange >= 0 ? '+' : ''}${valueChange.toFixed(2)} | New avg cost: ${newUnitCost.toFixed(2)}`]);
+        }
       }
 
       // Update adjustment status
@@ -1751,6 +1823,96 @@ router.get('/reports/refund-history', async (req, res) => {
   } catch (error) {
     console.error('Error generating refund history report:', error);
     res.status(500).json({ error: 'Failed to generate report' });
+  }
+});
+
+// ===== Adjustment File Attachments =====
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+const adjustmentStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const dir = path.join(__dirname, '../../public/uploads/adjustments');
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    cb(null, `adj_${req.params.id}_${Date.now()}${ext}`);
+  }
+});
+const adjustmentUpload = multer({
+  storage: adjustmentStorage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+});
+
+// Upload attachments for an adjustment
+router.post('/adjustments/:id/attachments', adjustmentUpload.array('files', 5), async (req, res) => {
+  try {
+    const db = database.getDb();
+    const adjustmentId = req.params.id;
+
+    // Ensure table exists
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS adjustment_attachments (
+        id SERIAL PRIMARY KEY,
+        adjustment_id INTEGER NOT NULL,
+        filename VARCHAR(255) NOT NULL,
+        original_name VARCHAR(255) NOT NULL,
+        file_path VARCHAR(500) NOT NULL,
+        file_size INTEGER,
+        mime_type VARCHAR(100),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    const files = req.files || [];
+    const saved = [];
+    for (const file of files) {
+      const result = await db.query(`
+        INSERT INTO adjustment_attachments (adjustment_id, filename, original_name, file_path, file_size, mime_type)
+        VALUES ($1, $2, $3, $4, $5, $6)
+        RETURNING *
+      `, [adjustmentId, file.filename, file.originalname, `/uploads/adjustments/${file.filename}`, file.size, file.mimetype]);
+      saved.push(result.rows[0]);
+    }
+
+    res.json({ success: true, attachments: saved });
+  } catch (error) {
+    console.error('Error uploading attachments:', error);
+    res.status(500).json({ error: 'Failed to upload attachments' });
+  }
+});
+
+// Get attachments for an adjustment
+router.get('/adjustments/:id/attachments', async (req, res) => {
+  try {
+    const db = database.getDb();
+    const result = await db.query(
+      'SELECT * FROM adjustment_attachments WHERE adjustment_id = $1 ORDER BY created_at',
+      [req.params.id]
+    );
+    res.json(result.rows);
+  } catch (error) {
+    res.json([]);
+  }
+});
+
+// Delete an attachment
+router.delete('/adjustments/attachments/:attachId', async (req, res) => {
+  try {
+    const db = database.getDb();
+    const att = await db.query('SELECT * FROM adjustment_attachments WHERE id = $1', [req.params.attachId]);
+    if (att.rows.length > 0) {
+      const filePath = path.join(__dirname, '../../public', att.rows[0].file_path);
+      if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+      await db.query('DELETE FROM adjustment_attachments WHERE id = $1', [req.params.attachId]);
+    }
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting attachment:', error);
+    res.status(500).json({ error: 'Failed to delete attachment' });
   }
 });
 

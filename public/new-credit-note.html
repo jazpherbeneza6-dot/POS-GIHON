@@ -954,6 +954,311 @@
         .footer-right .amount {
             font-weight: 600;
         }
+
+        /* === Add Items in Bulk Modal === */
+        .bulk-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1200;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .bulk-overlay.open {
+            display: flex;
+        }
+
+        .bulk-modal {
+            background: #fff;
+            border-radius: 10px;
+            width: 880px;
+            max-width: 95vw;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.22);
+        }
+
+        .bulk-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 24px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .bulk-header h2 {
+            margin: 0;
+            font-size: 17px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .bulk-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #e74c3c;
+            cursor: pointer;
+        }
+
+        .bulk-body {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        .bulk-left {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #eee;
+            min-width: 0;
+        }
+
+        .bulk-search-wrap {
+            padding: 14px 18px;
+        }
+
+        .bulk-search {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .bulk-search:focus {
+            border-color: #4285f4;
+        }
+
+        .bulk-items-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        .bulk-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 18px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .bulk-item:hover {
+            background: #f5f8ff;
+        }
+
+        .bulk-item.selected {
+            background: #eef6ee;
+        }
+
+        .bulk-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .bulk-item-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .bulk-item.selected .bulk-item-name {
+            color: #1a8a1a;
+        }
+
+        .bulk-item-meta {
+            font-size: 11px;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .bulk-item.selected .bulk-item-meta {
+            color: #1a8a1a;
+        }
+
+        .bulk-item-stock {
+            text-align: right;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .bulk-item-stock-label {
+            font-size: 10px;
+            color: #888;
+        }
+
+        .bulk-item-stock-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a8a1a;
+        }
+
+        .bulk-right {
+            width: 380px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bulk-right-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 18px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .bulk-right-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .bulk-right-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #4285f4;
+            color: white;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            min-width: 22px;
+            height: 22px;
+            padding: 0 6px;
+            margin-left: 8px;
+        }
+
+        .bulk-right-qty {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .bulk-selected-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+
+        .bulk-sel-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 18px;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .bulk-sel-name {
+            font-size: 13px;
+            color: #333;
+        }
+
+        .bulk-sel-sku {
+            color: #888;
+            font-weight: 500;
+        }
+
+        .bulk-qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 0;
+        }
+
+        .bulk-qty-btn {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ddd;
+            background: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+
+        .bulk-qty-btn:first-child {
+            border-radius: 4px 0 0 4px;
+        }
+
+        .bulk-qty-btn:last-child {
+            border-radius: 0 4px 4px 0;
+        }
+
+        .bulk-qty-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .bulk-qty-input {
+            width: 40px;
+            height: 30px;
+            border: 1px solid #ddd;
+            border-left: none;
+            border-right: none;
+            text-align: center;
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .bulk-footer {
+            display: flex;
+            gap: 10px;
+            padding: 16px 18px;
+            border-top: 1px solid #eee;
+        }
+
+        .bulk-btn-add {
+            padding: 10px 24px;
+            background: #4285f4;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .bulk-btn-add:hover {
+            background: #3367d6;
+        }
+
+        .bulk-btn-cancel {
+            padding: 10px 24px;
+            background: #f0f0f0;
+            color: #333;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .bulk-btn-cancel:hover {
+            background: #e0e0e0;
+        }
+
+        .bulk-empty-hint {
+            padding: 30px;
+            text-align: center;
+            color: #bbb;
+            font-size: 13px;
+        }
     </style>
 </head>
 
@@ -970,7 +1275,6 @@
                     <h1 class="page-title">New Credit Note</h1>
                 </div>
                 <div class="header-actions">
-                    <button class="header-icon-btn">⚙</button>
                     <button class="close-btn" onclick="goBack()">×</button>
                 </div>
             </div>
@@ -1025,54 +1329,7 @@
                             <label class="form-label required">Credit Note Date*</label>
                             <input type="date" class="form-input" id="creditNoteDate">
                         </div>
-                        <div class="form-row">
-                            <label class="form-label">Location</label>
-                            <div class="custom-dd-wrap" id="locDdWrap" style="max-width: 200px;">
-                                <input type="hidden" id="location" value="head_office">
-                                <div class="custom-dd-trigger" id="locDdTrigger" onclick="toggleLocDd()">
-                                    <span id="locDdLabel">Head Office</span>
-                                    <span class="dd-arrow">▼</span>
-                                </div>
-                                <div class="custom-dd-panel" id="locDdPanel">
-                                    <div class="custom-dd-search">
-                                        <div class="custom-dd-search-inner">
-                                            <span style="color: #999;">🔍</span>
-                                            <input type="text" id="locDdSearch" placeholder="Search"
-                                                oninput="filterLocDd()">
-                                        </div>
-                                    </div>
-                                    <div class="custom-dd-options" id="locDdOptions"></div>
-                                    <div class="custom-dd-add-footer">
-                                        <input type="text" id="locAddInput" placeholder="Add new location and Enter"
-                                            onkeydown="if(event.key==='Enter'){event.preventDefault();addLocOption();}">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <label class="form-label">Warehouse</label>
-                            <div class="custom-dd-wrap" id="whDdWrap" style="max-width: 200px;">
-                                <input type="hidden" id="warehouseLocation" value="head_office">
-                                <div class="custom-dd-trigger" id="whDdTrigger" onclick="toggleWhDd()">
-                                    <span id="whDdLabel">Head Office</span>
-                                    <span class="dd-arrow">▼</span>
-                                </div>
-                                <div class="custom-dd-panel" id="whDdPanel">
-                                    <div class="custom-dd-search">
-                                        <div class="custom-dd-search-inner">
-                                            <span style="color: #999;">🔍</span>
-                                            <input type="text" id="whDdSearch" placeholder="Search"
-                                                oninput="filterWhDd()">
-                                        </div>
-                                    </div>
-                                    <div class="custom-dd-options" id="whDdOptions"></div>
-                                    <div class="custom-dd-add-footer">
-                                        <input type="text" id="whAddInput" placeholder="Add new warehouse and Enter"
-                                            onkeydown="if(event.key==='Enter'){event.preventDefault();addWhOption();}">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+
                         <div class="form-row">
                             <label class="form-label">Salesperson</label>
                             <div class="custom-dd-wrap" id="spDdWrap" style="max-width: 200px;">
@@ -1120,11 +1377,7 @@
                         </div>
                     </div>
 
-                    <div class="additional-link">
-                        <span style="color: #4285f4;">Additional Fields:</span>
-                        Add custom fields via <a href="#">Settings</a> >> <a href="#">Sales</a> >> <a href="#">Credit
-                            Notes</a>
-                    </div>
+
                 </div>
 
                 <!-- Right Column -->
@@ -1133,7 +1386,7 @@
                     <div class="item-table-section">
                         <div class="item-table-header">
                             <span class="item-table-title">Item Table</span>
-                            <a href="#" class="bulk-actions-link">⚡ Bulk Actions</a>
+
                         </div>
 
                         <table class="item-table">
@@ -1686,6 +1939,8 @@
             }
         });
 
+        let linkedSalesReturnId = null;
+
         // Initialize
         document.addEventListener('DOMContentLoaded', async function () {
             document.getElementById('creditNoteDate').value = getTodayDate();
@@ -1702,6 +1957,7 @@
                 try {
                     const data = JSON.parse(sessionStorage.getItem('creditNoteFromReturn'));
                     if (data) {
+                        linkedSalesReturnId = data.sales_return_id || null;
                         prefillFromReturn(data);
                         sessionStorage.removeItem('creditNoteFromReturn');
                     }
@@ -1727,9 +1983,9 @@
                 document.getElementById('reference').value = data.rma_number;
             }
 
-            // Set date
-            if (data.return_date) {
-                const d = new Date(data.return_date);
+            // Set date to today (credit note date = when it's created, not the return date)
+            {
+                const d = new Date();
                 const yyyy = d.getFullYear();
                 const mm = String(d.getMonth() + 1).padStart(2, '0');
                 const dd = String(d.getDate()).padStart(2, '0');
@@ -1960,11 +2216,7 @@
         }
 
         function goBack() {
-            if (document.referrer && document.referrer.includes('sales-returns')) {
-                window.history.back();
-            } else {
-                window.location.href = '/credit-notes.html';
-            }
+            window.location.href = '/credit-notes.html';
         }
 
         function addNewRow() {
@@ -1979,10 +2231,134 @@
             recalcTotals();
         }
 
-        function addBulkItems() {
-            for (let i = 0; i < 3; i++) {
-                addNewRow();
+        // ===== Add Items in Bulk Modal =====
+        let bulkSelected = [];
+
+        function openBulkModal() {
+            bulkSelected = [];
+            document.getElementById('bulkSearch').value = '';
+            renderBulkItems('');
+            updateBulkSelected();
+            document.getElementById('bulkOverlay').classList.add('open');
+        }
+
+        function closeBulkModal() {
+            document.getElementById('bulkOverlay').classList.remove('open');
+        }
+
+        function renderBulkItems(filter) {
+            const q = (filter || '').toLowerCase();
+            const filtered = allItemsList.filter(item =>
+                (item.name || '').toLowerCase().includes(q) ||
+                (item.sku && item.sku.toLowerCase().includes(q))
+            );
+            const list = document.getElementById('bulkItemsList');
+            if (filtered.length === 0) {
+                list.innerHTML = '<div style="padding:30px;text-align:center;color:#999;">No items found</div>';
+                return;
             }
+            list.innerHTML = filtered.map(item => {
+                const isSelected = bulkSelected.some(s => s.id === item.id);
+                const stock = parseFloat(item.stock_quantity || 0).toFixed(2);
+                const unit = item.unit || 'pcs';
+                const rate = parseFloat(item.selling_price || 0).toFixed(2);
+                return `<div class="bulk-item ${isSelected ? 'selected' : ''}" onclick="toggleBulkItem(${item.id})">
+                    <div class="bulk-item-info">
+                        <div class="bulk-item-name">${item.name}</div>
+                        <div class="bulk-item-meta">SKU: ${item.sku || 'N/A'} Rate: PHP${rate}</div>
+                    </div>
+                    <div class="bulk-item-stock">
+                        <div class="bulk-item-stock-label">Stock on Hand</div>
+                        <div class="bulk-item-stock-value">${stock} ${unit}</div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function toggleBulkItem(id) {
+            const idx = bulkSelected.findIndex(s => s.id === id);
+            if (idx >= 0) {
+                bulkSelected.splice(idx, 1);
+            } else {
+                const item = allItemsList.find(i => i.id === id);
+                if (item) {
+                    bulkSelected.push({
+                        id: item.id,
+                        name: item.name,
+                        sku: item.sku || '',
+                        selling_price: item.selling_price || 0,
+                        stock_quantity: item.stock_quantity || 0,
+                        unit: item.unit || 'pcs',
+                        qty: 1
+                    });
+                }
+            }
+            renderBulkItems(document.getElementById('bulkSearch').value);
+            updateBulkSelected();
+        }
+
+        function updateBulkSelected() {
+            const count = bulkSelected.length;
+            const totalQty = bulkSelected.reduce((sum, s) => sum + s.qty, 0);
+            document.getElementById('bulkBadge').textContent = count;
+            document.getElementById('bulkTotalQty').textContent = 'Total Quantity: ' + totalQty;
+            const list = document.getElementById('bulkSelectedList');
+            if (count === 0) {
+                list.innerHTML = '<div class="bulk-empty-hint">Click items on the left to select them.</div>';
+                return;
+            }
+            list.innerHTML = bulkSelected.map((s, i) => {
+                return `<div class="bulk-sel-item">
+                    <div class="bulk-sel-name"><span class="bulk-sel-sku">[${s.sku}]</span> ${s.name}</div>
+                    <div class="bulk-qty-controls">
+                        <button class="bulk-qty-btn" onclick="adjustBulkQty(${i}, -1)">−</button>
+                        <input class="bulk-qty-input" type="number" value="${s.qty}" min="1" onchange="setBulkQty(${i}, this.value)">
+                        <button class="bulk-qty-btn" onclick="adjustBulkQty(${i}, 1)">+</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function adjustBulkQty(idx, delta) {
+            bulkSelected[idx].qty = Math.max(1, bulkSelected[idx].qty + delta);
+            updateBulkSelected();
+        }
+
+        function setBulkQty(idx, val) {
+            bulkSelected[idx].qty = Math.max(1, parseInt(val) || 1);
+            updateBulkSelected();
+        }
+
+        function addBulkItemsToTable() {
+            if (bulkSelected.length === 0) return;
+            const tbody = document.getElementById('itemsBody');
+            // Check if first row is empty
+            const firstRow = tbody.querySelector('tr');
+            let reuseFirst = false;
+            if (firstRow) {
+                const nameInput = firstRow.querySelector('.item-name-input');
+                if (nameInput && !nameInput.value.trim()) reuseFirst = true;
+            }
+            bulkSelected.forEach((item, index) => {
+                let tr;
+                if (index === 0 && reuseFirst) {
+                    tr = firstRow;
+                } else {
+                    tr = createItemRow('', 1, 0, 0);
+                    tbody.appendChild(tr);
+                }
+                const nameInput = tr.querySelector('.item-name-input');
+                nameInput.value = item.name;
+                tr.querySelector('.qty-input').value = item.qty;
+                tr.querySelector('.rate-input').value = item.selling_price;
+                recalcRow(tr.querySelector('.rate-input'));
+            });
+            closeBulkModal();
+            recalcTotals();
+        }
+
+        function addBulkItems() {
+            openBulkModal();
         }
 
         // ===== Salesperson Password Validation =====
@@ -2038,13 +2414,66 @@
 
                     if (result.valid) {
                         overlay.remove();
-                        if (action === 'draft') {
-                            alert('Credit Note saved as draft!');
-                            goBack();
-                        } else {
-                            const creditNoteNumber = document.getElementById('creditNoteNumber').value;
-                            alert('Credit Note ' + creditNoteNumber + ' saved as open!');
-                            goBack();
+                        // Gather form data
+                        const creditNoteNumber = document.getElementById('creditNoteNumber').value;
+                        const customerName = document.getElementById('customerName').value;
+                        const reference = document.getElementById('reference').value;
+                        const creditNoteDate = document.getElementById('creditNoteDate').value;
+                        const customerNotes = document.getElementById('customerNotes').value;
+                        const termsConditions = document.getElementById('termsConditions').value;
+
+                        // Gather items
+                        const itemRows = document.querySelectorAll('#itemsBody tr');
+                        const items = [];
+                        itemRows.forEach(row => {
+                            const itemName = row.querySelector('.item-name-input')?.value || '';
+                            if (!itemName) return;
+                            const qty = parseFloat(row.querySelector('.qty-input')?.value || 0);
+                            const rate = parseFloat(row.querySelector('.rate-input')?.value || 0);
+                            const disc = parseFloat(row.querySelector('.disc-input')?.value || 0);
+                            const discType = row.querySelector('.disc-toggle')?.getAttribute('data-type') || '%';
+                            const tax = parseFloat(row.querySelector('.tax-select')?.value || 0);
+                            const amountText = row.querySelector('.amount-cell')?.textContent || '0';
+                            const amount = parseFloat(amountText.replace(/[^0-9.-]/g, '') || 0);
+                            items.push({ item_name: itemName, quantity: qty, rate, discount: disc, discount_type: discType, tax, amount });
+                        });
+
+                        const saveStatus = action === 'draft' ? 'DRAFT' : 'OPEN';
+
+                        const payload = {
+                            credit_note_number: creditNoteNumber,
+                            customer_name: customerName,
+                            reference: reference,
+                            credit_note_date: creditNoteDate,
+                            salesperson: selectedSalespersonName,
+                            status: saveStatus,
+                            sales_return_id: linkedSalesReturnId,
+                            sub_total: parseFloat(document.getElementById('subTotal')?.textContent || 0),
+                            discount: parseFloat(document.getElementById('totalDiscValue')?.textContent || 0),
+                            shipping_charges: parseFloat(document.getElementById('shippingInput')?.value || 0),
+                            adjustment: parseFloat(document.getElementById('adjustmentInput')?.value || 0),
+                            total: parseFloat(document.getElementById('grandTotal')?.textContent || 0),
+                            customer_notes: customerNotes,
+                            terms_conditions: termsConditions,
+                            items: items
+                        };
+
+                        try {
+                            const saveRes = await fetch('/api/credit-notes', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(payload)
+                            });
+                            if (saveRes.ok) {
+                                alert('Credit Note ' + creditNoteNumber + ' saved as ' + (action === 'draft' ? 'draft' : 'open') + '!');
+                                goBack();
+                            } else {
+                                const errData = await saveRes.json();
+                                alert('Error saving credit note: ' + (errData.error || 'Unknown error'));
+                            }
+                        } catch (saveErr) {
+                            console.error('Save error:', saveErr);
+                            alert('Error saving credit note. Please try again.');
                         }
                     } else {
                         errorDiv.textContent = 'Invalid password. Please try again.';
@@ -2091,6 +2520,39 @@
             showPasswordModal('open');
         }
     </script>
+    <!-- Add Items in Bulk Modal -->
+    <div class="bulk-overlay" id="bulkOverlay" onclick="closeBulkModal()">
+        <div class="bulk-modal" onclick="event.stopPropagation()">
+            <div class="bulk-header">
+                <h2>Add Items in Bulk</h2>
+                <button class="bulk-close" onclick="closeBulkModal()">✕</button>
+            </div>
+            <div class="bulk-body">
+                <div class="bulk-left">
+                    <div class="bulk-search-wrap">
+                        <input type="text" class="bulk-search" id="bulkSearch"
+                            placeholder="Type to search or scan the barcode of the item"
+                            oninput="renderBulkItems(this.value)">
+                    </div>
+                    <div class="bulk-items-list" id="bulkItemsList"></div>
+                    <div class="bulk-footer">
+                        <button class="bulk-btn-add" onclick="addBulkItemsToTable()">Add Items</button>
+                        <button class="bulk-btn-cancel" onclick="closeBulkModal()">Cancel</button>
+                    </div>
+                </div>
+                <div class="bulk-right">
+                    <div class="bulk-right-header">
+                        <div>
+                            <span class="bulk-right-title">Selected Items</span>
+                            <span class="bulk-right-badge" id="bulkBadge">0</span>
+                        </div>
+                        <span class="bulk-right-qty" id="bulkTotalQty">Total Quantity: 0</span>
+                    </div>
+                    <div class="bulk-selected-list" id="bulkSelectedList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

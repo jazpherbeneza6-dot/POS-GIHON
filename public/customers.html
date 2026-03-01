@@ -248,14 +248,24 @@
             display: none;
             position: absolute;
             top: 0;
-            right: 100%;
+            right: calc(100% - 8px);
             background: white;
             border-radius: 8px;
             box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
             min-width: 200px;
             padding: 6px 0;
-            margin-right: 4px;
+            padding-right: 8px;
         }
+
+        .more-submenu::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -12px;
+            width: 20px;
+            height: 100%;
+        }
+
 
         .more-dropdown-item:hover>.more-submenu {
             display: block;
@@ -1805,6 +1815,12 @@
             background: #f5f5f5;
         }
 
+        .comment-toolbar-btn.active {
+            background: #e0e7ff;
+            border-color: #4285f4;
+            color: #4285f4;
+        }
+
         .comment-input {
             width: 100%;
             min-height: 60px;
@@ -1812,14 +1828,19 @@
             border-radius: 4px;
             padding: 8px;
             font-size: 13px;
-            resize: vertical;
             font-family: inherit;
             box-sizing: border-box;
+            outline: none;
+            overflow-y: auto;
         }
 
         .comment-input:focus {
-            outline: none;
             border-color: #4285f4;
+        }
+
+        .comment-input:empty::before {
+            content: 'Write a comment...';
+            color: #aaa;
         }
 
         .comment-add-btn {
@@ -1843,6 +1864,207 @@
             color: #888;
             letter-spacing: 0.5px;
             margin-bottom: 8px;
+        }
+
+        .comment-item {
+            background: #f9fafb;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .comment-item-body {
+            font-size: 13px;
+            color: #333;
+            line-height: 1.6;
+            word-break: break-word;
+        }
+
+        .comment-item-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            font-size: 11px;
+            color: #999;
+        }
+
+        .comment-delete-btn {
+            background: none;
+            border: none;
+            color: #ccc;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .comment-delete-btn:hover {
+            color: #e74c3c;
+            background: #fee2e2;
+        }
+
+        /* Statement tab */
+        .stmt-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .stmt-toolbar-left {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .stmt-toolbar select,
+        .stmt-toolbar input {
+            padding: 6px 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 13px;
+            background: #fff;
+        }
+
+        .stmt-print-btn {
+            padding: 6px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stmt-print-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .stmt-card {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 40px 48px;
+            margin: 0 auto;
+            max-width: 800px;
+        }
+
+        .stmt-company-info {
+            text-align: right;
+            margin-bottom: 30px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .stmt-company-name {
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .stmt-to-section {
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .stmt-to-label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 2px;
+        }
+
+        .stmt-to-name {
+            color: #1a73e8;
+            font-weight: 600;
+        }
+
+        .stmt-title {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .stmt-title h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 0 0 2px 0;
+            text-decoration: underline;
+        }
+
+        .stmt-title-date {
+            font-size: 12px;
+            color: #666;
+            border-top: 2px solid #1a73e8;
+            display: inline-block;
+            padding-top: 4px;
+        }
+
+        .stmt-summary {
+            width: 280px;
+            margin-left: auto;
+            margin-bottom: 24px;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .stmt-summary th {
+            background: #e8e8e8;
+            text-align: left;
+            padding: 6px 10px;
+            font-weight: 700;
+        }
+
+        .stmt-summary td {
+            padding: 5px 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .stmt-summary td:last-child {
+            text-align: right;
+        }
+
+        .stmt-summary tr:last-child td {
+            font-weight: 700;
+            border-top: 1px solid #ccc;
+        }
+
+        .stmt-txn-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin-bottom: 16px;
+        }
+
+        .stmt-txn-table th {
+            background: #e8e8e8;
+            padding: 6px 10px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 11px;
+        }
+
+        .stmt-txn-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+        }
+
+        .stmt-txn-table .amt {
+            text-align: right;
+        }
+
+        .stmt-balance-due {
+            text-align: right;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 10px 0;
+            border-top: 2px solid #333;
         }
 
         /* Transactions tab */
@@ -2105,10 +2327,221 @@
             font-size: 12px;
             color: #333;
         }
+
+        /* General Info Edit Modal */
+        .gi-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.35);
+            z-index: 10001;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 80px;
+        }
+
+        .gi-modal-overlay.active {
+            display: flex;
+        }
+
+        .gi-modal {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+            width: 520px;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: toastSlideDown 0.25s ease;
+        }
+
+        .gi-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 24px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .gi-modal-header h2 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .gi-modal-close {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #999;
+            cursor: pointer;
+        }
+
+        .gi-modal-close:hover {
+            color: #333;
+        }
+
+        .gi-modal-body {
+            padding: 20px 24px;
+        }
+
+        .gi-form-row {
+            margin-bottom: 16px;
+        }
+
+        .gi-form-row-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .gi-form-label {
+            display: block;
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .gi-form-input {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #333;
+            background: white;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        .gi-form-input:focus {
+            outline: none;
+            border-color: #4285f4;
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.12);
+        }
+
+        .gi-modal-footer {
+            padding: 14px 24px;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            gap: 10px;
+        }
+
+        .gi-btn-save {
+            padding: 8px 24px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .gi-btn-save:hover {
+            background: #3367d6;
+        }
+
+        .gi-btn-cancel {
+            padding: 8px 24px;
+            background: #f5f5f5;
+            color: #333;
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .gi-btn-cancel:hover {
+            background: #eee;
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .toast {
+            pointer-events: auto;
+            padding: 18px 32px;
+            border-radius: 10px;
+            color: #333;
+            font-weight: 500;
+            font-size: 15px;
+            background: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            border: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            animation: toastSlideDown 0.3s ease;
+            min-width: 340px;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .toast.success {
+            border-left: 4px solid #10b981;
+        }
+
+        .toast.error {
+            border-left: 4px solid #ef4444;
+        }
+
+        .toast.info {
+            border-left: 4px solid #3b82f6;
+        }
+
+        .toast-icon {
+            font-size: 20px;
+        }
+
+        .toast-message {
+            flex: 1;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 18px;
+            opacity: 0.8;
+        }
+
+        .toast-close:hover {
+            opacity: 1;
+            color: #333;
+        }
+
+        @keyframes toastSlideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 
 <body>
+    <div class="toast-container" id="toastContainer"></div>
     <!-- Sidebar Container -->
     <div id="sidebarContainer"></div>
 
@@ -2178,9 +2611,6 @@
                                     </div>
                                 </div>
                                 <div class="more-dropdown-divider"></div>
-                                <div class="more-dropdown-item" onclick="openPreferences()">
-                                    <span class="item-icon">⚙</span> Preferences
-                                </div>
                                 <div class="more-dropdown-item" onclick="refreshList()">
                                     <span class="item-icon">🔄</span> Refresh List
                                 </div>
@@ -2195,7 +2625,13 @@
                 <!-- Bulk Action Bar -->
                 <div class="bulk-action-bar" id="bulkActionBar">
                     <button class="bulk-btn" onclick="bulkUpdate()">Bulk Update</button>
-                    <button class="bulk-btn bulk-btn-print" onclick="bulkPrint()" title="Print">🖨</button>
+                    <button class="bulk-btn bulk-btn-print" onclick="bulkPrint()" title="Print"><svg viewBox="0 0 24 24"
+                            width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 6 2 18 2 18 9" />
+                            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                            <rect x="6" y="14" width="12" height="8" />
+                        </svg></button>
                     <div class="bulk-separator"></div>
                     <button class="bulk-btn" id="btnMarkStatus" onclick="bulkMarkStatus()">Mark as Inactive</button>
                     <button class="bulk-btn bulk-btn-delete" onclick="bulkDelete()">Delete</button>
@@ -2260,7 +2696,6 @@
                                 <th>WORK PHONE</th>
                                 <th class="th-right">RECEIVABLES (BCY)</th>
                                 <th class="th-right">UNUSED CREDITS (BCY)</th>
-                                <th style="width: 30px;"><span class="search-icon">🔍</span></th>
                             </tr>
                         </thead>
                         <tbody id="customersBody"></tbody>
@@ -2300,7 +2735,6 @@
                         <span>Active Customers ▾</span>
                         <div class="detail-left-header-actions">
                             <button class="detail-left-add" onclick="createCustomer()" title="New">+</button>
-                            <button class="detail-left-more" title="More">⋯</button>
                         </div>
                     </div>
                     <div class="detail-left-list" id="detailLeftList"></div>
@@ -2313,38 +2747,33 @@
                         <div class="detail-header-name" id="detailName"></div>
                         <div class="detail-header-actions">
                             <button class="btn-edit" onclick="editCustomer()">Edit</button>
-                            <button class="btn-print" onclick="printCustomer()">🖨</button>
+                            <button class="btn-print" onclick="printCustomer()"><svg viewBox="0 0 24 24" width="16"
+                                    height="16" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 6 2 18 2 18 9" />
+                                    <path
+                                        d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                                    <rect x="6" y="14" width="12" height="8" />
+                                </svg></button>
                             <div class="dropdown-wrapper">
                                 <button class="btn-transaction" onclick="toggleDropdown('transactionDropdown')">New
                                     Transaction ▾</button>
                                 <div class="dropdown-menu" id="transactionDropdown">
+                                    <div
+                                        style="padding:8px 20px 4px;font-size:11px;font-weight:600;color:#4285f4;text-transform:uppercase;letter-spacing:0.5px;">
+                                        Sales</div>
                                     <div class="dropdown-item" onclick="newTransaction('invoice')">Invoice</div>
+                                    <div class="dropdown-item" onclick="newTransaction('customerPayment')">Customer
+                                        Payment</div>
+                                    <div class="dropdown-item" onclick="newTransaction('salesOrder')">Sales Order</div>
+                                    <div class="dropdown-item" onclick="newTransaction('package')">Package</div>
+
+                                    <div class="dropdown-item" onclick="newTransaction('creditNote')">Credit Note</div>
                                     <div class="dropdown-item" onclick="newTransaction('salesReceipt')">Sales Receipt
                                     </div>
-                                    <div class="dropdown-item" onclick="newTransaction('salesOrder')">Sales Order</div>
-                                    <div class="dropdown-item" onclick="newTransaction('estimate')">Estimate</div>
-                                    <div class="dropdown-item" onclick="newTransaction('creditNote')">Credit Note</div>
-                                    <div class="dropdown-item" onclick="newTransaction('paymentReceived')">Payment
-                                        Received</div>
                                 </div>
                             </div>
-                            <div class="dropdown-wrapper">
-                                <button class="btn-more-detail" onclick="toggleDropdown('moreDropdown')">More ▾</button>
-                                <div class="dropdown-menu" id="moreDropdown">
-                                    <div class="dropdown-item" onclick="moreAction('associateTemplates')">Associate
-                                        Templates</div>
-                                    <div class="dropdown-item" onclick="moreAction('configurePortal')">Configure
-                                        Customer Portal</div>
-                                    <div class="dropdown-item" onclick="moreAction('stopReminders')">Stop All Reminders
-                                    </div>
-                                    <div class="dropdown-item" onclick="moreAction('linkVendor')">Link to Vendor</div>
-                                    <div class="dropdown-item" onclick="moreAction('clone')">Clone</div>
-                                    <div class="dropdown-item" onclick="moreAction('merge')">Merge Customers</div>
-                                    <div class="dropdown-item" onclick="moreAction('markInactive')">Mark as Inactive
-                                    </div>
-                                    <div class="dropdown-item danger" onclick="moreAction('delete')">Delete</div>
-                                </div>
-                            </div>
+
                             <button class="btn-close-detail" onclick="closeDetailView()" title="Close">✕</button>
                         </div>
                     </div>
@@ -2357,7 +2786,6 @@
                         </div>
                         <div class="detail-tab" data-tab="transactions" onclick="switchDetailTab('transactions', this)">
                             Transactions</div>
-                        <div class="detail-tab" data-tab="mails" onclick="switchDetailTab('mails', this)">Mails</div>
                         <div class="detail-tab" data-tab="statement" onclick="switchDetailTab('statement', this)">
                             Statement</div>
                     </div>
@@ -2372,12 +2800,36 @@
 
                                 <!-- Contact Card -->
                                 <div class="contact-card">
-                                    <div class="contact-avatar">👤</div>
+                                    <div class="contact-avatar" id="overviewAvatar"
+                                        onclick="triggerCustomerAvatarUpload()" style="cursor:pointer;"
+                                        title="Click to upload profile photo">👤</div>
                                     <div class="contact-info">
                                         <div class="contact-name" id="detailContactName"></div>
                                         <div class="contact-email" id="detailContactEmail"></div>
                                         <div class="contact-phone" id="detailContactPhone"></div>
-                                        <div class="contact-portal-link">Invite to Portal</div>
+                                    </div>
+                                </div>
+
+                                <!-- REMARKS Section -->
+                                <div class="section-header" onclick="toggleSection('detailRemarksSection', this)">
+                                    <span class="section-title">REMARKS</span>
+                                    <span class="section-toggle" style="display: flex; align-items: center; gap: 6px;">
+                                        <span style="color: #4285f4; cursor: pointer;"
+                                            onclick="event.stopPropagation(); editRemarks();" title="Edit">✎</span> ⌃
+                                    </span>
+                                </div>
+                                <div id="detailRemarksSection">
+                                    <div style="padding: 8px 0; font-size: 13px; color: #555;" id="detailRemarks">—
+                                    </div>
+                                    <div id="remarksEditArea" style="display:none; padding: 8px 0;">
+                                        <textarea id="remarksEditInput" rows="3"
+                                            style="display:block; width:100%; padding:8px 10px; border:1.5px solid #4285f4; border-radius:6px; font-size:13px; font-family:inherit; resize:vertical; outline:none; box-sizing:border-box;"></textarea>
+                                        <div style="margin-top:8px; display:flex; gap:8px;">
+                                            <button onclick="saveRemarks()"
+                                                style="padding:6px 16px; background:#4285f4; color:white; border:none; border-radius:4px; font-size:12px; cursor:pointer;">Save</button>
+                                            <button onclick="cancelRemarksEdit()"
+                                                style="padding:6px 16px; background:#f5f5f5; color:#333; border:1px solid #ddd; border-radius:4px; font-size:12px; cursor:pointer;">Cancel</button>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -2386,7 +2838,8 @@
                                     <span class="section-title">GENERAL INFORMATION</span>
                                     <span class="section-toggle" style="display: flex; align-items: center; gap: 6px;">
                                         <span style="color: #4285f4; cursor: pointer;"
-                                            onclick="event.stopPropagation(); editCustomer();" title="Edit">✎</span> ⌃
+                                            onclick="event.stopPropagation(); openGeneralInfoModal();"
+                                            title="Edit">✎</span> ⌃
                                     </span>
                                 </div>
                                 <div id="detailGeneralSection">
@@ -2433,20 +2886,17 @@
                                     <span class="section-title">ADDRESS</span>
                                     <span class="section-toggle" style="display: flex; align-items: center; gap: 6px;">
                                         <span style="color: #4285f4; cursor: pointer;"
-                                            onclick="event.stopPropagation(); editCustomer();" title="Edit">✎</span> ⌃
+                                            onclick="event.stopPropagation(); openAddressModal();" title="Edit">✎</span>
+                                        ⌃
                                     </span>
                                 </div>
                                 <div id="detailAddressSection">
                                     <div class="address-block">
-                                        <div class="address-title">Billing Address <span class="address-edit-icon"
-                                                onclick="editCustomer()">✎</span>
-                                        </div>
+                                        <div class="address-title">Billing Address</div>
                                         <div class="address-text" id="detailBillingAddress">—</div>
                                     </div>
                                     <div class="address-block">
-                                        <div class="address-title">Shipping Address <span class="address-edit-icon"
-                                                onclick="editCustomer()">✎</span>
-                                        </div>
+                                        <div class="address-title">Shipping Address</div>
                                         <div class="address-text" id="detailShippingAddress">—</div>
                                     </div>
                                 </div>
@@ -2466,8 +2916,12 @@
                                         <span class="detail-value" id="detailCurrency"></span>
                                     </div>
                                     <div class="detail-row">
-                                        <span class="detail-label">Portal Status</span>
-                                        <span class="detail-value status-disabled">Disabled</span>
+                                        <span class="detail-label">Payment Terms</span>
+                                        <span class="detail-value" id="detailPaymentTerms"></span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Tax Rate</span>
+                                        <span class="detail-value" id="detailTaxRate"></span>
                                     </div>
                                 </div>
 
@@ -2477,7 +2931,7 @@
                                     <span class="section-title">CONTACT PERSONS</span>
                                     <span class="section-toggle" style="display: flex; align-items: center; gap: 6px;">
                                         <span style="color: #4285f4; cursor: pointer;"
-                                            onclick="event.stopPropagation(); editCustomer();"
+                                            onclick="event.stopPropagation(); openContactPersonsModal();"
                                             title="Add Contact Person">⊕</span> ⌃
                                     </span>
                                 </div>
@@ -2507,15 +2961,17 @@
                                     <tbody>
                                         <tr>
                                             <td>PHP- Philippine Peso</td>
-                                            <td>PHP0.00</td>
-                                            <td>PHP0.00</td>
+                                            <td id="detailOutstandingReceivables">PHP0.00</td>
+                                            <td id="detailUnusedCredits">PHP0.00</td>
                                         </tr>
                                     </tbody>
                                 </table>
 
                                 <div class="items-status">
-                                    <div class="items-status-item">Items to be packed: <span>0.00</span></div>
-                                    <div class="items-status-item">Items to be shipped: <span>0.00</span></div>
+                                    <div class="items-status-item">Items to be packed: <span id="detailToBePacked"
+                                            style="color:#dc2626;font-weight:600;">0.00</span></div>
+                                    <div class="items-status-item">Items to be shipped: <span id="detailToBeShipped"
+                                            style="color:#dc2626;font-weight:600;">0.00</span></div>
                                 </div>
 
                                 <!-- Activity Timeline -->
@@ -2532,15 +2988,21 @@
                     <div class="tab-content-area" id="dtab-comments" style="flex-direction:column;padding:20px 24px;">
                         <div class="comment-editor-card">
                             <div class="comment-toolbar">
-                                <button class="comment-toolbar-btn" style="font-weight:700;">B</button>
-                                <button class="comment-toolbar-btn" style="font-style:italic;">I</button>
-                                <button class="comment-toolbar-btn" style="text-decoration:underline;">U</button>
+                                <button class="comment-toolbar-btn" style="font-weight:700;"
+                                    onclick="execFormat('bold')" title="Bold">B</button>
+                                <button class="comment-toolbar-btn" style="font-style:italic;"
+                                    onclick="execFormat('italic')" title="Italic">I</button>
+                                <button class="comment-toolbar-btn" style="text-decoration:underline;"
+                                    onclick="execFormat('underline')" title="Underline">U</button>
                             </div>
-                            <textarea class="comment-input" placeholder=""></textarea>
-                            <button class="comment-add-btn">Add Comment</button>
+                            <div class="comment-input" id="commentEditor" contenteditable="true"></div>
+                            <button class="comment-add-btn" onclick="addCustomerComment()">Add Comment</button>
                         </div>
                         <div class="all-comments-header">ALL COMMENTS</div>
-                        <div style="text-align:center;padding:20px;color:#888;font-size:13px;">No comments yet.</div>
+                        <div id="commentsListContainer">
+                            <div id="commentsEmpty" style="text-align:center;padding:20px;color:#888;font-size:13px;">No
+                                comments yet.</div>
+                        </div>
                     </div>
 
                     <!-- Tab: Transactions -->
@@ -2555,8 +3017,6 @@
                                     <span class="txn-section-title">Invoices</span>
                                 </div>
                                 <div class="txn-table-actions">
-                                    <button class="txn-status-filter" onclick="event.stopPropagation();">▿ Status:
-                                        All</button>
                                     <button class="txn-new-btn"
                                         onclick="event.stopPropagation(); newTransaction('invoice')"><span
                                             class="dot"></span> New</button>
@@ -2658,16 +3118,26 @@
                         </div>
                     </div>
 
-                    <!-- Tab: Mails -->
-                    <div class="tab-content-area" id="dtab-mails" style="flex-direction:column;padding:20px 24px;">
-                        <div style="text-align:center;padding:60px 20px;color:#888;font-size:14px;">⚠ No email has been
-                            sent yet.</div>
-                    </div>
 
                     <!-- Tab: Statement -->
                     <div class="tab-content-area" id="dtab-statement" style="flex-direction:column;padding:20px 24px;">
-                        <div style="text-align:center;padding:60px 20px;color:#888;font-size:14px;">Statement will be
-                            available when transactions exist.</div>
+                        <div class="stmt-toolbar">
+                            <div class="stmt-toolbar-left">
+                                <select id="stmtPeriod" onchange="loadCustomerStatement()">
+                                    <option value="this_month">This Month</option>
+                                    <option value="last_month">Last Month</option>
+                                    <option value="this_quarter">This Quarter</option>
+                                    <option value="this_year">This Year</option>
+                                    <option value="last_year">Last Year</option>
+                                </select>
+                            </div>
+                            <div>
+                                <button class="stmt-print-btn" onclick="printStatement()">🖨 Print</button>
+                            </div>
+                        </div>
+                        <div id="stmtContent">
+                            <div style="text-align:center;padding:40px;color:#888;">Loading statement...</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2761,6 +3231,252 @@
         </div>
     </div>
 
+    <!-- General Information Edit Modal -->
+    <div class="gi-modal-overlay" id="giEditModal">
+        <div class="gi-modal">
+            <div class="gi-modal-header">
+                <h2>General Information</h2>
+                <button class="gi-modal-close" onclick="closeGeneralInfoModal()">✕</button>
+            </div>
+            <div class="gi-modal-body">
+                <div class="gi-form-row">
+                    <label class="gi-form-label">Salutation</label>
+                    <select class="gi-form-input" id="giSalutation" onchange="updateGiDisplayName()">
+                        <option value="">—</option>
+                        <option value="Mr.">Mr.</option>
+                        <option value="Mrs.">Mrs.</option>
+                        <option value="Ms.">Ms.</option>
+                        <option value="Dr.">Dr.</option>
+                    </select>
+                </div>
+                <div class="gi-form-row gi-form-row-2col">
+                    <div>
+                        <label class="gi-form-label">First Name</label>
+                        <input type="text" class="gi-form-input" id="giFirstName" oninput="updateGiDisplayName()">
+                    </div>
+                    <div>
+                        <label class="gi-form-label">Last Name</label>
+                        <input type="text" class="gi-form-input" id="giLastName" oninput="updateGiDisplayName()">
+                    </div>
+                </div>
+                <div class="gi-form-row">
+                    <label class="gi-form-label">Company Name</label>
+                    <input type="text" class="gi-form-input" id="giCompanyName">
+                </div>
+                <div class="gi-form-row">
+                    <label class="gi-form-label">Display Name</label>
+                    <input type="text" class="gi-form-input" id="giDisplayName">
+                </div>
+                <div class="gi-form-row">
+                    <label class="gi-form-label">Email</label>
+                    <input type="email" class="gi-form-input" id="giEmail">
+                </div>
+                <div class="gi-form-row gi-form-row-2col">
+                    <div>
+                        <label class="gi-form-label">Work Phone</label>
+                        <input type="text" class="gi-form-input" id="giWorkPhone">
+                    </div>
+                    <div>
+                        <label class="gi-form-label">Mobile</label>
+                        <input type="text" class="gi-form-input" id="giMobile">
+                    </div>
+                </div>
+                <div class="gi-form-row">
+                    <label class="gi-form-label">Website</label>
+                    <input type="text" class="gi-form-input" id="giWebsite" placeholder="https://">
+                </div>
+            </div>
+            <div class="gi-modal-footer">
+                <button class="gi-btn-save" onclick="saveGeneralInfo()">Save</button>
+                <button class="gi-btn-cancel" onclick="closeGeneralInfoModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Address Edit Modal -->
+    <div class="gi-modal-overlay" id="addrEditModal">
+        <div class="gi-modal" style="width: 580px;">
+            <div class="gi-modal-header">
+                <h2>Address</h2>
+                <button class="gi-modal-close" onclick="closeAddressModal()">✕</button>
+            </div>
+            <div class="gi-modal-body">
+                <h3 style="font-size:14px;color:#333;margin:0 0 14px;font-weight:600;">Billing Address</h3>
+                <div class="gi-form-row">
+                    <label class="gi-form-label">Street</label>
+                    <textarea class="gi-form-input" id="addrBillingStreet" rows="2" style="resize:vertical;"></textarea>
+                </div>
+                <div class="gi-form-row gi-form-row-2col">
+                    <div>
+                        <label class="gi-form-label">City</label>
+                        <input type="text" class="gi-form-input" id="addrBillingCity">
+                    </div>
+                    <div>
+                        <label class="gi-form-label">State</label>
+                        <input type="text" class="gi-form-input" id="addrBillingState">
+                    </div>
+                </div>
+                <div class="gi-form-row gi-form-row-2col">
+                    <div>
+                        <label class="gi-form-label">ZIP Code</label>
+                        <input type="text" class="gi-form-input" id="addrBillingZip">
+                    </div>
+                    <div>
+                        <label class="gi-form-label">Country</label>
+                        <input type="text" class="gi-form-input" id="addrBillingCountry">
+                    </div>
+                </div>
+
+                <div style="margin:18px 0 14px;border-top:1px solid #e8e8e8;padding-top:18px;">
+                    <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#555;cursor:pointer;">
+                        <input type="checkbox" id="addrCopyToShipping" onchange="copyBillingToShipping()">
+                        Copy Billing Address to Shipping Address
+                    </label>
+                </div>
+
+                <h3 style="font-size:14px;color:#333;margin:0 0 14px;font-weight:600;">Shipping Address</h3>
+                <div class="gi-form-row">
+                    <label class="gi-form-label">Street</label>
+                    <textarea class="gi-form-input" id="addrShippingStreet" rows="2"
+                        style="resize:vertical;"></textarea>
+                </div>
+                <div class="gi-form-row gi-form-row-2col">
+                    <div>
+                        <label class="gi-form-label">City</label>
+                        <input type="text" class="gi-form-input" id="addrShippingCity">
+                    </div>
+                    <div>
+                        <label class="gi-form-label">State</label>
+                        <input type="text" class="gi-form-input" id="addrShippingState">
+                    </div>
+                </div>
+                <div class="gi-form-row gi-form-row-2col">
+                    <div>
+                        <label class="gi-form-label">ZIP Code</label>
+                        <input type="text" class="gi-form-input" id="addrShippingZip">
+                    </div>
+                    <div>
+                        <label class="gi-form-label">Country</label>
+                        <input type="text" class="gi-form-input" id="addrShippingCountry">
+                    </div>
+                </div>
+            </div>
+            <div class="gi-modal-footer">
+                <button class="gi-btn-save" onclick="saveAddress()">Save</button>
+                <button class="gi-btn-cancel" onclick="closeAddressModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Contact Person Modal -->
+    <div class="gi-modal-overlay" id="cpEditModal">
+        <div class="gi-modal" style="width: 820px; max-height: 90vh;">
+            <div class="gi-modal-header"
+                style="display:flex;justify-content:space-between;align-items:center;padding:16px 24px;border-bottom:1px solid #e8e8e8;">
+                <h2 style="margin:0;font-size:18px;font-weight:500;color:#333;" id="cpModalTitle">Add Contact Person
+                </h2>
+                <button class="gi-modal-close" onclick="closeContactPersonsModal()"
+                    style="color:#e74c3c;font-size:22px;background:none;border:none;cursor:pointer;">✕</button>
+            </div>
+            <div class="gi-modal-body" style="padding:24px;overflow-y:auto;max-height:65vh;">
+                <input type="hidden" id="cpEditId" value="">
+                <div style="display:flex;gap:32px;">
+                    <!-- Left Form -->
+                    <div style="flex:1;">
+                        <!-- Name Row -->
+                        <div
+                            style="display:grid;grid-template-columns:110px 1fr 1fr;gap:12px;margin-bottom:20px;align-items:center;">
+                            <label style="font-size:13px;color:#555;font-weight:500;">Name</label>
+                            <div style="grid-column: span 1;">
+                                <select id="cpSalutation"
+                                    style="width:100%;padding:9px 10px;border:1px solid #d0d5dd;border-radius:4px;font-size:13px;background:white;">
+                                    <option value="">Salutation</option>
+                                    <option value="Mr.">Mr.</option>
+                                    <option value="Mrs.">Mrs.</option>
+                                    <option value="Ms.">Ms.</option>
+                                    <option value="Dr.">Dr.</option>
+                                </select>
+                            </div>
+                            <div></div>
+                        </div>
+                        <div
+                            style="display:grid;grid-template-columns:110px 1fr 1fr;gap:12px;margin-bottom:20px;margin-top:-10px;">
+                            <div></div>
+                            <input type="text" id="cpFirstName" placeholder="First Name"
+                                style="padding:9px 12px;border:1px solid #d0d5dd;border-radius:4px;font-size:13px;">
+                            <input type="text" id="cpLastName" placeholder="Last Name"
+                                style="padding:9px 12px;border:1px solid #d0d5dd;border-radius:4px;font-size:13px;">
+                        </div>
+
+                        <!-- Email -->
+                        <div style="display:grid;grid-template-columns:110px 1fr;gap:12px;margin-bottom:20px;">
+                            <label style="font-size:13px;color:#555;font-weight:500;">Email Address</label>
+                            <input type="email" id="cpEmail"
+                                style="padding:9px 12px;border:1px solid #d0d5dd;border-radius:4px;font-size:13px;">
+                        </div>
+
+                        <!-- Phone -->
+                        <div style="display:grid;grid-template-columns:110px 80px 1fr;gap:12px;margin-bottom:20px;">
+                            <label style="font-size:13px;color:#555;font-weight:500;">Phone</label>
+                            <select
+                                style="padding:9px 6px;border:1px solid #d0d5dd;border-radius:4px;font-size:13px;background:white;">
+                                <option>+63</option>
+                            </select>
+                            <input type="text" id="cpWorkPhone" placeholder="Work Phone"
+                                style="padding:9px 12px;border:1px solid #d0d5dd;border-radius:4px;font-size:13px;">
+                        </div>
+
+                        <!-- Mobile -->
+                        <div style="display:grid;grid-template-columns:110px 80px 1fr;gap:12px;margin-bottom:20px;">
+                            <div></div>
+                            <select
+                                style="padding:9px 6px;border:1px solid #d0d5dd;border-radius:4px;font-size:13px;background:white;">
+                                <option>+63</option>
+                            </select>
+                            <input type="text" id="cpMobile" placeholder="Mobile"
+                                style="padding:9px 12px;border:1px solid #d0d5dd;border-radius:4px;font-size:13px;">
+                        </div>
+
+                        <!-- Other Details -->
+                        <div style="display:grid;grid-template-columns:110px 1fr 1fr;gap:12px;margin-bottom:24px;">
+                            <label style="font-size:13px;color:#555;font-weight:500;">Other Details</label>
+                            <input type="text" id="cpDesignation" placeholder="Designation"
+                                style="padding:9px 12px;border:1px solid #d0d5dd;border-radius:4px;font-size:13px;">
+                            <input type="text" id="cpDepartment" placeholder="Department"
+                                style="padding:9px 12px;border:1px solid #d0d5dd;border-radius:4px;font-size:13px;">
+                        </div>
+                    </div>
+
+                    <!-- Right: Profile Image -->
+                    <div style="width:200px;flex-shrink:0;">
+                        <div id="cpProfileImagePreview"
+                            style="border:2px dashed #d0d5dd;border-radius:8px;padding:24px 16px;text-align:center;cursor:pointer;transition:border-color 0.2s;"
+                            onclick="document.getElementById('cpProfileImageInput').click()"
+                            onmouseover="this.style.borderColor='#4285f4'"
+                            onmouseout="this.style.borderColor='#d0d5dd'">
+                            <div style="font-size:28px;margin-bottom:8px;">⬆️</div>
+                            <div style="font-size:13px;font-weight:600;color:#333;margin-bottom:4px;">Drag & Drop
+                                Profile Image</div>
+                            <div style="font-size:11px;color:#999;margin-bottom:2px;">Supported Files: jpg, jpeg, png,
+                                gif, bmp</div>
+                            <div style="font-size:11px;color:#999;margin-bottom:12px;">Maximum File Size: 5MB</div>
+                            <span style="font-size:13px;color:#333;text-decoration:underline;">Upload File</span>
+                        </div>
+                        <input type="file" id="cpProfileImageInput" accept="image/*" style="display:none;"
+                            onchange="handleCpImageUpload(this)">
+                        <input type="hidden" id="cpProfileImageUrl" value="">
+                    </div>
+                </div>
+            </div>
+            <div class="gi-modal-footer" style="padding:16px 24px;border-top:1px solid #e8e8e8;display:flex;gap:12px;">
+                <button class="gi-btn-save" onclick="saveContactPerson()"
+                    style="padding:8px 20px;background:#4285f4;color:white;border:none;border-radius:4px;font-size:13px;font-weight:500;cursor:pointer;">Save</button>
+                <button class="gi-btn-cancel" onclick="closeContactPersonsModal()"
+                    style="padding:8px 20px;background:none;border:none;color:#333;font-size:13px;cursor:pointer;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Layout Script -->
     <script src="/js/pagination.js"></script>
     <script src="/js/layout.js"></script>
@@ -2771,6 +3487,28 @@
 
         function createCustomer() {
             window.location.href = '/new-customer.html';
+        }
+
+        // Toast notification function
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            if (!container) { console.log(`[${type.toUpperCase()}] ${message}`); return; }
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+            toast.innerHTML = `
+                <span class="toast-icon">${icon}</span>
+                <span class="toast-message">${message}</span>
+                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateY(-20px)';
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, 3000);
         }
 
         function toggleSelectAll(checkbox) {
@@ -2793,11 +3531,10 @@
                 return;
             }
             const filtered = allCustomers.filter(c => {
-                const name = (c.display_name || c.first_name || '').toLowerCase();
-                const email = (c.email || '').toLowerCase();
-                const phone = (c.phone || '').toLowerCase();
-                const company = (c.company_name || '').toLowerCase();
-                return name.includes(query) || email.includes(query) || phone.includes(query) || company.includes(query);
+                return Object.values(c).some(val => {
+                    if (val == null) return false;
+                    return String(val).toLowerCase().includes(query);
+                });
             });
             const emptyState = document.getElementById('emptyState');
             const container = document.getElementById('customersContainer');
@@ -3009,6 +3746,22 @@
 
             // Close the dropdown
             document.getElementById('moreDropdown').classList.remove('show');
+
+            // Show toast notification
+            const fieldLabels = {
+                display_name: 'Name', company_name: 'Company Name',
+                receivables: 'Receivables (BCY)', created_at: 'Created Time',
+                updated_at: 'Last Modified Time'
+            };
+            let dirLabel;
+            if (field === 'created_at' || field === 'updated_at') {
+                dirLabel = currentSortAsc ? 'Oldest-Newest' : 'Newest-Oldest';
+            } else if (field === 'receivables') {
+                dirLabel = currentSortAsc ? 'Lowest-Highest' : 'Highest-Lowest';
+            } else {
+                dirLabel = currentSortAsc ? 'A-Z' : 'Z-A';
+            }
+            showToast(`Sorted by ${fieldLabels[field] || field} (${dirLabel})`, 'info');
         }
 
         function importCustomers() {
@@ -3080,6 +3833,7 @@
             document.getElementById('moreDropdown').classList.remove('show');
             deselectAllCustomers();
             loadCustomers();
+            showToast('Customer list refreshed.', 'info');
         }
 
         function resetColumnWidth() {
@@ -3092,7 +3846,7 @@
                     cell.style.maxWidth = '';
                 });
             }
-            alert('Column widths have been reset.');
+            showToast('Column widths have been reset.', 'info');
         }
 
         // ===== Customize Columns Feature =====
@@ -3334,7 +4088,7 @@
             });
 
             // Search column
-            html += '<th style="width:30px;"><span class="search-icon">🔍</span></th>';
+
             html += '</tr>';
 
             thead.innerHTML = html;
@@ -3367,6 +4121,21 @@
             currentCustomerId = customerId;
             invoicesLoaded = false;
             salesOrdersLoaded = false;
+            paymentsLoaded = false;
+            packagesLoaded = false;
+            salesReceiptsLoaded = false;
+            billsLoaded = false;
+            creditNotesLoaded = false;
+            // Reset transaction cache and pagination
+            txnCache = { invoices: [], payments: [], salesOrders: [], packages: [], salesReceipts: [], creditNotes: [] };
+            txnPage = { invoices: 1, payments: 1, salesOrders: 1, packages: 1, salesReceipts: 1, creditNotes: 1 };
+            // Collapse all open sections and reset their content
+            ['txnInvoices', 'txnPayments', 'txnSalesOrders', 'txnPackages', 'txnSalesReceipts', 'txnBills', 'txnCreditNotes'].forEach(id => {
+                const body = document.getElementById(id + 'Body');
+                if (body) { body.classList.add('collapsed'); }
+                const toggle = document.querySelector('#' + id + ' .txn-section-toggle');
+                if (toggle) toggle.textContent = '▸';
+            });
             const customer = allCustomers.find(c => c.id === customerId);
             if (!customer) return;
 
@@ -3395,12 +4164,26 @@
             // Populate overview company
             document.getElementById('detailCompany').textContent = customer.company_name || '';
 
+            // Remarks
+            document.getElementById('detailRemarks').textContent = customer.remarks || '—';
+
+            // Fetch to-be-packed and to-be-shipped counts
+            updatePackedShippedCounts(customer.id);
+
             // Contact card
             const salutation = customer.salutation ? customer.salutation + ' ' : '';
             const fullName = salutation + (customer.first_name || '') + ' ' + (customer.last_name || '');
             document.getElementById('detailContactName').textContent = fullName.trim() || customer.display_name;
             document.getElementById('detailContactEmail').textContent = customer.email || '';
             document.getElementById('detailContactPhone').textContent = customer.work_phone || customer.mobile || '';
+
+            // Overview avatar profile image
+            const overviewAv = document.getElementById('overviewAvatar');
+            if (customer.profile_image) {
+                overviewAv.innerHTML = `<img src="${customer.profile_image}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+            } else {
+                overviewAv.innerHTML = '👤';
+            }
 
             // Phone visibility
             const phoneEl = document.getElementById('detailContactPhone');
@@ -3445,6 +4228,7 @@
             document.getElementById('detailCustType').textContent = customer.customer_type || 'Business';
             document.getElementById('detailCurrency').textContent = customer.currency || 'PHP';
             document.getElementById('detailPaymentTerms').textContent = customer.payment_terms || 'Due on Receipt';
+            document.getElementById('detailTaxRate').textContent = customer.tax_rate || '—';
 
             // Payment due
             document.getElementById('detailPaymentDue').textContent = customer.payment_terms || 'Due on Receipt';
@@ -3458,19 +4242,27 @@
                     if (contacts.length > 0) {
                         cpContainer.innerHTML = contacts.map((cp, idx) => {
                             const cpName = [cp.first_name, cp.last_name].filter(Boolean).join(' ') || '—';
-                            const cpWorkPhone = cp.work_phone ? `+63-${escapeHtml(cp.work_phone)}` : '';
-                            const cpMobile = cp.mobile ? `+63-${escapeHtml(cp.mobile)}` : '';
+                            const cpEmail = cp.email ? escapeHtml(cp.email) : '';
+                            const cpWorkPhone = cp.work_phone ? escapeHtml(cp.work_phone) : '';
+                            const cpMobile = cp.mobile ? escapeHtml(cp.mobile) : '';
+                            const primaryBadge = cp.is_primary ? '<span style="display:inline-block;background:#e8f0fe;color:#4285f4;font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;margin-left:8px;">Primary</span>' : '';
                             return `
                                 <div style="display: flex; align-items: flex-start; gap: 14px; padding: 16px 4px; border-bottom: 1px solid #f0f0f0; position: relative;">
-                                    <!-- Person Avatar (gray silhouette) -->
-                                    <div style="width: 48px; height: 48px; background: #e8e8e8; border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="#bbb">
-                                            <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
-                                        </svg>
+                                    <!-- Person Avatar -->
+                                    <div style="width: 48px; height: 48px; background: #e8e8e8; border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; position: relative;"
+                                        onclick="triggerCpAvatarUpload(${cp.id})" title="Click to upload photo">
+                                        ${cp.profile_image
+                                    ? `<img src="${cp.profile_image}" style="width:100%;height:100%;object-fit:cover;">`
+                                    : `<svg width="32" height="32" viewBox="0 0 24 24" fill="#bbb">
+                                                <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+                                            </svg>`}
                                     </div>
                                     <!-- Contact Info -->
                                     <div style="flex: 1; min-width: 0;">
-                                        <div style="font-size: 14px; font-weight: 600; color: #333; margin-bottom: 4px;">${escapeHtml(cpName)}</div>
+                                        <div style="font-size: 14px; font-weight: 600; color: #333; margin-bottom: 4px;">${escapeHtml(cpName)}${primaryBadge}</div>
+                                        ${cpEmail ? `<div style="font-size: 13px; color: #555; display: flex; align-items: center; gap: 6px; margin-bottom: 3px;">
+                                            <span style="font-size: 14px;">✉</span> ${cpEmail}
+                                        </div>` : ''}
                                         ${cpWorkPhone ? `<div style="font-size: 13px; color: #555; display: flex; align-items: center; gap: 6px; margin-bottom: 3px;">
                                             <span style="font-size: 14px;">📞</span> ${cpWorkPhone}
                                         </div>` : ''}
@@ -3481,9 +4273,12 @@
                                     <!-- Gear Icon -->
                                     <div style="position: relative;" class="cp-gear-wrap">
                                         <span onclick="toggleCpGearMenu(event, ${idx})" style="cursor: pointer; font-size: 18px; color: #999; padding: 4px;" title="Settings">⚙</span>
-                                        <div id="cpGearMenu_${idx}" style="display: none; position: absolute; right: 0; top: 28px; background: white; border: 1px solid #e0e0e0; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.12); z-index: 100; min-width: 100px;">
-                                            <div onclick="editContactPerson(${customer.id})" style="padding: 8px 16px; font-size: 13px; color: #333; cursor: pointer; white-space: nowrap; border-radius: 6px;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='white'">
-                                                ✎ Edit
+                                        <div id="cpGearMenu_${idx}" style="display: none; position: absolute; right: 0; top: 28px; background: white; border: 1px solid #e0e0e0; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); z-index: 100; min-width: 160px; overflow: hidden;">
+                                            <div onclick="editContactPerson(${cp.id})" style="padding: 10px 18px; font-size: 13px; color: white; background: #4285f4; cursor: pointer; white-space: nowrap;">
+                                                Edit
+                                            </div>
+                                            <div onclick="deleteContactPerson(${customer.id}, ${cp.id})" style="padding: 10px 18px; font-size: 13px; color: #333; cursor: pointer; white-space: nowrap;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='white'">
+                                                Delete
                                             </div>
                                         </div>
                                     </div>
@@ -3508,6 +4303,15 @@
 
         let invoicesLoaded = false;
         let salesOrdersLoaded = false;
+        let paymentsLoaded = false;
+        let packagesLoaded = false;
+        let salesReceiptsLoaded = false;
+        let billsLoaded = false;
+        let creditNotesLoaded = false;
+
+        const TXN_PAGE_SIZE = 5;
+        let txnCache = { invoices: [], payments: [], salesOrders: [], packages: [], salesReceipts: [], creditNotes: [] };
+        let txnPage = { invoices: 1, payments: 1, salesOrders: 1, packages: 1, salesReceipts: 1, creditNotes: 1 };
 
         function toggleTxnSection(sectionId) {
             const section = document.getElementById(sectionId);
@@ -3516,99 +4320,255 @@
             if (body.classList.contains('collapsed')) {
                 body.classList.remove('collapsed');
                 toggle.textContent = '▾';
-                // Auto-load data on first expand
-                if (sectionId === 'txnInvoices' && !invoicesLoaded) {
-                    loadCustomerInvoices();
-                }
-                if (sectionId === 'txnSalesOrders' && !salesOrdersLoaded) {
-                    loadCustomerSalesOrders();
-                }
+                if (sectionId === 'txnInvoices' && !invoicesLoaded) loadCustomerInvoices();
+                if (sectionId === 'txnPayments' && !paymentsLoaded) loadCustomerPayments();
+                if (sectionId === 'txnSalesOrders' && !salesOrdersLoaded) loadCustomerSalesOrders();
+                if (sectionId === 'txnPackages' && !packagesLoaded) loadCustomerPackages();
+                if (sectionId === 'txnSalesReceipts' && !salesReceiptsLoaded) loadCustomerSalesReceipts();
+                if (sectionId === 'txnBills' && !billsLoaded) loadCustomerBills();
+                if (sectionId === 'txnCreditNotes' && !creditNotesLoaded) loadCustomerCreditNotes();
             } else {
                 body.classList.add('collapsed');
                 toggle.textContent = '▸';
             }
         }
 
+        function txnPaginationHtml(key, page, total) {
+            const totalPages = Math.ceil(total / TXN_PAGE_SIZE);
+            const start = (page - 1) * TXN_PAGE_SIZE + 1;
+            const end = Math.min(page * TXN_PAGE_SIZE, total);
+            const prevDis = page <= 1 ? 'disabled style="opacity:0.4;cursor:default;"' : '';
+            const nextDis = page >= totalPages ? 'disabled style="opacity:0.4;cursor:default;"' : '';
+            return `<div class="txn-table-footer">
+                <div>Total Count: <a href="#" class="txn-link">${total}</a></div>
+                <div class="txn-pagination">
+                    <button ${prevDis} onclick="txnGoPage('${key}',${page - 1})">‹</button>
+                    <span>${start} - ${end}</span>
+                    <button ${nextDis} onclick="txnGoPage('${key}',${page + 1})">›</button>
+                </div>
+            </div>`;
+        }
+
+        function txnGoPage(key, page) {
+            if (page < 1) return;
+            const totalPages = Math.ceil(txnCache[key].length / TXN_PAGE_SIZE);
+            if (page > totalPages) return;
+            txnPage[key] = page;
+            if (key === 'invoices') renderInvoicesPage();
+            else if (key === 'payments') renderPaymentsPage();
+            else if (key === 'salesOrders') renderSalesOrdersPage();
+            else if (key === 'packages') renderPackagesPage();
+            else if (key === 'salesReceipts') renderSalesReceiptsPage();
+            else if (key === 'creditNotes') renderCreditNotesPage();
+        }
+
+        // ===== INVOICES =====
         async function loadCustomerInvoices() {
             if (!currentCustomerId) return;
             const container = document.getElementById('invoiceTableContainer');
             container.innerHTML = '<div style="text-align:center;padding:20px;color:#888;font-size:13px;">Loading...</div>';
             try {
                 const res = await fetch('/api/invoices');
-                const allInvoices = await res.json();
-                const invoices = allInvoices.filter(inv => inv.customer_id == currentCustomerId);
-
-                if (invoices.length === 0) {
-                    container.innerHTML = '<div class="txn-empty">There are no Invoices - <a href="#" onclick="newTransaction(\'invoice\')">Add New</a></div>';
-                    return;
-                }
-
-                // Sort by date descending
-                invoices.sort((a, b) => new Date(b.invoice_date) - new Date(a.invoice_date));
-
-                let rows = '';
-                invoices.forEach(inv => {
-                    const date = inv.invoice_date ? new Date(inv.invoice_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
-                    const invNum = inv.invoice_number || '-';
-                    const orderNum = inv.order_number || '-';
-                    const amount = 'PHP' + Number(inv.total || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                    const balanceDue = 'PHP' + Number(inv.balance_due || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                    const status = (inv.status || 'Draft').charAt(0).toUpperCase() + (inv.status || 'draft').slice(1).toLowerCase();
-                    const statusClass = status.toLowerCase();
-
-                    rows += `<tr>
-                        <td>${date}</td>
-                        <td>Head Office</td>
-                        <td><a class="txn-link" href="/sales-orders.html?invoiceId=${inv.id}">${invNum}</a></td>
-                        <td>${orderNum}</td>
-                        <td class="txn-amount">${amount}</td>
-                        <td class="txn-amount">${balanceDue}</td>
-                        <td><span class="txn-status-badge ${statusClass}">${status}</span></td>
-                    </tr>`;
-                });
-
-                container.innerHTML = `
-                    <table class="txn-data-table">
-                        <thead>
-                            <tr>
-                                <th class="sortable">DATE ⇅</th>
-                                <th>LOCATION</th>
-                                <th>INVOICE NUMBER</th>
-                                <th>ORDER NUMBER</th>
-                                <th class="txn-amount">AMOUNT</th>
-                                <th class="txn-amount">BALANCE DUE</th>
-                                <th>STATUS</th>
-                            </tr>
-                        </thead>
-                        <tbody>${rows}</tbody>
-                    </table>
-                    <div class="txn-table-footer">
-                        <div>Total Count: <a href="#" class="txn-link">${invoices.length}</a></div>
-                        <div class="txn-pagination">
-                            <button>‹</button>
-                            <span>1 - ${invoices.length}</span>
-                            <button>›</button>
-                        </div>
-                    </div>
-                `;
+                const all = await res.json();
+                const filtered = all.filter(inv => inv.customer_id == currentCustomerId);
+                filtered.sort((a, b) => new Date(b.invoice_date) - new Date(a.invoice_date));
+                txnCache.invoices = filtered;
+                txnPage.invoices = 1;
                 invoicesLoaded = true;
-            } catch (err) {
-                console.error('Error loading invoices:', err);
-                container.innerHTML = '<div class="txn-empty">Error loading invoices.</div>';
-            }
+                if (filtered.length === 0) { container.innerHTML = '<div class="txn-empty">There are no Invoices - <a href="#" onclick="newTransaction(\'invoice\')">Add New</a></div>'; return; }
+                renderInvoicesPage();
+            } catch (err) { container.innerHTML = '<div class="txn-empty">Error loading invoices.</div>'; }
+        }
+        function renderInvoicesPage() {
+            const data = txnCache.invoices, page = txnPage.invoices;
+            const slice = data.slice((page - 1) * TXN_PAGE_SIZE, page * TXN_PAGE_SIZE);
+            const container = document.getElementById('invoiceTableContainer');
+            let rows = '';
+            slice.forEach(inv => {
+                const date = inv.invoice_date ? new Date(inv.invoice_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+                const amount = 'PHP' + Number(inv.total || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                const bal = 'PHP' + Number(inv.balance_due || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                const st = (inv.status || 'Draft').charAt(0).toUpperCase() + (inv.status || 'draft').slice(1).toLowerCase();
+                rows += `<tr><td>${date}</td><td>Head Office</td><td><a class="txn-link" href="/sales-orders.html?invoiceId=${inv.id}">${inv.invoice_number || '-'}</a></td><td>${inv.order_number || '-'}</td><td class="txn-amount">${amount}</td><td class="txn-amount">${bal}</td><td><span class="txn-status-badge ${st.toLowerCase()}">${st}</span></td></tr>`;
+            });
+            container.innerHTML = `<table class="txn-data-table"><thead><tr><th class="sortable">DATE ⇅</th><th>LOCATION</th><th>INVOICE NUMBER</th><th>ORDER NUMBER</th><th class="txn-amount">AMOUNT</th><th class="txn-amount">BALANCE DUE</th><th>STATUS</th></tr></thead><tbody>${rows}</tbody></table>${txnPaginationHtml('invoices', page, data.length)}`;
         }
 
+        // ===== CUSTOMER PAYMENTS =====
+        async function loadCustomerPayments() {
+            if (!currentCustomerId) return;
+            const container = document.getElementById('txnPaymentsBody');
+            container.innerHTML = '<div style="text-align:center;padding:20px;color:#888;font-size:13px;">Loading...</div>';
+            try {
+                const res = await fetch('/api/payments-received');
+                const all = await res.json();
+                const filtered = all.filter(p => String(p.customer_id) === String(currentCustomerId));
+                filtered.sort((a, b) => new Date(b.payment_date) - new Date(a.payment_date));
+                txnCache.payments = filtered;
+                txnPage.payments = 1;
+                paymentsLoaded = true;
+                if (filtered.length === 0) { container.innerHTML = '<div class="txn-empty">There are no Customer Payments - <a href="#" onclick="newTransaction(\'paymentReceived\')">Record Payment</a></div>'; return; }
+                renderPaymentsPage();
+            } catch (err) { container.innerHTML = '<div class="txn-empty">Error loading payments.</div>'; }
+        }
+        function renderPaymentsPage() {
+            const data = txnCache.payments, page = txnPage.payments;
+            const slice = data.slice((page - 1) * TXN_PAGE_SIZE, page * TXN_PAGE_SIZE);
+            const container = document.getElementById('txnPaymentsBody');
+            let rows = '';
+            slice.forEach(p => {
+                const date = p.payment_date ? new Date(p.payment_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+                const invNums = (p.invoice_number || '').split(',').map(s => s.trim().split('|')[0]).filter(Boolean).join(', ') || '-';
+                const amount = 'PHP' + Number(p.amount_received || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                const st = (p.status || 'Draft').charAt(0).toUpperCase() + (p.status || 'draft').slice(1).toLowerCase();
+                rows += `<tr><td>${date}</td><td><a class="txn-link" href="/payments-received.html">${p.payment_number || '-'}</a></td><td>${invNums}</td><td>${p.payment_mode || 'Cash'}</td><td class="txn-amount">${amount}</td><td><span class="txn-status-badge ${st.toLowerCase()}">${st}</span></td></tr>`;
+            });
+            container.innerHTML = `<div class="txn-table-container"><table class="txn-data-table"><thead><tr><th class="sortable">DATE ⇅</th><th>PAYMENT #</th><th>INVOICE #</th><th>MODE</th><th class="txn-amount">AMOUNT</th><th>STATUS</th></tr></thead><tbody>${rows}</tbody></table>${txnPaginationHtml('payments', page, data.length)}</div>`;
+        }
+
+        // ===== SALES ORDERS =====
         async function loadCustomerSalesOrders() {
-            // Placeholder for future implementation
-            salesOrdersLoaded = true;
+            if (!currentCustomerId) return;
+            const container = document.getElementById('txnSalesOrdersBody');
+            container.innerHTML = '<div style="text-align:center;padding:20px;color:#888;font-size:13px;">Loading...</div>';
+            try {
+                const res = await fetch('/api/sales-orders');
+                const all = await res.json();
+                const filtered = all.filter(o => String(o.customer_id) === String(currentCustomerId));
+                filtered.sort((a, b) => new Date(b.order_date || b.created_at) - new Date(a.order_date || a.created_at));
+                txnCache.salesOrders = filtered;
+                txnPage.salesOrders = 1;
+                salesOrdersLoaded = true;
+                if (filtered.length === 0) { container.innerHTML = '<div class="txn-empty">There are no Sales Orders - <a href="#" onclick="newTransaction(\'salesOrder\')">Add New</a></div>'; return; }
+                renderSalesOrdersPage();
+            } catch (err) { container.innerHTML = '<div class="txn-empty">Error loading sales orders.</div>'; }
+        }
+        function renderSalesOrdersPage() {
+            const data = txnCache.salesOrders, page = txnPage.salesOrders;
+            const slice = data.slice((page - 1) * TXN_PAGE_SIZE, page * TXN_PAGE_SIZE);
+            const container = document.getElementById('txnSalesOrdersBody');
+            let rows = '';
+            slice.forEach(o => {
+                const date = (o.order_date || o.created_at) ? new Date(o.order_date || o.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+                const orderNum = o.order_number || ('SO-' + String(o.id).padStart(5, '0'));
+                const amount = 'PHP' + Number(o.total || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                const st = (o.status || 'Draft').charAt(0).toUpperCase() + (o.status || 'draft').slice(1).toLowerCase();
+                rows += `<tr><td>${date}</td><td><a class="txn-link" href="/sales-orders.html?orderId=${o.id}">${orderNum}</a></td><td class="txn-amount">${amount}</td><td><span class="txn-status-badge ${st.toLowerCase().replace(/\s+/g, '-')}">${st}</span></td></tr>`;
+            });
+            container.innerHTML = `<div class="txn-table-container"><table class="txn-data-table"><thead><tr><th class="sortable">DATE ⇅</th><th>ORDER NUMBER</th><th class="txn-amount">AMOUNT</th><th>STATUS</th></tr></thead><tbody>${rows}</tbody></table>${txnPaginationHtml('salesOrders', page, data.length)}</div>`;
         }
 
+        // ===== PACKAGES =====
+        async function loadCustomerPackages() {
+            if (!currentCustomerId) return;
+            const container = document.getElementById('txnPackagesBody');
+            container.innerHTML = '<div style="text-align:center;padding:20px;color:#888;font-size:13px;">Loading...</div>';
+            try {
+                const customer = allCustomers.find(c => c.id === currentCustomerId);
+                const customerName = customer ? customer.display_name : '';
+                const res = await fetch('/api/packages');
+                const all = await res.json();
+                const filtered = all.filter(p => p.customer_name === customerName);
+                filtered.sort((a, b) => new Date(b.package_date || b.created_at) - new Date(a.package_date || a.created_at));
+                txnCache.packages = filtered;
+                txnPage.packages = 1;
+                packagesLoaded = true;
+                if (filtered.length === 0) { container.innerHTML = '<div class="txn-empty">There are no Packages - <a href="#" onclick="newTransaction(\'package\')">Add New</a></div>'; return; }
+                renderPackagesPage();
+            } catch (err) { container.innerHTML = '<div class="txn-empty">Error loading packages.</div>'; }
+        }
+        function renderPackagesPage() {
+            const data = txnCache.packages, page = txnPage.packages;
+            const slice = data.slice((page - 1) * TXN_PAGE_SIZE, page * TXN_PAGE_SIZE);
+            const container = document.getElementById('txnPackagesBody');
+            let rows = '';
+            slice.forEach(p => {
+                const date = (p.package_date || p.created_at) ? new Date(p.package_date || p.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+                const st = (p.status || 'Draft').charAt(0).toUpperCase() + (p.status || 'draft').slice(1).toLowerCase();
+                rows += `<tr><td>${date}</td><td><a class="txn-link">${p.package_number || p.package_slip || '-'}</a></td><td>${p.sales_order_number || p.order_number || '-'}</td><td><span class="txn-status-badge ${st.toLowerCase().replace(/\s+/g, '-')}">${st}</span></td></tr>`;
+            });
+            container.innerHTML = `<div class="txn-table-container"><table class="txn-data-table"><thead><tr><th class="sortable">DATE ⇅</th><th>PACKAGE #</th><th>SALES ORDER #</th><th>STATUS</th></tr></thead><tbody>${rows}</tbody></table>${txnPaginationHtml('packages', page, data.length)}</div>`;
+        }
+
+        // ===== SALES RECEIPTS =====
+        async function loadCustomerSalesReceipts() {
+            if (!currentCustomerId) return;
+            const container = document.getElementById('txnSalesReceiptsBody');
+            container.innerHTML = '<div style="text-align:center;padding:20px;color:#888;font-size:13px;">Loading...</div>';
+            try {
+                const res = await fetch('/api/sales-receipts');
+                const all = await res.json();
+                const filtered = all.filter(r => String(r.customer_id) === String(currentCustomerId));
+                filtered.sort((a, b) => new Date(b.receipt_date || b.created_at) - new Date(a.receipt_date || a.created_at));
+                txnCache.salesReceipts = filtered;
+                txnPage.salesReceipts = 1;
+                salesReceiptsLoaded = true;
+                if (filtered.length === 0) { container.innerHTML = '<div class="txn-empty">There are no Sales Receipts - <a href="#" onclick="newTransaction(\'salesReceipt\')">Add New</a></div>'; return; }
+                renderSalesReceiptsPage();
+            } catch (err) { container.innerHTML = '<div class="txn-empty">Error loading sales receipts.</div>'; }
+        }
+        function renderSalesReceiptsPage() {
+            const data = txnCache.salesReceipts, page = txnPage.salesReceipts;
+            const slice = data.slice((page - 1) * TXN_PAGE_SIZE, page * TXN_PAGE_SIZE);
+            const container = document.getElementById('txnSalesReceiptsBody');
+            let rows = '';
+            slice.forEach(r => {
+                const date = (r.receipt_date || r.created_at) ? new Date(r.receipt_date || r.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+                const amount = 'PHP' + Number(r.total || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                const st = (r.status || 'Draft').charAt(0).toUpperCase() + (r.status || 'draft').slice(1).toLowerCase();
+                rows += `<tr><td>${date}</td><td><a class="txn-link" href="/sales-receipt-detail.html?id=${r.id}">${r.receipt_number || '-'}</a></td><td class="txn-amount">${amount}</td><td><span class="txn-status-badge ${st.toLowerCase()}">${st}</span></td></tr>`;
+            });
+            container.innerHTML = `<div class="txn-table-container"><table class="txn-data-table"><thead><tr><th class="sortable">DATE ⇅</th><th>RECEIPT #</th><th class="txn-amount">AMOUNT</th><th>STATUS</th></tr></thead><tbody>${rows}</tbody></table>${txnPaginationHtml('salesReceipts', page, data.length)}</div>`;
+        }
+
+        // ===== BILLS & CREDIT NOTES (placeholder) =====
+        async function loadCustomerBills() {
+            document.getElementById('txnBillsBody').innerHTML = '<div class="txn-empty">There are no Bills.</div>';
+            billsLoaded = true;
+        }
+        async function loadCustomerCreditNotes() {
+            if (!currentCustomerId) return;
+            const container = document.getElementById('txnCreditNotesBody');
+            container.innerHTML = '<div style="text-align:center;padding:20px;color:#888;font-size:13px;">Loading...</div>';
+            try {
+                const customer = allCustomers.find(c => c.id === currentCustomerId);
+                const custDisplayName = (customer ? customer.display_name : '').toLowerCase().trim();
+                const custFullName = customer ? ((customer.salutation || '') + ' ' + (customer.first_name || '') + ' ' + (customer.last_name || '')).toLowerCase().trim() : '';
+                const res = await fetch('/api/credit-notes');
+                const all = await res.json();
+                const filtered = all.filter(cn => {
+                    const cnCust = (cn.customer_name || '').toLowerCase().trim();
+                    return cnCust === custDisplayName || cnCust === custFullName;
+                });
+                filtered.sort((a, b) => new Date(b.credit_note_date || b.created_at) - new Date(a.credit_note_date || a.created_at));
+                txnCache.creditNotes = filtered;
+                txnPage.creditNotes = 1;
+                creditNotesLoaded = true;
+                if (filtered.length === 0) { container.innerHTML = '<div class="txn-empty">There are no Credit Notes - <a href="#" onclick="newTransaction(\'creditNote\')">Add New</a></div>'; return; }
+                renderCreditNotesPage();
+            } catch (err) { container.innerHTML = '<div class="txn-empty">Error loading credit notes.</div>'; }
+        }
+        function renderCreditNotesPage() {
+            const data = txnCache.creditNotes, page = txnPage.creditNotes;
+            const slice = data.slice((page - 1) * TXN_PAGE_SIZE, page * TXN_PAGE_SIZE);
+            const container = document.getElementById('txnCreditNotesBody');
+            let rows = '';
+            slice.forEach(cn => {
+                const date = (cn.credit_note_date || cn.created_at) ? new Date(cn.credit_note_date || cn.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+                const amount = 'PHP' + Number(cn.total || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                const st = (cn.status || 'Draft').charAt(0).toUpperCase() + (cn.status || 'draft').slice(1).toLowerCase();
+                rows += `<tr><td>${date}</td><td><a class="txn-link" href="/credit-notes.html">${cn.credit_note_number || '-'}</a></td><td>${cn.reference || '-'}</td><td class="txn-amount">${amount}</td><td><span class="txn-status-badge ${st.toLowerCase()}">${st}</span></td></tr>`;
+            });
+            container.innerHTML = `<div class="txn-table-container"><table class="txn-data-table"><thead><tr><th class="sortable">DATE ⇅</th><th>CREDIT NOTE #</th><th>REFERENCE #</th><th class="txn-amount">AMOUNT</th><th>STATUS</th></tr></thead><tbody>${rows}</tbody></table>${txnPaginationHtml('creditNotes', page, data.length)}</div>`;
+        }
         function newTransaction(type) {
-            // Placeholder — navigate to the appropriate new transaction page
             switch (type) {
-                case 'invoice': window.location.href = '/invoices.html'; break;
+                case 'invoice': window.location.href = '/new-invoice.html?customerId=' + currentCustomerId; break;
                 case 'salesOrder': window.location.href = '/new-sales-order.html?customerId=' + currentCustomerId; break;
                 case 'salesReceipt': window.location.href = '/new-sales-receipt.html?customerId=' + currentCustomerId; break;
+                case 'package': window.location.href = '/new-package.html?customerId=' + currentCustomerId; break;
+                case 'paymentReceived':
+                case 'customerPayment': window.location.href = '/record-invoice-payment.html?customerId=' + currentCustomerId; break;
                 default: alert('New ' + type + ' coming soon!');
             }
         }
@@ -3619,6 +4579,252 @@
             if (tabEl) tabEl.classList.add('active');
             const area = document.getElementById('dtab-' + tabName);
             if (area) area.classList.add('active');
+            if (tabName === 'comments' && currentCustomerId) loadCustomerComments(currentCustomerId);
+            if (tabName === 'statement' && currentCustomerId) loadCustomerStatement();
+        }
+
+        // ===== STATEMENT OF ACCOUNTS =====
+        function getStatementDateRange() {
+            const period = document.getElementById('stmtPeriod').value;
+            const now = new Date();
+            let start, end;
+            if (period === 'this_month') { start = new Date(now.getFullYear(), now.getMonth(), 1); end = new Date(now.getFullYear(), now.getMonth() + 1, 0); }
+            else if (period === 'last_month') { start = new Date(now.getFullYear(), now.getMonth() - 1, 1); end = new Date(now.getFullYear(), now.getMonth(), 0); }
+            else if (period === 'this_quarter') { const q = Math.floor(now.getMonth() / 3) * 3; start = new Date(now.getFullYear(), q, 1); end = new Date(now.getFullYear(), q + 3, 0); }
+            else if (period === 'this_year') { start = new Date(now.getFullYear(), 0, 1); end = new Date(now.getFullYear(), 11, 31); }
+            else if (period === 'last_year') { start = new Date(now.getFullYear() - 1, 0, 1); end = new Date(now.getFullYear() - 1, 11, 31); }
+            return { start, end };
+        }
+
+        async function loadCustomerStatement() {
+            if (!currentCustomerId) return;
+            const container = document.getElementById('stmtContent');
+            container.innerHTML = '<div style="text-align:center;padding:40px;color:#888;">Loading statement...</div>';
+            const customer = allCustomers.find(c => c.id === currentCustomerId);
+            if (!customer) return;
+            const { start, end } = getStatementDateRange();
+            const fmtDate = d => d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+            try {
+                const [invRes, payRes, cnRes, credRes] = await Promise.all([
+                    fetch('/api/invoices'), fetch('/api/payments-received'), fetch('/api/credit-notes'),
+                    fetch('/api/customer-credits/' + currentCustomerId)
+                ]);
+                const allInv = await invRes.json();
+                const allPay = await payRes.json();
+                const allCn = await cnRes.json();
+                const credData = credRes.ok ? await credRes.json() : { entries: [] };
+
+                // All customer active invoices/payments (exclude DRAFT/VOID)
+                const custInvoices = allInv.filter(i => i.customer_id == currentCustomerId && (i.status || '').toUpperCase() !== 'DRAFT' && (i.status || '').toUpperCase() !== 'VOID');
+                const custPayments = allPay.filter(p => String(p.customer_id) === String(currentCustomerId) && (p.status || '').toUpperCase() !== 'DRAFT' && (p.status || '').toUpperCase() !== 'VOID');
+                const custDisplayName = (customer.display_name || '').toLowerCase().trim();
+                const custFullName = ((customer.salutation || '') + ' ' + (customer.first_name || '') + ' ' + (customer.last_name || '')).toLowerCase().trim();
+                const allCreditNotes = allCn.filter(cn => { const c = (cn.customer_name || '').toLowerCase().trim(); return (c === custDisplayName || c === custFullName) && (cn.status || '').toUpperCase() === 'OPEN'; });
+                const allAppliedCredits = (credData.entries || []).filter(c => c.type === 'CREDIT_APPLIED');
+                const allRefunds = (credData.entries || []).filter(c => c.type === 'REFUND');
+
+                // Helper: calculate applied amount for a payment
+                function getAppliedAmount(pay) {
+                    let applied = 0;
+                    const s = pay.invoice_number || '';
+                    if (s.includes('|')) { s.split(',').forEach(part => { const segs = part.trim().split('|'); if (segs.length >= 3) applied += parseFloat(segs[2]) || 0; }); }
+                    else { const m = custInvoices.find(i => i.id == pay.invoice_id || i.invoice_number === s.trim()); applied = Math.min(Number(pay.amount_received || 0), m ? Number(m.total || 0) : Number(pay.amount_received || 0)); }
+                    return applied;
+                }
+
+                // === OPENING BALANCE: cumulative unpaid balance BEFORE start date ===
+                const priorInvTotal = custInvoices.filter(i => new Date(i.invoice_date) < start).reduce((s, i) => s + Number(i.total || 0), 0);
+                const priorPayTotal = custPayments.filter(p => new Date(p.payment_date) < start).reduce((s, p) => s + getAppliedAmount(p), 0);
+                const priorAcTotal = allAppliedCredits.filter(ac => new Date(ac.created_at) < start).reduce((s, ac) => s + Number(ac.amount || 0), 0);
+                const openingBalance = Math.max(0, priorInvTotal - priorPayTotal - priorAcTotal);
+
+                // === PERIOD TRANSACTIONS ===
+                const periodInvoices = custInvoices.filter(i => new Date(i.invoice_date) >= start && new Date(i.invoice_date) <= end);
+                const periodPayments = custPayments.filter(p => new Date(p.payment_date) >= start && new Date(p.payment_date) <= end);
+                const periodCreditNotes = allCreditNotes.filter(cn => { const d = new Date(cn.credit_note_date || cn.created_at); return d >= start && d <= end; });
+                const periodAppliedCredits = allAppliedCredits.filter(ac => new Date(ac.created_at) >= start && new Date(ac.created_at) <= end);
+                const periodRefunds = allRefunds.filter(r => { const d = new Date(r.created_at); return d >= start && d <= end; });
+
+                // Build timeline
+                const entries = [];
+                entries.push({ date: new Date(start), type: '***Opening Balance***', details: '', amount: openingBalance, payment: 0, sortOrder: 0 });
+                periodInvoices.forEach(inv => { entries.push({ date: new Date(inv.invoice_date), type: 'Invoice', details: `${inv.invoice_number} - due on ${inv.due_date ? fmtDate(new Date(inv.due_date)) : '-'}`, amount: Number(inv.total || 0), payment: 0, sortOrder: 1 }); });
+                periodPayments.forEach(pay => { const invNums = (pay.invoice_number || '').split(',').map(s => s.trim().split('|')[0]).filter(Boolean).join(', '); const applied = getAppliedAmount(pay); entries.push({ date: new Date(pay.payment_date), type: 'Payment Received', details: `${pay.payment_number}\nPHP${applied.toFixed(2)} for payment of ${invNums}`, amount: 0, payment: applied, sortOrder: 2 }); });
+                periodCreditNotes.forEach(cn => { entries.push({ date: new Date(cn.credit_note_date || cn.created_at), type: 'Credit Note', details: `${cn.credit_note_number}\nPHP${Number(cn.total || 0).toFixed(2)} unused credit added`, amount: 0, payment: 0, sortOrder: 3 }); });
+                periodAppliedCredits.forEach(ac => { const inv = allInv.find(i => i.id == ac.reference_id); entries.push({ date: new Date(ac.created_at), type: 'Credit Applied', details: `PHP${Number(ac.amount || 0).toFixed(2)} credit applied to ${inv ? inv.invoice_number : 'invoice'}`, amount: 0, payment: Number(ac.amount || 0), sortOrder: 4 }); });
+                periodRefunds.forEach(r => { const refAmt = Math.abs(Number(r.amount || 0)); entries.push({ date: new Date(r.created_at), type: 'Credit Note Refund', details: `${r.description || 'Refund'}\nPHP${refAmt.toFixed(2)} refunded to customer`, amount: 0, payment: 0, sortOrder: 5 }); });
+                entries.sort((a, b) => a.date - b.date || a.sortOrder - b.sortOrder);
+
+                // Calculate totals
+                const periodInvoicedTotal = periodInvoices.reduce((s, i) => s + Number(i.total || 0), 0);
+                const periodReceivedTotal = entries.filter(e => e.type === 'Payment Received').reduce((s, e) => s + e.payment, 0);
+                const periodAcTotal = entries.filter(e => e.type === 'Credit Applied').reduce((s, e) => s + e.payment, 0);
+                const totalAmountReceived = periodReceivedTotal + periodAcTotal;
+                const balanceDue = Math.max(0, openingBalance + periodInvoicedTotal - totalAmountReceived);
+
+                // Build running balance rows
+                let runBal = 0;
+                let txnRows = '';
+                entries.forEach(e => {
+                    if (e.type === '***Opening Balance***') {
+                        runBal = openingBalance;
+                    } else {
+                        runBal += e.amount - e.payment;
+                    }
+                    const dateStr = fmtDate(e.date);
+                    const detailsHtml = (e.details || '').replace(/\n/g, '<br>');
+                    const amtStr = (e.type === '***Opening Balance***') ? '' : (e.amount ? Number(e.amount).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '');
+                    const payStr = e.payment ? Number(e.payment).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '';
+                    const balStr = Number(runBal).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    txnRows += `<tr><td>${dateStr}</td><td>${e.type}</td><td>${detailsHtml}</td><td class="amt">${amtStr}</td><td class="amt">${payStr}</td><td class="amt">${balStr}</td></tr>`;
+                });
+
+                // Customer address
+                const addr = [customer.billing_street, customer.billing_city, customer.billing_state, customer.billing_zip, customer.billing_country].filter(Boolean).join('<br>');
+
+                container.innerHTML = `
+                    <div class="stmt-card" id="stmtPrintArea">
+                        <div class="stmt-company-info">
+                            <div class="stmt-company-name">GIHON</div>
+                            <div>Philippines</div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">
+                            <div class="stmt-to-section">
+                                <div class="stmt-to-label">To</div>
+                                <div class="stmt-to-name">${customer.display_name}</div>
+                                ${addr ? '<div>' + addr + '</div>' : ''}
+                            </div>
+                            <div class="stmt-title">
+                                <h2>Statement of Accounts</h2>
+                                <div class="stmt-title-date">${fmtDate(start)} To ${fmtDate(end)}</div>
+                            </div>
+                        </div>
+                        <table class="stmt-summary">
+                            <tr><th colspan="2">Account Summary</th></tr>
+                            <tr><td>Opening Balance</td><td>PHP ${openingBalance.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td></tr>
+                            <tr><td>Invoiced Amount</td><td>PHP ${periodInvoicedTotal.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td></tr>
+                            <tr><td>Amount Received</td><td>PHP ${totalAmountReceived.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td></tr>
+                            <tr><td><strong>Balance Due</strong></td><td><strong>PHP ${balanceDue.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong></td></tr>
+                        </table>
+                        <table class="stmt-txn-table">
+                            <thead><tr><th>Date</th><th>Transactions</th><th>Details</th><th class="amt">Amount</th><th class="amt">Payments</th><th class="amt">Balance</th></tr></thead>
+                            <tbody>${txnRows}</tbody>
+                        </table>
+                        <div class="stmt-balance-due">Balance Due &nbsp;&nbsp; PHP ${balanceDue.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                    </div>
+                `;
+            } catch (err) {
+                console.error('Error loading statement:', err);
+                container.innerHTML = '<div style="text-align:center;padding:40px;color:#e74c3c;">Error loading statement.</div>';
+            }
+        }
+
+        function printStatement() {
+            const content = document.getElementById('stmtPrintArea');
+            if (!content) return;
+            const w = window.open('', '_blank');
+            w.document.write(`<html><head><title>Statement of Accounts</title><style>
+                body{font-family:'Segoe UI',Arial,sans-serif;padding:20px;}
+                .stmt-card{padding:0;border:none;}
+                .stmt-company-info{text-align:right;margin-bottom:30px;font-size:13px;line-height:1.6;}
+                .stmt-company-name{font-weight:700;font-size:15px;}
+                .stmt-to-section{font-size:13px;line-height:1.6;}
+                .stmt-to-label{font-weight:600;color:#555;}
+                .stmt-to-name{color:#1a73e8;font-weight:600;}
+                .stmt-title{text-align:center;}
+                .stmt-title h2{font-size:18px;margin:0 0 2px;text-decoration:underline;}
+                .stmt-title-date{font-size:12px;color:#666;border-top:2px solid #1a73e8;display:inline-block;padding-top:4px;}
+                .stmt-summary{width:280px;margin-left:auto;margin-bottom:24px;border-collapse:collapse;font-size:13px;}
+                .stmt-summary th{background:#e8e8e8;text-align:left;padding:6px 10px;font-weight:700;}
+                .stmt-summary td{padding:5px 10px;border-bottom:1px solid #eee;}
+                .stmt-summary td:last-child{text-align:right;}
+                .stmt-summary tr:last-child td{font-weight:700;border-top:1px solid #ccc;}
+                .stmt-txn-table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:16px;}
+                .stmt-txn-table th{background:#e8e8e8;padding:6px 10px;text-align:left;font-weight:700;font-size:11px;}
+                .stmt-txn-table td{padding:8px 10px;border-bottom:1px solid #eee;vertical-align:top;}
+                .amt{text-align:right;}
+                .stmt-balance-due{text-align:right;font-size:13px;font-weight:700;padding:10px 0;border-top:2px solid #333;}
+            </style></head><body>${content.innerHTML}</body></html>`);
+            w.document.close();
+            w.print();
+        }
+
+        // ===== COMMENTS FUNCTIONALITY =====
+        function execFormat(command) {
+            document.getElementById('commentEditor').focus();
+            document.execCommand(command, false, null);
+        }
+
+        async function addCustomerComment() {
+            if (!currentCustomerId) return;
+            const editor = document.getElementById('commentEditor');
+            const html = editor.innerHTML.trim();
+            if (!html || html === '<br>' || html === '<div><br></div>') {
+                alert('Please write a comment before adding.');
+                return;
+            }
+            try {
+                const res = await fetch('/api/customers/' + currentCustomerId + '/comments', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ comment_html: html })
+                });
+                if (res.ok) {
+                    editor.innerHTML = '';
+                    loadCustomerComments(currentCustomerId);
+                } else {
+                    alert('Failed to add comment.');
+                }
+            } catch (err) {
+                console.error('Error adding comment:', err);
+                alert('Failed to add comment.');
+            }
+        }
+
+        async function loadCustomerComments(customerId) {
+            const container = document.getElementById('commentsListContainer');
+            const emptyMsg = document.getElementById('commentsEmpty');
+            try {
+                const res = await fetch('/api/customers/' + customerId + '/comments');
+                if (!res.ok) return;
+                const comments = await res.json();
+                if (comments.length === 0) {
+                    emptyMsg.style.display = 'block';
+                    // Remove all comment items but keep empty msg
+                    container.querySelectorAll('.comment-item').forEach(el => el.remove());
+                    return;
+                }
+                emptyMsg.style.display = 'none';
+                // Remove old comment items
+                container.querySelectorAll('.comment-item').forEach(el => el.remove());
+                comments.forEach(c => {
+                    const d = new Date(c.created_at);
+                    const timeStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' ' + d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                    const div = document.createElement('div');
+                    div.className = 'comment-item';
+                    div.innerHTML = `
+                        <div class="comment-item-body">${c.comment_html}</div>
+                        <div class="comment-item-footer">
+                            <span>${timeStr}</span>
+                            <button class="comment-delete-btn" onclick="deleteCustomerComment(${c.id})" title="Delete">✕</button>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            } catch (err) {
+                console.error('Error loading comments:', err);
+            }
+        }
+
+        async function deleteCustomerComment(commentId) {
+            if (!currentCustomerId) return;
+            if (!confirm('Delete this comment?')) return;
+            try {
+                await fetch('/api/customers/' + currentCustomerId + '/comments/' + commentId, { method: 'DELETE' });
+                loadCustomerComments(currentCustomerId);
+            } catch (err) {
+                console.error('Error deleting comment:', err);
+            }
         }
 
         function closeDetailView() {
@@ -3669,78 +4875,179 @@
             // Build timeline items
             let items = [];
 
-            // Fetch change history from API
+            // Helper to format dates
+            function fmtDate(d) { return new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); }
+            function fmtTime(d) { return new Date(d).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); }
+
+            // 1. Fetch customer change history
             try {
                 const res = await fetch('/api/customers/' + customer.id + '/changes');
                 if (res.ok) {
                     const changes = await res.json();
-
-                    // Group changes by changed_at timestamp (within 2 seconds)
                     const grouped = [];
                     changes.forEach(ch => {
                         const chTime = new Date(ch.changed_at).getTime();
                         const existing = grouped.find(g => Math.abs(g.time - chTime) < 2000);
-                        if (existing) {
-                            existing.fields.push(ch);
-                        } else {
-                            grouped.push({ time: chTime, date: new Date(ch.changed_at), fields: [ch] });
-                        }
+                        if (existing) { existing.fields.push(ch); }
+                        else { grouped.push({ time: chTime, date: new Date(ch.changed_at), fields: [ch] }); }
                     });
-
-                    // Add grouped change events to timeline
                     grouped.forEach(group => {
-                        const gDate = group.date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-                        const gTime = group.date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-
                         const changeDetails = group.fields.map(f => {
                             const label = fieldLabels[f.field_name] || f.field_name;
                             const oldVal = f.old_value || '(empty)';
                             const newVal = f.new_value || '(empty)';
                             return `<div style="font-size: 12px; color: #555; padding: 2px 0;"><b>${label}</b>: <span style="color: #e57373; text-decoration: line-through;">${escapeHtml(oldVal)}</span> → <span style="color: #4caf50; font-weight: 500;">${escapeHtml(newVal)}</span></div>`;
                         }).join('');
-
                         items.push({
-                            date: gDate,
-                            time: gTime,
+                            timestamp: group.time,
+                            date: fmtDate(group.date), time: fmtTime(group.date),
+                            icon: '✏️', color: '#ff9800',
                             title: 'Customer Updated',
                             desc: `<div style="margin-bottom: 4px; color: #333;">The following fields were changed:</div>${changeDetails}`
                         });
                     });
                 }
-            } catch (err) {
-                console.log('Could not fetch change history:', err);
-            }
+            } catch (err) { console.log('Could not fetch change history:', err); }
 
-            // If no detailed changes but updated_at differs, show generic update
+            // 2. Fetch Sales Orders
+            try {
+                const res = await fetch('/api/sales-orders?customer_id=' + customer.id);
+                if (res.ok) {
+                    const orders = await res.json();
+                    orders.forEach(so => {
+                        const d = so.created_at || so.order_date;
+                        if (!d) return;
+                        const total = parseFloat(so.total || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                        items.push({
+                            timestamp: new Date(d).getTime(),
+                            date: fmtDate(d), time: fmtTime(d),
+                            icon: '📦', color: '#2196f3',
+                            title: 'Sales Order Created',
+                            desc: `Sales Order <b>${escapeHtml(so.order_number || '')}</b> — PHP${total} — Status: <b>${so.status || 'DRAFT'}</b>`
+                        });
+                    });
+                }
+            } catch (err) { console.log('Could not fetch sales orders:', err); }
+
+            // 3. Fetch Invoices
+            try {
+                const res = await fetch('/api/invoices');
+                if (res.ok) {
+                    const invoices = await res.json();
+                    invoices.filter(inv => String(inv.customer_id) === String(customer.id)).forEach(inv => {
+                        const d = inv.created_at || inv.invoice_date;
+                        if (!d) return;
+                        const total = parseFloat(inv.total || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                        items.push({
+                            timestamp: new Date(d).getTime(),
+                            date: fmtDate(d), time: fmtTime(d),
+                            icon: '🧾', color: '#4caf50',
+                            title: 'Invoice Created',
+                            desc: `Invoice <b>${escapeHtml(inv.invoice_number || '')}</b> — PHP${total} — Status: <b>${inv.status || 'DRAFT'}</b>`
+                        });
+                    });
+                }
+            } catch (err) { console.log('Could not fetch invoices:', err); }
+
+            // 4. Fetch Payments Received
+            try {
+                const res = await fetch('/api/payments-received');
+                if (res.ok) {
+                    const payments = await res.json();
+                    payments.filter(p => String(p.customer_id) === String(customer.id)).forEach(p => {
+                        const d = p.created_at || p.payment_date;
+                        if (!d) return;
+                        const amt = parseFloat(p.amount_received || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                        const invNums = (p.invoice_number || '').split(',').map(s => s.trim().split('|')[0]).filter(Boolean).join(', ');
+                        items.push({
+                            timestamp: new Date(d).getTime(),
+                            date: fmtDate(d), time: fmtTime(d),
+                            icon: '💰', color: '#43a047',
+                            title: 'Payment Received',
+                            desc: `Payment <b>${escapeHtml(p.payment_number || '')}</b> — PHP${amt} — Status: <b>${p.status || 'DRAFT'}</b>${invNums ? ' — Invoices: ' + escapeHtml(invNums) : ''}`
+                        });
+                    });
+                }
+            } catch (err) { console.log('Could not fetch payments:', err); }
+
+            // 5. Fetch Sales Receipts
+            try {
+                const res = await fetch('/api/sales-receipts');
+                if (res.ok) {
+                    const receipts = await res.json();
+                    receipts.filter(r => String(r.customer_id) === String(customer.id)).forEach(r => {
+                        const d = r.created_at || r.receipt_date;
+                        if (!d) return;
+                        const total = parseFloat(r.total || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                        items.push({
+                            timestamp: new Date(d).getTime(),
+                            date: fmtDate(d), time: fmtTime(d),
+                            icon: '🧾', color: '#9c27b0',
+                            title: 'Sales Receipt Created',
+                            desc: `Sales Receipt <b>${escapeHtml(r.receipt_number || '')}</b> — PHP${total} — Status: <b>${r.status || 'DRAFT'}</b>`
+                        });
+                    });
+                }
+            } catch (err) { console.log('Could not fetch sales receipts:', err); }
+
+            // 6. Fetch Credit Notes
+            try {
+                const res = await fetch('/api/credit-notes');
+                if (res.ok) {
+                    const notes = await res.json();
+                    const custDisplayName = (customer.display_name || '').toLowerCase().trim();
+                    const custFullName = ((customer.salutation || '') + ' ' + (customer.first_name || '') + ' ' + (customer.last_name || '')).toLowerCase().trim();
+                    notes.filter(cn => {
+                        const cnCust = (cn.customer_name || '').toLowerCase().trim();
+                        return cnCust === custDisplayName || cnCust === custFullName || String(cn.customer_id) === String(customer.id);
+                    }).forEach(cn => {
+                        const d = cn.created_at || cn.credit_note_date;
+                        if (!d) return;
+                        const total = parseFloat(cn.total || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                        items.push({
+                            timestamp: new Date(d).getTime(),
+                            date: fmtDate(d), time: fmtTime(d),
+                            icon: '📝', color: '#f44336',
+                            title: 'Credit Note Created',
+                            desc: `Credit Note <b>${escapeHtml(cn.credit_note_number || '')}</b> — PHP${total} — Status: <b>${cn.status || 'DRAFT'}</b>`
+                        });
+                    });
+                }
+            } catch (err) { console.log('Could not fetch credit notes:', err); }
+
+            // If no items except created, show generic update if updated_at differs
             if (items.length === 0 && customer.updated_at && customer.updated_at !== customer.created_at) {
                 const updDate = new Date(customer.updated_at);
-                const updFormatDate = updDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-                const updFormatTime = updDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
                 items.push({
-                    date: updFormatDate,
-                    time: updFormatTime,
+                    timestamp: updDate.getTime(),
+                    date: fmtDate(updDate), time: fmtTime(updDate),
+                    icon: '✏️', color: '#ff9800',
                     title: 'Customer Updated',
                     desc: `Customer details for ${escapeHtml(customer.display_name)} have been updated.`
                 });
             }
 
-            // Created event
+            // Created event (always at the bottom)
             items.push({
-                date: formattedDate,
-                time: formattedTime,
+                timestamp: createdDate.getTime(),
+                date: formattedDate, time: formattedTime,
+                icon: '🎉', color: '#4285f4',
                 title: 'Customer Created',
                 desc: `Customer ${escapeHtml(customer.display_name)} has been created.`
             });
 
+            // Sort by timestamp descending (newest first)
+            items.sort((a, b) => b.timestamp - a.timestamp);
+
             timeline.innerHTML = items.map(item => `
                 <div class="timeline-item">
-                    <div class="timeline-dot"></div>
+                    <div class="timeline-dot" style="background: ${item.color}; font-size: 10px; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; border: 2px solid ${item.color};">${item.icon}</div>
                     <div style="display: flex; gap: 16px; align-items: flex-start;">
                         <div class="timeline-date" style="min-width: 80px; text-align: right;">
                             ${item.date}<br>${item.time}
                         </div>
                         <div class="timeline-card" style="flex: 1;">
-                            <div class="timeline-card-title">${item.title}</div>
+                            <div class="timeline-card-title" style="color: ${item.color};">${item.title}</div>
                             <div class="timeline-card-desc">${item.desc}</div>
                         </div>
                     </div>
@@ -3768,6 +5075,474 @@
         function editCustomer() {
             if (!currentCustomerId) return;
             window.location.href = '/new-customer.html?edit=' + currentCustomerId;
+        }
+
+        // ===== General Information Edit Modal =====
+        async function updatePackedShippedCounts(customerId) {
+            let toBePacked = 0;
+            let toBeShipped = 0;
+            try {
+                // Get customer's sales orders
+                const soRes = await fetch('/api/sales-orders?customer_id=' + customerId);
+                if (!soRes.ok) return;
+                const orders = await soRes.json();
+                const activeOrders = orders.filter(o => o.status && o.status !== 'DRAFT' && o.status !== 'CLOSED' && o.status !== 'DELIVERED');
+
+                for (const so of activeOrders) {
+                    // Get SO items
+                    const soDetailRes = await fetch('/api/sales-orders/' + so.id);
+                    if (!soDetailRes.ok) continue;
+                    const soDetail = await soDetailRes.json();
+                    const soItems = soDetail.items || [];
+                    const totalOrdered = soItems.reduce((sum, i) => sum + (parseFloat(i.quantity) || 0), 0);
+
+                    // Get packages for this SO
+                    let totalPacked = 0;
+                    let notShippedPacked = 0;
+                    try {
+                        const pkgRes = await fetch('/api/packages/by-order/' + so.id);
+                        if (pkgRes.ok) {
+                            const packages = await pkgRes.json();
+                            for (const pkg of packages) {
+                                const pkgQty = (pkg.items || []).reduce((sum, pi) => sum + (parseFloat(pi.packed_quantity) || parseFloat(pi.quantity_to_pack) || 0), 0);
+                                totalPacked += pkgQty;
+                                if (pkg.status !== 'SHIPPED' && pkg.status !== 'DELIVERED') {
+                                    notShippedPacked += pkgQty;
+                                }
+                            }
+                        }
+                    } catch (e) { }
+
+                    toBePacked += Math.max(totalOrdered - totalPacked, 0);
+                    toBeShipped += notShippedPacked;
+                }
+            } catch (e) { console.error(e); }
+
+            document.getElementById('detailToBePacked').textContent = toBePacked.toFixed(2);
+            document.getElementById('detailToBeShipped').textContent = toBeShipped.toFixed(2);
+
+            // Load receivables
+            loadCustomerReceivables(customerId);
+        }
+
+        async function loadCustomerReceivables(customerId) {
+            try {
+                const [invRes, payRes, creditRes] = await Promise.all([
+                    fetch('/api/invoices'), fetch('/api/payments-received'),
+                    fetch('/api/customer-credits/' + customerId)
+                ]);
+                const allInv = await invRes.json();
+                const allPay = await payRes.json();
+                const invoices = allInv.filter(i => i.customer_id == customerId && (i.status || '').toUpperCase() !== 'DRAFT' && (i.status || '').toUpperCase() !== 'VOID');
+                const payments = allPay.filter(p => String(p.customer_id) === String(customerId));
+
+                const outstanding = invoices.reduce((sum, inv) => sum + Number(inv.balance_due || 0), 0);
+
+                // Get actual credit balance from customer_credits table
+                let unusedCredits = 0;
+                if (creditRes.ok) {
+                    const creditData = await creditRes.json();
+                    unusedCredits = creditData.balance || 0;
+                }
+
+                document.getElementById('detailOutstandingReceivables').textContent = 'PHP' + outstanding.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                document.getElementById('detailUnusedCredits').textContent = 'PHP' + unusedCredits.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            } catch (e) { console.error('Error loading receivables:', e); }
+        }
+
+        function editRemarks() {
+            const current = document.getElementById('detailRemarks').textContent;
+            document.getElementById('remarksEditInput').value = current === '—' ? '' : current;
+            document.getElementById('detailRemarks').style.display = 'none';
+            document.getElementById('remarksEditArea').style.display = 'block';
+        }
+
+        async function saveRemarks() {
+            if (!currentCustomerId) return;
+            const newRemarks = document.getElementById('remarksEditInput').value.trim();
+            try {
+                const res = await fetch('/api/customers/' + currentCustomerId, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ remarks: newRemarks || null })
+                });
+                if (!res.ok) throw new Error('Failed');
+                const updated = await res.json();
+                const idx = allCustomers.findIndex(x => x.id === currentCustomerId);
+                if (idx !== -1) allCustomers[idx].remarks = updated.remarks;
+                document.getElementById('detailRemarks').textContent = updated.remarks || '—';
+                cancelRemarksEdit();
+                showToast('Remarks updated.', 'success');
+            } catch (err) {
+                showToast('Error: ' + err.message, 'error');
+            }
+        }
+
+        function cancelRemarksEdit() {
+            document.getElementById('remarksEditArea').style.display = 'none';
+            document.getElementById('detailRemarks').style.display = 'block';
+        }
+
+        function openGeneralInfoModal() {
+            if (!currentCustomerId) return;
+            const c = allCustomers.find(x => x.id === currentCustomerId);
+            if (!c) return;
+            document.getElementById('giSalutation').value = c.salutation || '';
+            document.getElementById('giFirstName').value = c.first_name || '';
+            document.getElementById('giLastName').value = c.last_name || '';
+            document.getElementById('giCompanyName').value = c.company_name || '';
+            document.getElementById('giDisplayName').value = c.display_name || '';
+            document.getElementById('giEmail').value = c.email || '';
+            document.getElementById('giWorkPhone').value = c.work_phone || '';
+            document.getElementById('giMobile').value = c.mobile || '';
+            document.getElementById('giWebsite').value = c.website || '';
+            document.getElementById('giEditModal').classList.add('active');
+        }
+
+        function closeGeneralInfoModal() {
+            document.getElementById('giEditModal').classList.remove('active');
+        }
+
+        function updateGiDisplayName() {
+            const sal = document.getElementById('giSalutation').value;
+            const first = document.getElementById('giFirstName').value.trim();
+            const last = document.getElementById('giLastName').value.trim();
+            const parts = [sal, first, last].filter(Boolean);
+            if (parts.length > 0) {
+                document.getElementById('giDisplayName').value = parts.join(' ');
+            }
+        }
+
+        async function saveGeneralInfo() {
+            if (!currentCustomerId) return;
+            const data = {
+                salutation: document.getElementById('giSalutation').value || null,
+                first_name: document.getElementById('giFirstName').value || null,
+                last_name: document.getElementById('giLastName').value || null,
+                company_name: document.getElementById('giCompanyName').value || null,
+                display_name: document.getElementById('giDisplayName').value || null,
+                email: document.getElementById('giEmail').value || null,
+                work_phone: document.getElementById('giWorkPhone').value || null,
+                mobile: document.getElementById('giMobile').value || null,
+                website: document.getElementById('giWebsite').value || null
+            };
+            if (!data.display_name) {
+                showToast('Display Name is required.', 'error');
+                return;
+            }
+            try {
+                const res = await fetch('/api/customers/' + currentCustomerId, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (!res.ok) throw new Error('Failed to update');
+                const updated = await res.json();
+                // Re-fetch full customer list so header + sidebar update
+                try {
+                    const listRes = await fetch('/api/customers');
+                    if (listRes.ok) allCustomers = await listRes.json();
+                } catch (e) { }
+                closeGeneralInfoModal();
+                openDetailView(currentCustomerId);
+                showToast('General information updated successfully.', 'success');
+            } catch (err) {
+                showToast('Error updating customer: ' + err.message, 'error');
+            }
+        }
+
+        // ===== Address Edit Modal =====
+        function openAddressModal() {
+            if (!currentCustomerId) return;
+            const c = allCustomers.find(x => x.id === currentCustomerId);
+            if (!c) return;
+            document.getElementById('addrBillingStreet').value = c.billing_street || '';
+            document.getElementById('addrBillingCity').value = c.billing_city || '';
+            document.getElementById('addrBillingState').value = c.billing_state || '';
+            document.getElementById('addrBillingZip').value = c.billing_zip || '';
+            document.getElementById('addrBillingCountry').value = c.billing_country || '';
+            document.getElementById('addrShippingStreet').value = c.shipping_street || '';
+            document.getElementById('addrShippingCity').value = c.shipping_city || '';
+            document.getElementById('addrShippingState').value = c.shipping_state || '';
+            document.getElementById('addrShippingZip').value = c.shipping_zip || '';
+            document.getElementById('addrShippingCountry').value = c.shipping_country || '';
+            document.getElementById('addrCopyToShipping').checked = false;
+            document.getElementById('addrEditModal').classList.add('active');
+        }
+
+        function closeAddressModal() {
+            document.getElementById('addrEditModal').classList.remove('active');
+        }
+
+        function copyBillingToShipping() {
+            if (document.getElementById('addrCopyToShipping').checked) {
+                document.getElementById('addrShippingStreet').value = document.getElementById('addrBillingStreet').value;
+                document.getElementById('addrShippingCity').value = document.getElementById('addrBillingCity').value;
+                document.getElementById('addrShippingState').value = document.getElementById('addrBillingState').value;
+                document.getElementById('addrShippingZip').value = document.getElementById('addrBillingZip').value;
+                document.getElementById('addrShippingCountry').value = document.getElementById('addrBillingCountry').value;
+            }
+        }
+
+        async function saveAddress() {
+            if (!currentCustomerId) return;
+            const data = {
+                billing_street: document.getElementById('addrBillingStreet').value || null,
+                billing_city: document.getElementById('addrBillingCity').value || null,
+                billing_state: document.getElementById('addrBillingState').value || null,
+                billing_zip: document.getElementById('addrBillingZip').value || null,
+                billing_country: document.getElementById('addrBillingCountry').value || null,
+                shipping_street: document.getElementById('addrShippingStreet').value || null,
+                shipping_city: document.getElementById('addrShippingCity').value || null,
+                shipping_state: document.getElementById('addrShippingState').value || null,
+                shipping_zip: document.getElementById('addrShippingZip').value || null,
+                shipping_country: document.getElementById('addrShippingCountry').value || null
+            };
+            try {
+                const res = await fetch('/api/customers/' + currentCustomerId, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (!res.ok) throw new Error('Failed to update');
+                const updated = await res.json();
+                const idx = allCustomers.findIndex(x => x.id === currentCustomerId);
+                if (idx !== -1) Object.assign(allCustomers[idx], updated);
+                closeAddressModal();
+                openDetailView(currentCustomerId);
+                showToast('Address updated successfully.', 'success');
+            } catch (err) {
+                showToast('Error updating address: ' + err.message, 'error');
+            }
+        }
+
+        // ===== Contact Persons Modal =====
+
+        function openContactPersonsModal(editData) {
+            if (!currentCustomerId) return;
+            // Reset form
+            document.getElementById('cpEditId').value = '';
+            document.getElementById('cpSalutation').value = '';
+            document.getElementById('cpFirstName').value = '';
+            document.getElementById('cpLastName').value = '';
+            document.getElementById('cpEmail').value = '';
+            document.getElementById('cpWorkPhone').value = '';
+            document.getElementById('cpMobile').value = '';
+            document.getElementById('cpDesignation').value = '';
+            document.getElementById('cpDepartment').value = '';
+            document.getElementById('cpProfileImageUrl').value = '';
+            // Reset upload preview
+            document.getElementById('cpProfileImagePreview').innerHTML = `
+                <div style="font-size:28px;margin-bottom:8px;">⬆️</div>
+                <div style="font-size:13px;font-weight:600;color:#333;margin-bottom:4px;">Drag & Drop Profile Image</div>
+                <div style="font-size:11px;color:#999;margin-bottom:2px;">Supported Files: jpg, jpeg, png, gif, bmp</div>
+                <div style="font-size:11px;color:#999;margin-bottom:12px;">Maximum File Size: 5MB</div>
+                <span style="font-size:13px;color:#333;text-decoration:underline;">Upload File</span>
+            `;
+            document.getElementById('cpProfileImagePreview').style.padding = '24px 16px';
+            document.getElementById('cpProfileImagePreview').style.borderColor = '#d0d5dd';
+            document.getElementById('cpModalTitle').textContent = 'Add Contact Person';
+
+            if (editData) {
+                document.getElementById('cpEditId').value = editData.id || '';
+                document.getElementById('cpSalutation').value = editData.salutation || '';
+                document.getElementById('cpFirstName').value = editData.first_name || '';
+                document.getElementById('cpLastName').value = editData.last_name || '';
+                document.getElementById('cpEmail').value = editData.email || '';
+                document.getElementById('cpWorkPhone').value = editData.work_phone || '';
+                document.getElementById('cpMobile').value = editData.mobile || '';
+                document.getElementById('cpDesignation').value = editData.designation || '';
+                document.getElementById('cpDepartment').value = editData.department || '';
+                document.getElementById('cpModalTitle').textContent = 'Edit Contact Person';
+                if (editData.profile_image) {
+                    document.getElementById('cpProfileImageUrl').value = editData.profile_image;
+                    const prev = document.getElementById('cpProfileImagePreview');
+                    prev.innerHTML = `<img src="${editData.profile_image}" style="width:100%;height:100%;object-fit:cover;border-radius:6px;">`;
+                    prev.style.padding = '0';
+                    prev.style.borderColor = '#4285f4';
+                }
+            }
+
+            document.getElementById('cpEditModal').classList.add('active');
+        }
+
+        async function handleCpImageUpload(input) {
+            if (!input.files || !input.files[0]) return;
+            const file = input.files[0];
+            if (file.size > 5 * 1024 * 1024) { showToast('File too large. Max 5MB.', 'error'); return; }
+            const formData = new FormData();
+            formData.append('profile_image', file);
+            try {
+                const res = await fetch('/api/customers/upload-temp-image', { method: 'POST', body: formData });
+                if (!res.ok) throw new Error('Upload failed');
+                const data = await res.json();
+                document.getElementById('cpProfileImageUrl').value = data.profile_image;
+                const prev = document.getElementById('cpProfileImagePreview');
+                prev.innerHTML = `<img src="${data.profile_image}" style="width:100%;height:100%;object-fit:cover;border-radius:6px;">`;
+                prev.style.padding = '0';
+                prev.style.borderColor = '#4285f4';
+            } catch (err) {
+                showToast('Error uploading image: ' + err.message, 'error');
+            }
+        }
+
+        function closeContactPersonsModal() {
+            document.getElementById('cpEditModal').classList.remove('active');
+        }
+
+        async function editContactPerson(contactId) {
+            // Close gear menus
+            document.querySelectorAll('[id^="cpGearMenu_"]').forEach(m => m.style.display = 'none');
+            try {
+                const res = await fetch('/api/customers/' + currentCustomerId + '/contacts');
+                if (res.ok) {
+                    const contacts = await res.json();
+                    const cp = contacts.find(c => c.id === contactId);
+                    if (cp) openContactPersonsModal(cp);
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function saveContactPerson() {
+            if (!currentCustomerId) return;
+            const editId = document.getElementById('cpEditId').value;
+            const data = {
+                salutation: document.getElementById('cpSalutation').value || null,
+                first_name: document.getElementById('cpFirstName').value || null,
+                last_name: document.getElementById('cpLastName').value || null,
+                email: document.getElementById('cpEmail').value || null,
+                work_phone: document.getElementById('cpWorkPhone').value || null,
+                mobile: document.getElementById('cpMobile').value || null,
+                designation: document.getElementById('cpDesignation').value || null,
+                department: document.getElementById('cpDepartment').value || null,
+                profile_image: document.getElementById('cpProfileImageUrl').value || null
+            };
+
+            if (!data.first_name && !data.last_name && !data.email) {
+                showToast('Please enter at least a name or email.', 'error');
+                return;
+            }
+
+            try {
+                let res;
+                if (editId) {
+                    // Update existing
+                    res = await fetch('/api/customers/' + currentCustomerId + '/contacts/' + editId, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                } else {
+                    // Add new (use POST with contacts array for compatibility)
+                    const existingRes = await fetch('/api/customers/' + currentCustomerId + '/contacts');
+                    let existing = [];
+                    if (existingRes.ok) existing = await existingRes.json();
+                    existing.push(data);
+                    res = await fetch('/api/customers/' + currentCustomerId + '/contacts', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contacts: existing.map(c => ({
+                                salutation: c.salutation, first_name: c.first_name, last_name: c.last_name,
+                                email: c.email, work_phone: c.work_phone, mobile: c.mobile,
+                                designation: c.designation, department: c.department, is_primary: c.is_primary || false,
+                                profile_image: c.profile_image || null
+                            }))
+                        })
+                    });
+                }
+                if (!res.ok) throw new Error('Failed to save');
+                closeContactPersonsModal();
+                openDetailView(currentCustomerId);
+                showToast(editId ? 'Contact person updated.' : 'Contact person added.', 'success');
+            } catch (err) {
+                showToast('Error: ' + err.message, 'error');
+            }
+        }
+
+        async function markContactPrimary(customerId, contactId) {
+            document.querySelectorAll('[id^="cpGearMenu_"]').forEach(m => m.style.display = 'none');
+            try {
+                const res = await fetch('/api/customers/' + customerId + '/contacts/' + contactId + '/primary', { method: 'PUT' });
+                if (!res.ok) throw new Error('Failed');
+                openDetailView(currentCustomerId);
+                showToast('Contact marked as primary.', 'success');
+            } catch (err) {
+                showToast('Error: ' + err.message, 'error');
+            }
+        }
+
+        function triggerCustomerAvatarUpload() {
+            if (!currentCustomerId) return;
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = async () => {
+                if (!input.files || !input.files[0]) return;
+                const file = input.files[0];
+                if (file.size > 5 * 1024 * 1024) { showToast('File too large. Max 5MB.', 'error'); return; }
+                const formData = new FormData();
+                formData.append('profile_image', file);
+                try {
+                    const uploadRes = await fetch('/api/customers/' + currentCustomerId + '/upload-image', { method: 'POST', body: formData });
+                    if (!uploadRes.ok) throw new Error('Upload failed');
+                    const data = await uploadRes.json();
+                    // Update local data
+                    const idx = allCustomers.findIndex(x => x.id === currentCustomerId);
+                    if (idx !== -1) allCustomers[idx].profile_image = data.profile_image;
+                    // Update avatar immediately
+                    document.getElementById('overviewAvatar').innerHTML = `<img src="${data.profile_image}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+                    showToast('Profile photo updated.', 'success');
+                } catch (err) {
+                    showToast('Error: ' + err.message, 'error');
+                }
+            };
+            input.click();
+        }
+
+        function triggerCpAvatarUpload(contactId) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = async () => {
+                if (!input.files || !input.files[0]) return;
+                const file = input.files[0];
+                if (file.size > 5 * 1024 * 1024) { showToast('File too large. Max 5MB.', 'error'); return; }
+                const formData = new FormData();
+                formData.append('profile_image', file);
+                try {
+                    const uploadRes = await fetch('/api/customers/upload-temp-image', { method: 'POST', body: formData });
+                    if (!uploadRes.ok) throw new Error('Upload failed');
+                    const uploadData = await uploadRes.json();
+                    // Update contact person with new image
+                    const res = await fetch('/api/customers/' + currentCustomerId + '/contacts/' + contactId, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ profile_image: uploadData.profile_image })
+                    });
+                    if (!res.ok) throw new Error('Failed to save');
+                    openDetailView(currentCustomerId);
+                    showToast('Profile photo updated.', 'success');
+                } catch (err) {
+                    showToast('Error: ' + err.message, 'error');
+                }
+            };
+            input.click();
+        }
+
+        async function deleteContactPerson(customerId, contactId) {
+            document.querySelectorAll('[id^="cpGearMenu_"]').forEach(m => m.style.display = 'none');
+            if (!confirm('Are you sure you want to delete this contact person?')) return;
+            try {
+                const res = await fetch('/api/customers/' + customerId + '/contacts/' + contactId, { method: 'DELETE' });
+                if (!res.ok) throw new Error('Failed');
+                openDetailView(currentCustomerId);
+                showToast('Contact person deleted.', 'success');
+            } catch (err) {
+                showToast('Error: ' + err.message, 'error');
+            }
         }
 
         // ===== Print Customer =====
@@ -3812,13 +5587,7 @@
             setTimeout(() => { printWin.print(); }, 300);
         }
 
-        // ===== New Transaction =====
-        function newTransaction(type) {
-            document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
-            const customer = allCustomers.find(c => c.id === currentCustomerId);
-            const name = customer ? customer.display_name : '';
-            alert('New ' + type.replace(/([A-Z])/g, ' $1').trim() + ' for: ' + name + '\n(Transaction pages coming soon!)');
-        }
+
 
         // ===== More actions =====
         async function moreAction(action) {

@@ -473,8 +473,7 @@
                     <div class="form-2col">
                         <div>
                             <div class="form-group">
-                                <label class="gray">Bank Charges (if any) <span class="info-icon"
-                                        title="Additional bank charges">ℹ️</span></label>
+                                <label class="gray">Bank Charges (if any)</label>
                                 <input type="number" id="bankCharges" value="0" step="0.01" min="0">
                             </div>
                             <div class="form-group">
@@ -566,7 +565,7 @@
         let currentBill = null;
 
         document.addEventListener('DOMContentLoaded', async function () {
-            document.getElementById('paymentDate').value = new Date().toISOString().split('T')[0];
+            const _d = new Date(); document.getElementById('paymentDate').value = _d.getFullYear() + '-' + String(_d.getMonth() + 1).padStart(2, '0') + '-' + String(_d.getDate()).padStart(2, '0');
             await loadSidebar();
             await refreshPaymentNumber();
             if (billId) {

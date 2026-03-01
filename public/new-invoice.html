@@ -555,6 +555,7 @@
 
         .btn-save-group {
             display: flex;
+            position: relative;
         }
 
         .btn-save {
@@ -577,6 +578,51 @@
             border-radius: 0 4px 4px 0;
             cursor: pointer;
             font-size: 10px;
+        }
+
+        .btn-save-dropdown:hover {
+            background: #2a56c6;
+        }
+
+        .save-dropdown-menu {
+            display: none;
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            padding: 6px 0;
+            margin-bottom: 4px;
+            z-index: 200;
+        }
+
+        .save-dropdown-menu.open {
+            display: block;
+        }
+
+        .save-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .save-dropdown-item:hover {
+            background: #4285f4;
+            color: white;
+        }
+
+        .save-dropdown-item .sdi-icon {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
         }
 
         .btn-cancel {
@@ -1350,6 +1396,320 @@
         .pt-modal-footer .btn-cancel-modal:hover {
             background: #555;
         }
+
+        /* ===== Bulk Add Items Modal ===== */
+        .bulk-add-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 99999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .bulk-add-overlay.active {
+            display: flex;
+        }
+
+        .bulk-add-panel {
+            background: #fff;
+            border-radius: 10px;
+            width: 900px;
+            max-width: 95vw;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .bulk-add-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .bulk-add-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .bulk-add-close {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: #e57373;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .bulk-add-body {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            min-height: 400px;
+        }
+
+        .bulk-add-left {
+            width: 50%;
+            border-right: 1px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bulk-add-right {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bulk-add-search {
+            padding: 14px 16px;
+        }
+
+        .bulk-add-search input {
+            width: 100%;
+            padding: 9px 12px;
+            border: 2px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        .bulk-add-search input:focus {
+            border-color: #4285f4;
+        }
+
+        .bulk-add-items-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        .bulk-item-row {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .bulk-item-row:hover {
+            background: #f0f5ff;
+        }
+
+        .bulk-item-row.selected {
+            background: #e8f5e9;
+        }
+
+        .bulk-item-info {
+            flex: 1;
+        }
+
+        .bulk-item-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .bulk-item-meta {
+            font-size: 11px;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .bulk-item-stock {
+            text-align: right;
+            font-size: 12px;
+            color: #666;
+            min-width: 100px;
+        }
+
+        .bulk-item-stock .stock-label {
+            color: #888;
+            font-size: 11px;
+        }
+
+        .bulk-item-stock .stock-value {
+            font-weight: 600;
+            color: #2e7d32;
+        }
+
+        .bulk-item-check {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 8px;
+        }
+
+        .bulk-item-check .check-icon {
+            width: 22px;
+            height: 22px;
+            background: #4caf50;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .bulk-selected-header {
+            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .bulk-selected-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .bulk-selected-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #e3f2fd;
+            color: #1976d2;
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .bulk-total-qty {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .bulk-selected-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+
+        .bulk-sel-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
+            gap: 12px;
+        }
+
+        .bulk-sel-name {
+            flex: 1;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .bulk-sel-qty-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            border: 2px solid #4285f4;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .bulk-sel-qty-btn {
+            background: #e3f2fd;
+            border: none;
+            width: 30px;
+            height: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            color: #1976d2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s;
+        }
+
+        .bulk-sel-qty-btn:hover {
+            background: #bbdefb;
+        }
+
+        .bulk-sel-qty-input {
+            width: 40px;
+            text-align: center;
+            border: none;
+            font-size: 13px;
+            font-weight: 600;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .bulk-sel-remove {
+            background: none;
+            border: none;
+            color: #e57373;
+            font-size: 18px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .bulk-sel-remove:hover {
+            color: #c62828;
+        }
+
+        .bulk-add-footer {
+            padding: 14px 24px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            gap: 10px;
+        }
+
+        .bulk-add-confirm {
+            padding: 8px 20px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .bulk-add-confirm:hover {
+            background: #3367d6;
+        }
+
+        .bulk-add-cancel-btn {
+            padding: 8px 20px;
+            background: #f5f5f5;
+            color: #333;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .bulk-add-cancel-btn:hover {
+            background: #e9ecef;
+        }
+
+        .bulk-sel-empty {
+            padding: 40px;
+            text-align: center;
+            color: #bbb;
+            font-size: 13px;
+        }
     </style>
 </head>
 
@@ -1363,10 +1723,10 @@
             <div class="page-header">
                 <div class="page-title-wrapper">
                     <span class="page-icon">📄</span>
-                    <h1 class="page-title">New Invoice</h1>
+                    <h1 class="page-title" id="invPageTitle">New Invoice</h1>
                 </div>
                 <div class="header-actions">
-                    <button class="header-icon-btn">⚙</button>
+
                     <button class="close-btn" onclick="goBack()">×</button>
                 </div>
             </div>
@@ -1400,6 +1760,26 @@
                         </div>
                     </div>
 
+                    <!-- Billing / Shipping Address -->
+                    <div id="addressSection" style="display:none; margin-top:8px;">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:500px;margin:0 auto;">
+                            <div>
+                                <div
+                                    style="font-size:12px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">
+                                    Billing Address</div>
+                                <div id="invBillingAddress"
+                                    style="font-size:13px;color:#333;line-height:1.6;min-height:40px;">—</div>
+                            </div>
+                            <div>
+                                <div
+                                    style="font-size:12px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">
+                                    Shipping Address</div>
+                                <div id="invShippingAddress"
+                                    style="font-size:13px;color:#333;line-height:1.6;min-height:40px;">—</div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Invoice Details Section -->
                     <div class="form-section form-section-gray">
                         <div class="form-row">
@@ -1409,9 +1789,12 @@
                                 <span class="input-icon">⚙</span>
                             </div>
                         </div>
-                        <div class="form-row">
-                            <label class="form-label">Order Number</label>
-                            <input type="text" class="form-input" id="orderNumber">
+                        <div class="form-row" id="salesOrderRow">
+                            <label class="form-label">Sales Order Number</label>
+                            <select class="form-input" id="orderNumber" style="max-width: 220px;"
+                                onchange="loadSalesOrderItems()">
+                                <option value="">Select or add Sales Order</option>
+                            </select>
                         </div>
                         <div class="form-row">
                             <label class="form-label required">Invoice Date*</label>
@@ -1494,8 +1877,12 @@
                         <!-- Attach Files -->
                         <div class="attach-section">
                             <div class="attach-title">Attach File(s) to Invoice</div>
-                            <button class="upload-btn" type="button">📤 Upload File ▼</button>
+                            <button class="upload-btn" type="button" onclick="invAttachFiles()">📤 Upload File
+                                ▼</button>
                             <p class="upload-help">Max 10 files, 10MB each</p>
+                            <div id="invAttachmentList" style="margin-top:8px;"></div>
+                            <div id="invUploadProgress"
+                                style="display:none;margin-top:6px;font-size:11px;color:#4285f4;">Uploading...</div>
                         </div>
                     </div>
                 </div>
@@ -1507,10 +1894,7 @@
                     <div class="item-table-section">
                         <div class="item-table-header">
                             <span class="item-table-title">Item Table</span>
-                            <div class="table-actions">
 
-                                <a href="#" class="action-link">⚡ Bulk Actions</a>
-                            </div>
                         </div>
 
                         <table class="item-table">
@@ -1562,7 +1946,7 @@
 
                         <div class="add-row-buttons">
                             <button class="add-row-btn primary">+ Add New Row</button>
-                            <button class="add-row-btn">+ Add Items in Bulk</button>
+                            <button class="add-row-btn" onclick="openBulkAddModal()">+ Add Items in Bulk</button>
                         </div>
                     </div>
 
@@ -1608,7 +1992,18 @@
             <div class="form-footer">
                 <div class="footer-left">
                     <button class="btn-draft" onclick="saveAsDraft()">Save as Draft</button>
-                    <button class="btn-save" onclick="saveAndPrint()">Save and Print</button>
+                    <div class="btn-save-group">
+                        <button class="btn-save" onclick="saveAndPrint()">Save and Print</button>
+                        <button class="btn-save-dropdown" onclick="toggleSaveDropdown(event)">▲</button>
+                        <div class="save-dropdown-menu" id="saveDropdownMenu">
+                            <div class="save-dropdown-item" onclick="saveAndPrint()">
+                                <span class="sdi-icon">🖨️</span> Save and Print
+                            </div>
+                            <div class="save-dropdown-item" onclick="saveAndConfirm()">
+                                <span class="sdi-icon">✅</span> Save and Confirm
+                            </div>
+                        </div>
+                    </div>
                     <button class="btn-cancel" onclick="goBack()">Cancel</button>
                 </div>
                 <div class="footer-right">
@@ -1684,9 +2079,255 @@
         </div>
     </div>
 
+    <!-- Bulk Add Items Modal -->
+    <div class="bulk-add-overlay" id="bulkAddOverlay" onclick="if(event.target===this)closeBulkAddModal()">
+        <div class="bulk-add-panel">
+            <div class="bulk-add-header">
+                <span class="bulk-add-title">Add Items in Bulk</span>
+                <button class="bulk-add-close" onclick="closeBulkAddModal()">&times;</button>
+            </div>
+            <div class="bulk-add-body">
+                <div class="bulk-add-left">
+                    <div class="bulk-add-search">
+                        <input type="text" id="bulkSearchInput"
+                            placeholder="Type to search or scan the barcode of the item"
+                            oninput="renderBulkItemsList()">
+                    </div>
+                    <div class="bulk-add-items-list" id="bulkItemsList"></div>
+                </div>
+                <div class="bulk-add-right">
+                    <div class="bulk-selected-header">
+                        <div>
+                            <span class="bulk-selected-title">Selected Items</span>
+                            <span class="bulk-selected-badge" id="bulkSelCount">0</span>
+                        </div>
+                        <span class="bulk-total-qty" id="bulkTotalQty">Total Quantity: 0</span>
+                    </div>
+                    <div class="bulk-selected-list" id="bulkSelectedList">
+                        <div class="bulk-sel-empty">Click items on the left to select them</div>
+                    </div>
+                </div>
+            </div>
+            <div class="bulk-add-footer">
+                <button class="bulk-add-confirm" onclick="confirmBulkAdd()">Add Items</button>
+                <button class="bulk-add-cancel-btn" onclick="closeBulkAddModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Layout Script -->
     <script src="/js/layout.js"></script>
     <script>
+        // ===== FILE ATTACHMENTS =====
+        let invUploadedFiles = [];
+
+        function invAttachFiles() {
+            if (invUploadedFiles.length >= 10) { alert('Maximum 10 files allowed.'); return; }
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.xls,.xlsx,.csv';
+            input.multiple = true;
+            input.onchange = async (e) => {
+                const files = Array.from(e.target.files);
+                if (files.length === 0) return;
+                if (invUploadedFiles.length + files.length > 10) {
+                    alert(`You can only upload ${10 - invUploadedFiles.length} more file(s).`);
+                    return;
+                }
+                for (const f of files) {
+                    if (f.size > 10 * 1024 * 1024) {
+                        alert(`"${f.name}" exceeds 10MB limit.`);
+                        return;
+                    }
+                }
+                const progress = document.getElementById('invUploadProgress');
+                progress.style.display = 'block';
+                const formData = new FormData();
+                files.forEach(f => formData.append('files', f));
+                try {
+                    const res = await fetch('/api/uploads', { method: 'POST', body: formData });
+                    if (!res.ok) { const err = await res.json(); alert('Upload failed: ' + (err.error || 'Unknown error')); progress.style.display = 'none'; return; }
+                    const data = await res.json();
+                    invUploadedFiles.push(...data.files);
+                    renderInvAttachments();
+                } catch (err) { console.error(err); alert('Upload failed.'); }
+                progress.style.display = 'none';
+            };
+            input.click();
+        }
+
+        function renderInvAttachments() {
+            const container = document.getElementById('invAttachmentList');
+            if (invUploadedFiles.length === 0) { container.innerHTML = ''; return; }
+            container.innerHTML = invUploadedFiles.map((f, i) => {
+                const sizeKB = (f.size / 1024).toFixed(1);
+                const icon = f.originalName.match(/\.(jpg|jpeg|png|gif)$/i) ? '🖼️' : '📄';
+                return `<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#f8f9fa;border:1px solid #e9ecef;border-radius:4px;margin-bottom:4px;font-size:12px;">
+                    <span>${icon}</span>
+                    <a href="${f.url}" target="_blank" style="color:#4285f4;text-decoration:none;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${f.originalName}">${f.originalName}</a>
+                    <span style="color:#999;font-size:10px;white-space:nowrap;">${sizeKB} KB</span>
+                    <span style="color:#e57373;cursor:pointer;font-size:14px;" onclick="removeInvAttachment(${i})" title="Remove">✕</span>
+                </div>`;
+            }).join('');
+        }
+
+        async function removeInvAttachment(idx) {
+            const file = invUploadedFiles[idx];
+            try { await fetch('/api/uploads/' + file.filename, { method: 'DELETE' }); } catch (e) { }
+            invUploadedFiles.splice(idx, 1);
+            renderInvAttachments();
+        }
+
+        // ===== BULK ADD ITEMS =====
+        let bulkSelectedItems = [];
+
+        function openBulkAddModal() {
+            bulkSelectedItems = [];
+            document.getElementById('bulkSearchInput').value = '';
+            renderBulkItemsList();
+            renderBulkSelected();
+            document.getElementById('bulkAddOverlay').classList.add('active');
+            document.getElementById('bulkSearchInput').focus();
+        }
+
+        function closeBulkAddModal() {
+            document.getElementById('bulkAddOverlay').classList.remove('active');
+        }
+
+        function renderBulkItemsList() {
+            const q = (document.getElementById('bulkSearchInput').value || '').toLowerCase();
+            const list = document.getElementById('bulkItemsList');
+            let items = allItems;
+            if (q) {
+                items = items.filter(item =>
+                    (item.name || '').toLowerCase().includes(q) ||
+                    (item.sku || '').toLowerCase().includes(q) ||
+                    (item.barcode || '').toLowerCase().includes(q)
+                );
+            }
+            if (items.length === 0) {
+                list.innerHTML = '<div style="padding:30px;text-align:center;color:#bbb;font-size:12px;">No items found</div>';
+                return;
+            }
+            list.innerHTML = items.map(item => {
+                const isSelected = bulkSelectedItems.some(s => s.id === item.id);
+                const rate = parseFloat(item.selling_price || 0).toFixed(2);
+                const stock = parseFloat(item.stock_quantity || 0).toFixed(2);
+                const unit = item.unit || 'pcs';
+                const sku = item.sku ? `SKU: ${item.sku}  ` : '';
+                const meta = `${sku}Rate: PHP${rate}`;
+                return `<div class="bulk-item-row${isSelected ? ' selected' : ''}" onclick="toggleBulkItem(${item.id})">
+                    <div class="bulk-item-info">
+                        <div class="bulk-item-name">${item.name || 'Unnamed'}</div>
+                        <div class="bulk-item-meta">${meta}</div>
+                    </div>
+                    <div class="bulk-item-stock">
+                        <div class="stock-label">Stock on Hand</div>
+                        <div class="stock-value">${stock} ${unit}</div>
+                    </div>
+                    <div class="bulk-item-check">
+                        ${isSelected ? '<div class="check-icon">✓</div>' : ''}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function toggleBulkItem(itemId) {
+            const idx = bulkSelectedItems.findIndex(s => s.id === itemId);
+            if (idx >= 0) {
+                bulkSelectedItems.splice(idx, 1);
+            } else {
+                const item = allItems.find(i => i.id === itemId);
+                if (item) {
+                    bulkSelectedItems.push({
+                        id: item.id,
+                        name: item.name,
+                        sku: item.sku || '',
+                        price: parseFloat(item.selling_price || 0),
+                        image_url: item.image_url || '',
+                        qty: 1
+                    });
+                }
+            }
+            renderBulkItemsList();
+            renderBulkSelected();
+        }
+
+        function renderBulkSelected() {
+            const list = document.getElementById('bulkSelectedList');
+            document.getElementById('bulkSelCount').textContent = bulkSelectedItems.length;
+            if (bulkSelectedItems.length === 0) {
+                list.innerHTML = '<div class="bulk-sel-empty">Click items on the left to select them</div>';
+                updateBulkTotalQty();
+                return;
+            }
+            list.innerHTML = bulkSelectedItems.map((item, i) => {
+                const label = item.sku ? `[${item.sku}] ${item.name}` : item.name;
+                return `<div class="bulk-sel-item">
+                    <div class="bulk-sel-name">${label}</div>
+                    <div class="bulk-sel-qty-wrap">
+                        <button class="bulk-sel-qty-btn" onclick="changeBulkQty(${i}, -1)">−</button>
+                        <input type="number" class="bulk-sel-qty-input" value="${item.qty}" min="1" onchange="updateBulkQty(${i}, this.value)">
+                        <button class="bulk-sel-qty-btn" onclick="changeBulkQty(${i}, 1)">+</button>
+                    </div>
+                    <button class="bulk-sel-remove" onclick="removeBulkItem(${i})">⊗</button>
+                </div>`;
+            }).join('');
+            updateBulkTotalQty();
+        }
+
+        function changeBulkQty(idx, delta) {
+            bulkSelectedItems[idx].qty = Math.max(1, bulkSelectedItems[idx].qty + delta);
+            renderBulkSelected();
+        }
+
+        function updateBulkQty(idx, val) {
+            bulkSelectedItems[idx].qty = Math.max(1, parseInt(val) || 1);
+            renderBulkSelected();
+        }
+
+        function removeBulkItem(idx) {
+            bulkSelectedItems.splice(idx, 1);
+            renderBulkItemsList();
+            renderBulkSelected();
+        }
+
+        function updateBulkTotalQty() {
+            const total = bulkSelectedItems.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById('bulkTotalQty').textContent = 'Total Quantity: ' + total;
+        }
+
+        function confirmBulkAdd() {
+            if (bulkSelectedItems.length === 0) { alert('No items selected.'); return; }
+            const tbody = document.getElementById('itemsBody');
+            bulkSelectedItems.forEach(item => {
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `
+                    <td class="item-picker-cell">
+                        <input type="text" class="item-picker-input" value="${item.name}" style="display:none;" onfocus="openItemPicker(this)" oninput="filterItemPicker(this)">
+                        <input type="hidden" class="item-id-hidden" value="${item.id}">
+                        <div class="item-picker-dropdown"></div>
+                        <div class="item-selected-display" style="cursor:pointer;" onclick="this.remove(); this.parentElement.querySelector('.item-picker-input').style.display=''; this.parentElement.querySelector('.item-picker-input').focus();">
+                            ${item.image_url ? `<img src="${item.image_url}" onerror="this.outerHTML='<div class=\\'item-selected-placeholder\\'>📦</div>'">`
+                        : '<div class="item-selected-placeholder">📦</div>'}
+                            <span class="item-selected-name">${item.name}</span>
+                        </div>
+                    </td>
+                    <td class="center"><input type="number" value="${item.qty}" style="text-align: center;" class="qty-input" onchange="recalcRow(this)"></td>
+                    <td class="center"><input type="number" value="${item.price.toFixed(2)}" style="text-align: right;" class="rate-input" onchange="recalcRow(this)"></td>
+                    ${getDiscColumnsHTML()}
+                    <td><select><option value="">Select Tax</option></select></td>
+                    <td class="center amount-cell">0</td>
+                    <td class="center"><button class="delete-row-btn" onclick="deleteItemRow(this)">×</button></td>
+                `;
+                tbody.appendChild(newRow);
+                // Trigger recalc
+                const rateInput = newRow.querySelector('.rate-input');
+                recalcRow(rateInput);
+            });
+            closeBulkAddModal();
+        }
+
         function goBack() {
             window.location.href = '/invoices.html';
         }
@@ -1771,6 +2412,10 @@
             };
         }
 
+        // Edit mode detection
+        const urlParams = new URLSearchParams(window.location.search);
+        const editInvoiceId = urlParams.get('editId');
+
         async function saveInvoice(status) {
             const customerName = document.getElementById('customerName').value;
             if (!customerName) {
@@ -1778,18 +2423,29 @@
                 return;
             }
 
+            // Validate invoice date >= SO date
+            const invoiceDateEl = document.getElementById('invoiceDate');
+            if (invoiceDateEl && invoiceDateEl.min && invoiceDateEl.value < invoiceDateEl.min) {
+                alert('Invoice date cannot be earlier than the Sales Order date (' + invoiceDateEl.min + ')');
+                invoiceDateEl.focus();
+                return;
+            }
+
             const data = collectInvoiceData();
             data.status = status;
 
             try {
-                const res = await fetch('/api/invoices', {
-                    method: 'POST',
+                const url = editInvoiceId ? '/api/invoices/' + editInvoiceId : '/api/invoices';
+                const method = editInvoiceId ? 'PUT' : 'POST';
+                const res = await fetch(url, {
+                    method: method,
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
 
                 if (res.ok) {
                     const invoice = await res.json();
+                    localStorage.setItem('invoice_refresh_needed', 'true');
                     return invoice;
                 } else {
                     const err = await res.json();
@@ -1814,12 +2470,31 @@
 
         async function saveAndPrint() {
             if (!verifySalespersonPassword()) return;
-            const invoice = await saveInvoice('CONFIRMED');
+            const invoice = await saveInvoice('ISSUED');
             if (invoice) {
-                alert('Invoice ' + invoice.invoice_number + ' saved!');
+                // Redirect to invoice detail view with auto-print
+                window.location.href = '/invoices.html?invoiceId=' + invoice.id + '&print=true';
+            }
+        }
+
+        async function saveAndConfirm() {
+            if (!verifySalespersonPassword()) return;
+            const invoice = await saveInvoice('ISSUED');
+            if (invoice) {
+                alert('Invoice ' + invoice.invoice_number + ' issued!');
                 goBack();
             }
         }
+
+        function toggleSaveDropdown(e) {
+            e.stopPropagation();
+            document.getElementById('saveDropdownMenu').classList.toggle('open');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function () {
+            document.getElementById('saveDropdownMenu')?.classList.remove('open');
+        });
 
         // ===== Customer Name Custom Dropdown =====
         let customersList = [];
@@ -1831,6 +2506,16 @@
                 if (res.ok) {
                     customersList = await res.json();
                     renderCustDdOptions();
+                    // Auto-select customer if URL has customerId
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const preselect = urlParams.get('customerId');
+                    if (preselect) {
+                        const c = customersList.find(x => String(x.id) === preselect);
+                        if (c) {
+                            const name = getCustomerDisplayName(c);
+                            selectCustDd(c.id, name);
+                        }
+                    }
                 }
             } catch (err) {
                 console.error('Error loading customers:', err);
@@ -1892,6 +2577,113 @@
             label.textContent = name;
             label.style.color = '#333';
             closeAllCustomDds();
+            populateCustomerAddress(id);
+            fetchUninvoicedSalesOrders(id);
+        }
+
+        async function fetchUninvoicedSalesOrders(customerId) {
+            const sel = document.getElementById('orderNumber');
+            sel.innerHTML = '<option value="">Select or add Sales Order</option>';
+            try {
+                const res = await fetch('/api/sales-orders?customer_id=' + customerId);
+                if (!res.ok) return;
+                const orders = await res.json();
+                // Filter: confirmed orders that don't already have an invoice
+                const uninvoiced = orders.filter(o =>
+                    o.status && o.status.toUpperCase() !== 'DRAFT' &&
+                    !o.has_invoice
+                );
+                if (uninvoiced.length === 0) return;
+                uninvoiced.forEach(o => {
+                    const opt = document.createElement('option');
+                    opt.value = o.order_number;
+                    opt.textContent = o.order_number;
+                    opt.dataset.soId = o.id;
+                    sel.appendChild(opt);
+                });
+                // Auto-select if only one, then load items
+                if (uninvoiced.length === 1) {
+                    sel.value = uninvoiced[0].order_number;
+                    loadSalesOrderItems();
+                }
+            } catch (err) {
+                console.error('Error fetching sales orders:', err);
+            }
+        }
+
+        async function loadSalesOrderItems() {
+            const sel = document.getElementById('orderNumber');
+            const selectedOpt = sel.options[sel.selectedIndex];
+            const soId = selectedOpt ? selectedOpt.dataset.soId : null;
+            if (!soId) return;
+
+            try {
+                const res = await fetch('/api/sales-orders/' + soId);
+                if (!res.ok) return;
+                const order = await res.json();
+                const items = order.items || [];
+                if (items.length === 0) return;
+
+                const tbody = document.getElementById('itemsBody');
+                tbody.innerHTML = '';
+
+                items.forEach(item => {
+                    const rate = parseFloat(item.rate || 0).toFixed(2);
+                    const qty = parseFloat(item.quantity || 1);
+                    const amount = parseFloat(item.amount || (qty * rate)).toFixed(2);
+                    const itemId = item.item_id || '';
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="item-picker-cell">
+                            <input type="text" class="item-picker-input" value="${item.item_name || ''}"
+                                onfocus="openItemPicker(this)" oninput="filterItemPicker(this)">
+                            <input type="hidden" class="item-id-hidden" value="${itemId}">
+                            <div class="item-picker-dropdown"></div>
+                        </td>
+                        <td class="center"><input type="number" value="${qty}" style="text-align: center;" class="qty-input" onchange="recalcRow(this)"></td>
+                        <td class="center"><input type="number" value="${rate}" style="text-align: right;" class="rate-input" onchange="recalcRow(this)"></td>
+                        ${getDiscColumnsHTML()}
+                        <td><select><option value="">Select Tax</option></select></td>
+                        <td class="center amount-cell">${formatNum(parseFloat(amount))}</td>
+                        <td class="center"><button class="delete-row-btn" onclick="deleteItemRow(this)">×</button></td>
+                    `;
+                    tbody.appendChild(row);
+                });
+
+                // Set discount, shipping, adjustment from SO
+                if (order.discount && parseFloat(order.discount) > 0) {
+                    document.getElementById('totalDiscInput').value = parseFloat(order.discount_value || order.discount);
+                    if (order.discount_type === '%') {
+                        document.getElementById('totalDiscToggle').dataset.type = '%';
+                        document.getElementById('totalDiscToggle').textContent = '%';
+                    } else {
+                        document.getElementById('totalDiscToggle').dataset.type = '₱';
+                        document.getElementById('totalDiscToggle').textContent = '₱';
+                    }
+                }
+                if (order.shipping_charges && parseFloat(order.shipping_charges) > 0) {
+                    document.getElementById('shippingInput').value = parseFloat(order.shipping_charges);
+                }
+                if (order.adjustment && parseFloat(order.adjustment) !== 0) {
+                    document.getElementById('adjustmentInput').value = parseFloat(order.adjustment);
+                }
+
+                recalcTotals();
+            } catch (err) {
+                console.error('Error loading SO items:', err);
+            }
+        }
+
+        function populateCustomerAddress(customerId) {
+            const c = customersList.find(x => String(x.id) === String(customerId));
+            const section = document.getElementById('addressSection');
+            if (!c) { section.style.display = 'none'; return; }
+            const billingParts = [c.billing_street, c.billing_city, c.billing_state, c.billing_zip, c.billing_country].filter(Boolean);
+            const shippingParts = [c.shipping_street, c.shipping_city, c.shipping_state, c.shipping_zip, c.shipping_country].filter(Boolean);
+            document.getElementById('invBillingAddress').textContent = billingParts.length > 0 ? billingParts.join(', ') : '—';
+            document.getElementById('invShippingAddress').textContent = shippingParts.length > 0 ? shippingParts.join(', ') : '—';
+            section.style.display = 'block';
         }
 
         function filterCustDd() {
@@ -1974,7 +2766,7 @@
 
         // Set today's date on date fields
         function setTodayDates() {
-            const today = new Date().toISOString().split('T')[0];
+            const _td = new Date(); const today = _td.getFullYear() + '-' + String(_td.getMonth() + 1).padStart(2, '0') + '-' + String(_td.getDate()).padStart(2, '0');
             document.getElementById('invoiceDate').value = today;
             document.getElementById('dueDate').value = today;
         }
@@ -2735,6 +3527,12 @@
                 if (!res.ok) return;
                 const order = await res.json();
 
+                // Set min date on invoice date input to the SO order date
+                if (order.order_date) {
+                    const soDate = order.order_date.substring(0, 10);
+                    document.getElementById('invoiceDate').setAttribute('min', soDate);
+                }
+
                 // Wait for customers and items to load
                 await new Promise(r => setTimeout(r, 500));
 
@@ -2742,6 +3540,9 @@
                 if (order.customer_name) {
                     selectCustDd(order.customer_id || '', order.customer_name);
                 }
+
+                // Wait for SO dropdown to populate
+                await new Promise(r => setTimeout(r, 600));
 
                 // Set order number (SO reference)
                 document.getElementById('orderNumber').value = order.order_number || '';
@@ -2768,6 +3569,13 @@
                     document.getElementById('salesperson').value = order.salesperson_name;
                     document.getElementById('spDdLabel').textContent = order.salesperson_name;
                     document.getElementById('spDdLabel').style.color = '#333';
+                    // Set the selectedSalesperson variable so validation passes
+                    const matchedSp = salespersonsList.find(s => s.name === order.salesperson_name);
+                    if (matchedSp) {
+                        selectedSalesperson = matchedSp.id;
+                    } else {
+                        selectedSalesperson = order.salesperson_name;
+                    }
                 }
 
                 // Set subject
@@ -2843,6 +3651,110 @@
                 console.error('Error pre-filling from sales order:', err);
             }
         })();
+
+        // ===== EDIT MODE =====
+        if (editInvoiceId) {
+            document.getElementById('invPageTitle').textContent = 'Edit Invoice';
+            document.title = 'Edit Invoice - Inventory Management';
+
+            (async function loadInvoiceForEdit() {
+                try {
+                    const res = await fetch('/api/invoices/' + editInvoiceId);
+                    if (!res.ok) { alert('Invoice not found.'); return; }
+                    const inv = await res.json();
+
+                    // Set customer
+                    document.getElementById('customerName').value = inv.customer_name || '';
+                    const custLabel = document.getElementById('custDdLabel');
+                    if (custLabel) { custLabel.textContent = inv.customer_name || 'Select a customer'; custLabel.style.color = '#333'; }
+                    if (inv.customer_id) {
+                        if (typeof selectedCustomerId !== 'undefined') selectedCustomerId = inv.customer_id;
+                        const custIdEl = document.getElementById('customerId');
+                        if (custIdEl) custIdEl.value = inv.customer_id;
+                    }
+
+                    // Set fields
+                    document.getElementById('invoiceNumber').value = inv.invoice_number || '';
+                    if (inv.order_number) document.getElementById('orderNumber').value = inv.order_number;
+                    if (inv.invoice_date) document.getElementById('invoiceDate').value = inv.invoice_date.substring(0, 10);
+                    if (inv.due_date) document.getElementById('dueDate').value = inv.due_date.substring(0, 10);
+
+                    // Payment terms
+                    if (inv.payment_terms) {
+                        const termsEl = document.getElementById('terms');
+                        if (termsEl) termsEl.value = inv.payment_terms;
+                        const termsLabel = document.getElementById('termsDdLabel');
+                        if (termsLabel) termsLabel.textContent = inv.payment_terms;
+                    }
+
+                    // Salesperson
+                    if (inv.salesperson_name) {
+                        const spEl = document.getElementById('salesperson');
+                        if (spEl) spEl.value = inv.salesperson_name;
+                        const spLabel = document.getElementById('spDdLabel');
+                        if (spLabel) { spLabel.textContent = inv.salesperson_name; spLabel.style.color = '#333'; }
+                        // Set the selectedSalesperson variable so validation passes
+                        const matchedSp = salespersonsList.find(s => s.name === inv.salesperson_name);
+                        if (matchedSp) {
+                            selectedSalesperson = matchedSp.id;
+                        } else {
+                            selectedSalesperson = inv.salesperson_name;
+                        }
+                    }
+
+                    // Subject, Notes, Terms
+                    if (inv.subject) { const el = document.getElementById('subject'); if (el) el.value = inv.subject; }
+                    if (inv.notes) { const el = document.getElementById('customerNotes'); if (el) el.value = inv.notes; }
+                    if (inv.terms_conditions) { const el = document.getElementById('termsConditions'); if (el) el.value = inv.terms_conditions; }
+
+                    // Populate items
+                    if (inv.items && inv.items.length > 0) {
+                        const tbody = document.getElementById('itemsBody');
+                        tbody.innerHTML = '';
+                        inv.items.forEach((item, i) => {
+                            if (i > 0 || tbody.children.length === 0) {
+                                // Use addItemRow if available, else clone
+                                const addBtn = document.querySelector('.add-row-btn.primary');
+                                if (addBtn) addBtn.click();
+                            }
+                        });
+                        // Re-query rows after adding
+                        const rows = document.querySelectorAll('#itemsBody tr');
+                        inv.items.forEach((item, i) => {
+                            if (!rows[i]) return;
+                            const row = rows[i];
+                            const nameInput = row.querySelector('.item-picker-input');
+                            if (nameInput) nameInput.value = item.item_name || '';
+                            const qtyInput = row.querySelector('.qty-input');
+                            if (qtyInput) qtyInput.value = item.quantity || 1;
+                            const rateInput = row.querySelector('.rate-input');
+                            if (rateInput) rateInput.value = item.rate || 0;
+                            const amountCell = row.querySelector('.amount-cell');
+                            if (amountCell) amountCell.textContent = parseFloat(item.amount || 0).toFixed(2);
+                        });
+                    }
+
+                    // Set totals
+                    if (inv.discount && parseFloat(inv.discount) > 0) {
+                        document.getElementById('totalDiscInput').value = parseFloat(inv.discount);
+                        if (inv.discount_type === '₱') {
+                            document.getElementById('totalDiscToggle').dataset.type = '₱';
+                            document.getElementById('totalDiscToggle').textContent = '₱';
+                        }
+                    }
+                    if (inv.shipping_charges && parseFloat(inv.shipping_charges) > 0) {
+                        document.getElementById('shippingInput').value = parseFloat(inv.shipping_charges);
+                    }
+                    if (inv.adjustment && parseFloat(inv.adjustment) !== 0) {
+                        document.getElementById('adjustmentInput').value = parseFloat(inv.adjustment);
+                    }
+
+                    recalcTotals();
+                } catch (err) {
+                    console.error('Error loading invoice for edit:', err);
+                }
+            })();
+        }
     </script>
 </body>
 

@@ -423,7 +423,7 @@
                 </div>
                 <div class="header-actions">
                     <button class="btn-action" onclick="window.print()">🖨 Print</button>
-                    <button class="btn-action primary" onclick="editReceipt()">✏ Edit</button>
+                    <button id="detailEditBtn" class="btn-action primary" onclick="editReceipt()">✏ Edit</button>
                     <button class="btn-action danger" onclick="deleteReceipt()">🗑 Delete</button>
                 </div>
             </div>
@@ -570,6 +570,9 @@
         }
 
         function renderReceipt(r) {
+            // Hide edit button for voided receipts
+            const editBtn = document.getElementById('detailEditBtn');
+            if (editBtn) editBtn.style.display = (r.status || '').toUpperCase() === 'VOID' ? 'none' : '';
             // Title
             document.getElementById('pageTitle').textContent = r.receipt_number || 'Sales Receipt';
 
@@ -644,7 +647,9 @@
         }
 
         function editReceipt() {
-            alert('Edit functionality coming soon.');
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            if (id) window.location.href = '/new-sales-receipt.html?id=' + id;
         }
 
         async function deleteReceipt() {

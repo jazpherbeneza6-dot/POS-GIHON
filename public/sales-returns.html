@@ -97,27 +97,30 @@
         /* ===== STATUS BADGES ===== */
         .status-badge {
             display: inline-block;
-            padding: 3px 10px;
-            border-radius: 12px;
             font-size: 11px;
-            font-weight: 600;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
         .status-badge.draft {
-            background: #f0f0f0;
             color: #555;
         }
 
         .status-badge.approved {
-            background: #16a34a;
-            color: #fff;
+            color: #1a73e8;
         }
 
         .status-badge.closed {
-            background: #dc2626;
-            color: #fff;
+            color: #16a34a;
+        }
+
+        .status-badge.declined {
+            color: #dc2626;
+        }
+
+        .status-badge.received {
+            color: #16a34a;
         }
 
         /* ===== EMPTY STATE ===== */
@@ -680,6 +683,347 @@
             color: #888;
             flex-shrink: 0;
         }
+
+        /* === Filter Dropdown === */
+        .sr-filter-wrap {
+            position: relative;
+            display: inline-block;
+        }
+
+        .sr-filter-btn {
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0;
+            font-family: inherit;
+        }
+
+        .sr-filter-btn:hover {
+            color: #4285f4;
+        }
+
+        .sr-filter-arrow {
+            font-size: 12px;
+            color: #4285f4;
+            transition: transform 0.2s;
+        }
+
+        .sr-filter-arrow.open {
+            transform: rotate(180deg);
+        }
+
+        .sr-filter-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 6px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+            min-width: 240px;
+            z-index: 100;
+            padding: 8px 0;
+        }
+
+        .sr-filter-dropdown.open {
+            display: block;
+        }
+
+        .sr-filter-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+            transition: background 0.15s;
+        }
+
+        .sr-filter-option:hover {
+            background: #f5f8ff;
+        }
+
+        .sr-filter-option.active {
+            color: #4285f4;
+            font-weight: 600;
+        }
+
+        .sr-filter-star {
+            font-size: 18px;
+            color: #ccc;
+            cursor: pointer;
+        }
+
+        .sr-filter-star:hover {
+            color: #f5c518;
+        }
+
+        /* === Hamburger Menu === */
+        .sr-hamburger-wrap {
+            position: relative;
+            display: inline-block;
+        }
+
+        .sr-hamburger-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: #999;
+            padding: 2px 4px;
+            vertical-align: middle;
+            line-height: 1;
+        }
+
+        .sr-hamburger-btn:hover {
+            color: #4285f4;
+        }
+
+        .sr-hamburger-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 4px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            min-width: 200px;
+            z-index: 200;
+            padding: 4px 0;
+        }
+
+        .sr-hamburger-menu.open {
+            display: block;
+        }
+
+        .sr-hamburger-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #333;
+            transition: background 0.15s;
+        }
+
+        .sr-hamburger-item:hover {
+            background: #f5f8ff;
+        }
+
+        .sr-hamburger-item-icon {
+            font-size: 14px;
+            color: #888;
+        }
+
+        /* === Customize Columns Modal === */
+        .cc-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.35);
+            z-index: 1300;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .cc-overlay.open {
+            display: flex;
+        }
+
+        .cc-modal {
+            background: #fff;
+            border-radius: 10px;
+            width: 420px;
+            max-width: 90vw;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.22);
+        }
+
+        .cc-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 22px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cc-header-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cc-header-left .cc-icon {
+            font-size: 16px;
+            color: #888;
+        }
+
+        .cc-header-left h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .cc-header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .cc-close {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #e53935;
+            cursor: pointer;
+        }
+
+        .cc-search-wrap {
+            padding: 12px 22px;
+        }
+
+        .cc-search {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .cc-search:focus {
+            border-color: #4285f4;
+        }
+
+        .cc-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 22px;
+        }
+
+        .cc-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            margin-bottom: 6px;
+            border-radius: 6px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .cc-item.checked {
+            background: #e8f4fd;
+            border-color: #c5ddf5;
+        }
+
+        .cc-item.locked {
+            background: #f8f8f8;
+            border-color: #e5e5e5;
+        }
+
+        .cc-item:hover {
+            background: #f0f4ff;
+        }
+
+        .cc-drag {
+            color: #ccc;
+            cursor: grab;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+        .cc-checkbox {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            border: 2px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .cc-checkbox.checked {
+            background: #4285f4;
+            border-color: #4285f4;
+            color: white;
+            font-size: 12px;
+        }
+
+        .cc-lock {
+            color: #f5c518;
+            font-size: 14px;
+        }
+
+        .cc-label {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .cc-footer {
+            display: flex;
+            gap: 10px;
+            padding: 16px 22px;
+            border-top: 1px solid #eee;
+        }
+
+        .cc-btn-save {
+            padding: 9px 22px;
+            background: #4285f4;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .cc-btn-save:hover {
+            background: #3367d6;
+        }
+
+        .cc-btn-cancel {
+            padding: 9px 22px;
+            background: #f0f0f0;
+            color: #333;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .cc-btn-cancel:hover {
+            background: #e0e0e0;
+        }
     </style>
 </head>
 
@@ -693,7 +1037,22 @@
             <!-- LIST VIEW -->
             <div id="listView">
                 <div class="page-header" id="pageHeader" style="display:none;">
-                    <span class="page-title">All Sales Returns</span>
+                    <div class="sr-filter-wrap">
+                        <button class="sr-filter-btn" onclick="toggleSrFilterDropdown()">
+                            <span id="srFilterTitle">All Sales Returns</span>
+                            <span class="sr-filter-arrow" id="srFilterArrow">▾</span>
+                        </button>
+                        <div class="sr-filter-dropdown" id="srFilterDropdown">
+                            <div class="sr-filter-option active" onclick="applySrFilter('all')">All <span
+                                    class="sr-filter-star">☆</span></div>
+                            <div class="sr-filter-option" onclick="applySrFilter('DECLINED')">Declined <span
+                                    class="sr-filter-star">☆</span></div>
+                            <div class="sr-filter-option" onclick="applySrFilter('DRAFT')">Draft <span
+                                    class="sr-filter-star">☆</span></div>
+                            <div class="sr-filter-option" onclick="applySrFilter('APPROVED')">Approved <span
+                                    class="sr-filter-star">☆</span></div>
+                        </div>
+                    </div>
                     <div class="global-search-container">
                         <span class="global-search-icon">🔍</span>
                         <input type="text" class="global-search-input" id="retSearchInput"
@@ -704,12 +1063,29 @@
                 <table class="returns-table" id="returnsTable" style="display:none;">
                     <thead>
                         <tr>
+                            <th style="width:30px;padding:12px 4px 12px 12px;">
+                                <div class="sr-hamburger-wrap">
+                                    <button class="sr-hamburger-btn"
+                                        onclick="event.stopPropagation();toggleHamburgerMenu()"
+                                        title="Table options">☰</button>
+                                    <div class="sr-hamburger-menu" id="srHamburgerMenu">
+                                        <div class="sr-hamburger-item" onclick="openCustomizeColumns()"><span
+                                                class="sr-hamburger-item-icon">⚙</span> Customize Columns</div>
+                                        <div class="sr-hamburger-item" onclick="toggleWrapText()"><span
+                                                class="sr-hamburger-item-icon">↩</span> <span id="wrapTextLabel">Wrap
+                                                Text</span></div>
+                                    </div>
+                                </div>
+                            </th>
                             <th>DATE</th>
                             <th>RMA#</th>
                             <th>SALES ORDER#</th>
                             <th>CUSTOMER NAME</th>
                             <th>STATUS</th>
-                            <th>WAREHOUSE</th>
+                            <th>RECEIVE STATUS</th>
+                            <th>REFUND STATUS</th>
+                            <th>RETURNED</th>
+                            <th>AMOUNT REFUNDED</th>
                         </tr>
                     </thead>
                     <tbody id="returnsBody">
@@ -775,6 +1151,76 @@
             return 'PHP' + num.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
+        let currentSrFilter = 'all';
+
+        function toggleSrFilterDropdown() {
+            const dd = document.getElementById('srFilterDropdown');
+            const arrow = document.getElementById('srFilterArrow');
+            dd.classList.toggle('open');
+            arrow.classList.toggle('open');
+        }
+
+        function applySrFilter(status) {
+            currentSrFilter = status;
+            const titleEl = document.getElementById('srFilterTitle');
+            if (status === 'all') {
+                titleEl.textContent = 'All Sales Returns';
+            } else {
+                titleEl.textContent = status.charAt(0).toUpperCase() + status.slice(1).toLowerCase() + ' Sales Returns';
+            }
+            // Update active state
+            document.querySelectorAll('.sr-filter-option').forEach(opt => opt.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            // Close dropdown
+            document.getElementById('srFilterDropdown').classList.remove('open');
+            document.getElementById('srFilterArrow').classList.remove('open');
+            // Apply filter
+            filterAndRenderReturns();
+        }
+
+        function filterAndRenderReturns() {
+            let filtered = allReturns;
+            if (currentSrFilter !== 'all') {
+                filtered = allReturns.filter(r => (r.status || '').toUpperCase() === currentSrFilter.toUpperCase());
+            }
+            if (filtered.length === 0) {
+                document.getElementById('returnsTable').style.display = 'none';
+                document.getElementById('retPaginationContainer').innerHTML = '<div style="text-align:center;padding:40px;color:#888;">No sales returns found.</div>';
+                return;
+            }
+            document.getElementById('returnsTable').style.display = 'table';
+            function renderRetPage(pageData) {
+                document.getElementById('returnsBody').innerHTML = pageData.map(ret => {
+                    const retAmt = parseFloat(ret.total_return_qty || 0);
+                    return `<tr onclick="viewReturn(${ret.id})" style="cursor:pointer;">
+                        <td></td>
+                        <td>${formatDate(ret.return_date)}</td>
+                        <td><a class="rma-link" href="#" onclick="event.preventDefault();viewReturn(${ret.id})">${ret.rma_number}</a></td>
+                        <td>${ret.sales_order_number || 'N/A'}</td>
+                        <td>${ret.customer_name || 'N/A'}</td>
+                        <td><span class="status-badge ${(ret.status || '').toLowerCase()}">${ret.status || 'DRAFT'}</span></td>
+                        <td>${ret.receive_status ? '<span style="color:#16a34a;font-weight:500;">' + ret.receive_status + '</span>' : ''}</td>
+                        <td>${ret.refund_status ? '<span style="color:' + (ret.refund_status.toUpperCase() === 'REFUNDED' ? '#16a34a' : '#e37400') + ';font-weight:500;">' + ret.refund_status + '</span>' : ''}</td>
+                        <td>${retAmt.toFixed(2)}</td>
+                        <td>${formatCurrency(0)}</td>
+                    </tr>`;
+                }).join('');
+            }
+            window.retPager = Pagination.create({
+                data: filtered, perPage: 14, containerId: 'retPaginationContainer',
+                onPageChange: function (pageData) { renderRetPage(pageData); }
+            });
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (e) {
+            const wrap = document.querySelector('.sr-filter-wrap');
+            if (wrap && !wrap.contains(e.target)) {
+                document.getElementById('srFilterDropdown').classList.remove('open');
+                document.getElementById('srFilterArrow').classList.remove('open');
+            }
+        });
+
         function searchReturns() {
             const query = (document.getElementById('retSearchInput').value || '').toLowerCase();
             if (!query) { loadReturns(); return; }
@@ -791,16 +1237,22 @@
             }
             document.getElementById('returnsTable').style.display = 'table';
             function renderPage(pageData) {
-                document.getElementById('returnsBody').innerHTML = pageData.map(ret => `
-                    <tr onclick="viewReturn(${ret.id})">
+                document.getElementById('returnsBody').innerHTML = pageData.map(ret => {
+                    const retAmt = parseFloat(ret.total_return_qty || 0);
+                    const isClosed = (ret.status || '').toUpperCase() === 'CLOSED';
+                    return `<tr onclick="viewReturn(${ret.id})" style="cursor:pointer;">
+                        <td></td>
                         <td>${formatDate(ret.return_date)}</td>
                         <td><a class="rma-link" href="#" onclick="event.preventDefault();viewReturn(${ret.id})">${ret.rma_number}</a></td>
                         <td>${ret.sales_order_number || 'N/A'}</td>
                         <td>${ret.customer_name || 'N/A'}</td>
                         <td><span class="status-badge ${(ret.status || '').toLowerCase()}">${ret.status || 'DRAFT'}</span></td>
-                        <td>${ret.warehouse_location || 'Head Office'}</td>
-                    </tr>
-                `).join('');
+                        <td>${ret.receive_status ? '<span style="color:#16a34a;font-weight:500;">' + ret.receive_status + '</span>' : ''}</td>
+                        <td>${ret.refund_status ? '<span style="color:' + (ret.refund_status.toUpperCase() === 'REFUNDED' ? '#16a34a' : '#e37400') + ';font-weight:500;">' + ret.refund_status + '</span>' : ''}</td>
+                        <td>${retAmt.toFixed(2)}</td>
+                        <td>${formatCurrency(0)}</td>
+                    </tr>`;
+                }).join('');
             }
             window.retPager = Pagination.create({
                 data: filtered, perPage: 14, containerId: 'retPaginationContainer',
@@ -828,16 +1280,22 @@
 
                 function renderRetPage(pageData) {
                     const tbody = document.getElementById('returnsBody');
-                    tbody.innerHTML = pageData.map(ret => `
-                        <tr onclick="viewReturn(${ret.id})">
+                    tbody.innerHTML = pageData.map(ret => {
+                        const retAmt = parseFloat(ret.total_return_qty || 0);
+                        const isClosed = (ret.status || '').toUpperCase() === 'CLOSED';
+                        return `<tr onclick="viewReturn(${ret.id})" style="cursor:pointer;">
+                            <td></td>
                             <td>${formatDate(ret.return_date)}</td>
                             <td><a class="rma-link" href="#" onclick="event.preventDefault();viewReturn(${ret.id})">${ret.rma_number}</a></td>
                             <td>${ret.sales_order_number || 'N/A'}</td>
                             <td>${ret.customer_name || 'N/A'}</td>
                             <td><span class="status-badge ${(ret.status || '').toLowerCase()}">${ret.status || 'DRAFT'}</span></td>
-                            <td>${ret.warehouse_location || 'Head Office'}</td>
-                        </tr>
-                    `).join('');
+                            <td>${ret.receive_status ? '<span style="color:#16a34a;font-weight:500;">' + ret.receive_status + '</span>' : ''}</td>
+                            <td>${ret.refund_status ? '<span style="color:' + (ret.refund_status.toUpperCase() === 'REFUNDED' ? '#16a34a' : '#e37400') + ';font-weight:500;">' + ret.refund_status + '</span>' : ''}</td>
+                            <td>${retAmt.toFixed(2)}</td>
+                            <td>${formatCurrency(0)}</td>
+                        </tr>`;
+                    }).join('');
                 }
 
                 if (!window.retPager) {
@@ -871,7 +1329,27 @@
                 if (!res.ok) return;
                 const ret = await res.json();
                 currentDetail = ret;
-                renderDetail(ret);
+
+                // Fetch associated sales order info
+                let soData = null;
+                if (ret.sales_order_id) {
+                    try {
+                        const soRes = await fetch('/api/sales-orders/' + ret.sales_order_id);
+                        if (soRes.ok) soData = await soRes.json();
+                    } catch (e) { }
+                }
+
+                // Check if credit note already exists for this return
+                let hasCreditNote = false;
+                try {
+                    const cnRes = await fetch('/api/credit-notes/by-return/' + returnId);
+                    if (cnRes.ok) {
+                        const cnList = await cnRes.json();
+                        hasCreditNote = cnList.length > 0;
+                    }
+                } catch (e) { }
+
+                renderDetail(ret, soData, hasCreditNote);
             } catch (err) {
                 console.error('Error loading return detail:', err);
             }
@@ -903,7 +1381,7 @@
             }).join('');
         }
 
-        function renderDetail(ret) {
+        function renderDetail(ret, soData, hasCreditNote) {
             const panel = document.getElementById('srRightPanel');
             const items = ret.items || [];
             const status = (ret.status || 'DRAFT').toUpperCase();
@@ -922,8 +1400,7 @@
                             ${item.item_name}
                         </td>
                         <td>
-                            <div class="sr-qty-returned">${returnQty} g  Returned</div>
-                            <div class="sr-qty-received">${returnQty} g  Received</div>
+                            <div class="sr-qty-returned">${returnQty} pcs  Returned</div>
                         </td>
                         <td style="text-align:right;">${formatCurrency(rate)}</td>
                         <td style="text-align:right;">${formatCurrency(amount)}</td>
@@ -931,37 +1408,92 @@
                 `;
             }).join('');
 
-            const receiveCount = status === 'APPROVED' ? 1 : 0;
-            const receiveStatus = status === 'APPROVED' ? '<span class="sr-receive-status">Received</span>' : '<span style="color:#888;">Pending</span>';
+            const isClosed = status === 'CLOSED';
+            const hasReceiveStatus = !!(ret.receive_status && ret.receive_status.trim());
+            const showReceiveStatus = hasReceiveStatus;
 
             panel.innerHTML = `
                 <div class="sr-right-header">
-                    <div class="sr-right-header-left">
-                        <span class="sr-right-rma">${ret.rma_number}</span>
-                        <span class="status-badge ${statusCls}">${status}</span>
+                    <div class="sr-right-header-left" style="flex-direction:column;align-items:flex-start;gap:2px;">
+                        ${ret.sales_order_number ? '<span style="font-size:11px;color:#888;">From sales order: ' + ret.sales_order_number + '</span>' : ''}
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <button onclick="backToList()" style="background:none;border:none;cursor:pointer;font-size:16px;color:#666;padding:0;">‹</button>
+                            <span class="sr-right-rma">${ret.rma_number}</span>
+                            <span class="status-badge ${statusCls}">${status}</span>
+                        </div>
                     </div>
                     <div class="sr-right-header-actions">
                         <button title="Comments">💬</button>
-                        <button title="Close" style="font-size:20px;" onclick="backToList()">✕</button>
+                        <button title="Close" style="font-size:20px;color:#e53935;" onclick="backToList()">✕</button>
                     </div>
                 </div>
 
                 <div class="sr-action-bar">
-                    <button class="sr-action-btn">✏️ Edit</button>
-                    <button class="sr-action-btn" onclick="createCreditNote()">📋 Create Credit Note</button>
+                    <button class="sr-action-btn" onclick="editSalesReturn()">✏️ Edit</button>
+                    ${status === 'DRAFT' ? '<button class="sr-action-btn" onclick="markAsApproved()" style="font-weight:600;">Mark as Approved</button>' : ''}
+                    ${status === 'APPROVED' && !hasReceiveStatus ? '<button class="sr-action-btn" onclick="receiveSalesReturn()" style="font-weight:600;">📦 Receive</button>' : ''}
+                    ${((status === 'APPROVED' && hasReceiveStatus) || status === 'CLOSED') && !hasCreditNote ? '<button class="sr-action-btn" onclick="createCreditNote()">📋 Create Credit Note</button>' : ''}
                     <button class="sr-action-btn">📄 PDF/Print ▾</button>
                     <div class="sr-action-separator"></div>
-                    <button class="sr-action-btn">⋯</button>
+                    <div style="position:relative;">
+                        <button class="sr-action-btn" onclick="toggleSrKebab(event)">⋯</button>
+                        <div id="srKebabMenu" style="display:none;position:absolute;top:100%;right:0;background:#fff;border:1px solid #e5e7eb;border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,0.12);min-width:160px;z-index:1000;padding:4px 0;margin-top:4px;">
+                            ${status === 'APPROVED' ? '<button onclick="markAsDecline()" style="display:flex;align-items:center;gap:8px;width:100%;padding:8px 16px;border:none;background:none;color:#e37400;font-size:13px;cursor:pointer;font-family:inherit;text-align:left;" onmouseover="this.style.background=\'#fef9e7\'" onmouseout="this.style.background=\'none\'">⛔ Mark as Decline</button>' : ''}
+                            <button onclick="deleteSalesReturn()" style="display:flex;align-items:center;gap:8px;width:100%;padding:8px 16px;border:none;background:none;color:#dc2626;font-size:13px;cursor:pointer;font-family:inherit;text-align:left;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'">🗑️ Delete</button>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="sr-tabs">
-                    <div class="sr-tab active">Receives <span class="sr-tab-count">${receiveCount}</span></div>
-                    <div class="sr-tab">Sales Orders <span class="sr-tab-count">1</span></div>
+                    ${hasReceiveStatus ? '<div class="sr-tab active" onclick="switchSrTab(\'receives\')" style="cursor:pointer;" id="tabReceives">Receives <span class="sr-tab-count">1</span></div>' : ''}
+                    <div class="sr-tab ${hasReceiveStatus ? '' : 'active'}" onclick="switchSrTab('salesorders')" style="cursor:pointer;" id="tabSalesOrders">Sales Orders <span class="sr-tab-count">1</span></div>
                     <div style="flex:1;"></div>
-                    <div class="sr-tab" style="margin-left:auto; display:flex; align-items:center; gap:4px; border-bottom:none; cursor:default;font-size:12px;color:#666;">
-                        ▶
+                    <div class="sr-tab" style="margin-left:auto; display:flex; align-items:center; gap:4px; border-bottom:none; cursor:pointer;font-size:12px;color:#666;" onclick="toggleActiveTab()">
+                        <span id="soToggleArrow">▼</span>
                     </div>
                 </div>
+
+                ${hasReceiveStatus ? `
+                <div id="receivesSection" style="background:white;padding:0 24px 16px;">
+                    <table style="width:100%;border-collapse:collapse;">
+                        <thead>
+                            <tr>
+                                <th style="text-align:left;padding:10px 12px;font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid #e9ecef;">Receive#</th>
+                                <th style="text-align:left;padding:10px 12px;font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid #e9ecef;">Received On</th>
+                                <th style="width:40px;border-bottom:2px solid #e9ecef;"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding:12px;font-size:13px;"><a href="javascript:void(0)" style="color:#4285f4;text-decoration:none;font-weight:500;">RR-${String(ret.id).padStart(5, '0')}</a></td>
+                                <td style="padding:12px;font-size:13px;color:#333;">${formatDate(new Date())}</td>
+                                <td style="padding:12px;text-align:center;"><button onclick="deleteReceive()" style="background:none;border:none;cursor:pointer;font-size:16px;color:#999;" title="Delete">🗑</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                ` : ''}
+
+                ${soData ? `
+                <div id="soDetailsSection" style="${hasReceiveStatus ? 'display:none;' : ''}background:white;padding:0 24px 16px;">
+                    <table style="width:100%;border-collapse:collapse;">
+                        <thead>
+                            <tr>
+                                <th style="text-align:left;padding:10px 12px;font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid #e9ecef;">Sales Order#</th>
+                                <th style="text-align:left;padding:10px 12px;font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid #e9ecef;">Date</th>
+                                <th style="text-align:left;padding:10px 12px;font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid #e9ecef;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding:12px;font-size:13px;"><a href="/sales-orders.html" style="color:#4285f4;text-decoration:none;font-weight:500;">${soData.order_number || ret.sales_order_number}</a></td>
+                                <td style="padding:12px;font-size:13px;color:#333;">${formatDate(soData.order_date || soData.created_at)}</td>
+                                <td style="padding:12px;font-size:13px;color:${(soData.status || '').toUpperCase() === 'CLOSED' ? '#16a34a' : '#333'};font-weight:500;">${(soData.status || '').toUpperCase()}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                ` : ''}
 
                 <div style="display:flex;align-items:center;justify-content:flex-end;padding:8px 24px;background:white;">
                     <div class="sr-pdf-toggle">
@@ -989,10 +1521,10 @@
                                     <span class="sr-status-label">Return Status</span>
                                     <span class="status-badge ${statusCls}">${status}</span>
                                 </div>
-                                <div class="sr-status-row">
+                                ${showReceiveStatus ? `<div class="sr-status-row">
                                     <span class="sr-status-label">Receive Status</span>
-                                    ${receiveStatus}
-                                </div>
+                                    <span class="sr-receive-status">${ret.receive_status || ''}</span>
+                                </div>` : ''}
                             </div>
                         </div>
 
@@ -1026,6 +1558,320 @@
             selectedReturnId = null;
         }
 
+        function editSalesReturn() {
+            if (!currentDetail) return;
+            const ret = currentDetail;
+            const panel = document.getElementById('srRightPanel');
+            const items = ret.items || [];
+
+            const itemRows = items.map((item, idx) => {
+                const shippedQty = parseFloat(item.shipped_quantity || item.return_quantity || 0);
+                const alreadyReturned = parseFloat(item.returned_quantity || 0);
+                const returnQty = parseFloat(item.return_quantity || 0);
+                const sku = item.item_id || '';
+                return `<tr data-eidx="${idx}">
+                    <td>
+                        <div style="font-size:14px;font-weight:500;color:#333;">${item.item_name || ''}</div>
+                        ${sku ? '<div style="font-size:12px;color:#1a73e8;margin-top:2px;">SKU: ' + sku + '</div>' : ''}
+                    </td>
+                    <td style="text-align:center;">${shippedQty}</td>
+                    <td style="text-align:center;">${alreadyReturned}</td>
+                    <td>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <input type="number" class="edit-return-qty" value="${returnQty}" min="0" data-eidx="${idx}" style="width:80px;padding:6px 10px;border:1px solid #d0d5dd;border-radius:4px;font-size:14px;text-align:right;outline:none;font-family:inherit;" onchange="updateEditTotalItems()">
+                            <button onclick="document.querySelector('tr[data-eidx=\\'${idx}\\']').remove();updateEditTotalItems();" style="background:none;border:none;color:#e53935;font-size:18px;cursor:pointer;padding:4px;" title="Remove">✕</button>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+
+            panel.innerHTML = `
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:18px 32px;border-bottom:1px solid #e9ecef;background:#fff;">
+                    <h1 style="font-size:20px;font-weight:500;color:#333;margin:0;">Edit Sales Return</h1>
+                    <button onclick="viewReturn(${ret.id})" style="font-size:24px;background:none;border:none;cursor:pointer;color:#999;padding:4px 8px;line-height:1;" title="Close">×</button>
+                </div>
+                <div style="padding:24px 40px;flex:1;overflow-y:auto;">
+                    <div style="display:grid;grid-template-columns:150px 280px;gap:14px 20px;align-items:center;margin-bottom:12px;">
+                        <label style="font-size:13px;color:#dc2626;font-weight:500;">RMA#*</label>
+                        <div style="position:relative;">
+                            <input type="text" id="editRma" value="${ret.rma_number || ''}" readonly style="padding:9px 12px;border:1px solid #d0d5dd;border-radius:4px;font-size:13px;color:#333;background:#fff;outline:none;width:100%;box-sizing:border-box;">
+                            <span style="position:absolute;right:8px;top:50%;transform:translateY(-50%);color:#1a73e8;font-size:14px;cursor:pointer;">⚙</span>
+                        </div>
+                        <label style="font-size:13px;color:#dc2626;font-weight:500;">Date*</label>
+                        <input type="text" id="editDate" value="${formatDate(ret.return_date)}" readonly style="padding:9px 12px;border:1px solid #d0d5dd;border-radius:4px;font-size:13px;color:#333;background:#fff;outline:none;width:100%;box-sizing:border-box;">
+                        <label style="font-size:13px;color:#dc2626;font-weight:500;">Warehouse Location*</label>
+                        <select id="editWarehouse" style="padding:9px 12px;border:1px solid #d0d5dd;border-radius:4px;font-size:13px;color:#333;background:#fff;outline:none;width:100%;box-sizing:border-box;">
+                            <option value="Head Office" ${(ret.warehouse_location || '') === 'Head Office' ? 'selected' : ''}>Head Office</option>
+                        </select>
+                        <label style="font-size:13px;color:#333;font-weight:500;">Reason</label>
+                        <input type="text" id="editReason" value="${ret.reason || ''}" style="padding:9px 12px;border:1px solid #d0d5dd;border-radius:4px;font-size:13px;color:#333;background:#fff;outline:none;width:100%;box-sizing:border-box;">
+                    </div>
+                    <div style="margin:16px 0 24px 170px;display:flex;align-items:center;gap:8px;font-size:13px;color:#555;">
+                        <input type="checkbox" id="editCreditOnly" ${ret.credit_only ? 'checked' : ''} style="width:15px;height:15px;">
+                        <label for="editCreditOnly">This sales return contains credit-only goods</label>
+                        <span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;border:1px solid #ccc;font-size:11px;color:#999;cursor:help;">?</span>
+                    </div>
+                    <table style="width:100%;border-collapse:collapse;">
+                        <thead>
+                            <tr>
+                                <th style="background:#fafbfc;padding:10px 14px;font-size:10px;font-weight:700;color:#555;text-transform:uppercase;text-align:left;border-top:1px solid #e0e0e0;border-bottom:1px solid #e0e0e0;letter-spacing:0.5px;width:30%;">Items & Description</th>
+                                <th style="background:#fafbfc;padding:10px 14px;font-size:10px;font-weight:700;color:#555;text-transform:uppercase;text-align:center;border-top:1px solid #e0e0e0;border-bottom:1px solid #e0e0e0;letter-spacing:0.5px;width:15%;">Shipped / Fulfilled</th>
+                                <th style="background:#fafbfc;padding:10px 14px;font-size:10px;font-weight:700;color:#555;text-transform:uppercase;text-align:center;border-top:1px solid #e0e0e0;border-bottom:1px solid #e0e0e0;letter-spacing:0.5px;width:12%;">Returned</th>
+                                <th style="background:#fafbfc;padding:10px 14px;font-size:10px;font-weight:700;color:#555;text-transform:uppercase;text-align:left;border-top:1px solid #e0e0e0;border-bottom:1px solid #e0e0e0;letter-spacing:0.5px;width:25%;">Return Quantity</th>
+                                <th style="background:#fafbfc;padding:10px 14px;border-top:1px solid #e0e0e0;border-bottom:1px solid #e0e0e0;width:5%;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="editItemsBody">
+                            ${itemRows || '<tr><td colspan="5" style="text-align:center;padding:30px;color:#999;">No items</td></tr>'}
+                        </tbody>
+                    </table>
+                </div>
+                <div style="position:sticky;bottom:0;background:#fff;border-top:1px solid #e0e0e0;padding:14px 40px;display:flex;align-items:center;gap:10px;">
+                    <button onclick="saveEditReturn('${ret.status || 'DRAFT'}')" style="padding:8px 20px;border-radius:4px;font-size:13px;cursor:pointer;font-weight:500;background:#1a73e8;color:#fff;border:1px solid #1a73e8;font-family:inherit;">Save</button>
+                    ${(ret.status || 'DRAFT').toUpperCase() === 'DRAFT' ? '<button onclick="saveEditReturn(\'APPROVED\')" style="padding:8px 20px;border-radius:4px;font-size:13px;cursor:pointer;font-weight:500;border:1px solid #d0d5dd;background:#fff;color:#333;font-family:inherit;">Save and Approve</button>' : ''}
+                    <button onclick="viewReturn(${ret.id})" style="padding:8px 20px;border-radius:4px;font-size:13px;cursor:pointer;font-weight:500;background:#333;color:#fff;border:1px solid #333;font-family:inherit;">Cancel</button>
+                    <span id="editTotalItems" style="margin-left:auto;font-size:13px;color:#555;font-weight:500;">Total Items : 0</span>
+                </div>
+            `;
+            updateEditTotalItems();
+        }
+
+        function updateEditTotalItems() {
+            let total = 0;
+            document.querySelectorAll('.edit-return-qty').forEach(inp => {
+                total += parseFloat(inp.value || 0);
+            });
+            const el = document.getElementById('editTotalItems');
+            if (el) el.textContent = 'Total Items : ' + total;
+        }
+
+        function receiveSalesReturn() {
+            if (!currentDetail) return;
+            const ret = currentDetail;
+            const panel = document.getElementById('srRightPanel');
+            const items = ret.items || [];
+
+            const itemRows = items.map((item, idx) => {
+                const returnQty = parseFloat(item.return_quantity || 0);
+                const receivedQty = 0;
+                const sku = item.item_id || '';
+                return `<tr data-ridx="${idx}">
+                    <td style="padding:12px 14px;font-size:13px;color:#333;border-bottom:1px solid #f0f0f0;vertical-align:top;">
+                        <div style="font-size:14px;font-weight:500;color:#333;">${item.item_name || ''}</div>
+                        ${sku ? '<div style="font-size:12px;color:#1a73e8;margin-top:2px;">SKU: ' + sku + '</div>' : ''}
+                    </td>
+                    <td style="padding:12px 14px;font-size:13px;color:#333;border-bottom:1px solid #f0f0f0;text-align:center;">${returnQty}(pcs)</td>
+                    <td style="padding:12px 14px;font-size:13px;color:#333;border-bottom:1px solid #f0f0f0;text-align:center;">${receivedQty}(pcs)</td>
+                    <td style="padding:12px 14px;font-size:13px;color:#333;border-bottom:1px solid #f0f0f0;">
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <input type="number" class="receive-qty-input" value="${returnQty}" min="0" max="${returnQty}" data-ridx="${idx}" style="width:80px;padding:6px 10px;border:1px solid #d0d5dd;border-radius:4px;font-size:14px;text-align:right;outline:none;font-family:inherit;" onchange="updateReceiveTotalItems()">
+                            <button onclick="document.querySelector('tr[data-ridx=\\'${idx}\\']').remove();updateReceiveTotalItems();" style="background:none;border:none;color:#1a73e8;font-size:16px;cursor:pointer;padding:4px;" title="Remove">⊘</button>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+
+            panel.innerHTML = `
+                <div style="padding:16px 24px;border-bottom:1px solid #e9ecef;background:#fff;">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                        <a href="javascript:void(0)" onclick="viewReturn(${ret.id})" style="color:#1a73e8;text-decoration:none;font-size:13px;font-weight:500;">< ${ret.rma_number}</a>
+                    </div>
+                    <h2 style="font-size:18px;font-weight:500;color:#333;margin:0;">New Sales Return Receipt</h2>
+                </div>
+
+                <div style="padding:24px 40px;flex:1;overflow-y:auto;">
+                    <div style="display:grid;grid-template-columns:150px 280px;gap:14px 20px;align-items:center;margin-bottom:24px;">
+                        <label style="font-size:13px;color:#dc2626;font-weight:500;">Receive Date*</label>
+                        <input type="text" id="receiveDate" value="${formatDate(new Date())}" readonly style="padding:9px 12px;border:1px solid #d0d5dd;border-radius:4px;font-size:13px;color:#333;background:#fff;outline:none;width:100%;box-sizing:border-box;">
+                    </div>
+
+
+
+                    <table style="width:100%;border-collapse:collapse;">
+                        <thead>
+                            <tr>
+                                <th style="background:#fafbfc;padding:10px 14px;font-size:10px;font-weight:700;color:#555;text-transform:uppercase;text-align:left;border-top:1px solid #e0e0e0;border-bottom:1px solid #e0e0e0;letter-spacing:0.5px;width:35%;">Items & Description</th>
+                                <th style="background:#fafbfc;padding:10px 14px;font-size:10px;font-weight:700;color:#555;text-transform:uppercase;text-align:center;border-top:1px solid #e0e0e0;border-bottom:1px solid #e0e0e0;letter-spacing:0.5px;width:15%;">Returned</th>
+                                <th style="background:#fafbfc;padding:10px 14px;font-size:10px;font-weight:700;color:#555;text-transform:uppercase;text-align:center;border-top:1px solid #e0e0e0;border-bottom:1px solid #e0e0e0;letter-spacing:0.5px;width:15%;">Received</th>
+                                <th style="background:#fafbfc;padding:10px 14px;font-size:10px;font-weight:700;color:#555;text-transform:uppercase;text-align:left;border-top:1px solid #e0e0e0;border-bottom:1px solid #e0e0e0;letter-spacing:0.5px;width:25%;">Quantity to Receive</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${itemRows}
+                        </tbody>
+                    </table>
+
+                    <div style="margin-top:16px;font-size:13px;font-weight:500;color:#333;" id="receiveTotalItems">Total Items : 0</div>
+
+                    <div style="margin-top:24px;">
+                        <label style="font-size:13px;color:#333;font-weight:500;display:block;margin-bottom:8px;">Notes (For Internal Use)</label>
+                        <textarea id="receiveNotes" rows="4" style="width:100%;border:1px solid #d0d5dd;border-radius:4px;font-size:13px;font-family:inherit;padding:10px;resize:vertical;outline:none;box-sizing:border-box;" placeholder=""></textarea>
+                    </div>
+                </div>
+
+                <div style="position:sticky;bottom:0;background:#fff;border-top:1px solid #e0e0e0;padding:14px 40px;display:flex;align-items:center;gap:10px;">
+                    <button onclick="processReceive()" style="padding:8px 20px;border-radius:4px;font-size:13px;cursor:pointer;font-weight:500;background:#16a34a;color:#fff;border:1px solid #16a34a;font-family:inherit;">Receive</button>
+                    <button onclick="viewReturn(${ret.id})" style="padding:8px 20px;border-radius:4px;font-size:13px;cursor:pointer;font-weight:500;border:1px solid #d0d5dd;background:#fff;color:#333;font-family:inherit;">Cancel</button>
+                </div>
+            `;
+            updateReceiveTotalItems();
+        }
+
+        function updateReceiveTotalItems() {
+            let total = 0;
+            document.querySelectorAll('.receive-qty-input').forEach(inp => {
+                total += parseFloat(inp.value || 0);
+            });
+            const el = document.getElementById('receiveTotalItems');
+            if (el) el.textContent = 'Total Items : ' + total;
+        }
+
+        async function processReceive() {
+            if (!currentDetail || !selectedReturnId) return;
+            const items = currentDetail.items || [];
+            const receiveQtys = [];
+
+            document.querySelectorAll('.receive-qty-input').forEach(inp => {
+                const idx = parseInt(inp.dataset.ridx);
+                const qty = parseFloat(inp.value || 0);
+                if (qty > 0 && items[idx]) {
+                    receiveQtys.push({ item_id: items[idx].item_id, qty: qty });
+                }
+            });
+
+            if (receiveQtys.length === 0) {
+                alert('Please enter quantity to receive.');
+                return;
+            }
+
+            try {
+                // 1. Update each item's stock (add returned qty back to inventory)
+                for (const rq of receiveQtys) {
+                    if (rq.item_id) {
+                        try {
+                            // Fetch current stock
+                            const itemRes = await fetch('/api/items/' + rq.item_id);
+                            if (itemRes.ok) {
+                                const itemData = await itemRes.json();
+                                const currentStock = parseFloat(itemData.stock_quantity || 0);
+                                const newStock = currentStock + rq.qty;
+                                // Update stock
+                                await fetch('/api/items/' + rq.item_id, {
+                                    method: 'PUT',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ stock_quantity: newStock, _partialUpdate: true })
+                                });
+                            }
+                        } catch (e) { console.error('Stock update error:', e); }
+                    }
+                }
+
+                // 2. Update sales return status to CLOSED and receive_status to RECEIVED
+                const res = await fetch('/api/sales-returns/' + selectedReturnId, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ receive_status: 'RECEIVED', refund_status: '' })
+                });
+
+                if (res.ok) {
+                    await loadReturns();
+                    viewReturn(selectedReturnId);
+                } else {
+                    alert('Failed to process receive.');
+                }
+            } catch (e) {
+                console.error('Receive error:', e);
+                alert('Failed to process receive.');
+            }
+        }
+
+        async function markAsDecline() {
+            if (!selectedReturnId) return;
+            if (!confirm('Are you sure you want to decline this sales return?')) return;
+            try {
+                const res = await fetch('/api/sales-returns/' + selectedReturnId, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'DECLINED', receive_status: '', refund_status: '' })
+                });
+                if (res.ok) {
+                    await loadReturns();
+                    viewReturn(selectedReturnId);
+                } else {
+                    alert('Failed to decline.');
+                }
+            } catch (e) {
+                console.error('Error declining:', e);
+                alert('Failed to decline.');
+            }
+        }
+
+        async function saveEditReturn(status) {
+            const rmaNumber = document.getElementById('editRma').value;
+            const reason = document.getElementById('editReason').value;
+            const creditOnly = document.getElementById('editCreditOnly').checked;
+            const warehouseLocation = document.getElementById('editWarehouse').value;
+
+            const items = [];
+            const retItems = currentDetail.items || [];
+            document.querySelectorAll('.edit-return-qty').forEach(inp => {
+                const idx = parseInt(inp.dataset.eidx);
+                const item = retItems[idx];
+                if (!item) return;
+                const returnQty = parseFloat(inp.value || 0);
+                if (returnQty <= 0) return;
+                items.push({
+                    item_name: item.item_name,
+                    item_id: item.item_id || null,
+                    shipped_quantity: parseFloat(item.shipped_quantity || item.return_quantity || 0),
+                    returned_quantity: 0,
+                    return_quantity: returnQty,
+                    rate: parseFloat(item.rate || 0),
+                    amount: returnQty * parseFloat(item.rate || 0)
+                });
+            });
+
+            if (items.length === 0) {
+                alert('Please add at least one item with a return quantity.');
+                return;
+            }
+
+            try {
+                // Delete old and re-create with same RMA
+                await fetch('/api/sales-returns/' + selectedReturnId, { method: 'DELETE' });
+                const body = {
+                    rma_number: rmaNumber,
+                    return_date: currentDetail.return_date || new Date().toISOString(),
+                    warehouse_location: warehouseLocation,
+                    reason: reason,
+                    credit_only: creditOnly,
+                    sales_order_id: currentDetail.sales_order_id,
+                    sales_order_number: currentDetail.sales_order_number || '',
+                    customer_name: currentDetail.customer_name || '',
+                    status: status,
+                    receive_status: (status === 'DRAFT' || status === 'APPROVED') ? '' : (currentDetail.receive_status || ''),
+                    refund_status: (status === 'DRAFT' || status === 'APPROVED') ? '' : (currentDetail.refund_status || ''),
+                    items: items
+                };
+                const res = await fetch('/api/sales-returns', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                if (res.ok) {
+                    const result = await res.json();
+                    selectedReturnId = result.id;
+                    await loadReturns();
+                    viewReturn(result.id);
+                } else {
+                    alert('Failed to save.');
+                }
+            } catch (e) {
+                console.error('Edit save error:', e);
+                alert('Failed to save.');
+            }
+        }
+
         // Create Credit Note from Sales Return
         function createCreditNote() {
             if (!currentDetail) {
@@ -1050,8 +1896,267 @@
             window.location.href = '/new-credit-note.html?from=sales-return';
         }
 
-        loadReturns();
+        async function markAsApproved() {
+            if (!selectedReturnId) return;
+            try {
+                const res = await fetch('/api/sales-returns/' + selectedReturnId, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'APPROVED', receive_status: '', refund_status: '' })
+                });
+                if (res.ok) {
+                    await loadReturns();
+                    viewReturn(selectedReturnId);
+                } else {
+                    alert('Failed to approve.');
+                }
+            } catch (e) {
+                console.error('Error approving:', e);
+                alert('Failed to approve.');
+            }
+        }
+
+        function switchSrTab(tab) {
+            const receivesSection = document.getElementById('receivesSection');
+            const soSection = document.getElementById('soDetailsSection');
+            const tabReceives = document.getElementById('tabReceives');
+            const tabSalesOrders = document.getElementById('tabSalesOrders');
+            const arrow = document.getElementById('soToggleArrow');
+
+            if (tab === 'receives') {
+                if (receivesSection) receivesSection.style.display = '';
+                if (soSection) soSection.style.display = 'none';
+                if (tabReceives) { tabReceives.classList.add('active'); }
+                if (tabSalesOrders) { tabSalesOrders.classList.remove('active'); }
+            } else {
+                if (receivesSection) receivesSection.style.display = 'none';
+                if (soSection) soSection.style.display = '';
+                if (tabReceives) { tabReceives.classList.remove('active'); }
+                if (tabSalesOrders) { tabSalesOrders.classList.add('active'); }
+            }
+            if (arrow) arrow.textContent = '▼';
+        }
+
+        function toggleActiveTab() {
+            const receivesSection = document.getElementById('receivesSection');
+            const soSection = document.getElementById('soDetailsSection');
+            const arrow = document.getElementById('soToggleArrow');
+            // Find which is currently visible
+            const recVisible = receivesSection && receivesSection.style.display !== 'none';
+            const soVisible = soSection && soSection.style.display !== 'none';
+
+            if (recVisible || soVisible) {
+                // Hide both
+                if (receivesSection) receivesSection.style.display = 'none';
+                if (soSection) soSection.style.display = 'none';
+                if (arrow) arrow.textContent = '▶';
+            } else {
+                // Show the active tab's section
+                const tabRec = document.getElementById('tabReceives');
+                if (tabRec && tabRec.classList.contains('active')) {
+                    if (receivesSection) receivesSection.style.display = '';
+                } else {
+                    if (soSection) soSection.style.display = '';
+                }
+                if (arrow) arrow.textContent = '▼';
+            }
+        }
+
+        async function deleteReceive() {
+            if (!selectedReturnId) return;
+            if (!confirm('Delete this receive record? The receive status will be cleared.')) return;
+            try {
+                const res = await fetch('/api/sales-returns/' + selectedReturnId, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ receive_status: '' })
+                });
+                if (res.ok) {
+                    await loadReturns();
+                    viewReturn(selectedReturnId);
+                }
+            } catch (e) {
+                console.error('Delete receive error:', e);
+            }
+        }
+
+        function toggleSrKebab(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('srKebabMenu');
+            if (menu) menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+        }
+
+        document.addEventListener('click', function () {
+            const menu = document.getElementById('srKebabMenu');
+            if (menu) menu.style.display = 'none';
+        });
+
+        async function deleteSalesReturn() {
+            if (!selectedReturnId) return;
+            if (!confirm('Are you sure you want to delete this sales return?')) return;
+            try {
+                const res = await fetch('/api/sales-returns/' + selectedReturnId, { method: 'DELETE' });
+                if (res.ok) {
+                    selectedReturnId = null;
+                    backToList();
+                    await loadReturns();
+                } else {
+                    alert('Failed to delete.');
+                }
+            } catch (e) {
+                console.error('Error deleting:', e);
+                alert('Failed to delete.');
+            }
+        }
+
+        // On page load — check for view_id URL param
+        (async function () {
+            await loadReturns();
+            const urlParams = new URLSearchParams(window.location.search);
+            const viewId = urlParams.get('view_id');
+            if (viewId) {
+                viewReturn(parseInt(viewId));
+            }
+        })();
+
+        // ===== Hamburger Menu & Customize Columns =====
+        let srWrapText = false;
+
+        function toggleHamburgerMenu() {
+            document.getElementById('srHamburgerMenu').classList.toggle('open');
+        }
+
+        // Close hamburger on outside click
+        document.addEventListener('click', function (e) {
+            const menu = document.getElementById('srHamburgerMenu');
+            if (menu && !menu.closest('.sr-hamburger-wrap').contains(e.target)) {
+                menu.classList.remove('open');
+            }
+        });
+
+        function toggleWrapText() {
+            srWrapText = !srWrapText;
+            document.getElementById('wrapTextLabel').textContent = srWrapText ? 'Clip Text' : 'Wrap Text';
+            const table = document.getElementById('returnsTable');
+            if (srWrapText) {
+                table.style.whiteSpace = 'normal';
+                table.style.wordBreak = 'break-word';
+            } else {
+                table.style.whiteSpace = '';
+                table.style.wordBreak = '';
+            }
+            document.getElementById('srHamburgerMenu').classList.remove('open');
+        }
+
+        // Column definitions for Sales Returns
+        const srColumns = [
+            { id: 'date', label: 'Date', locked: true, visible: true },
+            { id: 'rma', label: 'RMA#', locked: true, visible: true },
+            { id: 'customer_name', label: 'Customer Name', locked: true, visible: true },
+            { id: 'sales_order', label: 'Sales Order#', locked: false, visible: true },
+            { id: 'status', label: 'Status', locked: false, visible: true },
+            { id: 'receive_status', label: 'Receive Status', locked: false, visible: true },
+            { id: 'refund_status', label: 'Refund Status', locked: false, visible: true },
+            { id: 'returned', label: 'Returned', locked: false, visible: true },
+            { id: 'amount_refunded', label: 'Amount Refunded', locked: false, visible: true },
+        ];
+        let ccTempColumns = [];
+
+        function openCustomizeColumns() {
+            document.getElementById('srHamburgerMenu').classList.remove('open');
+            ccTempColumns = srColumns.map(c => ({ ...c }));
+            document.getElementById('ccSearch').value = '';
+            renderCcList('');
+            document.getElementById('ccOverlay').classList.add('open');
+        }
+
+        function closeCustomizeColumns() {
+            document.getElementById('ccOverlay').classList.remove('open');
+        }
+
+        function renderCcList(filter) {
+            const q = (filter || '').toLowerCase();
+            const filtered = ccTempColumns.filter(c => c.label.toLowerCase().includes(q));
+            const list = document.getElementById('ccList');
+            const selected = ccTempColumns.filter(c => c.visible).length;
+            document.getElementById('ccSelectedCount').textContent = selected + ' of ' + ccTempColumns.length + ' Selected';
+            list.innerHTML = filtered.map((col, idx) => {
+                const realIdx = ccTempColumns.indexOf(col);
+                if (col.locked) {
+                    return `<div class="cc-item locked">
+                        <span class="cc-drag">⋮</span>
+                        <span class="cc-lock">🔒</span>
+                        <span class="cc-label">${col.label}</span>
+                    </div>`;
+                }
+                return `<div class="cc-item ${col.visible ? 'checked' : ''}" onclick="toggleCcColumn(${realIdx})">
+                    <span class="cc-drag">⋮</span>
+                    <div class="cc-checkbox ${col.visible ? 'checked' : ''}">${col.visible ? '✓' : ''}</div>
+                    <span class="cc-label">${col.label}</span>
+                </div>`;
+            }).join('');
+        }
+
+        function filterCcColumns(val) {
+            renderCcList(val);
+        }
+
+        function toggleCcColumn(idx) {
+            ccTempColumns[idx].visible = !ccTempColumns[idx].visible;
+            renderCcList(document.getElementById('ccSearch').value);
+        }
+
+        function saveCcColumns() {
+            // Apply changes to srColumns
+            ccTempColumns.forEach((col, i) => { srColumns[i].visible = col.visible; });
+            // Re-render table headers
+            applyColumnVisibility();
+            closeCustomizeColumns();
+        }
+
+        function applyColumnVisibility() {
+            const table = document.getElementById('returnsTable');
+            // Index 0 = hamburger column (always visible), then 1-9 map to srColumns
+            const colMap = ['_hamburger', 'date', 'rma', 'sales_order', 'customer_name', 'status', 'receive_status', 'refund_status', 'returned', 'amount_refunded'];
+            const ths = table.querySelectorAll('thead th');
+            const rows = table.querySelectorAll('tbody tr');
+            colMap.forEach((colId, thIdx) => {
+                if (colId === '_hamburger') return; // always visible
+                const col = srColumns.find(c => c.id === colId);
+                const show = col ? col.visible : true;
+                if (ths[thIdx]) ths[thIdx].style.display = show ? '' : 'none';
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells[thIdx]) cells[thIdx].style.display = show ? '' : 'none';
+                });
+            });
+        }
     </script>
+
+    <!-- Customize Columns Modal -->
+    <div class="cc-overlay" id="ccOverlay" onclick="closeCustomizeColumns()">
+        <div class="cc-modal" onclick="event.stopPropagation()">
+            <div class="cc-header">
+                <div class="cc-header-left">
+                    <span class="cc-icon">⚙</span>
+                    <h3>Customize Columns</h3>
+                </div>
+                <div class="cc-header-right">
+                    <span id="ccSelectedCount">6 of 9 Selected</span>
+                    <button class="cc-close" onclick="closeCustomizeColumns()">✕</button>
+                </div>
+            </div>
+            <div class="cc-search-wrap">
+                <input type="text" class="cc-search" id="ccSearch" placeholder="Search"
+                    oninput="filterCcColumns(this.value)">
+            </div>
+            <div class="cc-list" id="ccList"></div>
+            <div class="cc-footer">
+                <button class="cc-btn-save" onclick="saveCcColumns()">Save</button>
+                <button class="cc-btn-cancel" onclick="closeCustomizeColumns()">Cancel</button>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

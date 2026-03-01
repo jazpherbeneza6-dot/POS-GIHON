@@ -60,10 +60,218 @@
             margin: 0;
         }
 
+        /* Title filter dropdown */
+        .page-title-wrap {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .page-title-arrow {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 14px;
+            color: #4285f4;
+            cursor: pointer;
+            margin-left: 6px;
+            padding: 2px 4px;
+            line-height: 1;
+        }
+
+        .page-title-arrow.visible {
+            display: inline-block;
+        }
+
+        .page-title-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.14);
+            min-width: 240px;
+            z-index: 3100;
+            padding: 8px 0;
+        }
+
+        .page-title-dropdown.show {
+            display: block;
+        }
+
+        .page-title-filter-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 12px 20px;
+            border: none;
+            background: none;
+            font-size: 15px;
+            color: #333;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .page-title-filter-item:hover {
+            background: #f5f7ff;
+        }
+
+        .page-title-filter-item.active {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .page-title-filter-star {
+            font-size: 18px;
+            color: #ccc;
+        }
+
         .header-actions {
             display: flex;
             align-items: center;
             gap: 6px;
+        }
+
+        /* Header kebab menu (list view only) */
+        .header-kebab-wrap {
+            position: relative;
+            display: none;
+        }
+
+        .header-kebab-wrap.visible {
+            display: inline-block;
+        }
+
+        .header-kebab-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 4px;
+            border: 1px solid #d9d9d9;
+            background: white;
+            font-size: 16px;
+            color: #555;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-kebab-btn:hover {
+            background: #f0f4ff;
+        }
+
+        .header-kebab-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 4px);
+            right: 0;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+            min-width: 220px;
+            z-index: 3200;
+            padding: 6px 0;
+        }
+
+        .header-kebab-dropdown.show {
+            display: block;
+        }
+
+        .hk-item {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 10px 18px;
+            border: none;
+            background: none;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            text-align: left;
+            gap: 10px;
+        }
+
+        .hk-item:hover {
+            background: #f5f7ff;
+        }
+
+        .hk-item.hk-sort {
+            background: #4285f4;
+            color: white;
+            border-radius: 6px;
+            margin: 4px 6px;
+            padding: 10px 14px;
+            width: calc(100% - 12px);
+        }
+
+        .hk-item.hk-sort:hover {
+            background: #3367d6;
+        }
+
+        .hk-icon {
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        .hk-arrow {
+            font-size: 10px;
+            color: #aaa;
+        }
+
+        .hk-item.hk-sort .hk-arrow {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Submenus */
+        .hk-submenu {
+            display: none;
+            position: absolute;
+            right: calc(100% + 2px);
+            top: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.14);
+            min-width: 200px;
+            padding: 6px 0;
+            z-index: 3300;
+        }
+
+        .hk-item:hover>.hk-submenu {
+            display: block;
+        }
+
+        .hk-sub-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 9px 16px;
+            border: none;
+            background: none;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .hk-sub-item:hover {
+            background: #f0f4ff;
+            color: #4285f4;
+        }
+
+        .hk-sub-item.active {
+            background: #e8f0fe;
+            color: #4285f4;
+            font-weight: 600;
+        }
+
+        .hk-sub-arrow {
+            font-size: 10px;
+            color: #4285f4;
         }
 
         /* View toggle buttons */
@@ -116,6 +324,167 @@
             background: #3367d6;
         }
 
+        /* ===== List View Table ===== */
+        .pkg-list-view {
+            display: none;
+            padding: 0 28px 20px;
+            flex: 1;
+            overflow: auto;
+        }
+
+        .pkg-list-view.active {
+            display: block;
+        }
+
+        .pkg-list-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e2e5ea;
+        }
+
+        .pkg-list-table thead th {
+            background: #f8f9fb;
+            padding: 10px 14px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #555;
+            text-transform: uppercase;
+            text-align: left;
+            border-bottom: 2px solid #e2e5ea;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        .pkg-list-table thead th:hover {
+            background: #eef1f5;
+        }
+
+        .pkg-action-btn .arrow {
+            font-size: 10px;
+            margin-left: 2px;
+            color: #888;
+        }
+
+        /* Action bar dropdown menus */
+        .pkg-action-wrap {
+            position: relative;
+            display: inline-block;
+        }
+
+        .pkg-action-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            z-index: 3000;
+            padding: 6px 0;
+        }
+
+        .pkg-action-dropdown.show {
+            display: block;
+        }
+
+        .pkg-action-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            padding: 9px 16px;
+            border: none;
+            background: none;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .pkg-action-dropdown-item:hover {
+            background: #f0f4ff;
+            color: #4285f4;
+        }
+
+        .pkg-action-dropdown-item.danger {
+            color: #d32f2f;
+        }
+
+        .pkg-action-dropdown-item.danger:hover {
+            background: #fce4ec;
+        }
+
+        .pkg-action-separator {
+            height: 1px;
+            background: #eee;
+            margin: 4px 0;
+        }
+
+        .pkg-list-table thead th .th-sort {
+            font-size: 10px;
+            margin-left: 4px;
+            color: #4285f4;
+        }
+
+        .pkg-list-table tbody td {
+            padding: 12px 14px;
+            font-size: 13px;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .pkg-list-table tbody tr:hover {
+            background: #f5f8ff;
+            cursor: pointer;
+        }
+
+        .pkg-list-table tbody tr:nth-child(even) {
+            background: #fafbfc;
+        }
+
+        .pkg-list-table tbody tr:nth-child(even):hover {
+            background: #f0f4ff;
+        }
+
+        .pkg-list-status {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .pkg-list-status.not-shipped {
+            background: #d6e9fb;
+            color: #1a5276;
+        }
+
+        .pkg-list-status.shipped {
+            background: #fef9e7;
+            color: #7d6608;
+        }
+
+        .pkg-list-status.delivered {
+            background: #d5f5e3;
+            color: #1e8449;
+        }
+
+        .pkg-list-link {
+            color: #4285f4;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .pkg-list-link:hover {
+            text-decoration: underline;
+        }
+
         /* ===== Kanban Board ===== */
         .kanban-board {
             display: flex;
@@ -162,6 +531,125 @@
 
         .kanban-column-header .col-menu:hover {
             color: rgba(0, 0, 0, 0.6);
+        }
+
+        /* Column menu dropdown */
+        .col-menu-wrap {
+            position: relative;
+            display: inline-block;
+        }
+
+        .col-menu-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            z-index: 2000;
+            padding: 8px 0;
+        }
+
+        .col-menu-dropdown.show {
+            display: block;
+        }
+
+        .col-menu-dropdown-item {
+            padding: 10px 18px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .col-menu-dropdown-item:hover {
+            background: #f0f4ff;
+        }
+
+        .col-menu-dropdown-item svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            stroke: #4285f4;
+        }
+
+        .col-menu-dropdown-item .arrow-right {
+            margin-left: auto;
+            color: #aaa;
+            font-size: 12px;
+        }
+
+        .col-menu-separator {
+            height: 1px;
+            background: #e8e8e8;
+            margin: 4px 0;
+        }
+
+        /* Sort submenu */
+        .col-menu-dropdown-item.has-submenu {
+            position: relative;
+        }
+
+        .col-sort-submenu {
+            display: none;
+            position: absolute;
+            left: 100%;
+            top: -8px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            z-index: 2001;
+            padding: 8px 0;
+        }
+
+        .col-menu-dropdown-item.has-submenu:hover .col-sort-submenu {
+            display: block;
+        }
+
+        .col-sort-item {
+            padding: 10px 18px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .col-sort-item:hover {
+            background: #f0f4ff;
+        }
+
+        .col-sort-item.active {
+            background: #4285f4;
+            color: white;
+        }
+
+        .col-sort-item.active-secondary {
+            background: #e8eef7;
+            color: #333;
+        }
+
+        .col-sort-item .sort-arrow {
+            font-size: 14px;
+            font-weight: 600;
         }
 
         /* Not Shipped - Light Blue */
@@ -474,6 +962,7 @@
             justify-content: center;
             color: #516a80;
             transition: all 0.15s ease;
+            position: relative;
         }
 
         .selection-header-bar .sel-action-btn:hover {
@@ -484,6 +973,55 @@
         .selection-header-bar .sel-action-btn svg {
             width: 18px;
             height: 18px;
+        }
+
+        /* Custom styled tooltips for action buttons */
+        .selection-header-bar [data-tooltip] {
+            position: relative;
+        }
+
+        .selection-header-bar [data-tooltip]::before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.15s ease, visibility 0.15s ease;
+            z-index: 1000;
+            font-family: inherit;
+            letter-spacing: 0.2px;
+            line-height: 1.4;
+        }
+
+        .selection-header-bar [data-tooltip]::after {
+            content: '';
+            position: absolute;
+            bottom: calc(100% + 3px);
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: #333;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.15s ease, visibility 0.15s ease;
+            z-index: 1000;
+        }
+
+        .selection-header-bar [data-tooltip]:hover::before,
+        .selection-header-bar [data-tooltip]:hover::after {
+            opacity: 1;
+            visibility: visible;
         }
 
         .selection-header-bar .sel-close {
@@ -814,6 +1352,76 @@
         .associated-arrow {
             font-size: 14px;
             color: #4285f4;
+            transition: transform 0.2s ease;
+        }
+
+        .associated-bar.expanded .associated-arrow {
+            transform: rotate(90deg);
+        }
+
+        /* Associated SO table */
+        .associated-so-panel {
+            display: none;
+            background: #fff;
+            border-bottom: 1px solid #e2e5ea;
+            flex-shrink: 0;
+        }
+
+        .associated-so-panel.open {
+            display: block;
+        }
+
+        .associated-so-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .associated-so-table thead th {
+            text-align: left;
+            padding: 10px 16px;
+            font-weight: 600;
+            color: #555;
+            font-size: 12px;
+            border-bottom: 3px solid #4285f4;
+            background: #fff;
+        }
+
+        .associated-so-table tbody td {
+            padding: 12px 16px;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .associated-so-table .so-link {
+            color: #4285f4;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .associated-so-table .so-link:hover {
+            text-decoration: underline;
+        }
+
+        .associated-so-table .so-status {
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .associated-so-table .so-status.closed {
+            color: #1e8449;
+        }
+
+        .associated-so-table .so-status.open {
+            color: #4285f4;
+        }
+
+        .associated-so-table .so-status.confirmed {
+            color: #e67e22;
+        }
+
+        .associated-so-table .so-status.draft {
+            color: #888;
         }
 
         /* Package document card */
@@ -823,6 +1431,120 @@
             overflow-y: auto;
             display: flex;
             justify-content: center;
+        }
+
+        /* Selection Action Bar */
+        .pkg-selection-bar {
+            display: none;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: #fff;
+            border-bottom: 1px solid #e2e5ea;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .pkg-selection-bar.show {
+            display: flex;
+        }
+
+        .pkg-sel-icon-group {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .pkg-sel-icon-btn {
+            background: #fff;
+            border: none;
+            padding: 7px 10px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: background 0.15s;
+        }
+
+        .pkg-sel-icon-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .pkg-sel-icon-btn .arrow {
+            font-size: 9px;
+            color: #888;
+        }
+
+        .pkg-sel-icon-btn+.pkg-sel-icon-btn {
+            border-left: 1px solid #d9d9d9;
+        }
+
+        .pkg-sel-action-btn {
+            padding: 6px 14px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            background: #fff;
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .pkg-sel-action-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .pkg-sel-divider {
+            width: 1px;
+            height: 24px;
+            background: #d9d9d9;
+            margin: 0 6px;
+        }
+
+        .pkg-sel-count {
+            font-size: 13px;
+            color: #333;
+            font-weight: 500;
+            margin-left: 4px;
+        }
+
+        .pkg-sel-count strong {
+            color: #4285f4;
+            font-weight: 700;
+        }
+
+        .pkg-sel-spacer {
+            flex: 1;
+        }
+
+        .pkg-sel-esc {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #888;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background 0.15s;
+        }
+
+        .pkg-sel-esc:hover {
+            background: #f5f5f5;
+            color: #555;
+        }
+
+        .pkg-sel-esc .esc-x {
+            font-size: 16px;
+            color: #d32f2f;
+            font-weight: 600;
         }
 
         .pkg-doc-card {
@@ -1237,6 +1959,15 @@
             padding: 0 28px 20px;
         }
 
+        .new-pkg-items-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #333;
+            padding: 18px 0 12px;
+            border-bottom: 1px solid #e2e5ea;
+            margin-bottom: 0;
+        }
+
         .new-pkg-items-table {
             width: 100%;
             border-collapse: collapse;
@@ -1247,16 +1978,19 @@
             padding: 12px 14px;
             text-align: left;
             font-size: 11px;
-            font-weight: 600;
-            color: #888;
+            font-weight: 500;
+            color: #999;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 1px solid #e2e5ea;
+            letter-spacing: 0.3px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .new-pkg-items-table th:first-child {
+            width: 40%;
         }
 
         .new-pkg-items-table th:nth-child(n+2) {
             text-align: center;
-            width: 120px;
         }
 
         .new-pkg-items-table td {
@@ -1270,8 +2004,8 @@
         }
 
         .new-pkg-items-table .qty-input {
-            width: 80px;
-            padding: 6px 8px;
+            width: 90px;
+            padding: 7px 10px;
             border: 1px solid #d9d9d9;
             border-radius: 4px;
             font-size: 13px;
@@ -1759,7 +2493,20 @@
         <div class="content" id="content">
             <!-- Page Header -->
             <div class="page-header">
-                <h1 class="page-title">All Packages</h1>
+                <div class="page-title-wrap">
+                    <h1 class="page-title" id="pkgPageTitle">All Packages</h1>
+                    <button class="page-title-arrow" id="pkgTitleArrow" onclick="togglePkgTitleDrop()">&#9662;</button>
+                    <div class="page-title-dropdown" id="pkgTitleDrop">
+                        <button class="page-title-filter-item active" onclick="filterPkgByStatus('all')">All <span
+                                class="page-title-filter-star">☆</span></button>
+                        <button class="page-title-filter-item" onclick="filterPkgByStatus('not shipped')">Not Shipped
+                            <span class="page-title-filter-star">☆</span></button>
+                        <button class="page-title-filter-item" onclick="filterPkgByStatus('shipped')">Shipped <span
+                                class="page-title-filter-star">☆</span></button>
+                        <button class="page-title-filter-item" onclick="filterPkgByStatus('delivered')">Delivered <span
+                                class="page-title-filter-star">☆</span></button>
+                    </div>
+                </div>
                 <div class="global-search-container">
                     <span class="global-search-icon">🔍</span>
                     <input type="text" class="global-search-input" id="pkgSearchInput" placeholder="Search packages..."
@@ -1767,11 +2514,118 @@
                 </div>
                 <div class="header-actions">
                     <div class="view-toggle">
-                        <button class="view-toggle-btn" title="List View">☰</button>
-                        <button class="view-toggle-btn active" title="Board View">▦</button>
+                        <button class="view-toggle-btn" id="listViewBtn" title="List View"
+                            onclick="switchToListView()">☰</button>
+                        <button class="view-toggle-btn active" id="boardViewBtn" title="Board View"
+                            onclick="switchToBoardView()">▦</button>
                     </div>
                     <button class="btn-new" onclick="openNewPkgForm()">+ New</button>
+                    <div class="header-kebab-wrap" id="headerKebabWrap">
+                        <button class="header-kebab-btn" onclick="toggleHeaderKebab(event)">⋯</button>
+                        <div class="header-kebab-dropdown" id="headerKebabDrop">
+                            <div class="hk-item hk-sort">
+                                <span><span class="hk-icon">⇅</span> Sort by</span>
+                                <span class="hk-arrow">›</span>
+                                <div class="hk-submenu">
+                                    <button class="hk-sub-item"
+                                        onclick="closeHeaderKebab(); sortListCol('package_date')">Package Date <span
+                                            class="hk-sub-arrow" id="hkSort_package_date">↑</span></button>
+                                    <button class="hk-sub-item"
+                                        onclick="closeHeaderKebab(); sortListCol('package_number')">Package# <span
+                                            class="hk-sub-arrow" id="hkSort_package_number"></span></button>
+                                    <button class="hk-sub-item"
+                                        onclick="closeHeaderKebab(); sortListCol('carrier')">Carrier <span
+                                            class="hk-sub-arrow" id="hkSort_carrier"></span></button>
+                                    <button class="hk-sub-item"
+                                        onclick="closeHeaderKebab(); sortListCol('sales_order_number')">Sales Order#
+                                        <span class="hk-sub-arrow" id="hkSort_sales_order_number"></span></button>
+                                    <button class="hk-sub-item"
+                                        onclick="closeHeaderKebab(); sortListCol('customer_name')">Customer Name <span
+                                            class="hk-sub-arrow" id="hkSort_customer_name"></span></button>
+                                    <button class="hk-sub-item"
+                                        onclick="closeHeaderKebab(); sortListCol('quantity')">Quantity <span
+                                            class="hk-sub-arrow" id="hkSort_quantity"></span></button>
+                                    <button class="hk-sub-item"
+                                        onclick="closeHeaderKebab(); sortListCol('created_time')">Created Time <span
+                                            class="hk-sub-arrow" id="hkSort_created_time"></span></button>
+                                    <button class="hk-sub-item"
+                                        onclick="closeHeaderKebab(); sortListCol('last_modified_time')">Last Modified
+                                        Time <span class="hk-sub-arrow" id="hkSort_last_modified_time"></span></button>
+                                </div>
+                            </div>
+                            <div class="hk-item">
+                                <span><span class="hk-icon">⬇</span> Import</span>
+                                <span class="hk-arrow">›</span>
+                                <div class="hk-submenu">
+                                    <button class="hk-sub-item" onclick="closeHeaderKebab(); importPackages()">Import
+                                        Packages</button>
+                                    <button class="hk-sub-item" onclick="closeHeaderKebab(); importShipments()">Import
+                                        Shipments</button>
+                                </div>
+                            </div>
+                            <div class="hk-item">
+                                <span><span class="hk-icon">⬆</span> Export</span>
+                                <span class="hk-arrow">›</span>
+                                <div class="hk-submenu">
+                                    <button class="hk-sub-item" onclick="closeHeaderKebab(); exportPackages()">Export
+                                        Packages</button>
+                                    <button class="hk-sub-item" onclick="closeHeaderKebab(); exportShipments()">Export
+                                        Shipments</button>
+                                </div>
+                            </div>
+                            <button class="hk-item"
+                                onclick="closeHeaderKebab(); loadPackages().then(() => renderListView())">
+                                <span><span class="hk-icon">🔄</span> Refresh List</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
+            </div>
+
+            <!-- List View Table -->
+            <div class="pkg-list-view" id="pkgListView">
+                <!-- Selection Action Bar -->
+                <div class="pkg-selection-bar" id="pkgSelectionBar">
+                    <div class="pkg-sel-icon-group">
+                        <button class="pkg-sel-icon-btn" title="Download PDF" onclick="bulkDownloadPDF()">
+                            📄 <span class="arrow">▾</span>
+                        </button>
+                        <button class="pkg-sel-icon-btn" title="Print" onclick="bulkPrintPackages()">
+                            🖨️ <span class="arrow">▾</span>
+                        </button>
+                    </div>
+                    <button class="pkg-sel-action-btn" onclick="bulkDeletePackages()">Delete</button>
+                    <div class="pkg-sel-divider"></div>
+                    <span class="pkg-sel-count"><strong id="pkgSelCount">0</strong>&nbsp; Selected</span>
+                    <div class="pkg-sel-spacer"></div>
+                    <span class="pkg-sel-esc" onclick="clearPkgSelection()"><span class="esc-x">✕</span></span>
+                </div>
+                <table class="pkg-list-table">
+                    <thead>
+                        <tr>
+                            <th style="width:36px;text-align:center;" onclick="event.stopPropagation()">
+                                <input type="checkbox" id="pkgListSelectAll" onclick="toggleAllPkgCheckboxes(this)"
+                                    style="width:14px;height:14px;cursor:pointer">
+                            </th>
+                            <th onclick="sortListCol('package_date')">Date <span class="th-sort"
+                                    id="thSort_package_date">&#8593;</span></th>
+                            <th onclick="sortListCol('package_number')">Package# <span class="th-sort"
+                                    id="thSort_package_number"></span></th>
+                            <th onclick="sortListCol('sales_order_number')">Sales Order# <span class="th-sort"
+                                    id="thSort_sales_order_number"></span></th>
+                            <th onclick="sortListCol('customer_name')">Customer Name <span class="th-sort"
+                                    id="thSort_customer_name"></span></th>
+                            <th onclick="sortListCol('carrier')">Carrier <span class="th-sort"
+                                    id="thSort_carrier"></span></th>
+                            <th onclick="sortListCol('quantity')">Quantity <span class="th-sort"
+                                    id="thSort_quantity"></span></th>
+                            <th onclick="sortListCol('status')">Status <span class="th-sort" id="thSort_status"></span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="pkgListBody">
+                    </tbody>
+                </table>
             </div>
 
             <!-- Kanban Board -->
@@ -1780,13 +2634,72 @@
                 <div class="kanban-column not-shipped">
                     <div class="kanban-column-header">
                         <span>Packages, Not Shipped</span>
-                        <button class="col-menu">☰</button>
+                        <div class="col-menu-wrap">
+                            <button class="col-menu" onclick="toggleColMenu(this, event)">☰</button>
+                            <div class="col-menu-dropdown">
+                                <div class="col-menu-dropdown-item has-submenu">
+                                    Sort by <span class="arrow-right">›</span>
+                                    <div class="col-sort-submenu">
+                                        <button class="col-sort-item active"
+                                            onclick="sortPackages('package_date', this)">Package Date <span
+                                                class="sort-arrow">↑</span></button>
+                                        <button class="col-sort-item"
+                                            onclick="sortPackages('package_number', this)">Package#</button>
+                                        <button class="col-sort-item"
+                                            onclick="sortPackages('carrier', this)">Carrier</button>
+                                        <button class="col-sort-item"
+                                            onclick="sortPackages('sales_order_number', this)">Sales Order#</button>
+                                        <button class="col-sort-item"
+                                            onclick="sortPackages('shipment_date', this)">Shipment Date</button>
+                                        <button class="col-sort-item"
+                                            onclick="sortPackages('customer_name', this)">Customer Name</button>
+                                        <button class="col-sort-item"
+                                            onclick="sortPackages('quantity', this)">Quantity</button>
+                                        <button class="col-sort-item active-secondary"
+                                            onclick="sortPackages('created_time', this)">Created Time <span
+                                                class="sort-arrow">↓</span></button>
+                                        <button class="col-sort-item"
+                                            onclick="sortPackages('last_modified_time', this)">Last Modified
+                                            Time</button>
+                                    </div>
+                                </div>
+                                <div class="col-menu-separator"></div>
+                                <button class="col-menu-dropdown-item" onclick="importPackages()"><svg
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                        <polyline points="7 10 12 15 17 10" />
+                                        <line x1="12" y1="15" x2="12" y2="3" />
+                                    </svg> Import Packages</button>
+                                <button class="col-menu-dropdown-item" onclick="exportPackages()"><svg
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                        <polyline points="17 8 12 3 7 8" />
+                                        <line x1="12" y1="3" x2="12" y2="15" />
+                                    </svg> Export Packages</button>
+                                <button class="col-menu-dropdown-item" onclick="importShipments()"><svg
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                        <polyline points="7 10 12 15 17 10" />
+                                        <line x1="12" y1="15" x2="12" y2="3" />
+                                    </svg> Import Shipments</button>
+                                <button class="col-menu-dropdown-item" onclick="exportShipments()"><svg
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                        <polyline points="17 8 12 3 7 8" />
+                                        <line x1="12" y1="3" x2="12" y2="15" />
+                                    </svg> Export Shipments</button>
+                            </div>
+                        </div>
                     </div>
                     <div class="selection-header-bar" id="selBar_colNotShipped">
                         <input type="checkbox" class="sel-checkbox"
                             onchange="selectAllInColumn('colNotShipped', this.checked)">
                         <div class="sel-actions">
-                            <button class="sel-action-btn" title="Print"
+                            <button class="sel-action-btn" data-tooltip="Print"
                                 onclick="printSelectedPackages('colNotShipped')">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                     stroke-linecap="round" stroke-linejoin="round">
@@ -1796,7 +2709,7 @@
                                     <rect x="6" y="14" width="12" height="8" />
                                 </svg>
                             </button>
-                            <button class="sel-action-btn" title="Delete"
+                            <button class="sel-action-btn" data-tooltip="Delete"
                                 onclick="deleteSelectedPackages('colNotShipped')">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                     stroke-linecap="round" stroke-linejoin="round">
@@ -1806,7 +2719,8 @@
                                 </svg>
                             </button>
                         </div>
-                        <button class="sel-close" title="Remove Selection" onclick="removeSelection('colNotShipped')">
+                        <button class="sel-close" data-tooltip="Remove Selection"
+                            onclick="removeSelection('colNotShipped')">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                 stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="18" y1="6" x2="6" y2="18" />
@@ -1823,13 +2737,81 @@
                 <div class="kanban-column shipped">
                     <div class="kanban-column-header">
                         <span>Shipped Packages</span>
-                        <button class="col-menu">☰</button>
+                        <div class="col-menu-wrap">
+                            <button class="col-menu" onclick="toggleColMenu(this, event)">☰</button>
+                            <div class="col-menu-dropdown">
+                                <div class="col-menu-dropdown-item has-submenu">
+                                    Sort by <span class="arrow-right">›</span>
+                                    <div class="col-sort-submenu">
+                                        <button class="col-sort-item active"
+                                            onclick="sortPackages('package_date', this)">Package Date <span
+                                                class="sort-arrow">↑</span></button>
+                                        <button class="col-sort-item"
+                                            onclick="sortPackages('package_number', this)">Package#</button>
+                                        <button class="col-sort-item"
+                                            onclick="sortPackages('carrier', this)">Carrier</button>
+                                        <button class="col-sort-item"
+                                            onclick="sortPackages('sales_order_number', this)">Sales Order#</button>
+                                        <button class="col-sort-item"
+                                            onclick="sortPackages('shipment_date', this)">Shipment Date</button>
+                                        <button class="col-sort-item"
+                                            onclick="sortPackages('customer_name', this)">Customer Name</button>
+                                        <button class="col-sort-item"
+                                            onclick="sortPackages('quantity', this)">Quantity</button>
+                                        <button class="col-sort-item active-secondary"
+                                            onclick="sortPackages('created_time', this)">Created Time <span
+                                                class="sort-arrow">↓</span></button>
+                                        <button class="col-sort-item"
+                                            onclick="sortPackages('last_modified_time', this)">Last Modified
+                                            Time</button>
+                                    </div>
+                                </div>
+                                <div class="col-menu-separator"></div>
+                                <button class="col-menu-dropdown-item" onclick="importPackages()"><svg
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                        <polyline points="7 10 12 15 17 10" />
+                                        <line x1="12" y1="15" x2="12" y2="3" />
+                                    </svg> Import Packages</button>
+                                <button class="col-menu-dropdown-item" onclick="exportPackages()"><svg
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                        <polyline points="17 8 12 3 7 8" />
+                                        <line x1="12" y1="3" x2="12" y2="15" />
+                                    </svg> Export Packages</button>
+                                <button class="col-menu-dropdown-item" onclick="importShipments()"><svg
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                        <polyline points="7 10 12 15 17 10" />
+                                        <line x1="12" y1="15" x2="12" y2="3" />
+                                    </svg> Import Shipments</button>
+                                <button class="col-menu-dropdown-item" onclick="exportShipments()"><svg
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                        <polyline points="17 8 12 3 7 8" />
+                                        <line x1="12" y1="3" x2="12" y2="15" />
+                                    </svg> Export Shipments</button>
+                            </div>
+                        </div>
                     </div>
                     <div class="selection-header-bar" id="selBar_colShipped">
                         <input type="checkbox" class="sel-checkbox"
                             onchange="selectAllInColumn('colShipped', this.checked)">
                         <div class="sel-actions">
-                            <button class="sel-action-btn" title="Print" onclick="printSelectedPackages('colShipped')">
+                            <button class="sel-action-btn" data-tooltip="Mark as Delivered"
+                                onclick="markSelectedAsDelivered()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                    <polyline points="22 4 12 14.01 9 11.01" />
+                                </svg>
+                            </button>
+                            <button class="sel-action-btn" data-tooltip="Print"
+                                onclick="printSelectedPackages('colShipped')">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                     stroke-linecap="round" stroke-linejoin="round">
                                     <polyline points="6 9 6 2 18 2 18 9" />
@@ -1838,7 +2820,7 @@
                                     <rect x="6" y="14" width="12" height="8" />
                                 </svg>
                             </button>
-                            <button class="sel-action-btn" title="Delete"
+                            <button class="sel-action-btn" data-tooltip="Delete"
                                 onclick="deleteSelectedPackages('colShipped')">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                     stroke-linecap="round" stroke-linejoin="round">
@@ -1848,7 +2830,8 @@
                                 </svg>
                             </button>
                         </div>
-                        <button class="sel-close" title="Remove Selection" onclick="removeSelection('colShipped')">
+                        <button class="sel-close" data-tooltip="Remove Selection"
+                            onclick="removeSelection('colShipped')">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                 stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="18" y1="6" x2="6" y2="18" />
@@ -1865,13 +2848,80 @@
                 <div class="kanban-column delivered">
                     <div class="kanban-column-header">
                         <span>Delivered Packages</span>
-                        <button class="col-menu">☰</button>
+                        <div class="col-menu-wrap">
+                            <button class="col-menu" onclick="toggleColMenu(this, event)">☰</button>
+                            <div class="col-menu-dropdown">
+                                <div class="col-menu-dropdown-item has-submenu">
+                                    Sort by <span class="arrow-right">›</span>
+                                    <div class="col-sort-submenu">
+                                        <button class="col-sort-item active"
+                                            onclick="sortPackages('package_date', this)">Package Date <span
+                                                class="sort-arrow">↑</span></button>
+                                        <button class="col-sort-item"
+                                            onclick="sortPackages('package_number', this)">Package#</button>
+                                        <button class="col-sort-item"
+                                            onclick="sortPackages('carrier', this)">Carrier</button>
+                                        <button class="col-sort-item"
+                                            onclick="sortPackages('sales_order_number', this)">Sales Order#</button>
+                                        <button class="col-sort-item"
+                                            onclick="sortPackages('shipment_date', this)">Shipment Date</button>
+                                        <button class="col-sort-item"
+                                            onclick="sortPackages('customer_name', this)">Customer Name</button>
+                                        <button class="col-sort-item"
+                                            onclick="sortPackages('quantity', this)">Quantity</button>
+                                        <button class="col-sort-item active-secondary"
+                                            onclick="sortPackages('created_time', this)">Created Time <span
+                                                class="sort-arrow">↓</span></button>
+                                        <button class="col-sort-item"
+                                            onclick="sortPackages('last_modified_time', this)">Last Modified
+                                            Time</button>
+                                    </div>
+                                </div>
+                                <div class="col-menu-separator"></div>
+                                <button class="col-menu-dropdown-item" onclick="importPackages()"><svg
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                        <polyline points="7 10 12 15 17 10" />
+                                        <line x1="12" y1="15" x2="12" y2="3" />
+                                    </svg> Import Packages</button>
+                                <button class="col-menu-dropdown-item" onclick="exportPackages()"><svg
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                        <polyline points="17 8 12 3 7 8" />
+                                        <line x1="12" y1="3" x2="12" y2="15" />
+                                    </svg> Export Packages</button>
+                                <button class="col-menu-dropdown-item" onclick="importShipments()"><svg
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                        <polyline points="7 10 12 15 17 10" />
+                                        <line x1="12" y1="15" x2="12" y2="3" />
+                                    </svg> Import Shipments</button>
+                                <button class="col-menu-dropdown-item" onclick="exportShipments()"><svg
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                        <polyline points="17 8 12 3 7 8" />
+                                        <line x1="12" y1="3" x2="12" y2="15" />
+                                    </svg> Export Shipments</button>
+                            </div>
+                        </div>
                     </div>
                     <div class="selection-header-bar" id="selBar_colDelivered">
                         <input type="checkbox" class="sel-checkbox"
                             onchange="selectAllInColumn('colDelivered', this.checked)">
                         <div class="sel-actions">
-                            <button class="sel-action-btn" title="Print"
+                            <button class="sel-action-btn" data-tooltip="Mark as Undelivered"
+                                onclick="markSelectedAsUndelivered()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="1 4 1 10 7 10" />
+                                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+                                </svg>
+                            </button>
+                            <button class="sel-action-btn" data-tooltip="Print"
                                 onclick="printSelectedPackages('colDelivered')">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                     stroke-linecap="round" stroke-linejoin="round">
@@ -1881,7 +2931,7 @@
                                     <rect x="6" y="14" width="12" height="8" />
                                 </svg>
                             </button>
-                            <button class="sel-action-btn" title="Delete"
+                            <button class="sel-action-btn" data-tooltip="Delete"
                                 onclick="deleteSelectedPackages('colDelivered')">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                     stroke-linecap="round" stroke-linejoin="round">
@@ -1891,7 +2941,8 @@
                                 </svg>
                             </button>
                         </div>
-                        <button class="sel-close" title="Remove Selection" onclick="removeSelection('colDelivered')">
+                        <button class="sel-close" data-tooltip="Remove Selection"
+                            onclick="removeSelection('colDelivered')">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                 stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="18" y1="6" x2="6" y2="18" />
@@ -1940,23 +2991,23 @@
                         </div>
                     </div>
                 </div>
-                <div class="new-pkg-info-bar">
-                    <span class="info-icon">ℹ</span>
-                    You can also select or scan the items to be included from the sales order. <a href="#"
-                        onclick="event.preventDefault()">Select or Scan Items</a>
-                </div>
+
                 <div class="new-pkg-items-section">
+                    <div class="new-pkg-items-title">Item Table</div>
                     <table class="new-pkg-items-table">
                         <thead>
                             <tr>
-                                <th>Items & Description</th>
+                                <th>Item Details</th>
                                 <th>Ordered</th>
                                 <th>Packed</th>
                                 <th>Quantity to Pack</th>
                             </tr>
                         </thead>
                         <tbody id="newPkgItemsBody">
-                            <!-- Populated when SO selected -->
+                            <tr>
+                                <td colspan="4" style="text-align:center;color:#aaa;padding:24px">Select a Sales Order
+                                    to load items</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -1978,8 +3029,19 @@
                     <span class="pkg-detail-left-title" id="pkgDetailLeftTitle">Packages, Not S... <span class="arrow"
                             style="font-size:10px;color:#888">▾</span></span>
                     <div class="pkg-detail-left-actions">
-                        <button class="pkg-detail-left-btn plus">+</button>
-                        <button class="pkg-detail-left-btn dots">⋯</button>
+                        <button class="pkg-detail-left-btn plus"
+                            onclick="closeDetailView(); openNewPkgForm()">+</button>
+                        <div class="pkg-action-wrap">
+                            <button class="pkg-detail-left-btn dots"
+                                onclick="togglePkgActionDrop('sidebarKebabDrop', event)">⋯</button>
+                            <div class="pkg-action-dropdown" id="sidebarKebabDrop" style="right:0;left:auto;">
+                                <button class="pkg-action-dropdown-item"
+                                    onclick="closePkgDropdowns(); loadPackages(); closeDetailView()">🔄 Refresh
+                                    List</button>
+                                <button class="pkg-action-dropdown-item"
+                                    onclick="closePkgDropdowns(); exportPackages()">📥 Export Packages</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="pkg-detail-left-body" id="pkgDetailLeftList"></div>
@@ -1988,22 +3050,58 @@
                 <div class="pkg-detail-top-bar">
                     <span class="pkg-detail-title" id="pkgDetailTitle">PKG-00001</span>
                     <div class="pkg-detail-top-actions">
-                        <button class="pkg-detail-icon-btn" title="Fullscreen">⛶</button>
                         <button class="pkg-detail-close-btn" onclick="closeDetailView()" title="Close">✕</button>
                     </div>
                 </div>
                 <div class="pkg-detail-action-bar">
-                    <button class="pkg-action-btn"><span class="icon">✏</span> Edit</button>
-                    <button class="pkg-action-btn" id="detailShipBtn"><span class="icon">🚚</span> Ship <span
-                            class="arrow">▾</span></button>
-                    <button class="pkg-action-btn"><span class="icon">📄</span> PDF/Print <span
-                            class="arrow">▾</span></button>
-                    <button class="pkg-action-btn"><span class="icon">⋯</span></button>
+                    <button class="pkg-action-btn" id="pkgEditBtn" onclick="editCurrentPackage()"><span
+                            class="icon">✏</span>
+                        Edit</button>
+                    <div class="pkg-action-wrap" id="pkgShipWrap">
+                        <button class="pkg-action-btn" id="detailShipBtn"
+                            onclick="shipManually(currentDetailPkgId)"><span class="icon">🚚</span> Ship</button>
+                    </div>
+                    <div class="pkg-action-wrap">
+                        <button class="pkg-action-btn" onclick="togglePkgActionDrop('pdfDrop', event)"><span
+                                class="icon">📄</span> PDF/Print <span class="arrow">▾</span></button>
+                        <div class="pkg-action-dropdown" id="pdfDrop">
+                            <button class="pkg-action-dropdown-item" onclick="closePkgDropdowns(); printPkgDoc()">🖨️
+                                Print Package Slip</button>
+                            <button class="pkg-action-dropdown-item" onclick="closePkgDropdowns(); downloadPkgDoc()">⬇️
+                                Download as PDF</button>
+                        </div>
+                    </div>
+                    <div class="pkg-action-wrap">
+                        <button class="pkg-action-btn" onclick="togglePkgActionDrop('moreDrop', event)"><span
+                                class="icon">⋯</span></button>
+                        <div class="pkg-action-dropdown" id="moreDrop" style="right:0;left:auto;">
+                            <button class="pkg-action-dropdown-item"
+                                onclick="closePkgDropdowns(); duplicatePackage()">📋 Clone Package</button>
+                            <div class="pkg-action-separator"></div>
+                            <button class="pkg-action-dropdown-item danger"
+                                onclick="closePkgDropdowns(); deleteCurrentPackage()">🗑️ Delete</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="associated-bar">
+                <div class="associated-bar" id="associatedSOBar" onclick="toggleAssociatedSO()">
                     <span><span class="associated-label">Associated sales orders</span> <span class="associated-count"
                             id="detailSOCount">1</span></span>
-                    <span class="associated-arrow">►</span>
+                    <span class="associated-arrow" id="associatedSOArrow">►</span>
+                </div>
+                <div class="associated-so-panel" id="associatedSOPanel">
+                    <table class="associated-so-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Sales Order#</th>
+                                <th>Status</th>
+                                <th>Shipment Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="associatedSOBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
                 </div>
                 <div class="pkg-doc-area" id="pkgDocArea">
                     <!-- Document card rendered here by JS -->
@@ -2106,12 +3204,38 @@
     <script src="/js/layout.js"></script>
     <script>
         function searchPackages() {
-            const query = (document.getElementById('pkgSearchInput').value || '').toLowerCase();
-            if (!query) { loadPackages(); return; }
-            // Filter kanban cards by hiding non-matching ones
+            const query = (document.getElementById('pkgSearchInput').value || '').toLowerCase().trim();
+
+            // Filter kanban cards
             document.querySelectorAll('.pkg-card').forEach(card => {
                 const text = card.textContent.toLowerCase();
-                card.style.display = text.includes(query) ? '' : 'none';
+                card.style.display = (!query || text.includes(query)) ? '' : 'none';
+            });
+
+            // Update empty state for kanban columns
+            document.querySelectorAll('.kanban-column').forEach(col => {
+                const cards = col.querySelectorAll('.pkg-card');
+                const visibleCards = [...cards].filter(c => c.style.display !== 'none');
+                const body = col.querySelector('.kanban-body');
+                if (body) {
+                    let emptyMsg = body.querySelector('.kanban-empty');
+                    if (visibleCards.length === 0 && cards.length > 0) {
+                        if (!emptyMsg) {
+                            emptyMsg = document.createElement('div');
+                            emptyMsg.className = 'kanban-empty';
+                            emptyMsg.textContent = 'No matching packages';
+                            body.appendChild(emptyMsg);
+                        }
+                    } else if (emptyMsg) {
+                        emptyMsg.remove();
+                    }
+                }
+            });
+
+            // Filter list view rows
+            document.querySelectorAll('#pkgListBody tr').forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = (!query || text.includes(query)) ? '' : 'none';
             });
         }
 
@@ -2119,6 +3243,13 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             loadPackages();
+
+            // Auto-open New Package form if ?new=true in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('new') === 'true') {
+                setTimeout(function () { if (typeof openNewPkgForm === 'function') openNewPkgForm(); }, 500);
+                window.history.replaceState({}, '', '/packages.html');
+            }
         });
 
         function fmtDate(dateStr) {
@@ -2163,6 +3294,8 @@
                 `;
             } else if (status === 'DELIVERED') {
                 menuItems = `
+                    <button class="pkg-menu-item" onclick="event.stopPropagation(); markAsUndelivered(${pkg.id})">Mark as Undelivered</button>
+                    <div class="pkg-menu-separator"></div>
                     <button class="pkg-menu-item" onclick="event.stopPropagation(); printShipmentOrder(${pkg.id})">Print Shipment Order</button>
                     <button class="pkg-menu-item" onclick="event.stopPropagation(); downloadShipmentOrder(${pkg.id})">Download Shipment Order</button>
                     <div class="pkg-menu-separator"></div>
@@ -2173,7 +3306,6 @@
                 // NOT SHIPPED
                 menuItems = `
                     <button class="pkg-menu-item" onclick="event.stopPropagation(); shipManually(${pkg.id})">Ship Manually</button>
-                    <button class="pkg-menu-item" onclick="event.stopPropagation(); shipViaCarrier(${pkg.id})">Ship via Carrier</button>
                     <div class="pkg-menu-separator"></div>
                     <button class="pkg-menu-item" onclick="event.stopPropagation(); printPackageSlip(${pkg.id})">Print Package Slip</button>
                     <button class="pkg-menu-item" onclick="event.stopPropagation(); downloadPackageSlip(${pkg.id})">Download Package Slip</button>
@@ -2256,6 +3388,44 @@
                     }
                 }
 
+                // Sort each column by current sort settings
+                const sortFn = (a, b) => {
+                    let valA, valB;
+                    const pkgA = a.pkg, pkgB = b.pkg;
+                    switch (currentSortField) {
+                        case 'package_date':
+                            valA = pkgA.package_date || ''; valB = pkgB.package_date || ''; break;
+                        case 'package_number':
+                            valA = pkgA.package_number || ''; valB = pkgB.package_number || ''; break;
+                        case 'carrier':
+                            valA = (a.shipmentInfo?.carrier || '').toLowerCase(); valB = (b.shipmentInfo?.carrier || '').toLowerCase(); break;
+                        case 'sales_order_number':
+                            valA = pkgA.sales_order_number || ''; valB = pkgB.sales_order_number || ''; break;
+                        case 'shipment_date':
+                            valA = a.shipmentInfo?.shipment_date || ''; valB = b.shipmentInfo?.shipment_date || ''; break;
+                        case 'customer_name':
+                            valA = (pkgA.customer_name || '').toLowerCase(); valB = (pkgB.customer_name || '').toLowerCase(); break;
+                        case 'quantity':
+                            valA = a.qty; valB = b.qty;
+                            if (valA < valB) return currentSortDir === 'asc' ? -1 : 1;
+                            if (valA > valB) return currentSortDir === 'asc' ? 1 : -1;
+                            return 0;
+                        case 'created_time':
+                            valA = pkgA.created_at || ''; valB = pkgB.created_at || ''; break;
+                        case 'last_modified_time':
+                            valA = pkgA.updated_at || pkgA.created_at || ''; valB = pkgB.updated_at || pkgB.created_at || ''; break;
+                        default:
+                            valA = pkgA.package_date || ''; valB = pkgB.package_date || '';
+                    }
+                    if (valA < valB) return currentSortDir === 'asc' ? -1 : 1;
+                    if (valA > valB) return currentSortDir === 'asc' ? 1 : -1;
+                    return 0;
+                };
+
+                notShipped.sort(sortFn);
+                shipped.sort(sortFn);
+                delivered.sort(sortFn);
+
                 // Render columns
                 renderColumn('colNotShipped', notShipped);
                 renderColumn('colShipped', shipped);
@@ -2275,8 +3445,11 @@
             container.innerHTML = items.map(({ pkg, qty, shipmentInfo }) => buildCard(pkg, qty, shipmentInfo)).join('');
         }
 
+        let currentDetailPkgId = null;
+
         async function viewPackage(id) {
             closeAllMenus();
+            currentDetailPkgId = id;
             try {
                 // Fetch package detail
                 const pkgRes = await fetch('/api/packages/' + id);
@@ -2301,6 +3474,24 @@
                 let ribbonText = 'Not Shipped';
                 if (status === 'SHIPPED') { ribbonClass = 'shipped'; ribbonText = 'Shipped'; }
                 else if (status === 'DELIVERED') { ribbonClass = 'delivered'; ribbonText = 'Delivered'; }
+
+                // Hide Edit button for shipped/delivered packages
+                const editBtn = document.getElementById('pkgEditBtn');
+                if (editBtn) {
+                    editBtn.style.display = (status === 'SHIPPED' || status === 'DELIVERED') ? 'none' : '';
+                }
+
+                // Update Ship button based on status
+                const shipWrap = document.getElementById('pkgShipWrap');
+                if (shipWrap) {
+                    if (status === 'SHIPPED') {
+                        shipWrap.innerHTML = '<button class="pkg-action-btn" onclick="markAsDelivered()"><span class="icon">✅</span> Mark as Delivered</button>';
+                    } else if (status === 'DELIVERED') {
+                        shipWrap.innerHTML = '<button class="pkg-action-btn" onclick="markAsUndelivered()"><span class="icon">↩️</span> Mark as Undelivered</button>';
+                    } else {
+                        shipWrap.innerHTML = '<button class="pkg-action-btn" onclick="shipManually(currentDetailPkgId)"><span class="icon">🚚</span> Ship</button>';
+                    }
+                }
 
                 // Render left sidebar (filtered by same status)
                 renderDetailLeftList(id, status);
@@ -2413,8 +3604,31 @@
                     </div>
                 `;
 
-                // Update associated SO count
+                // Update associated SO section
                 document.getElementById('detailSOCount').textContent = pkg.sales_order_id ? '1' : '0';
+                const soBody = document.getElementById('associatedSOBody');
+                if (pkg.sales_order_id && so) {
+                    const soDate = fmtDate(so.order_date);
+                    const soStatus = (so.status || 'OPEN').toUpperCase();
+                    let statusClass = 'open';
+                    if (soStatus === 'CLOSED') statusClass = 'closed';
+                    else if (soStatus === 'CONFIRMED') statusClass = 'confirmed';
+                    else if (soStatus === 'DRAFT') statusClass = 'draft';
+                    const shipDate = so.shipment_date ? fmtDate(so.shipment_date) : '';
+                    soBody.innerHTML = `
+                        <tr>
+                            <td>${soDate}</td>
+                            <td><a class="so-link" href="/sales-orders.html?id=${so.id}">${so.order_number || ''}</a></td>
+                            <td><span class="so-status ${statusClass}">${soStatus}</span></td>
+                            <td>${shipDate}</td>
+                        </tr>
+                    `;
+                } else {
+                    soBody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#aaa;padding:16px">No associated sales orders</td></tr>';
+                }
+                // Reset associated panel state (collapsed)
+                document.getElementById('associatedSOBar').classList.remove('expanded');
+                document.getElementById('associatedSOPanel').classList.remove('open');
 
                 // Show overlay
                 document.getElementById('pkgDetailOverlay').classList.add('open');
@@ -2426,6 +3640,245 @@
 
         function closeDetailView() {
             document.getElementById('pkgDetailOverlay').classList.remove('open');
+            currentDetailPkgId = null;
+        }
+
+        function toggleAssociatedSO() {
+            const bar = document.getElementById('associatedSOBar');
+            const panel = document.getElementById('associatedSOPanel');
+            bar.classList.toggle('expanded');
+            panel.classList.toggle('open');
+        }
+
+        // === Package Detail Action Dropdowns ===
+        function togglePkgActionDrop(dropId, e) {
+            e.stopPropagation();
+            const drop = document.getElementById(dropId);
+            const wasOpen = drop.classList.contains('show');
+            closePkgDropdowns();
+            if (!wasOpen) drop.classList.add('show');
+        }
+
+        function closePkgDropdowns() {
+            document.querySelectorAll('.pkg-action-dropdown.show').forEach(d => d.classList.remove('show'));
+        }
+
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.pkg-action-wrap')) closePkgDropdowns();
+        });
+
+        let editingPkgId = null;
+
+        async function editCurrentPackage() {
+            if (!currentDetailPkgId) return;
+            editingPkgId = currentDetailPkgId;
+            closeDetailView();
+
+            try {
+                // Fetch current package data
+                const pkgRes = await fetch('/api/packages/' + editingPkgId);
+                if (!pkgRes.ok) { alert('Package not found'); editingPkgId = null; return; }
+                const pkg = await pkgRes.json();
+
+                // Fetch customers
+                const custRes = await fetch('/api/customers');
+                newPkgAllCustomers = custRes.ok ? await custRes.json() : [];
+
+                // Fetch all sales orders
+                const soRes = await fetch('/api/sales-orders');
+                const allSOs = soRes.ok ? await soRes.json() : [];
+
+                // For edit mode, include the current SO even if it's already packaged
+                const existPkgRes = await fetch('/api/packages');
+                const existingPkgs = existPkgRes.ok ? await existPkgRes.json() : [];
+                const usedSOIds = new Set(existingPkgs.filter(p => p.sales_order_id && String(p.id) !== String(editingPkgId)).map(p => String(p.sales_order_id)));
+                newPkgAllSalesOrders = allSOs.filter(so => !usedSOIds.has(String(so.id)));
+
+                // Set title to Edit Package
+                document.querySelector('.new-pkg-header-title').innerHTML = '<span class="icon">\ud83d\udce6</span> Edit Package';
+
+                // Populate customer dropdown
+                const custSelect = document.getElementById('newPkgCustomer');
+                custSelect.innerHTML = '<option value="">Select Customer</option>';
+                newPkgAllCustomers.forEach(c => {
+                    custSelect.innerHTML += `<option value="${c.id}" data-name="${c.display_name || c.first_name || ''}">${c.display_name || c.first_name || 'Unknown'}</option>`;
+                });
+
+                // Pre-select customer using the SO's customer_id for accuracy
+                let matchedCustId = null;
+                if (pkg.sales_order_id) {
+                    const matchedSO = allSOs.find(so => String(so.id) === String(pkg.sales_order_id));
+                    if (matchedSO && matchedSO.customer_id) {
+                        matchedCustId = String(matchedSO.customer_id);
+                    }
+                }
+
+                // Try matching by customer_id from SO, fallback to name
+                if (matchedCustId) {
+                    custSelect.value = matchedCustId;
+                } else {
+                    const custName = pkg.customer_name || '';
+                    for (let i = 0; i < custSelect.options.length; i++) {
+                        const optName = (custSelect.options[i].getAttribute('data-name') || '').toLowerCase();
+                        if (optName === custName.toLowerCase()) {
+                            custSelect.selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                // Populate SO dropdown filtered by selected customer
+                const selectedCustId = custSelect.value;
+                const soSelect = document.getElementById('newPkgSalesOrder');
+                const filteredSOs = selectedCustId
+                    ? newPkgAllSalesOrders.filter(so => String(so.customer_id) === selectedCustId)
+                    : newPkgAllSalesOrders;
+
+                soSelect.disabled = false;
+                soSelect.innerHTML = '<option value="">Select Sales Order</option>';
+                filteredSOs.forEach(so => {
+                    soSelect.innerHTML += `<option value="${so.id}" data-number="${so.order_number}" data-customer="${so.customer_name || ''}">${so.order_number} - ${so.customer_name || ''}</option>`;
+                });
+
+                // Pre-select the current sales order
+                if (pkg.sales_order_id) {
+                    soSelect.value = String(pkg.sales_order_id);
+                    // Fallback: if the SO wasn't found in filtered list, add it manually
+                    if (!soSelect.value || soSelect.value === '') {
+                        const fallbackSO = allSOs.find(so => String(so.id) === String(pkg.sales_order_id));
+                        if (fallbackSO) {
+                            soSelect.innerHTML += `<option value="${fallbackSO.id}" data-number="${fallbackSO.order_number}" data-customer="${fallbackSO.customer_name || ''}">${fallbackSO.order_number} - ${fallbackSO.customer_name || ''}</option>`;
+                            soSelect.value = String(fallbackSO.id);
+                        } else if (pkg.sales_order_number) {
+                            // Last resort: add a placeholder option with the SO number from the package
+                            soSelect.innerHTML += `<option value="${pkg.sales_order_id}" data-number="${pkg.sales_order_number}" data-customer="${pkg.customer_name || ''}">${pkg.sales_order_number} - ${pkg.customer_name || ''}</option>`;
+                            soSelect.value = String(pkg.sales_order_id);
+                        }
+                    }
+                }
+
+                // Set package number and date
+                document.getElementById('newPkgSlipNum').value = pkg.package_number || '';
+                if (pkg.package_date) {
+                    const d = new Date(pkg.package_date);
+                    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    document.getElementById('newPkgDate').value = `${String(d.getDate()).padStart(2, '0')} ${months[d.getMonth()]} ${d.getFullYear()}`;
+                }
+
+                // Set notes
+                document.getElementById('newPkgNotes').value = pkg.internal_notes || '';
+
+                // Populate items from package
+                newPkgSelectedSOItems = (pkg.items || []).map(item => ({
+                    item_name: item.item_name,
+                    item_id: item.item_id,
+                    quantity: item.ordered_quantity || item.quantity_to_pack || 0
+                }));
+
+                const tbody = document.getElementById('newPkgItemsBody');
+                if (newPkgSelectedSOItems.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#aaa;padding:16px">No items</td></tr>';
+                } else {
+                    tbody.innerHTML = newPkgSelectedSOItems.map((item, idx) => {
+                        const ordered = parseFloat(item.quantity || 0).toFixed(2);
+                        const packed = parseFloat(pkg.items[idx]?.quantity_to_pack || 0).toFixed(2);
+                        return `
+                            <tr>
+                                <td>${item.item_name || ''}</td>
+                                <td>${ordered}</td>
+                                <td>0.00</td>
+                                <td><input type="number" class="qty-input" id="newPkgQty_${idx}" value="${packed}" step="0.01" min="0"></td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+
+
+                // Show overlay
+                document.getElementById('newPkgOverlay').classList.add('open');
+            } catch (err) {
+                console.error('Error opening edit form:', err);
+                alert('Error opening edit form.');
+                editingPkgId = null;
+            }
+        }
+
+        function printPkgDoc() {
+            const docArea = document.getElementById('pkgDocArea');
+            if (!docArea) return;
+            const printWin = window.open('', '_blank', 'width=800,height=600');
+            printWin.document.write(`
+                <html><head><title>Package Slip</title>
+                <style>
+                    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 20px; }
+                    table { border-collapse: collapse; width: 100%; }
+                    th, td { padding: 8px 12px; border: 1px solid #ddd; text-align: left; font-size: 13px; }
+                    th { background: #2d4a7a; color: white; }
+                    .pkg-doc-ribbon { display: none; }
+                </style>
+                </head><body>${docArea.innerHTML}</body></html>
+            `);
+            printWin.document.close();
+            printWin.focus();
+            setTimeout(() => { printWin.print(); }, 300);
+        }
+
+        function downloadPkgDoc() {
+            printPkgDoc();
+        }
+
+        async function duplicatePackage() {
+            if (!currentDetailPkgId) return;
+            try {
+                const res = await fetch('/api/packages/' + currentDetailPkgId);
+                if (!res.ok) { alert('Package not found.'); return; }
+                const pkg = await res.json();
+
+                const numRes = await fetch('/api/packages/next-number');
+                const numData = numRes.ok ? await numRes.json() : { package_number: 'PKG-00001' };
+
+                const cloneRes = await fetch('/api/packages', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        sales_order_id: pkg.sales_order_id,
+                        customer_name: pkg.customer_name,
+                        package_date: new Date().toISOString().split('T')[0],
+                        package_number: numData.package_number,
+                        notes: pkg.notes || '',
+                        items: (pkg.items || []).map(i => ({ item_id: i.item_id, item_name: i.item_name, quantity_to_pack: i.quantity_to_pack }))
+                    })
+                });
+
+                if (cloneRes.ok) {
+                    const newPkg = await cloneRes.json();
+                    alert('Package cloned as ' + (newPkg.package_number || numData.package_number));
+                    loadPackages();
+                    closeDetailView();
+                } else {
+                    alert('Failed to clone package.');
+                }
+            } catch (err) {
+                console.error('Clone error:', err);
+                alert('Error cloning package.');
+            }
+        }
+
+        async function deleteCurrentPackage() {
+            if (!currentDetailPkgId) return;
+            if (!confirm('Are you sure you want to delete this package?')) return;
+            try {
+                const res = await fetch('/api/packages/' + currentDetailPkgId, { method: 'DELETE' });
+                if (res.ok) {
+                    closeDetailView();
+                    loadPackages();
+                } else {
+                    alert('Failed to delete package.');
+                }
+            } catch (err) {
+                console.error('Error deleting package:', err);
+                alert('Error deleting package.');
+            }
         }
 
         function renderDetailLeftList(activeId, filterStatus) {
@@ -2501,6 +3954,14 @@
                 const soRes = await fetch('/api/sales-orders');
                 newPkgAllSalesOrders = soRes.ok ? await soRes.json() : [];
 
+                // Fetch existing packages to know which SOs already have packages
+                const existPkgRes = await fetch('/api/packages');
+                const existingPkgs = existPkgRes.ok ? await existPkgRes.json() : [];
+                const usedSOIds = new Set(existingPkgs.filter(p => p.sales_order_id).map(p => String(p.sales_order_id)));
+
+                // Filter out SOs that already have a package
+                newPkgAllSalesOrders = newPkgAllSalesOrders.filter(so => !usedSOIds.has(String(so.id)));
+
                 // Get next package number
                 const numRes = await fetch('/api/packages/next-number');
                 const numData = numRes.ok ? await numRes.json() : { package_number: 'PKG-00001' };
@@ -2512,12 +3973,10 @@
                     custSelect.innerHTML += `<option value="${c.id}" data-name="${c.display_name || c.first_name || ''}">${c.display_name || c.first_name || 'Unknown'}</option>`;
                 });
 
-                // Populate sales order dropdown
+                // Sales order dropdown starts empty - must select customer first
                 const soSelect = document.getElementById('newPkgSalesOrder');
-                soSelect.innerHTML = '<option value="">Select Sales Order</option>';
-                newPkgAllSalesOrders.forEach(so => {
-                    soSelect.innerHTML += `<option value="${so.id}" data-number="${so.order_number}" data-customer="${so.customer_name || ''}">${so.order_number} - ${so.customer_name || ''}</option>`;
-                });
+                soSelect.innerHTML = '<option value="">Select a customer first</option>';
+                soSelect.disabled = true;
 
                 // Set package number
                 document.getElementById('newPkgSlipNum').value = numData.package_number;
@@ -2542,6 +4001,9 @@
 
         function closeNewPkgForm() {
             document.getElementById('newPkgOverlay').classList.remove('open');
+            // Reset edit mode
+            editingPkgId = null;
+            document.querySelector('.new-pkg-header-title').innerHTML = '<span class="icon">📦</span> New Package';
         }
 
         function onNewPkgCustomerChange() {
@@ -2549,19 +4011,28 @@
             const soSelect = document.getElementById('newPkgSalesOrder');
             const selectedCustId = custSelect.value;
 
-            // Filter SO dropdown by customer
-            soSelect.innerHTML = '<option value="">Select Sales Order</option>';
-            const filtered = selectedCustId
-                ? newPkgAllSalesOrders.filter(so => String(so.customer_id) === selectedCustId)
-                : newPkgAllSalesOrders;
-
-            filtered.forEach(so => {
-                soSelect.innerHTML += `<option value="${so.id}" data-number="${so.order_number}" data-customer="${so.customer_name || ''}">${so.order_number} - ${so.customer_name || ''}</option>`;
-            });
-
             // Clear items
             document.getElementById('newPkgItemsBody').innerHTML = '';
             newPkgSelectedSOItems = [];
+
+            if (!selectedCustId) {
+                soSelect.innerHTML = '<option value="">Select a customer first</option>';
+                soSelect.disabled = true;
+                return;
+            }
+
+            // Filter SOs: only for this customer AND not yet packaged
+            const filtered = newPkgAllSalesOrders.filter(so => String(so.customer_id) === selectedCustId);
+
+            soSelect.disabled = false;
+            if (filtered.length === 0) {
+                soSelect.innerHTML = '<option value="">No available sales orders</option>';
+            } else {
+                soSelect.innerHTML = '<option value="">Select Sales Order</option>';
+                filtered.forEach(so => {
+                    soSelect.innerHTML += `<option value="${so.id}" data-number="${so.order_number}" data-customer="${so.customer_name || ''}">${so.order_number} - ${so.customer_name || ''}</option>`;
+                });
+            }
         }
 
         async function onNewPkgSOChange() {
@@ -2658,8 +4129,11 @@
             }
 
             try {
-                const res = await fetch('/api/packages', {
-                    method: 'POST',
+                const url = editingPkgId ? '/api/packages/' + editingPkgId : '/api/packages';
+                const method = editingPkgId ? 'PUT' : 'POST';
+
+                const res = await fetch(url, {
+                    method: method,
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         package_number: pkgNumber,
@@ -2717,6 +4191,50 @@
 
         let currentShipPkgId = null;
         let currentShipPkg = null;
+
+        async function markAsDelivered(pkgId) {
+            const id = pkgId || currentDetailPkgId;
+            if (!id) return;
+            try {
+                const res = await fetch('/api/packages/' + id, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'DELIVERED' })
+                });
+                if (res.ok) {
+                    await loadPackages();
+                    if (currentDetailPkgId) viewPackage(currentDetailPkgId);
+                } else {
+                    alert('Failed to update status.');
+                }
+            } catch (err) {
+                console.error('Error marking as delivered:', err);
+                alert('Error updating status.');
+            }
+        }
+        window.markAsDelivered = markAsDelivered;
+
+        async function markAsUndelivered(pkgId) {
+            const id = pkgId || currentDetailPkgId;
+            if (!id) return;
+            try {
+                const res = await fetch('/api/packages/' + id, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'SHIPPED' })
+                });
+                if (res.ok) {
+                    await loadPackages();
+                    if (currentDetailPkgId) viewPackage(currentDetailPkgId);
+                } else {
+                    alert('Failed to update status.');
+                }
+            } catch (err) {
+                console.error('Error marking as undelivered:', err);
+                alert('Error updating status.');
+            }
+        }
+        window.markAsUndelivered = markAsUndelivered;
 
         async function shipManually(pkgId) {
             closeAllMenus();
@@ -2879,19 +4397,19 @@
             alert('Ship via Carrier: Package #' + pkgId + ' (coming soon)');
         }
 
-        async function markAsDelivered(pkgId) {
-            closeAllMenus();
-            try {
-                const res = await fetch('/api/shipments/mark-delivered/' + pkgId, { method: 'PATCH' });
-                if (res.ok) {
-                    loadPackages();
-                } else {
-                    alert('Failed to mark as delivered.');
+        async function markSelectedAsUndelivered() {
+            const checkboxes = document.querySelectorAll('#colDelivered .pkg-card-checkbox:checked');
+            if (checkboxes.length === 0) { alert('No delivered packages selected.'); return; }
+            if (!confirm(`Mark ${checkboxes.length} package(s) as undelivered? They will return to Shipped.`)) return;
+            for (const cb of checkboxes) {
+                const pkgId = cb.dataset.pkgId;
+                try {
+                    await fetch('/api/shipments/mark-undelivered/' + pkgId, { method: 'PATCH' });
+                } catch (err) {
+                    console.error('Error marking package ' + pkgId + ' as undelivered:', err);
                 }
-            } catch (err) {
-                console.error('Error marking as delivered:', err);
-                alert('Failed to mark as delivered.');
             }
+            loadPackages();
         }
 
         async function deleteShipment(pkgId) {
@@ -3212,6 +4730,641 @@
             `);
             printWindow.document.close();
         }
+
+        // ===== Column Menu Dropdown Functions =====
+        function toggleColMenu(btn, e) {
+            e.stopPropagation();
+            const wrap = btn.closest('.col-menu-wrap');
+            const dropdown = wrap.querySelector('.col-menu-dropdown');
+            // Close all other dropdowns first
+            document.querySelectorAll('.col-menu-dropdown.show').forEach(d => {
+                if (d !== dropdown) d.classList.remove('show');
+            });
+            dropdown.classList.toggle('show');
+        }
+
+        // Close column menus when clicking outside
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.col-menu-wrap')) {
+                document.querySelectorAll('.col-menu-dropdown.show').forEach(d => d.classList.remove('show'));
+            }
+        });
+
+        let currentSortField = 'package_date';
+        let currentSortDir = 'asc';
+
+        function sortPackages(field, btn) {
+            // Toggle direction if same field
+            if (currentSortField === field) {
+                currentSortDir = currentSortDir === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSortField = field;
+                currentSortDir = 'asc';
+            }
+
+            // Update all sort items across all dropdowns
+            document.querySelectorAll('.col-sort-item').forEach(item => {
+                item.classList.remove('active', 'active-secondary');
+                const arrow = item.querySelector('.sort-arrow');
+                if (arrow) arrow.remove();
+            });
+
+            // Find all buttons matching this field and highlight them
+            document.querySelectorAll('.col-sort-item').forEach(item => {
+                if (item.textContent.trim().replace(/[\u2191\u2193]/g, '').trim() === btn.textContent.trim().replace(/[\u2191\u2193]/g, '').trim()) {
+                    item.classList.add('active');
+                    const arrowSpan = document.createElement('span');
+                    arrowSpan.className = 'sort-arrow';
+                    arrowSpan.textContent = currentSortDir === 'asc' ? '\u2191' : '\u2193';
+                    item.appendChild(arrowSpan);
+                }
+            });
+
+            // Close all menus
+            document.querySelectorAll('.col-menu-dropdown.show').forEach(d => d.classList.remove('show'));
+
+            // Reload packages (the loadPackages function will re-render)
+            loadPackages();
+        }
+
+        function importPackages() {
+            document.querySelectorAll('.col-menu-dropdown.show').forEach(d => d.classList.remove('show'));
+
+            const existing = document.getElementById('pkgImportModal');
+            if (existing) existing.remove();
+
+            const modal = document.createElement('div');
+            modal.id = 'pkgImportModal';
+            modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;';
+            modal.innerHTML = `
+                <div style="background:white;border-radius:12px;padding:32px;width:520px;max-width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.2);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                        <h3 style="margin:0;font-size:18px;color:#333;">Import Packages</h3>
+                        <button onclick="document.getElementById('pkgImportModal').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#888;">✕</button>
+                    </div>
+                    <div style="border:2px dashed #ccc;border-radius:8px;padding:40px 20px;text-align:center;cursor:pointer;margin-bottom:16px;"
+                         ondragover="event.preventDefault();this.style.borderColor='#4285f4';this.style.background='#f0f4ff'"
+                         ondragleave="this.style.borderColor='#ccc';this.style.background='white'"
+                         ondrop="event.preventDefault();this.style.borderColor='#ccc';this.style.background='white';pkgImportFileData=event.dataTransfer.files[0];document.getElementById('pkgImportFileName').textContent='📄 '+pkgImportFileData.name;document.getElementById('pkgImportSubmitBtn').disabled=false;document.getElementById('pkgImportSubmitBtn').style.opacity='1'"
+                         onclick="document.getElementById('pkgImportFileInput').click()">
+                        <svg style="width:40px;height:40px;margin-bottom:12px;stroke:#4285f4" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        <div style="font-size:14px;color:#555;">Drag & drop CSV or click to browse</div>
+                        <div id="pkgImportFileName" style="font-size:12px;color:#888;margin-top:8px;"></div>
+                    </div>
+                    <input type="file" id="pkgImportFileInput" accept=".csv" style="display:none" onchange="pkgImportFileData=this.files[0];document.getElementById('pkgImportFileName').textContent='📄 '+this.files[0].name;document.getElementById('pkgImportSubmitBtn').disabled=false;document.getElementById('pkgImportSubmitBtn').style.opacity='1'">
+                    <div style="background:#f8f9fb;border-radius:6px;padding:14px;margin-bottom:20px;font-size:12px;color:#666;line-height:1.6;">
+                        <strong>CSV Format:</strong><br>
+                        <code style="font-size:11px;background:#eee;padding:2px 6px;border-radius:3px;">Sales Order Number, Customer Name, Package Date</code>
+                    </div>
+                    <div style="display:flex;gap:10px;justify-content:flex-end;">
+                        <button onclick="document.getElementById('pkgImportModal').remove()" style="padding:8px 20px;border:1px solid #ddd;border-radius:6px;background:white;cursor:pointer;">Cancel</button>
+                        <button id="pkgImportSubmitBtn" onclick="submitPkgImport()" disabled style="padding:8px 20px;border:none;border-radius:6px;background:#4285f4;color:white;cursor:pointer;opacity:0.5;">Import</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        let pkgImportFileData = null;
+
+        async function submitPkgImport() {
+            if (!pkgImportFileData) return;
+            const btn = document.getElementById('pkgImportSubmitBtn');
+            btn.disabled = true; btn.textContent = 'Importing...';
+
+            try {
+                const text = await pkgImportFileData.text();
+                const lines = text.trim().split('\n');
+                if (lines.length < 2) { alert('CSV needs header + data rows.'); btn.disabled = false; btn.textContent = 'Import'; return; }
+
+                let successCount = 0;
+                for (let i = 1; i < lines.length; i++) {
+                    const cols = lines[i].match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g);
+                    if (!cols) continue;
+                    const clean = cols.map(c => c.replace(/^"|"$/g, '').trim());
+                    const [soNumber, customerName, pkgDate] = clean;
+
+                    // Find sales order by number
+                    let soId = null;
+                    if (soNumber) {
+                        try {
+                            const soRes = await fetch('/api/sales-orders');
+                            const sos = soRes.ok ? await soRes.json() : [];
+                            const found = sos.find(s => s.order_number === soNumber);
+                            if (found) soId = found.id;
+                        } catch (e) { }
+                    }
+
+                    const res = await fetch('/api/packages', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            sales_order_id: soId,
+                            customer_name: customerName || 'Unknown',
+                            package_date: pkgDate || new Date().toISOString().split('T')[0],
+                            items: []
+                        })
+                    });
+                    if (res.ok) successCount++;
+                }
+
+                document.getElementById('pkgImportModal').remove();
+                pkgImportFileData = null;
+                alert(`Successfully imported ${successCount} package(s).`);
+                loadPackages();
+            } catch (err) {
+                console.error('Import error:', err);
+                alert('Error importing: ' + err.message);
+                btn.disabled = false; btn.textContent = 'Import';
+            }
+        }
+
+        function exportPackages() {
+            document.querySelectorAll('.col-menu-dropdown.show').forEach(d => d.classList.remove('show'));
+
+            try {
+                if (!allPackages || allPackages.length === 0) {
+                    alert('No packages to export.');
+                    return;
+                }
+
+                let csv = 'Package Number,Customer Name,Status,Sales Order Number,Package Date,Quantity\n';
+                allPackages.forEach(pkg => {
+                    const qty = getTotalQty(pkg);
+                    const values = [
+                        pkg.package_number || '',
+                        pkg.customer_name || '',
+                        pkg.status || 'NOT SHIPPED',
+                        pkg.sales_order_number || '',
+                        pkg.package_date ? new Date(pkg.package_date).toLocaleDateString() : '',
+                        qty
+                    ].map(v => '"' + String(v).replace(/"/g, '""') + '"');
+                    csv += values.join(',') + '\n';
+                });
+
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'packages_' + new Date().toISOString().slice(0, 10) + '.csv';
+                a.click();
+                URL.revokeObjectURL(url);
+            } catch (err) {
+                console.error('Export error:', err);
+                alert('Error exporting packages.');
+            }
+        }
+
+        function importShipments() {
+            document.querySelectorAll('.col-menu-dropdown.show').forEach(d => d.classList.remove('show'));
+
+            const existing = document.getElementById('shipImportModal');
+            if (existing) existing.remove();
+
+            const modal = document.createElement('div');
+            modal.id = 'shipImportModal';
+            modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;';
+            modal.innerHTML = `
+                <div style="background:white;border-radius:12px;padding:32px;width:520px;max-width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.2);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                        <h3 style="margin:0;font-size:18px;color:#333;">Import Shipments</h3>
+                        <button onclick="document.getElementById('shipImportModal').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#888;">✕</button>
+                    </div>
+                    <div style="border:2px dashed #ccc;border-radius:8px;padding:40px 20px;text-align:center;cursor:pointer;margin-bottom:16px;"
+                         ondragover="event.preventDefault();this.style.borderColor='#4285f4';this.style.background='#f0f4ff'"
+                         ondragleave="this.style.borderColor='#ccc';this.style.background='white'"
+                         ondrop="event.preventDefault();this.style.borderColor='#ccc';this.style.background='white';shipImportFileData=event.dataTransfer.files[0];document.getElementById('shipImportFileName').textContent='📄 '+shipImportFileData.name;document.getElementById('shipImportSubmitBtn').disabled=false;document.getElementById('shipImportSubmitBtn').style.opacity='1'"
+                         onclick="document.getElementById('shipImportFileInput').click()">
+                        <svg style="width:40px;height:40px;margin-bottom:12px;stroke:#4285f4" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        <div style="font-size:14px;color:#555;">Drag & drop CSV or click to browse</div>
+                        <div id="shipImportFileName" style="font-size:12px;color:#888;margin-top:8px;"></div>
+                    </div>
+                    <input type="file" id="shipImportFileInput" accept=".csv" style="display:none" onchange="shipImportFileData=this.files[0];document.getElementById('shipImportFileName').textContent='📄 '+this.files[0].name;document.getElementById('shipImportSubmitBtn').disabled=false;document.getElementById('shipImportSubmitBtn').style.opacity='1'">
+                    <div style="background:#f8f9fb;border-radius:6px;padding:14px;margin-bottom:20px;font-size:12px;color:#666;line-height:1.6;">
+                        <strong>CSV Format:</strong><br>
+                        <code style="font-size:11px;background:#eee;padding:2px 6px;border-radius:3px;">Package Number, Carrier, Tracking Number, Shipment Date</code>
+                    </div>
+                    <div style="display:flex;gap:10px;justify-content:flex-end;">
+                        <button onclick="document.getElementById('shipImportModal').remove()" style="padding:8px 20px;border:1px solid #ddd;border-radius:6px;background:white;cursor:pointer;">Cancel</button>
+                        <button id="shipImportSubmitBtn" onclick="submitShipImport()" disabled style="padding:8px 20px;border:none;border-radius:6px;background:#4285f4;color:white;cursor:pointer;opacity:0.5;">Import</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        let shipImportFileData = null;
+
+        async function submitShipImport() {
+            if (!shipImportFileData) return;
+            const btn = document.getElementById('shipImportSubmitBtn');
+            btn.disabled = true; btn.textContent = 'Importing...';
+
+            try {
+                const text = await shipImportFileData.text();
+                const lines = text.trim().split('\n');
+                if (lines.length < 2) { alert('CSV needs header + data rows.'); btn.disabled = false; btn.textContent = 'Import'; return; }
+
+                // Get all packages to match by number
+                const pkgRes = await fetch('/api/packages');
+                const pkgs = pkgRes.ok ? await pkgRes.json() : [];
+
+                let successCount = 0;
+                for (let i = 1; i < lines.length; i++) {
+                    const cols = lines[i].match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g);
+                    if (!cols) continue;
+                    const clean = cols.map(c => c.replace(/^"|"$/g, '').trim());
+                    const [pkgNumber, carrier, trackingNum, shipDate] = clean;
+
+                    const matchedPkg = pkgs.find(p => p.package_number === pkgNumber);
+                    if (!matchedPkg) {
+                        alert(`Package not found: "${pkgNumber}" (row ${i + 1}).`);
+                        btn.disabled = false; btn.textContent = 'Import'; return;
+                    }
+
+                    const res = await fetch('/api/shipments', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            package_id: matchedPkg.id,
+                            carrier: carrier || '',
+                            tracking_number: trackingNum || '',
+                            shipment_date: shipDate || new Date().toISOString().split('T')[0]
+                        })
+                    });
+                    if (res.ok) successCount++;
+                }
+
+                document.getElementById('shipImportModal').remove();
+                shipImportFileData = null;
+                alert(`Successfully imported ${successCount} shipment(s).`);
+                loadPackages();
+            } catch (err) {
+                console.error('Import error:', err);
+                alert('Error importing: ' + err.message);
+                btn.disabled = false; btn.textContent = 'Import';
+            }
+        }
+
+        async function exportShipments() {
+            document.querySelectorAll('.col-menu-dropdown.show').forEach(d => d.classList.remove('show'));
+
+            try {
+                const res = await fetch('/api/shipments');
+                const shipments = res.ok ? await res.json() : [];
+
+                if (shipments.length === 0) {
+                    alert('No shipments to export.');
+                    return;
+                }
+
+                let csv = 'Shipment Number,Package Number,Carrier,Tracking Number,Shipment Date,Status,Customer Name\n';
+                shipments.forEach(s => {
+                    const values = [
+                        s.shipment_number || '',
+                        s.package_number || '',
+                        s.carrier || '',
+                        s.tracking_number || '',
+                        s.shipment_date ? new Date(s.shipment_date).toLocaleDateString() : '',
+                        s.status || '',
+                        s.customer_name || ''
+                    ].map(v => '"' + String(v).replace(/"/g, '""') + '"');
+                    csv += values.join(',') + '\n';
+                });
+
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'shipments_' + new Date().toISOString().slice(0, 10) + '.csv';
+                a.click();
+                URL.revokeObjectURL(url);
+            } catch (err) {
+                console.error('Export error:', err);
+                alert('Error exporting shipments.');
+            }
+        }
+
+        // ===== List / Board View Toggle =====
+        let currentView = 'board'; // 'board' or 'list'
+
+        function switchToListView() {
+            currentView = 'list';
+            document.getElementById('kanbanBoard').style.display = 'none';
+            document.getElementById('pkgListView').classList.add('active');
+            document.getElementById('listViewBtn').classList.add('active');
+            document.getElementById('boardViewBtn').classList.remove('active');
+            document.getElementById('pkgTitleArrow').classList.add('visible');
+            document.getElementById('headerKebabWrap').classList.add('visible');
+            renderListView();
+        }
+
+        function toggleAllPkgCheckboxes(headerCheckbox) {
+            const checkboxes = document.querySelectorAll('.pkg-row-checkbox');
+            checkboxes.forEach(cb => cb.checked = headerCheckbox.checked);
+            updatePkgSelectionBar();
+        }
+
+        function updatePkgSelectionBar() {
+            const checked = document.querySelectorAll('.pkg-row-checkbox:checked');
+            const bar = document.getElementById('pkgSelectionBar');
+            const count = document.getElementById('pkgSelCount');
+            if (checked.length > 0) {
+                bar.classList.add('show');
+                count.textContent = checked.length;
+            } else {
+                bar.classList.remove('show');
+                count.textContent = '0';
+            }
+        }
+
+        function clearPkgSelection() {
+            const headerCb = document.getElementById('pkgListSelectAll');
+            if (headerCb) headerCb.checked = false;
+            document.querySelectorAll('.pkg-row-checkbox').forEach(cb => cb.checked = false);
+            updatePkgSelectionBar();
+        }
+
+        function getSelectedPkgIds() {
+            return Array.from(document.querySelectorAll('.pkg-row-checkbox:checked')).map(cb => cb.value);
+        }
+
+        async function bulkMarkDelivered() {
+            const ids = getSelectedPkgIds();
+            if (ids.length === 0) return;
+            if (!confirm(`Mark ${ids.length} package(s) as Delivered?`)) return;
+            try {
+                for (const id of ids) {
+                    await fetch('/api/packages/' + id, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status: 'DELIVERED' })
+                    });
+                }
+                clearPkgSelection();
+                loadPackages();
+            } catch (err) {
+                console.error('Bulk mark delivered error:', err);
+                alert('Error marking packages as delivered.');
+            }
+        }
+
+        async function bulkDeletePackages() {
+            const ids = getSelectedPkgIds();
+            if (ids.length === 0) return;
+            if (!confirm(`Delete ${ids.length} package(s)? This cannot be undone.`)) return;
+            try {
+                for (const id of ids) {
+                    await fetch('/api/packages/' + id, { method: 'DELETE' });
+                }
+                clearPkgSelection();
+                loadPackages();
+            } catch (err) {
+                console.error('Bulk delete error:', err);
+                alert('Error deleting packages.');
+            }
+        }
+
+        function getSelectedPackageData() {
+            const ids = getSelectedPkgIds();
+            return allPackages.filter(p => ids.includes(String(p.id)));
+        }
+
+        function buildPkgPrintHTML(packages) {
+            const rows = packages.map(pkg => {
+                const status = (pkg.status || 'NOT SHIPPED').toUpperCase();
+                const qty = getTotalQty(pkg);
+                return `<tr>
+                    <td>${fmtDate(pkg.package_date)}</td>
+                    <td>${pkg.package_number || ''}</td>
+                    <td>${pkg.carrier || ''}</td>
+                    <td>${pkg.sales_order_number || ''}</td>
+                    <td>${status}</td>
+                    <td>${pkg.shipment_date ? fmtDate(pkg.shipment_date) : ''}</td>
+                    <td>${pkg.customer_name || ''}</td>
+                    <td>${qty.toFixed(2)}</td>
+                </tr>`;
+            }).join('');
+
+            return `<!DOCTYPE html>
+            <html><head><title>Packages</title>
+            <style>
+                body { font-family: 'Inter', Arial, sans-serif; padding: 24px; color: #333; }
+                h2 { font-size: 18px; margin-bottom: 16px; }
+                table { width: 100%; border-collapse: collapse; font-size: 13px; }
+                th { text-align: left; padding: 10px 12px; border-bottom: 2px solid #4285f4; font-weight: 600; color: #555; font-size: 11px; text-transform: uppercase; }
+                td { padding: 10px 12px; border-bottom: 1px solid #eee; }
+                .status { font-weight: 600; font-size: 12px; }
+                @media print { body { padding: 0; } }
+            </style></head><body>
+            <h2>Packages (${packages.length})</h2>
+            <table>
+                <thead><tr>
+                    <th>Package Date</th><th>Package#</th><th>Carrier</th><th>Sales Order#</th><th>Status</th><th>Shipment Date</th><th>Customer Name</th><th>Quantity</th>
+                </tr></thead>
+                <tbody>${rows}</tbody>
+            </table>
+            </body></html>`;
+        }
+
+        function bulkDownloadPDF() {
+            const packages = getSelectedPackageData();
+            if (packages.length === 0) return;
+            const html = buildPkgPrintHTML(packages);
+            const printWin = window.open('', '_blank');
+            printWin.document.write(html);
+            printWin.document.close();
+            printWin.onload = function () {
+                printWin.print();
+            };
+        }
+
+        function bulkPrintPackages() {
+            const packages = getSelectedPackageData();
+            if (packages.length === 0) return;
+            const html = buildPkgPrintHTML(packages);
+            const printWin = window.open('', '_blank');
+            printWin.document.write(html);
+            printWin.document.close();
+            printWin.onload = function () {
+                printWin.print();
+            };
+        }
+
+        function switchToBoardView() {
+            currentView = 'board';
+            document.getElementById('kanbanBoard').style.display = '';
+            document.getElementById('pkgListView').classList.remove('active');
+            document.getElementById('boardViewBtn').classList.add('active');
+            document.getElementById('listViewBtn').classList.remove('active');
+            document.getElementById('pkgTitleArrow').classList.remove('visible');
+            document.getElementById('pkgTitleDrop').classList.remove('show');
+            document.getElementById('headerKebabWrap').classList.remove('visible');
+            closeHeaderKebab();
+            // Reset filter
+            currentPkgFilter = 'all';
+            document.getElementById('pkgPageTitle').textContent = 'All Packages';
+        }
+
+        function renderListView() {
+            const body = document.getElementById('pkgListBody');
+            if (!allPackages || allPackages.length === 0) {
+                body.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#888;">No packages found</td></tr>';
+                return;
+            }
+
+            // Build sortable array
+            let items = allPackages.map(pkg => ({
+                pkg,
+                qty: getTotalQty(pkg),
+                carrier: ''
+            }));
+
+            // Apply status filter
+            if (currentPkgFilter && currentPkgFilter !== 'all') {
+                items = items.filter(({ pkg }) => (pkg.status || 'NOT SHIPPED').toLowerCase() === currentPkgFilter.toLowerCase());
+            }
+
+            if (items.length === 0) {
+                body.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:#888;">No packages found</td></tr>';
+                return;
+            }
+
+            // Sort by current sort field
+            items.sort((a, b) => {
+                let valA, valB;
+                switch (currentSortField) {
+                    case 'package_date':
+                        valA = a.pkg.package_date || ''; valB = b.pkg.package_date || ''; break;
+                    case 'package_number':
+                        valA = a.pkg.package_number || ''; valB = b.pkg.package_number || ''; break;
+                    case 'sales_order_number':
+                        valA = a.pkg.sales_order_number || ''; valB = b.pkg.sales_order_number || ''; break;
+                    case 'customer_name':
+                        valA = (a.pkg.customer_name || '').toLowerCase(); valB = (b.pkg.customer_name || '').toLowerCase(); break;
+                    case 'quantity':
+                        valA = a.qty; valB = b.qty;
+                        if (valA < valB) return currentSortDir === 'asc' ? -1 : 1;
+                        if (valA > valB) return currentSortDir === 'asc' ? 1 : -1;
+                        return 0;
+                    case 'status':
+                        valA = (a.pkg.status || '').toLowerCase(); valB = (b.pkg.status || '').toLowerCase(); break;
+                    case 'carrier':
+                        valA = a.carrier.toLowerCase(); valB = b.carrier.toLowerCase(); break;
+                    default:
+                        valA = a.pkg.package_date || ''; valB = b.pkg.package_date || '';
+                }
+                if (valA < valB) return currentSortDir === 'asc' ? -1 : 1;
+                if (valA > valB) return currentSortDir === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            body.innerHTML = items.map(({ pkg, qty }) => {
+                const status = (pkg.status || 'NOT SHIPPED').toUpperCase();
+                let statusClass = 'not-shipped';
+                let statusText = 'Not Shipped';
+                if (status === 'SHIPPED') { statusClass = 'shipped'; statusText = 'Shipped'; }
+                else if (status === 'DELIVERED') { statusClass = 'delivered'; statusText = 'Delivered'; }
+
+                return `
+                    <tr onclick="viewPackage(${pkg.id})">
+                        <td style="text-align:center;width:36px" onclick="event.stopPropagation()">
+                            <input type="checkbox" class="pkg-row-checkbox" value="${pkg.id}" style="width:14px;height:14px;cursor:pointer" onchange="updatePkgSelectionBar()">
+                        </td>
+                        <td>${fmtDate(pkg.package_date)}</td>
+                        <td><a class="pkg-list-link" href="javascript:void(0)" onclick="event.stopPropagation(); viewPackage(${pkg.id})">${pkg.package_number || ''}</a></td>
+                        <td>${pkg.sales_order_number || ''}</td>
+                        <td>${pkg.customer_name || 'Unknown'}</td>
+                        <td>${pkg.carrier || ''}</td>
+                        <td>${qty.toFixed(2)}</td>
+                        <td><span class="pkg-list-status ${statusClass}">${statusText}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function sortListCol(field) {
+            if (currentSortField === field) {
+                currentSortDir = currentSortDir === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSortField = field;
+                currentSortDir = 'asc';
+            }
+
+            // Update sort arrows in table headers
+            document.querySelectorAll('.th-sort').forEach(s => s.textContent = '');
+            const sortEl = document.getElementById('thSort_' + field);
+            if (sortEl) sortEl.textContent = currentSortDir === 'asc' ? '\u2191' : '\u2193';
+
+            // Update sort items in kanban menus too
+            document.querySelectorAll('.col-sort-item').forEach(item => {
+                item.classList.remove('active', 'active-secondary');
+                const arrow = item.querySelector('.sort-arrow');
+                if (arrow) arrow.remove();
+            });
+
+            renderListView();
+        }
+
+        // === Title Filter Dropdown ===
+        let currentPkgFilter = 'all';
+
+        function togglePkgTitleDrop() {
+            const drop = document.getElementById('pkgTitleDrop');
+            const arrow = document.getElementById('pkgTitleArrow');
+            const isOpen = drop.classList.contains('show');
+            drop.classList.toggle('show');
+            arrow.innerHTML = isOpen ? '&#9662;' : '&#9652;';
+        }
+
+        function filterPkgByStatus(status) {
+            currentPkgFilter = status;
+            const titleEl = document.getElementById('pkgPageTitle');
+            const labels = { 'all': 'All Packages', 'not shipped': 'Not Shipped', 'shipped': 'Shipped', 'delivered': 'Delivered' };
+            titleEl.textContent = labels[status] || 'All Packages';
+
+            // Update active filter item
+            document.querySelectorAll('.page-title-filter-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.textContent.trim().replace(/☆/g, '').trim().toLowerCase() === (status === 'all' ? 'all' : status)) {
+                    item.classList.add('active');
+                }
+            });
+
+            // Close dropdown and reset arrow
+            document.getElementById('pkgTitleDrop').classList.remove('show');
+            document.getElementById('pkgTitleArrow').innerHTML = '&#9662;';
+
+            renderListView();
+        }
+
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.page-title-wrap')) {
+                const drop = document.getElementById('pkgTitleDrop');
+                if (drop && drop.classList.contains('show')) {
+                    drop.classList.remove('show');
+                    document.getElementById('pkgTitleArrow').innerHTML = '&#9662;';
+                }
+            }
+        });
+
+        // === Header Kebab Toggle ===
+        function toggleHeaderKebab(e) {
+            e.stopPropagation();
+            const drop = document.getElementById('headerKebabDrop');
+            drop.classList.toggle('show');
+        }
+
+        function closeHeaderKebab() {
+            const drop = document.getElementById('headerKebabDrop');
+            if (drop) drop.classList.remove('show');
+        }
+
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.header-kebab-wrap')) {
+                closeHeaderKebab();
+            }
+        });
     </script>
 </body>
 

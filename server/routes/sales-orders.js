@@ -2,18 +2,28 @@ const express = require('express');
 const router = express.Router();
 const database = require('../database');
 
-// GET all sales orders
+// GET all sales orders (optionally filtered by customer_id)
 router.get('/', async (req, res) => {
     try {
         const pool = database.getDb();
+        const { customer_id } = req.query;
+        let whereClause = '';
+        const params = [];
+        if (customer_id) {
+            whereClause = 'WHERE so.customer_id = $1';
+            params.push(customer_id);
+        }
         const result = await pool.query(`
             SELECT so.*,
                 COALESCE(pkg.package_count, 0)::int AS package_count,
                 COALESCE(pkg.shipped_count, 0)::int AS shipped_package_count,
                 COALESCE(shp.shipment_count, 0)::int AS shipment_count,
                 CASE WHEN inv.id IS NOT NULL THEN true ELSE false END AS has_invoice,
-                CASE WHEN inv.status IN ('PAID', 'Paid') THEN true ELSE false END AS invoice_paid
+                CASE WHEN inv.status IN ('PAID', 'Paid') THEN true ELSE false END AS invoice_paid,
+                c.company_name AS company_name,
+                COALESCE(inv_totals.invoiced_amount, 0) AS invoiced_amount
             FROM sales_orders so
+            LEFT JOIN customers c ON so.customer_id = c.id
             LEFT JOIN (
                 SELECT sales_order_id, 
                     COUNT(*) AS package_count,
@@ -27,10 +37,17 @@ router.get('/', async (req, res) => {
                 GROUP BY sales_order_id
             ) shp ON so.id = shp.sales_order_id
             LEFT JOIN LATERAL (
-                SELECT id, status FROM invoices WHERE order_number = so.order_number LIMIT 1
+                SELECT id, status FROM invoices WHERE order_number = so.order_number AND status != 'DRAFT' LIMIT 1
             ) inv ON true
+            LEFT JOIN (
+                SELECT order_number, SUM(total) AS invoiced_amount
+                FROM invoices
+                WHERE status != 'DRAFT'
+                GROUP BY order_number
+            ) inv_totals ON so.order_number = inv_totals.order_number
+            ${whereClause}
             ORDER BY so.created_at DESC
-        `);
+        `, params);
         res.json(result.rows);
     } catch (err) {
         console.error('Error fetching sales orders:', err);
@@ -179,6 +196,27 @@ router.post('/', async (req, res) => {
     }
 });
 
+// PATCH update sales order status
+router.patch('/:id/status', async (req, res) => {
+    try {
+        const pool = database.getDb();
+        const { status } = req.body;
+        if (!status) return res.status(400).json({ error: 'Status is required' });
+
+        const result = await pool.query(
+            'UPDATE sales_orders SET status = $1, updated_at = NOW() WHERE id = $2 RETURNING *',
+            [status.toUpperCase(), req.params.id]
+        );
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Sales order not found' });
+        }
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error('Error updating status:', err);
+        res.status(500).json({ error: 'Failed to update status' });
+    }
+});
+
 // POST convert sales order to invoice
 router.post('/:id/convert-to-invoice', async (req, res) => {
     try {
@@ -191,9 +229,33 @@ router.post('/:id/convert-to-invoice', async (req, res) => {
         }
         const order = orderResult.rows[0];
 
+        // DRAFT guard — cannot convert a draft order
+        if ((order.status || '').toUpperCase() === 'DRAFT') {
+            return res.status(403).json({ error: 'Cannot process a Draft order. Please confirm the order first.' });
+        }
+
         // 2. Fetch sales order items
         const itemsResult = await pool.query('SELECT * FROM sales_order_items WHERE sales_order_id = $1', [order.id]);
         const items = itemsResult.rows;
+
+        // 2b. Stock validation — check all items have sufficient stock
+        for (const item of items) {
+            if (item.item_id) {
+                const stockRes = await pool.query('SELECT stock_quantity FROM items WHERE id = $1', [item.item_id]);
+                if (stockRes.rows.length > 0) {
+                    const stock = parseFloat(stockRes.rows[0].stock_quantity) || 0;
+                    const ordered = parseFloat(item.quantity) || 0;
+                    if (stock < ordered) {
+                        return res.status(400).json({
+                            error: 'Action Denied: Insufficient stock to fulfill or invoice this order.',
+                            item_name: item.item_name,
+                            stock_available: stock,
+                            quantity_required: ordered
+                        });
+                    }
+                }
+            }
+        }
 
         // 3. Generate next invoice number
         const countResult = await pool.query('SELECT COUNT(*) FROM invoices');
@@ -218,8 +280,8 @@ router.post('/:id/convert-to-invoice', async (req, res) => {
             );
         }
 
-        // 6. Update sales order status to CLOSED
-        await pool.query('UPDATE sales_orders SET status = $1 WHERE id = $2', ['CLOSED', order.id]);
+        // 6. Check dual-requirement for closing: only close if both invoiced AND shipped
+        await checkAndCloseSalesOrder(pool, order.id);
 
         res.status(201).json({ invoice_id: invoice.id, invoice_number: invoice.invoice_number });
     } catch (err) {
@@ -321,4 +383,49 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
+// Dual-requirement check: only close SO when both invoiced AND fully shipped
+async function checkAndCloseSalesOrder(pool, salesOrderId) {
+    if (!salesOrderId) return;
+    try {
+        // Get current SO status
+        const soResult = await pool.query('SELECT * FROM sales_orders WHERE id = $1', [salesOrderId]);
+        if (soResult.rows.length === 0) return;
+        const so = soResult.rows[0];
+        const currentStatus = (so.status || '').toUpperCase();
+
+        // Don't re-close or touch cancelled orders
+        if (currentStatus === 'CLOSED' || currentStatus === 'CANCELLED') return;
+
+        // Check 1: Has an invoice been created for this SO?
+        const invoiceResult = await pool.query(
+            "SELECT id FROM invoices WHERE order_number = $1 LIMIT 1",
+            [so.order_number]
+        );
+        const hasInvoice = invoiceResult.rows.length > 0;
+
+        // Check 2: Are all items fully shipped? (all packages shipped/delivered)
+        const pkgResult = await pool.query(
+            'SELECT id, status FROM packages WHERE sales_order_id = $1',
+            [salesOrderId]
+        );
+        const packages = pkgResult.rows;
+        const hasShipment = packages.length > 0 && packages.every(p => {
+            const s = (p.status || '').toUpperCase();
+            return s === 'SHIPPED' || s === 'DELIVERED';
+        });
+
+        // Only close if BOTH conditions are met
+        if (hasInvoice && hasShipment) {
+            await pool.query(
+                'UPDATE sales_orders SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
+                ['CLOSED', salesOrderId]
+            );
+            console.log(`Sales order ${salesOrderId} CLOSED (both invoiced and shipped)`);
+        }
+    } catch (err) {
+        console.error('Error in checkAndCloseSalesOrder:', err);
+    }
+}
+
 module.exports = router;
+module.exports.checkAndCloseSalesOrder = checkAndCloseSalesOrder;

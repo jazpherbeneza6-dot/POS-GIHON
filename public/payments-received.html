@@ -91,36 +91,22 @@
         }
 
         .btn-new {
-            padding: 8px 16px;
+            padding: 10px 28px;
             background: #4285f4;
             color: white;
             border: none;
-            border-radius: 4px 0 0 4px;
-            font-size: 13px;
+            border-radius: 6px;
+            font-size: 14px;
             font-weight: 500;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 6px;
+            letter-spacing: 0.2px;
         }
 
         .btn-new:hover {
             background: #3367d6;
-        }
-
-        .btn-new-dropdown {
-            padding: 8px 10px;
-            background: #3367d6;
-            color: white;
-            border: none;
-            border-left: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 0 4px 4px 0;
-            cursor: pointer;
-            font-size: 10px;
-        }
-
-        .btn-new-dropdown:hover {
-            background: #2d5bb9;
         }
 
         .btn-more {
@@ -135,10 +121,118 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
         }
 
         .btn-more:hover {
             background: #f5f5f5;
+        }
+
+        .pr-more-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            right: 0;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            min-width: 240px;
+            z-index: 9999;
+            padding: 8px 0;
+        }
+
+        .pr-more-menu.show {
+            display: block;
+        }
+
+        .pr-more-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+            transition: background 0.15s;
+            white-space: nowrap;
+        }
+
+        .pr-more-item:hover {
+            background: #f5f7fa;
+        }
+
+        .pr-more-item .pr-mi-icon {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+            color: #555;
+        }
+
+        .pr-more-item .pr-mi-arrow {
+            margin-left: auto;
+            color: #aaa;
+            font-size: 12px;
+        }
+
+        .pr-more-sep {
+            height: 1px;
+            background: #e5e7eb;
+            margin: 6px 0;
+        }
+
+        /* Sort By submenu */
+        .pr-sort-wrap {
+            position: relative;
+        }
+
+        .pr-sort-sub {
+            display: none;
+            position: absolute;
+            right: 100%;
+            top: -8px;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            min-width: 210px;
+            z-index: 10000;
+            padding: 8px 0;
+        }
+
+        .pr-sort-wrap:hover .pr-sort-sub {
+            display: block;
+        }
+
+        .pr-sort-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .pr-sort-item:hover {
+            background: #f5f7fa;
+        }
+
+        .pr-sort-item.active {
+            background: #4285f4;
+            color: #fff;
+            border-radius: 4px;
+            margin: 2px 6px;
+            padding: 10px 12px;
+        }
+
+        .pr-sort-item.active:hover {
+            background: #3367d6;
+        }
+
+        .pr-sort-arrow {
+            font-size: 14px;
         }
 
         /* ===== Empty State ===== */
@@ -228,8 +322,10 @@
         }
 
         .payments-table th:first-child {
-            padding-left: 16px;
-            width: 36px;
+            padding-left: 8px;
+            width: 28px;
+            min-width: 28px;
+            max-width: 28px;
         }
 
         .payments-table td {
@@ -241,8 +337,18 @@
         }
 
         .payments-table td:first-child {
-            padding-left: 16px;
-            width: 36px;
+            padding-left: 8px;
+            width: 28px;
+            min-width: 28px;
+            max-width: 28px;
+        }
+
+        .payments-table td:nth-child(2),
+        .payments-table th:nth-child(2) {
+            width: 30px;
+            min-width: 30px;
+            max-width: 30px;
+            padding: 10px 4px;
         }
 
         .payments-table tr {
@@ -260,6 +366,41 @@
         .payments-table .col-amount,
         .payments-table .col-unused {
             text-align: right;
+        }
+
+        /* ---- Text Clipping for long columns ---- */
+        .payments-table td.pr-clip {
+            max-width: 180px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            position: relative;
+        }
+
+        .payments-table th.pr-clip-th {
+            max-width: 180px;
+            overflow: hidden;
+        }
+
+        /* ---- Tooltip on hover for clipped cells ---- */
+        .payments-table td.pr-clip:hover::after {
+            content: attr(data-tip);
+            position: absolute;
+            left: 0;
+            top: 100%;
+            z-index: 9999;
+            background: #1e293b;
+            color: #f1f5f9;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: normal;
+            word-break: break-word;
+            max-width: 320px;
+            min-width: 120px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            pointer-events: none;
+            line-height: 1.4;
         }
 
         .payment-num-link {
@@ -507,6 +648,18 @@
             background: #9e9e9e;
         }
 
+        .receipt-ribbon.refunded span {
+            background: #e53935;
+        }
+
+        .receipt-ribbon.voided span {
+            background: #ff9800;
+        }
+
+        .detail-kebab-item:hover {
+            background: #f5f5f5;
+        }
+
         .company-info {
             margin-bottom: 24px;
         }
@@ -666,21 +819,481 @@
         .btn-mark-paid:hover {
             background: #388e3c;
         }
+
+        /* ===== Hamburger Dropdown ===== */
+        .pr-col-dropdown-wrap {
+            position: relative;
+            display: inline-block;
+        }
+
+        .pr-filter-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 4px;
+            background: #f0f5ff;
+            border: 1px solid #bfdbfe;
+            transition: all 0.2s ease;
+        }
+
+        .pr-filter-icon:hover {
+            background: #dbeafe;
+            border-color: #93c5fd;
+        }
+
+        .pr-filter-icon:hover svg {
+            fill: #2563eb;
+        }
+
+        .pr-col-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            min-width: 200px;
+            z-index: 9999;
+            padding: 8px 0;
+        }
+
+        .pr-col-dropdown.show {
+            display: block;
+        }
+
+        .pr-col-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #374151;
+            transition: background 0.15s;
+            white-space: nowrap;
+        }
+
+        .pr-col-dropdown-item:hover {
+            background: #f3f4f6;
+        }
+
+        .pr-col-dropdown-item .dd-icon {
+            font-size: 15px;
+            width: 18px;
+            text-align: center;
+            color: #6b7280;
+        }
+
+        /* ===== Customize Columns Modal ===== */
+        .pr-cc-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.15);
+            z-index: 99999;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 60px;
+        }
+
+        .pr-cc-overlay.active {
+            display: flex;
+        }
+
+        .pr-cc-panel {
+            background: #fff;
+            width: 500px;
+            max-height: 85vh;
+            border-radius: 4px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pr-cc-header {
+            display: flex;
+            align-items: center;
+            padding: 18px 24px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .pr-cc-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 500;
+            color: #333;
+            flex: 1;
+        }
+
+        .pr-cc-title-icon {
+            color: #666;
+            font-size: 18px;
+        }
+
+        .pr-cc-count {
+            font-size: 13px;
+            color: #666;
+            margin-right: 14px;
+        }
+
+        .pr-cc-close {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: #ef4444;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .pr-cc-close:hover {
+            color: #dc2626;
+        }
+
+        .pr-cc-search {
+            padding: 16px 24px;
+        }
+
+        .pr-cc-search input {
+            width: 100%;
+            padding: 10px 14px 10px 36px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 10px center;
+        }
+
+        .pr-cc-search input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+        .pr-cc-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 16px 16px;
+            min-height: 0;
+        }
+
+        .pr-cc-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 14px;
+            margin: 4px 0;
+            background: #f8fafc;
+            border-radius: 8px;
+            gap: 12px;
+            cursor: default;
+            border: 2px solid transparent;
+            transition: all 0.15s;
+        }
+
+        .pr-cc-item:hover {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+        }
+
+        .pr-cc-item.checked {
+            background: #e6f4ff;
+            border-color: #91caff;
+        }
+
+        .pr-cc-item.locked {
+            cursor: default;
+            background: #f5f5f5;
+        }
+
+        .pr-cc-drag {
+            color: #bbb;
+            font-size: 14px;
+            cursor: grab;
+            user-select: none;
+        }
+
+        .pr-cc-lock {
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        .pr-cc-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #3b82f6;
+        }
+
+        .pr-cc-label {
+            font-size: 14px;
+            color: #333;
+            flex: 1;
+        }
+
+        .pr-cc-footer {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 24px;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .pr-cc-save {
+            padding: 8px 20px;
+            background: #3b82f6;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .pr-cc-save:hover {
+            background: #2563eb;
+        }
+
+        .pr-cc-cancel {
+            padding: 8px 20px;
+            background: #f3f4f6;
+            color: #333;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .pr-cc-cancel:hover {
+            background: #e5e7eb;
+        }
+
+        /* ===== Toast Notification ===== */
+        .pr-toast-container {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .pr-toast {
+            pointer-events: auto;
+            padding: 14px 28px;
+            border-radius: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+            background: #fff;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            border: 1px solid #e5e7eb;
+            border-left: 4px solid #3b82f6;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 300px;
+            animation: prToastIn 0.3s ease;
+            transition: opacity 0.3s ease;
+        }
+
+        .pr-toast-icon {
+            font-size: 18px;
+        }
+
+        .pr-toast-message {
+            flex: 1;
+        }
+
+        .pr-toast-close {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .pr-toast-close:hover {
+            color: #333;
+        }
+
+        @keyframes prToastIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== PAYMENTS BULK ACTION BAR ===== */
+        .pr-bulk-bar {
+            display: none;
+            background: #fff;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 8px 20px;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .pr-bulk-bar.show {
+            display: flex;
+        }
+
+        .pr-bulk-btn {
+            padding: 6px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            background: #fff;
+            font-size: 12px;
+            color: #333;
+            cursor: pointer;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .pr-bulk-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .pr-bulk-btn.icon-only {
+            padding: 6px 10px;
+            font-size: 14px;
+        }
+
+        .pr-bulk-count {
+            background: #3b82f6;
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: auto;
+        }
+
+        .pr-bulk-esc {
+            font-size: 12px;
+            color: #666;
+            margin-left: 8px;
+            cursor: pointer;
+        }
+
+        .pr-bulk-close {
+            background: none;
+            border: none;
+            font-size: 16px;
+            color: #ef4444;
+            cursor: pointer;
+            padding: 0 0 0 6px;
+            line-height: 1;
+        }
+
+        .pr-bulk-close:hover {
+            color: #dc2626;
+        }
+
+        .pr-bulk-more-wrap {
+            position: relative;
+            display: inline-block;
+        }
+
+        .pr-bulk-more-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            min-width: 180px;
+            z-index: 9999;
+            padding: 6px 0;
+        }
+
+        .pr-bulk-more-menu.show {
+            display: block;
+        }
+
+        .pr-bulk-more-item {
+            padding: 10px 16px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .pr-bulk-more-item:hover {
+            background: #f5f7fa;
+        }
+
+        .pr-bulk-more-item.danger {
+            color: #ef4444;
+        }
+
+        .pr-bulk-more-item.danger:hover {
+            background: #fef2f2;
+        }
     </style>
 </head>
 
 <body>
+    <!-- Toast Container -->
+    <div class="pr-toast-container" id="prToastContainer"></div>
     <!-- Sidebar Container -->
     <div id="sidebarContainer"></div>
 
     <div class="main-layout">
         <div class="content" id="content">
+            <!-- Bulk Action Bar -->
+            <div class="pr-bulk-bar" id="prBulkBar">
+                <button class="pr-bulk-btn icon-only" title="Print" onclick="bulkPrintPayments()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9V2h12v7" />
+                        <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2" />
+                        <rect x="6" y="14" width="12" height="8" />
+                    </svg>
+                </button>
+                <button class="pr-bulk-btn icon-only" title="Export PDF" onclick="bulkExportPrPDF()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+                        <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2" />
+                        <path d="M12 11v6" />
+                        <path d="m9 14 3-3 3 3" />
+                    </svg>
+                </button>
+                <div class="pr-bulk-more-wrap">
+                    <button class="pr-bulk-btn" onclick="togglePrBulkMore(event)">⋯</button>
+                    <div class="pr-bulk-more-menu" id="prBulkMoreMenu">
+                        <div class="pr-bulk-more-item danger" onclick="bulkDeletePayments()">Delete</div>
+                    </div>
+                </div>
+                <span class="pr-bulk-count" id="prBulkCount">0 Payments Selected</span>
+                <span class="pr-bulk-esc" onclick="clearPrBulkSelection()">Esc</span>
+                <button class="pr-bulk-close" onclick="clearPrBulkSelection()">✕</button>
+            </div>
             <!-- Page Header -->
             <div class="page-header">
                 <div class="page-title-wrapper">
                     <h1 class="page-title">
                         All Received Payments
-                        <span class="dropdown-arrow">▼</span>
                     </h1>
                 </div>
                 <div class="global-search-container">
@@ -691,11 +1304,49 @@
                 <div class="header-actions">
                     <div class="btn-new-group">
                         <button class="btn-new" onclick="goToRecordPayment()">
-                            <span>+</span> New
+                            + New
                         </button>
-                        <button class="btn-new-dropdown">▼</button>
                     </div>
-                    <button class="btn-more">⋯</button>
+                    <div style="position:relative;display:inline-block;">
+                        <button class="btn-more" onclick="togglePrMoreMenu(event)">⋯</button>
+                        <div class="pr-more-menu" id="prMoreMenu">
+                            <div class="pr-sort-wrap pr-more-item">
+                                <span class="pr-mi-icon">↑↓</span> Sort by <span class="pr-mi-arrow">›</span>
+                                <div class="pr-sort-sub" id="prSortSub">
+                                    <div class="pr-sort-item" onclick="sortPaymentsBy('date', this)">Date</div>
+                                    <div class="pr-sort-item" onclick="sortPaymentsBy('payment_number', this)">Payment#
+                                    </div>
+                                    <div class="pr-sort-item" onclick="sortPaymentsBy('reference_number', this)">
+                                        Reference#</div>
+                                    <div class="pr-sort-item" onclick="sortPaymentsBy('customer_name', this)">Customer
+                                        Name</div>
+                                    <div class="pr-sort-item" onclick="sortPaymentsBy('payment_mode', this)">Mode</div>
+                                    <div class="pr-sort-item" onclick="sortPaymentsBy('amount_received', this)">Amount
+                                    </div>
+                                    <div class="pr-sort-item" onclick="sortPaymentsBy('unused_amount', this)">Unused
+                                        Amount</div>
+                                    <div class="pr-sort-item" onclick="sortPaymentsBy('created_at', this)">Created Time
+                                    </div>
+                                    <div class="pr-sort-item" onclick="sortPaymentsBy('updated_at', this)">Last Modified
+                                        Time</div>
+                                </div>
+                            </div>
+                            <div class="pr-more-sep"></div>
+                            <div class="pr-more-item" onclick="prImportPayments()">
+                                <span class="pr-mi-icon">⬇</span> Import
+                            </div>
+                            <div class="pr-more-item" onclick="prExportPayments()">
+                                <span class="pr-mi-icon">⬆</span> Export
+                            </div>
+                            <div class="pr-more-sep"></div>
+                            <div class="pr-more-item" onclick="prRefreshList()">
+                                <span class="pr-mi-icon">🔄</span> Refresh List
+                            </div>
+                            <div class="pr-more-item" onclick="prResetColumnWidth()">
+                                <span class="pr-mi-icon">↩</span> Reset Column Width
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -716,6 +1367,26 @@
                         <table class="payments-table">
                             <thead>
                                 <tr>
+                                    <th style="width:40px;min-width:40px;text-align:center;padding:14px 8px;">
+                                        <div class="pr-col-dropdown-wrap">
+                                            <span class="pr-filter-icon" onclick="togglePrColDropdown(event)">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                    viewBox="0 0 16 16" style="fill:#3b82f6;">
+                                                    <path
+                                                        d="M1 2.5h14a.5.5 0 000-1H1a.5.5 0 000 1zm0 4h14a.5.5 0 000-1H1a.5.5 0 000 1zm0 4h14a.5.5 0 000-1H1a.5.5 0 000 1zm0 4h14a.5.5 0 000-1H1a.5.5 0 000 1z" />
+                                                </svg>
+                                            </span>
+                                            <div class="pr-col-dropdown" id="prColDropdown">
+                                                <div class="pr-col-dropdown-item" onclick="openPrCustomizeCols()">
+                                                    <span class="dd-icon">⚙</span> Customize Columns
+                                                </div>
+                                                <div class="pr-col-dropdown-item" onclick="togglePrTextMode()">
+                                                    <span class="dd-icon" id="prTextIcon">✂</span> <span
+                                                        id="prTextLabel">Clip Text</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </th>
                                     <th><input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)"></th>
                                     <th>DATE</th>
                                     <th>PAYMENT #</th>
@@ -725,7 +1396,7 @@
                                     <th>MODE</th>
                                     <th class="col-amount">AMOUNT</th>
                                     <th class="col-unused">UNUSED AMOUNT</th>
-                                    <th class="th-search"><span class="search-icon">🔍</span></th>
+
                                 </tr>
                             </thead>
                             <tbody id="paymentsBody">
@@ -745,10 +1416,7 @@
                     <!-- Info Bar -->
                     <div class="detail-info-bar">
                         <div class="detail-info-left">
-                            <div class="detail-info-item">
-                                <span class="detail-info-label">Location</span>
-                                <span class="detail-info-value" id="detailLocation">Head Office</span>
-                            </div>
+
                             <div class="detail-info-item">
                                 <span class="detail-info-label">Payment #</span>
                                 <span class="detail-info-value" id="detailPaymentNum"></span>
@@ -758,17 +1426,33 @@
 
                     <!-- Action Bar -->
                     <div class="detail-action-bar">
-                        <button class="detail-action-btn">✏️ Edit</button>
+                        <button class="detail-action-btn"
+                            onclick="window.location.href='/record-invoice-payment.html?edit_id=' + selectedPaymentId">✏️
+                            Edit</button>
                         <div class="detail-action-separator"></div>
-                        <button class="detail-action-btn">📧 Send Email</button>
+                        <button class="detail-action-btn" onclick="printPaymentDetail()">📄 PDF/Print</button>
                         <div class="detail-action-separator"></div>
-                        <button class="detail-action-btn">📄 PDF/Print ▾</button>
-                        <div class="detail-action-separator"></div>
-                        <button class="detail-action-btn">↩️ Refund</button>
+                        <button class="detail-action-btn" id="btnRefund" style="display:none;"
+                            onclick="confirmRefund()">↩️ Refund</button>
                         <div class="detail-action-separator"></div>
                         <button class="detail-action-btn" id="btnMarkPaid" style="display:none;"
                             onclick="markAsPaid()">✅ Mark as Paid</button>
-                        <button class="detail-action-btn">⋯</button>
+                        <div style="position:relative;display:inline-block;">
+                            <button class="detail-action-btn" onclick="toggleDetailKebab(event)">⋯</button>
+                            <div id="detailKebabMenu"
+                                style="display:none; position:absolute; top:100%; right:0; background:#fff; border:1px solid #e0e0e0; border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,0.12); z-index:1000; min-width:150px; overflow:hidden;">
+                                <div id="kebabVoid" class="detail-kebab-item" onclick="confirmVoid()"
+                                    style="padding:10px 16px; cursor:pointer; font-size:13px; display:flex; align-items:center; gap:8px;">
+                                    🚫 Void
+                                </div>
+                                <div class="detail-kebab-item" onclick="confirmDelete()"
+                                    style="padding:10px 16px; cursor:pointer; font-size:13px; color:#e53935; display:flex; align-items:center; gap:8px;">
+                                    🗑️ Delete
+                                </div>
+                            </div>
+                        </div>
+                        <button class="detail-action-btn" onclick="closePaymentDetail()"
+                            style="margin-left:auto;font-size:18px;padding:4px 10px;" title="Close">✕</button>
                     </div>
 
                     <!-- Detail Content -->
@@ -779,14 +1463,445 @@
         </div>
     </div>
 
+    <!-- Refund Confirmation Modal -->
+    <div id="refundModal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); z-index:99999; align-items:center; justify-content:center;">
+        <div
+            style="background:#fff; border-radius:10px; padding:28px 32px; max-width:440px; width:90%; box-shadow:0 8px 32px rgba(0,0,0,0.2); text-align:center;">
+            <div style="font-size:36px; margin-bottom:12px;">⚠️</div>
+            <div style="font-size:16px; font-weight:600; margin-bottom:8px;">Refund this payment?</div>
+            <div style="font-size:13px; color:#666; margin-bottom:20px;">This will void associated credits and reopen
+                any paid invoices. This action cannot be undone.</div>
+            <div style="display:flex; gap:10px; justify-content:center;">
+                <button onclick="document.getElementById('refundModal').style.display='none'"
+                    style="padding:8px 24px; border:1px solid #ddd; border-radius:6px; background:#fff; cursor:pointer; font-size:14px;">Cancel</button>
+                <button onclick="executeRefund()"
+                    style="padding:8px 24px; border:none; border-radius:6px; background:#e53935; color:#fff; cursor:pointer; font-size:14px; font-weight:600;">Yes,
+                    Refund</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Void Confirmation Modal -->
+    <div id="voidModal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); z-index:99999; align-items:center; justify-content:center;">
+        <div
+            style="background:#fff; border-radius:10px; padding:28px 32px; max-width:440px; width:90%; box-shadow:0 8px 32px rgba(0,0,0,0.2); text-align:center;">
+            <div style="font-size:36px; margin-bottom:12px;">🚫</div>
+            <div style="font-size:16px; font-weight:600; margin-bottom:8px;">Void this payment?</div>
+            <div style="font-size:13px; color:#666; margin-bottom:20px;">This will revert associated invoice balances,
+                remove credits, and mark the payment as VOID. This action cannot be undone.</div>
+            <div style="display:flex; gap:10px; justify-content:center;">
+                <button onclick="document.getElementById('voidModal').style.display='none'"
+                    style="padding:8px 24px; border:1px solid #ddd; border-radius:6px; background:#fff; cursor:pointer; font-size:14px;">Cancel</button>
+                <button onclick="executeVoid()"
+                    style="padding:8px 24px; border:none; border-radius:6px; background:#ff9800; color:#fff; cursor:pointer; font-size:14px; font-weight:600;">Yes,
+                    Void</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); z-index:99999; align-items:center; justify-content:center;">
+        <div
+            style="background:#fff; border-radius:10px; padding:28px 32px; max-width:440px; width:90%; box-shadow:0 8px 32px rgba(0,0,0,0.2); text-align:center;">
+            <div style="font-size:36px; margin-bottom:12px;">🗑️</div>
+            <div style="font-size:16px; font-weight:600; margin-bottom:8px;">Delete this payment?</div>
+            <div style="font-size:13px; color:#666; margin-bottom:20px;">This will permanently remove this payment
+                record. This action cannot be undone.</div>
+            <div style="display:flex; gap:10px; justify-content:center;">
+                <button onclick="document.getElementById('deleteModal').style.display='none'"
+                    style="padding:8px 24px; border:1px solid #ddd; border-radius:6px; background:#fff; cursor:pointer; font-size:14px;">Cancel</button>
+                <button onclick="executeDelete()"
+                    style="padding:8px 24px; border:none; border-radius:6px; background:#e53935; color:#fff; cursor:pointer; font-size:14px; font-weight:600;">Yes,
+                    Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customize Columns Modal -->
+    <div class="pr-cc-overlay" id="prCCOverlay" onclick="if(event.target===this)closePrCustomizeCols()">
+        <div class="pr-cc-panel">
+            <div class="pr-cc-header">
+                <div class="pr-cc-title"><span class="pr-cc-title-icon">⚙</span> Customize Columns</div>
+                <span class="pr-cc-count" id="prCCCount"></span>
+                <button class="pr-cc-close" onclick="closePrCustomizeCols()">✕</button>
+            </div>
+            <div class="pr-cc-search">
+                <input type="text" placeholder="Search" oninput="filterPrCCItems(this.value)">
+            </div>
+            <div class="pr-cc-list" id="prCCList"></div>
+            <div class="pr-cc-footer">
+                <button class="pr-cc-save" onclick="savePrCols()">Save</button>
+                <button class="pr-cc-cancel" onclick="closePrCustomizeCols()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Layout Script -->
     <script src="/js/pagination.js"></script>
     <script src="/js/layout.js"></script>
     <script>
         let payments = [];
         let selectedPaymentId = null;
+        let prTextClipped = false;
+
+        // ===== COLUMN DEFINITIONS =====
+        const prAllColumns = [
+            { key: 'date', label: 'Date', locked: true, visible: true },
+            { key: 'payment_number', label: 'Payment #', locked: true, visible: true },
+            { key: 'customer_name', label: 'Customer Name', locked: true, visible: true },
+            { key: 'reference_number', label: 'Reference Number', visible: true },
+            { key: 'invoice_number', label: 'Invoice#', visible: true },
+            { key: 'payment_mode', label: 'Mode', visible: true },
+            { key: 'amount', label: 'Amount', visible: true },
+            { key: 'unused_amount', label: 'Unused Amount', visible: true },
+            { key: 'status', label: 'Status', visible: false },
+            { key: 'deposit_to', label: 'Deposit To', visible: false },
+            { key: 'salesperson', label: 'Salesperson', visible: false },
+            { key: 'notes', label: 'Notes', visible: false },
+            { key: 'bank_charges', label: 'Bank Charges', visible: false }
+        ];
+        let prCCState = [];
+
+        // Restore saved column visibility from localStorage
+        (function () {
+            const saved = localStorage.getItem('pr_columns');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    parsed.forEach(s => {
+                        const col = prAllColumns.find(c => c.key === s.key);
+                        if (col && !col.locked) col.visible = s.visible;
+                    });
+                } catch (e) { }
+            }
+        })();
+
+        function getVisiblePrCols() { return prAllColumns.filter(c => c.visible); }
+
+        function openPrCustomizeCols() {
+            document.getElementById('prColDropdown').classList.remove('show');
+            prCCState = prAllColumns.map(c => ({ ...c }));
+            renderPrCCList();
+            document.getElementById('prCCOverlay').classList.add('active');
+        }
+
+        function closePrCustomizeCols() {
+            document.getElementById('prCCOverlay').classList.remove('active');
+        }
+
+        function renderPrCCList(filter) {
+            const list = document.getElementById('prCCList');
+            const q = (filter || '').toLowerCase();
+            let html = '';
+            prCCState.forEach((col, i) => {
+                if (q && !col.label.toLowerCase().includes(q)) return;
+                const checkedClass = col.visible ? 'checked' : '';
+                const lockedClass = col.locked ? 'locked' : '';
+                if (col.locked) {
+                    html += `<div class="pr-cc-item ${lockedClass} ${checkedClass}">
+                        <span class="pr-cc-drag">\u2807</span>
+                        <span class="pr-cc-lock">\ud83d\udd12</span>
+                        <span class="pr-cc-label">${col.label}</span>
+                    </div>`;
+                } else {
+                    html += `<div class="pr-cc-item ${checkedClass}" onclick="togglePrCCCol(${i})">
+                        <span class="pr-cc-drag">\u2807</span>
+                        <input type="checkbox" class="pr-cc-checkbox" ${col.visible ? 'checked' : ''} onclick="event.stopPropagation(); togglePrCCCol(${i})">
+                        <span class="pr-cc-label">${col.label}</span>
+                    </div>`;
+                }
+            });
+            list.innerHTML = html;
+            updatePrCCCount();
+        }
+
+        function togglePrCCCol(index) {
+            if (prCCState[index].locked) return;
+            prCCState[index].visible = !prCCState[index].visible;
+            renderPrCCList(document.querySelector('.pr-cc-search input')?.value);
+        }
+
+        function updatePrCCCount() {
+            const sel = prCCState.filter(c => c.visible).length;
+            document.getElementById('prCCCount').textContent = `${sel} of ${prCCState.length} Selected`;
+        }
+
+        function filterPrCCItems(query) { renderPrCCList(query); }
+
+        function savePrCols() {
+            prAllColumns.forEach((col, i) => { col.visible = prCCState[i].visible; });
+            localStorage.setItem('pr_columns', JSON.stringify(prAllColumns.map(c => ({ key: c.key, visible: c.visible }))));
+            closePrCustomizeCols();
+            rebuildPrTable();
+            renderPaymentsList();
+        }
+
+        function getPrCellValue(p, key) {
+            switch (key) {
+                case 'date': return p.payment_date ? new Date(p.payment_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+                case 'payment_number': return `<a class="payment-num-link" href="javascript:void(0)" onclick="event.stopPropagation(); selectPayment(${p.id})">${p.payment_number || ''}</a>`;
+                case 'customer_name': return p.customer_name || '';
+                case 'reference_number': return p.reference_number || '';
+                case 'invoice_number': return (p.invoice_number || '').split(',').map(s => s.trim().split('|')[0]).filter(Boolean).join(', ');
+                case 'payment_mode': return p.payment_mode || 'Cash';
+                case 'amount': return 'PHP' + parseFloat(p.amount_received || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                case 'unused_amount': return 'PHP' + parseFloat(p.unused_amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                case 'status': return `<span class="payment-badge ${(p.status || '').toLowerCase()}">${p.status || ''}</span>`;
+                case 'deposit_to': return p.deposit_to || '';
+                case 'salesperson': return p.salesperson_name || '';
+                case 'bank_charges': return parseFloat(p.bank_charges || 0).toFixed(2);
+                default: return '';
+            }
+        }
+
+        function getPrColAlign(key) {
+            return (key === 'amount' || key === 'unused_amount' || key === 'bank_charges') ? 'text-align:right;' : '';
+        }
+
+        // Columns that should be clipped with tooltip
+        const PR_CLIP_COLS = new Set(['invoice_number', 'customer_name', 'reference_number']);
+
+        // Get plain text for tooltip (strip HTML)
+        function getPrPlainText(p, key) {
+            switch (key) {
+                case 'customer_name': return p.customer_name || '';
+                case 'invoice_number': return (p.invoice_number || '').split(',').map(s => s.trim().split('|')[0]).filter(Boolean).join(', ');
+                case 'reference_number': return p.reference_number || '';
+                default: return '';
+            }
+        }
+
+        // Build a <td> with optional clipping and tooltip
+        function buildPrTd(p, col) {
+            const align = getPrColAlign(col.key);
+            const value = getPrCellValue(p, col.key);
+            if (PR_CLIP_COLS.has(col.key)) {
+                const tip = getPrPlainText(p, col.key).replace(/"/g, '&quot;');
+                return `<td class="pr-clip" style="${align}" data-tip="${tip}">${value}</td>`;
+            }
+            return `<td style="${align}">${value}</td>`;
+        }
+
+        // Column width map for table-layout: fixed
+        const PR_COL_WIDTHS = {
+            date: '100px',
+            payment_number: '100px',
+            customer_name: '180px',
+            reference_number: '130px',
+            invoice_number: '180px',
+            payment_mode: '90px',
+            amount: '120px',
+            unused_amount: '120px',
+            status: '90px',
+            deposit_to: '110px',
+            salesperson: '120px',
+            bank_charges: '100px'
+        };
+
+        function rebuildPrTable() {
+            const cols = getVisiblePrCols();
+            const thead = document.querySelector('.payments-table thead tr');
+            // Keep hamburger th + checkbox th, rebuild the rest
+            const hamTh = thead.children[0].outerHTML;
+            const cbTh = thead.children[1].outerHTML;
+            thead.innerHTML = hamTh + cbTh + cols.map(c => {
+                const clipCls = PR_CLIP_COLS.has(c.key) ? ' pr-clip-th' : '';
+                return `<th style="${getPrColAlign(c.key)}" class="${clipCls}">${c.label.toUpperCase()}</th>`;
+            }).join('');
+        }
+
+        function togglePrMoreMenu(e) {
+            e.stopPropagation();
+            document.getElementById('prMoreMenu').classList.toggle('show');
+        }
+        document.addEventListener('click', function () {
+            const m = document.getElementById('prMoreMenu');
+            if (m) m.classList.remove('show');
+        });
+
+        // Toast notification
+        function showPrToast(msg) {
+            const container = document.getElementById('prToastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'pr-toast';
+            toast.innerHTML = '<span class="pr-toast-icon">ℹ️</span><span class="pr-toast-message">' + msg + '</span><button class="pr-toast-close" onclick="this.parentElement.remove()">✕</button>';
+            container.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => { toast.remove(); }, 300); }, 3000);
+        }
+
+        // Sort By logic
+        let prSortField = 'date';
+        let prSortDir = 'desc';
+
+        const PR_SORT_LABELS = {
+            customer_name: { asc: 'A → Z', desc: 'Z → A' },
+            payment_mode: { asc: 'A → Z', desc: 'Z → A' },
+            reference_number: { asc: 'A → Z', desc: 'Z → A' },
+            payment_number: { asc: 'Ascending', desc: 'Descending' },
+            amount_received: { asc: 'Lowest → Highest', desc: 'Highest → Lowest' },
+            unused_amount: { asc: 'Lowest → Highest', desc: 'Highest → Lowest' },
+            date: { asc: 'Oldest → Newest', desc: 'Newest → Oldest' },
+            created_at: { asc: 'Oldest → Newest', desc: 'Newest → Oldest' },
+            updated_at: { asc: 'Oldest → Newest', desc: 'Newest → Oldest' }
+        };
+        const PR_FIELD_NAMES = {
+            date: 'Date', payment_number: 'Payment#', reference_number: 'Reference#',
+            customer_name: 'Customer Name', payment_mode: 'Mode',
+            amount_received: 'Amount', unused_amount: 'Unused Amount',
+            created_at: 'Created Time', updated_at: 'Last Modified Time'
+        };
+
+        function sortPaymentsBy(field, el) {
+            // Toggle direction if same field, else default desc
+            if (field === prSortField) {
+                prSortDir = prSortDir === 'desc' ? 'asc' : 'desc';
+            } else {
+                prSortField = field;
+                prSortDir = 'desc';
+            }
+
+            // Toast
+            const dirLabel = (PR_SORT_LABELS[field] || { asc: 'Ascending', desc: 'Descending' })[prSortDir];
+            showPrToast('Sorted by ' + (PR_FIELD_NAMES[field] || field) + ': ' + dirLabel);
+
+            // Update active state
+            document.querySelectorAll('.pr-sort-item').forEach(function (item) {
+                item.classList.remove('active');
+                item.innerHTML = item.textContent.trim();
+            });
+            el.classList.add('active');
+            el.innerHTML = el.textContent.trim() + ' <span class="pr-sort-arrow">' + (prSortDir === 'desc' ? '↓' : '↑') + '</span>';
+
+            // Sort payments
+            payments.sort(function (a, b) {
+                var va = a[field], vb = b[field];
+                if (['amount_received', 'unused_amount', 'bank_charges'].indexOf(field) >= 0) {
+                    va = parseFloat(va) || 0; vb = parseFloat(vb) || 0;
+                }
+                if (['date', 'created_at', 'updated_at'].indexOf(field) >= 0) {
+                    var fa = field === 'date' ? 'payment_date' : field;
+                    va = new Date(a[fa] || 0).getTime(); vb = new Date(b[fa] || 0).getTime();
+                }
+                if (typeof va === 'string') va = va.toLowerCase();
+                if (typeof vb === 'string') vb = vb.toLowerCase();
+                if (va < vb) return prSortDir === 'asc' ? -1 : 1;
+                if (va > vb) return prSortDir === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            renderPaymentsList();
+            document.getElementById('prMoreMenu').classList.remove('show');
+        }
+
+        // ===== KEBAB MENU ACTIONS =====
+        function prImportPayments() {
+            document.getElementById('prMoreMenu').classList.remove('show');
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.csv';
+            input.onchange = async function () {
+                const file = input.files[0];
+                if (!file) return;
+                const text = await file.text();
+                const lines = text.split('\n').filter(function (l) { return l.trim(); });
+                if (lines.length < 2) { showPrToast('CSV file is empty or has no data rows.'); return; }
+                const headers = lines[0].split(',').map(function (h) { return h.trim().toLowerCase().replace(/[^a-z_]/g, ''); });
+                let imported = 0;
+                for (var i = 1; i < lines.length; i++) {
+                    var vals = lines[i].split(',').map(function (v) { return v.trim(); });
+                    var row = {};
+                    headers.forEach(function (h, idx) { row[h] = vals[idx] || ''; });
+                    try {
+                        var res = await fetch('/api/payments-received', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(row)
+                        });
+                        if (res.ok) imported++;
+                    } catch (e) { console.error('Import error:', e); }
+                }
+                showPrToast(imported + ' payment' + (imported !== 1 ? 's' : '') + ' imported successfully.');
+                loadPayments();
+            };
+            input.click();
+        }
+
+        function prExportPayments() {
+            document.getElementById('prMoreMenu').classList.remove('show');
+            if (!payments || payments.length === 0) {
+                showPrToast('No payments to export.');
+                return;
+            }
+            var cols = ['payment_date', 'payment_number', 'customer_name', 'reference_number', 'invoice_number', 'payment_mode', 'amount_received', 'unused_amount', 'status', 'deposit_to', 'salesperson_name', 'bank_charges', 'notes'];
+            var headers = ['Date', 'Payment#', 'Customer Name', 'Reference#', 'Invoice#', 'Mode', 'Amount', 'Unused Amount', 'Status', 'Deposit To', 'Salesperson', 'Bank Charges', 'Notes'];
+            var csv = headers.join(',') + '\n';
+            payments.forEach(function (p) {
+                var row = cols.map(function (c) {
+                    var val = (p[c] || '').toString().replace(/"/g, '""');
+                    return '"' + val + '"';
+                });
+                csv += row.join(',') + '\n';
+            });
+            var blob = new Blob([csv], { type: 'text/csv' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'payments_received_' + new Date().toISOString().slice(0, 10) + '.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+            showPrToast('Exported ' + payments.length + ' payment' + (payments.length !== 1 ? 's' : '') + ' to CSV.');
+        }
+
+        function prRefreshList() {
+            document.getElementById('prMoreMenu').classList.remove('show');
+            loadPayments();
+            showPrToast('Payment list refreshed.');
+        }
+
+        function prResetColumnWidth() {
+            document.getElementById('prMoreMenu').classList.remove('show');
+            prAllColumns.forEach(function (col) { col.visible = true; });
+            localStorage.setItem('prColConfig', JSON.stringify(prAllColumns.map(function (c) { return { key: c.key, visible: c.visible }; })));
+            rebuildPrTable();
+            renderPaymentsList();
+            showPrToast('Column widths have been reset.');
+        }
+
+        function togglePrColDropdown(e) {
+            e.stopPropagation();
+            document.getElementById('prColDropdown').classList.toggle('show');
+        }
+
+        function togglePrTextMode() {
+            prTextClipped = !prTextClipped;
+            document.getElementById('prTextIcon').textContent = prTextClipped ? '↩' : '✂';
+            document.getElementById('prTextLabel').textContent = prTextClipped ? 'Wrap Text' : 'Clip Text';
+            const cells = document.querySelectorAll('.payments-table td');
+            cells.forEach(td => {
+                if (prTextClipped) {
+                    td.style.whiteSpace = 'nowrap';
+                    td.style.overflow = 'hidden';
+                    td.style.textOverflow = 'ellipsis';
+                    td.style.maxWidth = '150px';
+                } else {
+                    td.style.whiteSpace = '';
+                    td.style.overflow = '';
+                    td.style.textOverflow = '';
+                    td.style.maxWidth = '';
+                }
+            });
+            document.getElementById('prColDropdown').classList.remove('show');
+        }
+
+        document.addEventListener('click', function () {
+            document.getElementById('prColDropdown')?.classList.remove('show');
+        });
 
         document.addEventListener('DOMContentLoaded', function () {
+            rebuildPrTable();
             loadPayments();
         });
 
@@ -794,35 +1909,62 @@
             const query = (document.getElementById('prSearchInput').value || '').toLowerCase();
             if (!query) { renderPaymentsList(); renderPaymentsCards(); return; }
             const filtered = payments.filter(p => {
+                const dateStr = p.payment_date ? new Date(p.payment_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+                const amountStr = parseFloat(p.amount_received || 0).toFixed(2);
                 return (p.payment_number || '').toLowerCase().includes(query) ||
                     (p.customer_name || '').toLowerCase().includes(query) ||
                     (p.invoice_number || '').toLowerCase().includes(query) ||
                     (p.reference_number || '').toLowerCase().includes(query) ||
-                    (p.payment_mode || '').toLowerCase().includes(query);
+                    (p.payment_mode || '').toLowerCase().includes(query) ||
+                    (p.status || '').toLowerCase().includes(query) ||
+                    (p.deposit_to || '').toLowerCase().includes(query) ||
+                    (p.location || '').toLowerCase().includes(query) ||
+                    (p.notes || '').toLowerCase().includes(query) ||
+                    (p.salesperson_name || '').toLowerCase().includes(query) ||
+                    dateStr.toLowerCase().includes(query) ||
+                    amountStr.includes(query);
             });
+            // Render filtered table
             function renderPage(pageData) {
+                const cols = getVisiblePrCols();
                 document.getElementById('paymentsBody').innerHTML = pageData.map(p => {
-                    const date = p.payment_date ? new Date(p.payment_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
-                    const amount = parseFloat(p.amount_received).toLocaleString('en-PH', { minimumFractionDigits: 2 });
                     const activeClass = p.id === selectedPaymentId ? 'active' : '';
                     return `<tr onclick="selectPayment(${p.id})" class="${activeClass}">
-                        <td><input type="checkbox" onclick="event.stopPropagation()"></td>
-                        <td>${date}</td>
-                        <td><a class="payment-num-link" href="javascript:void(0)" onclick="event.stopPropagation(); selectPayment(${p.id})">${p.payment_number || ''}</a></td>
-                        <td>${p.reference_number || ''}</td>
-                        <td>${p.customer_name || ''}</td>
-                        <td>${p.invoice_number || ''}</td>
-                        <td>${p.payment_mode || 'Cash'}</td>
-                        <td class="col-amount">PHP${amount}</td>
-                        <td class="col-unused">PHP0.00</td>
+                        <td></td>
+                        <td><input type="checkbox" class="pr-checkbox" value="${p.id}" onclick="event.stopPropagation()" onchange="updatePrBulkBar()"></td>
+                        ${cols.map(c => buildPrTd(p, c)).join('')}
                         <td></td>
                     </tr>`;
                 }).join('');
             }
             window.prPager = Pagination.create({
                 data: filtered, perPage: 14, containerId: 'prPaginationContainer',
-                onPageChange: function(pageData) { renderPage(pageData); }
+                onPageChange: function (pageData) { renderPage(pageData); }
             });
+
+            // Also filter card view
+            const container = document.getElementById('paymentsCards');
+            container.innerHTML = filtered.map(p => {
+                const date = p.payment_date ? new Date(p.payment_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+                const amount = parseFloat(p.amount_received).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                const statusClass = p.status === 'PAID' ? 'paid' : 'draft';
+                const activeClass = p.id === selectedPaymentId ? 'active' : '';
+                return `
+                    <div class="payment-card ${activeClass}" onclick="selectPayment(${p.id})">
+                        <div class="payment-card-top">
+                            <span class="payment-card-customer">${p.customer_name || 'Unknown'}</span>
+                            <span class="payment-card-amount">PHP${amount}</span>
+                        </div>
+                        <div class="payment-card-meta">
+                            ${p.payment_number || ''} &middot; ${date}
+                        </div>
+                        <div class="payment-card-bottom">
+                            <span class="payment-badge ${statusClass}">${p.status}</span>
+                            <span class="payment-card-mode">${p.payment_mode || 'Cash'}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
         async function loadPayments() {
@@ -849,23 +1991,15 @@
         /* ===== Full Table View ===== */
         function renderPaymentsList() {
             function renderPRPage(pageData) {
+                const cols = getVisiblePrCols();
                 const tbody = document.getElementById('paymentsBody');
                 tbody.innerHTML = pageData.map(p => {
-                    const date = p.payment_date ? new Date(p.payment_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
-                    const amount = parseFloat(p.amount_received).toLocaleString('en-PH', { minimumFractionDigits: 2 });
                     const activeClass = p.id === selectedPaymentId ? 'active' : '';
-
                     return `
                         <tr onclick="selectPayment(${p.id})" class="${activeClass}">
-                            <td><input type="checkbox" onclick="event.stopPropagation()"></td>
-                            <td>${date}</td>
-                            <td><a class="payment-num-link" href="javascript:void(0)" onclick="event.stopPropagation(); selectPayment(${p.id})">${p.payment_number || ''}</a></td>
-                            <td>${p.reference_number || ''}</td>
-                            <td>${p.customer_name || ''}</td>
-                            <td>${p.invoice_number || ''}</td>
-                            <td>${p.payment_mode || 'Cash'}</td>
-                            <td class="col-amount">PHP${amount}</td>
-                            <td class="col-unused">PHP0.00</td>
+                            <td></td>
+                            <td><input type="checkbox" class="pr-checkbox" value="${p.id}" onclick="event.stopPropagation()" onchange="updatePrBulkBar()"></td>
+                            ${cols.map(c => buildPrTd(p, c)).join('')}
                             <td></td>
                         </tr>
                     `;
@@ -919,6 +2053,9 @@
             // Show detail panel
             document.getElementById('listPanel').classList.add('with-detail');
             document.getElementById('detailPanel').classList.add('active');
+            // Hide page header
+            var pageHeader = document.querySelector('.page-header');
+            if (pageHeader) pageHeader.style.display = 'none';
 
             // Fetch full payment details
             try {
@@ -931,18 +2068,151 @@
             }
         }
 
+        function closePaymentDetail() {
+            selectedPaymentId = null;
+            document.getElementById('listPanel').classList.remove('with-detail');
+            document.getElementById('detailPanel').classList.remove('active');
+            var pageHeader = document.querySelector('.page-header');
+            if (pageHeader) pageHeader.style.display = '';
+            renderPaymentsList();
+            renderPaymentsCards();
+        }
+
+        function printPaymentDetail() {
+            var content = document.getElementById('detailContent');
+            if (!content) return;
+            var printWin = window.open('', '_blank', 'width=800,height=600');
+            printWin.document.write('<!DOCTYPE html><html><head><title>Payment Receipt</title>');
+            printWin.document.write('<style>');
+            printWin.document.write('* { margin: 0; padding: 0; box-sizing: border-box; }');
+            printWin.document.write('body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 40px; color: #333; }');
+            printWin.document.write('.receipt-card { max-width: 700px; margin: 0 auto; position: relative; }');
+            printWin.document.write('.receipt-ribbon { position: absolute; top: 0; right: 30px; background: #28a745; color: #fff; padding: 6px 18px; font-size: 13px; font-weight: 600; border-radius: 0 0 6px 6px; }');
+            printWin.document.write('.receipt-ribbon.draft { background: #6c757d; }');
+            printWin.document.write('.company-info { margin-bottom: 20px; }');
+            printWin.document.write('.company-name { font-size: 22px; font-weight: 700; color: #1a73e8; }');
+            printWin.document.write('.company-details { font-size: 13px; color: #666; margin-top: 4px; }');
+            printWin.document.write('.receipt-title { font-size: 20px; font-weight: 700; color: #333; margin: 20px 0 16px; text-transform: uppercase; }');
+            printWin.document.write('.payment-info-grid { display: flex; justify-content: space-between; margin-bottom: 20px; }');
+            printWin.document.write('.payment-info-left { display: flex; flex-direction: column; gap: 4px; }');
+            printWin.document.write('.info-label { font-size: 12px; color: #888; font-weight: 600; text-transform: uppercase; margin-top: 8px; }');
+            printWin.document.write('.info-value { font-size: 14px; color: #333; }');
+            printWin.document.write('.amount-box { background: #f0f7ff; border: 1px solid #d0e3f7; border-radius: 8px; padding: 16px 24px; text-align: right; }');
+            printWin.document.write('.amount-label { font-size: 12px; color: #888; font-weight: 600; text-transform: uppercase; }');
+            printWin.document.write('.amount-value { font-size: 22px; font-weight: 700; color: #1a73e8; }');
+            printWin.document.write('.received-from { margin: 16px 0; }');
+            printWin.document.write('.received-from-label { font-size: 12px; color: #888; font-weight: 600; text-transform: uppercase; }');
+            printWin.document.write('.received-from-name { font-size: 15px; font-weight: 600; color: #1a73e8; margin-top: 4px; }');
+            printWin.document.write('.received-from-address { font-size: 13px; color: #666; margin-top: 2px; }');
+            printWin.document.write('.payment-for-title { font-size: 14px; font-weight: 700; margin: 20px 0 8px; }');
+            printWin.document.write('.payment-for-table { width: 100%; border-collapse: collapse; font-size: 13px; }');
+            printWin.document.write('.payment-for-table th { background: #f5f7fa; padding: 10px 12px; text-align: left; font-weight: 600; border-bottom: 2px solid #e0e0e0; }');
+            printWin.document.write('.payment-for-table td { padding: 10px 12px; border-bottom: 1px solid #eee; }');
+            printWin.document.write('.invoice-link { color: #1a73e8; text-decoration: none; }');
+            printWin.document.write('.btn-mark-paid { display: none; }');
+            printWin.document.write('@media print { body { padding: 20px; } }');
+            printWin.document.write('</style></head><body>');
+            printWin.document.write(content.innerHTML);
+            printWin.document.write('</body></html>');
+            printWin.document.close();
+            printWin.focus();
+            setTimeout(function () { printWin.print(); }, 300);
+        }
+
+        function confirmRefund() {
+            document.getElementById('refundModal').style.display = 'flex';
+        }
+
+        async function executeRefund() {
+            document.getElementById('refundModal').style.display = 'none';
+            try {
+                var res = await fetch('/api/payments-received/' + selectedPaymentId + '/refund', { method: 'POST' });
+                var data = await res.json();
+                if (!res.ok) {
+                    alert('Error: ' + (data.error || 'Failed to refund'));
+                    return;
+                }
+                showPrToast('Payment refunded successfully.');
+                // Refresh the detail view
+                selectPayment(selectedPaymentId);
+                loadPayments();
+            } catch (e) {
+                console.error('Refund error:', e);
+                alert('Failed to refund payment.');
+            }
+        }
+
+        function toggleDetailKebab(e) {
+            e.stopPropagation();
+            var menu = document.getElementById('detailKebabMenu');
+            menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+        }
+
+        document.addEventListener('click', function () {
+            var menu = document.getElementById('detailKebabMenu');
+            if (menu) menu.style.display = 'none';
+        });
+
+        function confirmVoid() {
+            document.getElementById('detailKebabMenu').style.display = 'none';
+            document.getElementById('voidModal').style.display = 'flex';
+        }
+
+        function confirmDelete() {
+            document.getElementById('detailKebabMenu').style.display = 'none';
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
+
+        async function executeVoid() {
+            document.getElementById('voidModal').style.display = 'none';
+            try {
+                var res = await fetch('/api/payments-received/' + selectedPaymentId + '/void', { method: 'POST' });
+                var data = await res.json();
+                if (!res.ok) {
+                    alert('Error: ' + (data.error || 'Failed to void'));
+                    return;
+                }
+                showPrToast('Payment voided successfully.');
+                selectPayment(selectedPaymentId);
+                loadPayments();
+            } catch (e) {
+                console.error('Void error:', e);
+                alert('Failed to void payment.');
+            }
+        }
+
+        async function executeDelete() {
+            document.getElementById('deleteModal').style.display = 'none';
+            try {
+                var res = await fetch('/api/payments-received/' + selectedPaymentId, { method: 'DELETE' });
+                var data = await res.json();
+                if (!res.ok) {
+                    alert('Error: ' + (data.error || 'Failed to delete'));
+                    return;
+                }
+                showPrToast('Payment deleted successfully.');
+                closePaymentDetail();
+                loadPayments();
+            } catch (e) {
+                console.error('Delete error:', e);
+                alert('Failed to delete payment.');
+            }
+        }
+
         function renderDetail(payment) {
             const date = payment.payment_date ? new Date(payment.payment_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
             const amount = parseFloat(payment.amount_received).toLocaleString('en-PH', { minimumFractionDigits: 2 });
-            const ribbonClass = payment.status === 'PAID' ? '' : 'draft';
-            const ribbonText = payment.status === 'PAID' ? 'Paid' : 'Draft';
+            const ribbonClass = payment.status === 'PAID' ? '' : (payment.status === 'REFUNDED' ? 'refunded' : (payment.status === 'VOID' ? 'voided' : 'draft'));
+            const ribbonText = payment.status === 'PAID' ? 'Paid' : (payment.status === 'REFUNDED' ? 'Refunded' : (payment.status === 'VOID' ? 'Void' : 'Draft'));
 
-            // Update info bar
-            document.getElementById('detailLocation').textContent = payment.location || 'Head Office';
+
             document.getElementById('detailPaymentNum').textContent = payment.payment_number || '';
 
             // Show/hide mark as paid button
             document.getElementById('btnMarkPaid').style.display = payment.status === 'DRAFT' ? 'inline-block' : 'none';
+            document.getElementById('btnRefund').style.display = payment.status === 'PAID' ? 'inline-block' : 'none';
+            // Kebab Void option: only show for PAID
+            document.getElementById('kebabVoid').style.display = payment.status === 'PAID' ? 'flex' : 'none';
 
             // Address
             let addressHTML = '';
@@ -952,13 +2222,23 @@
             if (payment.billing_zip) addressHTML += '<br>' + payment.billing_zip;
             if (payment.billing_country) addressHTML += '<br>' + payment.billing_country;
 
-            // Invoice info
-            let invoiceDate = '';
-            let invoiceAmount = '';
-            if (payment.invoice) {
-                invoiceDate = payment.invoice.invoice_date ? new Date(payment.invoice.invoice_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
-                invoiceAmount = parseFloat(payment.invoice.total).toLocaleString('en-PH', { minimumFractionDigits: 2 });
-            }
+            // Build invoice rows from stored data (format: "INV-NUM|invoiceAmt|paymentAmt, ...")
+            const invoiceEntries = (payment.invoice_number || '').split(',').map(s => s.trim()).filter(Boolean);
+            let invoiceRowsHTML = '';
+            invoiceRowsHTML = invoiceEntries.map(entry => {
+                const parts = entry.split('|');
+                const invNum = parts[0] || '';
+                const invAmt = parts[1] ? parseFloat(parts[1]).toLocaleString('en-PH', { minimumFractionDigits: 2 }) : '-';
+                const payAmt = parts[2] ? parseFloat(parts[2]).toLocaleString('en-PH', { minimumFractionDigits: 2 }) : '-';
+                return `
+                    <tr>
+                        <td><a class="invoice-link" href="/invoices.html">${invNum}</a></td>
+                        <td>${date}</td>
+                        <td>${parts[1] ? 'PHP' + invAmt : '-'}</td>
+                        <td>${parts[2] ? 'PHP' + payAmt : '-'}</td>
+                    </tr>
+                `;
+            }).join('');
 
             document.getElementById('detailContent').innerHTML = `
                 <div class="receipt-card">
@@ -1007,12 +2287,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td><a class="invoice-link" href="/invoices.html">${payment.invoice_number || ''}</a></td>
-                                <td>${invoiceDate}</td>
-                                <td>PHP${invoiceAmount || amount}</td>
-                                <td>PHP${amount}</td>
-                            </tr>
+                            ${invoiceRowsHTML}
                         </tbody>
                     </table>
 
@@ -1045,6 +2320,161 @@
         function toggleSelectAll(el) {
             const checkboxes = document.querySelectorAll('#paymentsBody input[type="checkbox"]');
             checkboxes.forEach(cb => cb.checked = el.checked);
+            updatePrBulkBar();
+        }
+
+        // ===== PAYMENTS BULK ACTION BAR =====
+        function updatePrBulkBar() {
+            const checked = document.querySelectorAll('.pr-checkbox:checked');
+            const bar = document.getElementById('prBulkBar');
+            const header = document.querySelector('.page-header');
+            if (checked.length > 0) {
+                bar.classList.add('show');
+                if (header) header.style.display = 'none';
+                document.getElementById('prBulkCount').textContent = checked.length + ' Payment' + (checked.length !== 1 ? 's' : '') + ' Selected';
+            } else {
+                bar.classList.remove('show');
+                if (header) header.style.display = '';
+            }
+        }
+
+        function clearPrBulkSelection() {
+            document.querySelectorAll('.pr-checkbox').forEach(cb => cb.checked = false);
+            const selectAll = document.getElementById('selectAll');
+            if (selectAll) selectAll.checked = false;
+            document.getElementById('prBulkBar').classList.remove('show');
+            document.getElementById('prBulkMoreMenu').classList.remove('show');
+            const header = document.querySelector('.page-header');
+            if (header) header.style.display = '';
+        }
+
+        function getSelectedPaymentIds() {
+            return Array.from(document.querySelectorAll('.pr-checkbox:checked')).map(cb => parseInt(cb.value));
+        }
+
+        function togglePrBulkMore(e) {
+            e.stopPropagation();
+            document.getElementById('prBulkMoreMenu').classList.toggle('show');
+        }
+
+        // Close bulk more menu on outside click
+        document.addEventListener('click', function () {
+            const menu = document.getElementById('prBulkMoreMenu');
+            if (menu) menu.classList.remove('show');
+        });
+
+        async function bulkDeletePayments() {
+            const ids = getSelectedPaymentIds();
+            if (ids.length === 0) return;
+            if (!confirm(`Are you sure you want to delete ${ids.length} payment${ids.length !== 1 ? 's' : ''}? This action cannot be undone.`)) return;
+
+            let deleted = 0;
+            for (const id of ids) {
+                try {
+                    const res = await fetch(`/api/payments-received/${id}`, { method: 'DELETE' });
+                    if (res.ok) deleted++;
+                } catch (e) { console.error('Error deleting payment:', e); }
+            }
+
+            alert(`${deleted} payment${deleted !== 1 ? 's' : ''} deleted successfully.`);
+            clearPrBulkSelection();
+            loadPayments();
+        }
+
+        async function bulkPrintPayments() {
+            const ids = getSelectedPaymentIds();
+            if (ids.length === 0) return;
+
+            // Fetch all selected payments
+            const selected = [];
+            for (const id of ids) {
+                try {
+                    const res = await fetch('/api/payments-received/' + id);
+                    if (res.ok) selected.push(await res.json());
+                } catch (e) { console.error(e); }
+            }
+            if (selected.length === 0) { alert('No payments loaded.'); return; }
+
+            const fmtCur = (v) => 'PHP' + parseFloat(v || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+            const fmtDate = (d) => d ? new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+
+            const pagesHTML = selected.map((p, idx) => {
+                const invoices = (p.invoice_number || '').split(',').map(s => s.trim().split('|')[0]).filter(Boolean);
+                const addr = [p.billing_street, p.billing_city, p.billing_state, p.billing_zip, p.billing_country].filter(Boolean).join(', ');
+
+                return `
+                <div class="payment-page" style="${idx < selected.length - 1 ? 'page-break-after:always;' : ''}padding:40px;max-width:800px;margin:0 auto;">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:30px;">
+                        <div>
+                            <h1 style="margin:0;font-size:22px;color:#333;">PAYMENT RECEIPT</h1>
+                            <div style="color:#666;font-size:13px;margin-top:4px;">Payment# ${p.payment_number || ''}</div>
+                        </div>
+                        <div style="text-align:right;font-size:13px;color:#555;">
+                            <div style="font-weight:600;">${p.customer_name || ''}</div>
+                            ${addr ? '<div>' + addr + '</div>' : ''}
+                        </div>
+                    </div>
+
+                    <table style="width:100%;margin-bottom:24px;font-size:13px;border-collapse:collapse;">
+                        <tr>
+                            <td style="padding:6px 0;color:#888;width:140px;">Payment Date</td>
+                            <td style="padding:6px 0;">${fmtDate(p.payment_date)}</td>
+                            <td style="padding:6px 0;color:#888;width:140px;">Reference Number</td>
+                            <td style="padding:6px 0;">${p.reference_number || '—'}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:6px 0;color:#888;">Payment Mode</td>
+                            <td style="padding:6px 0;">${p.payment_mode || 'Cash'}</td>
+                            <td style="padding:6px 0;color:#888;">Deposit To</td>
+                            <td style="padding:6px 0;">${p.deposit_to || '—'}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:6px 0;color:#888;">Status</td>
+                            <td style="padding:6px 0;font-weight:600;">${(p.status || '').toUpperCase()}</td>
+                            <td style="padding:6px 0;color:#888;">Salesperson</td>
+                            <td style="padding:6px 0;">${p.salesperson_name || '—'}</td>
+                        </tr>
+                    </table>
+
+                    ${invoices.length > 0 ? `
+                    <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:20px;">
+                        <thead>
+                            <tr style="background:#f9fafb;border-bottom:2px solid #e5e7eb;">
+                                <th style="padding:10px;text-align:left;color:#888;font-size:11px;font-weight:600;">INVOICE#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${invoices.map(inv => `<tr><td style="padding:8px 10px;border-bottom:1px solid #eee;">${inv}</td></tr>`).join('')}
+                        </tbody>
+                    </table>` : ''}
+
+                    <table style="width:300px;margin-left:auto;font-size:13px;border-collapse:collapse;">
+                        <tr style="border-top:2px solid #333;font-weight:700;font-size:16px;">
+                            <td style="padding:10px;text-align:right;">Amount Received</td>
+                            <td style="padding:10px;text-align:right;">${fmtCur(p.amount_received)}</td>
+                        </tr>
+                        ${parseFloat(p.bank_charges || 0) > 0 ? `<tr><td style="padding:6px 10px;text-align:right;color:#666;">Bank Charges</td><td style="padding:6px 10px;text-align:right;">${fmtCur(p.bank_charges)}</td></tr>` : ''}
+                    </table>
+                    ${p.notes ? '<div style="margin-top:20px;font-size:12px;color:#666;border-top:1px solid #eee;padding-top:10px;"><strong>Notes:</strong> ' + p.notes + '</div>' : ''}
+                </div>`;
+            }).join('');
+
+            const printWin = window.open('', '_blank', 'width=900,height=700');
+            printWin.document.write(`<!DOCTYPE html><html><head><title>Print Payments</title>
+                <style>
+                    * { margin:0; padding:0; box-sizing:border-box; }
+                    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color:#333; }
+                    @media print { body { margin:0; } .payment-page { padding:20px !important; } }
+                </style>
+            </head><body>${pagesHTML}</body></html>`);
+            printWin.document.close();
+            printWin.focus();
+            setTimeout(() => { printWin.print(); }, 500);
+        }
+
+        async function bulkExportPrPDF() {
+            // Same as print — browser "Save as PDF" from print dialog
+            await bulkPrintPayments();
         }
 
         function goToRecordPayment() {

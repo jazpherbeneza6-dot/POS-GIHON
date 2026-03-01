@@ -115,6 +115,39 @@ router.post('/', async (req, res) => {
     }
 });
 
+// PUT update sales return
+router.put('/:id', async (req, res) => {
+    try {
+        const pool = database.getDb();
+        const { status, receive_status, refund_status, reason } = req.body;
+        const fields = [];
+        const values = [];
+        let idx = 1;
+
+        if (status !== undefined) { fields.push(`status = $${idx++}`); values.push(status); }
+        if (receive_status !== undefined) { fields.push(`receive_status = $${idx++}`); values.push(receive_status); }
+        if (refund_status !== undefined) { fields.push(`refund_status = $${idx++}`); values.push(refund_status); }
+        if (reason !== undefined) { fields.push(`reason = $${idx++}`); values.push(reason); }
+
+        if (fields.length === 0) {
+            return res.status(400).json({ error: 'No fields to update' });
+        }
+
+        values.push(req.params.id);
+        const result = await pool.query(
+            `UPDATE sales_returns SET ${fields.join(', ')} WHERE id = $${idx} RETURNING *`,
+            values
+        );
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Sales return not found' });
+        }
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error('Error updating sales return:', err);
+        res.status(500).json({ error: 'Failed to update sales return' });
+    }
+});
+
 // DELETE sales return
 router.delete('/:id', async (req, res) => {
     try {

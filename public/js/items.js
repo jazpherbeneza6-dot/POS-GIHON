@@ -18,6 +18,35 @@ let currentView = 'list'; // 'list' or 'grid'
 let currentDetailItemId = null; // Currently viewed item in detail view
 let selectedItems = []; // Array of selected item IDs for bulk actions
 let currentItemsFilter = 'active'; // Current filter for items list
+let salesFilteredItemIds = null;
+let purchaseFilteredItemIds = null;
+let sortDirection = 'asc'; // Current sort direction
+
+// Grid view render (stub - grid view uses same data as table)
+function renderItemsGrid() {
+  // Grid view re-render handled by renderItemsTable's grid mode
+}
+
+// ========== ITEM TYPE TOGGLE (Goods vs Service) ==========
+function onItemTypeChange() {
+  const isService = document.querySelector('input[name="itemType"]:checked')?.value === 'service';
+  const goodsOnlyElements = [
+    'returnableRow',
+    'goodsOnlyDivider',
+    'dimensionsWeightRow',
+    'manufacturerBrandRow'
+  ];
+  goodsOnlyElements.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = isService ? 'none' : '';
+  });
+  // When service mode hides rows, the form gets shorter and the absolutely-positioned
+  // image upload area overlaps with UPC/MPN. Add a spacer to prevent this.
+  const upcRow = document.getElementById('upcMpnRow');
+  if (upcRow) {
+    upcRow.style.marginTop = isService ? '80px' : '';
+  }
+}
 
 // ========== SKU DUPLICATE CHECK FUNCTION ==========
 // Check if SKU already exists and show inline error
@@ -117,68 +146,55 @@ async function applyItemsFilter() {
 
   switch (currentItemsFilter) {
     case 'sales':
-      // Show items that have been part of sales transactions
+      // Show items that have been part of sales orders or invoices
       try {
-        const salesResponse = await fetch('/api/sales');
-        if (salesResponse.ok) {
-          const sales = await salesResponse.json();
-          const soldItemIds = new Set();
-          for (const sale of sales) {
-            if (sale.items && Array.isArray(sale.items)) {
-              for (const saleItem of sale.items) {
-                if (saleItem.item_id) soldItemIds.add(parseInt(saleItem.item_id));
-              }
-            }
-          }
-          // Store filtered items temporarily for render
-          const originalItems = [...items];
-          items = originalItems.filter(item => soldItemIds.has(parseInt(item.id)));
+        const salesRes = await fetch('/api/items/filter/sales-item-ids');
+        if (!salesRes.ok) {
+          console.error('Sales filter API returned:', salesRes.status);
+          showToast('No items found in sales transactions', 'info');
           renderItemsTable();
           renderItemsGrid();
-          items = originalItems;
-          if (items.length > 0 && soldItemIds.size === 0) {
-            showToast('No items found in sales transactions', 'info');
-          }
+          return;
         }
+        const soldIds = await salesRes.json();
+        const soldIdSet = new Set(soldIds.map(id => parseInt(id)));
+        // Filter the items array
+        salesFilteredItemIds = soldIdSet;
+        renderItemsTable();
+        renderItemsGrid();
+        salesFilteredItemIds = null;
       } catch (error) {
         console.error('Error fetching sales items:', error);
         showToast('Error loading sales items', 'error');
+        renderItemsTable();
+        renderItemsGrid();
       }
       return;
 
     case 'purchases':
-      // Show items that have been part of purchase transactions
+      // Show items that have been part of purchase orders
       try {
-        const purchasesResponse = await fetch('/api/purchases');
-        if (purchasesResponse.ok) {
-          const purchases = await purchasesResponse.json();
-          const purchasedItemIds = new Set();
-          for (const purchase of purchases) {
-            if (purchase.items && Array.isArray(purchase.items)) {
-              for (const purchaseItem of purchase.items) {
-                if (purchaseItem.item_id) purchasedItemIds.add(parseInt(purchaseItem.item_id));
-              }
-            }
-          }
-          // Store filtered items temporarily for render
-          const originalItems = [...items];
-          items = originalItems.filter(item => purchasedItemIds.has(parseInt(item.id)));
+        const purchaseRes = await fetch('/api/items/filter/purchase-item-ids');
+        if (!purchaseRes.ok) {
+          console.error('Purchase filter API returned:', purchaseRes.status);
+          showToast('No items found in purchase transactions', 'info');
           renderItemsTable();
           renderItemsGrid();
-          items = originalItems;
-          if (items.length > 0 && purchasedItemIds.size === 0) {
-            showToast('No items found in purchase transactions', 'info');
-          }
+          return;
         }
+        const purchasedIds = await purchaseRes.json();
+        const purchasedIdSet = new Set(purchasedIds.map(id => parseInt(id)));
+        purchaseFilteredItemIds = purchasedIdSet;
+        renderItemsTable();
+        renderItemsGrid();
+        purchaseFilteredItemIds = null;
       } catch (error) {
         console.error('Error fetching purchase items:', error);
         showToast('Error loading purchase items', 'error');
+        renderItemsTable();
+        renderItemsGrid();
       }
       return;
-
-    case 'zohocrm':
-      showToast('Zoho CRM integration coming soon', 'info');
-      break;
 
     default:
       // For all other filters (all, active, inactive, ungrouped, lowstock, inventory)
@@ -236,7 +252,7 @@ async function loadItemTransactions(itemId) {
   itemTransactions = [];
 
   try {
-    const response = await fetch(`/api/items/${itemId}/transactions`);
+    const response = await fetch(`/api/items/${itemId}/transactions?type=all`);
     if (response.ok) {
       const transactions = await response.json();
       itemTransactions = transactions.map(t => ({
@@ -247,7 +263,8 @@ async function loadItemTransactions(itemId) {
         quantity: parseFloat(t.quantity) || 0,
         price: parseFloat(t.price) || 0,
         total: parseFloat(t.total) || 0,
-        status: t.status || 'unknown'
+        status: t.status || 'unknown',
+        payment_status: t.payment_status || t.status || 'unknown'
       }));
     }
 
@@ -341,8 +358,22 @@ function renderTransactionsTable() {
 
   let filteredTransactions = [...itemTransactions];
 
+  // Map API type values to filter type values
+  const typeMapping = {
+    'sales': ['Sales Order'],
+    'invoices': ['Invoice'],
+    'credit_notes': ['Credit Note'],
+    'sales_receipts': ['Sales Receipt'],
+    'purchases': ['Purchase Order'],
+    'bills': ['Bill'],
+    'vendor_credits': ['Vendor Credit'],
+    'transfer_orders': ['Transfer Order'],
+    'adjustments': ['Inventory Adjustment']
+  };
+
   // Apply type filter
-  filteredTransactions = filteredTransactions.filter(t => t.type === typeFilter);
+  const matchTypes = typeMapping[typeFilter] || [];
+  filteredTransactions = filteredTransactions.filter(t => matchTypes.includes(t.type));
 
   // Apply status filter
   if (statusFilter !== 'all') {
@@ -370,16 +401,28 @@ function renderTransactionsTable() {
     // Clean quantity display (no trailing zeros)
     const qtyDisplay = Number.isInteger(qty) ? qty.toString() : qty.toFixed(2);
 
-    // Status styling
-    const statusStyle = t.status === 'completed' || t.status === 'confirmed' || t.status === 'received' || t.status === 'adjusted'
-      ? 'color:#166534;background:#dcfce7'
-      : t.status === 'ordered' || t.status === 'pending'
-        ? 'color:#92400e;background:#fef3c7'
-        : t.status === 'cancelled'
-          ? 'color:#991b1b;background:#fee2e2'
-          : '';
-
-    const statusText = t.status.charAt(0).toUpperCase() + t.status.slice(1);
+    // Status styling - include PAID
+    const statusUpper = (t.payment_status || t.status || '').toUpperCase();
+    let statusStyle = '';
+    let statusText = '';
+    if (statusUpper === 'PAID') {
+      statusStyle = 'color:#166534;background:#dcfce7';
+      statusText = 'Paid';
+    } else if (statusUpper === 'CONFIRMED' || statusUpper === 'COMPLETED' || statusUpper === 'RECEIVED' || statusUpper === 'ADJUSTED') {
+      statusStyle = 'color:#166534;background:#dcfce7';
+      statusText = statusUpper.charAt(0) + statusUpper.slice(1).toLowerCase();
+    } else if (statusUpper === 'DRAFT') {
+      statusStyle = 'color:#6b7280;background:#f3f4f6';
+      statusText = 'Draft';
+    } else if (statusUpper === 'ORDERED' || statusUpper === 'PENDING' || statusUpper === 'CLOSED') {
+      statusStyle = 'color:#92400e;background:#fef3c7';
+      statusText = statusUpper.charAt(0) + statusUpper.slice(1).toLowerCase();
+    } else if (statusUpper === 'CANCELLED') {
+      statusStyle = 'color:#991b1b;background:#fee2e2';
+      statusText = 'Cancelled';
+    } else {
+      statusText = t.status ? t.status.charAt(0).toUpperCase() + t.status.slice(1).toLowerCase() : '-';
+    }
 
     return `
       <tr>
@@ -402,58 +445,27 @@ async function loadItemHistory(itemId) {
   if (!itemId) return;
 
   try {
-    // Get item details for creation date
-    const item = items.find(i => i.id == itemId);
-    if (!item) return;
-
-    // Build history from item data
-    itemHistory = [];
-
-    // Add creation entry
-    if (item.created_at) {
-      itemHistory.push({
-        date: item.created_at,
-        action: 'created',
-        details: 'created by',
-        user: 'System'
-      });
-    }
-
-    // Add update entry if different from creation
-    if (item.updated_at && item.updated_at !== item.created_at) {
-      itemHistory.push({
-        date: item.updated_at,
-        action: 'updated',
-        details: 'updated by',
-        user: 'System'
-      });
-    }
-
-    // Check if there were stock adjustments
-    try {
-      const adjustmentsResponse = await fetch(`/api/inventory-adjustments?item_id=${itemId}`);
-      if (adjustmentsResponse.ok) {
-        const adjustments = await adjustmentsResponse.json();
-        for (const adj of adjustments) {
-          const changeType = adj.adjustment_type === 'add' ? 'increased' : 'decreased';
-          itemHistory.push({
-            date: adj.created_at,
-            action: 'stock_adjusted',
-            details: `updated. Initial stock changed from ${adj.previous_quantity || 0} to ${adj.new_quantity || adj.previous_quantity + adj.quantity}`,
-            user: adj.created_by || 'System'
-          });
+    const res = await fetch(`/api/items/${itemId}/history`);
+    if (res.ok) {
+      itemHistory = await res.json();
+    } else {
+      // Fallback: build from item data
+      const item = items.find(i => i.id == itemId);
+      itemHistory = [];
+      if (item) {
+        if (item.created_at) {
+          itemHistory.push({ date: item.created_at, action: 'created', details: `Item "${item.name}" was created`, user: 'System', type: 'system' });
+        }
+        if (item.updated_at && item.updated_at !== item.created_at) {
+          itemHistory.push({ date: item.updated_at, action: 'updated', details: `Item "${item.name}" was updated`, user: 'System', type: 'system' });
         }
       }
-    } catch (e) {
-      // Adjustments endpoint might not exist
     }
-
-    // Sort by date descending (newest first)
-    itemHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
 
     renderHistoryTable();
   } catch (error) {
     console.error('Error loading history:', error);
+    itemHistory = [];
     renderHistoryTable();
   }
 }
@@ -471,16 +483,38 @@ function renderHistoryTable() {
     return;
   }
 
+  const actionIcons = {
+    'created': '➕',
+    'updated': '✏️',
+    'stock_adjusted': '📦',
+    'deleted': '🗑️',
+    'status_change': '🔄'
+  };
+
+  const actionColors = {
+    'created': '#10b981',
+    'updated': '#3b82f6',
+    'stock_adjusted': '#f59e0b',
+    'deleted': '#ef4444',
+    'status_change': '#8b5cf6'
+  };
+
   tbody.innerHTML = itemHistory.map(h => {
     const date = new Date(h.date);
     const dateStr = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
     const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    const icon = actionIcons[h.action] || 'ℹ️';
+    const color = actionColors[h.action] || '#6b7280';
+    const typeBadge = h.type === 'adjustment' ? '<span style="background:#fef3c7;color:#92400e;padding:1px 6px;border-radius:3px;font-size:11px;margin-left:6px;">Adjustment</span>' :
+      h.type === 'activity' ? '<span style="background:#dbeafe;color:#1e40af;padding:1px 6px;border-radius:3px;font-size:11px;margin-left:6px;">Activity</span>' : '';
 
     return `
       <tr>
-        <td class="history-date">${dateStr} ${timeStr}</td>
+        <td class="history-date" style="white-space:nowrap;color:#3b82f6;">${dateStr} ${timeStr}</td>
         <td class="history-details">
-          <span class="change-highlight">${h.details}</span> - <span class="user-name">${h.user}</span>
+          <span style="margin-right:4px;">${icon}</span>
+          <span class="change-highlight">${h.details}</span>${typeBadge}
+          <span class="user-name" style="margin-left:4px;"> - ${h.user}</span>
         </td>
       </tr>
     `;
@@ -518,6 +552,13 @@ function openAdjustStockModal() {
   const costPrice = parseFloat(item.purchase_cost) || parseFloat(item.cost) || 0;
   document.getElementById('adjustCostPrice').value = costPrice.toFixed(0);
 
+  // Set value fields
+  const currentValue = qtyAvailable * costPrice;
+  document.getElementById('adjustCurrentValue').value = 'PHP' + currentValue.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  document.getElementById('adjustCurrentValue').dataset.rawValue = currentValue;
+  document.getElementById('adjustChangedValue').value = '0.00';
+  document.getElementById('adjustValueAdjusted').value = '';
+
   // Reset other fields
   document.getElementById('adjustNewQuantity').value = '0.00';
   document.getElementById('adjustQuantityAdjusted').value = '';
@@ -525,21 +566,51 @@ function openAdjustStockModal() {
   document.getElementById('adjustStockReason').value = '';
   document.getElementById('adjustStockDescription').value = '';
 
-  // Set up input events for bidirectional calculation
+  // Reset to Quantity mode
+  document.querySelector('input[name="adjustmentType"][value="quantity"]').checked = true;
+  document.getElementById('qtyAdjustSection').style.display = '';
+  document.getElementById('valueAdjustSection').style.display = 'none';
+
+  // Set up mode toggle listeners
+  document.querySelectorAll('input[name="adjustmentType"]').forEach(radio => {
+    radio.onchange = function () {
+      if (this.value === 'value') {
+        document.getElementById('qtyAdjustSection').style.display = 'none';
+        document.getElementById('valueAdjustSection').style.display = '';
+      } else {
+        document.getElementById('qtyAdjustSection').style.display = '';
+        document.getElementById('valueAdjustSection').style.display = 'none';
+      }
+    };
+  });
+
+  // Set up input events for quantity bidirectional calculation
   const qtyAdjustedEl = document.getElementById('adjustQuantityAdjusted');
   const newQtyEl = document.getElementById('adjustNewQuantity');
-  // Remove old listeners by cloning
   const newQtyAdjustedEl = qtyAdjustedEl.cloneNode(true);
   qtyAdjustedEl.parentNode.replaceChild(newQtyAdjustedEl, qtyAdjustedEl);
   const newNewQtyEl = newQtyEl.cloneNode(true);
   newQtyEl.parentNode.replaceChild(newNewQtyEl, newQtyEl);
-  // Add fresh listeners
   newQtyAdjustedEl.addEventListener('input', calculateNewQuantity);
   newNewQtyEl.addEventListener('input', calculateQuantityAdjusted);
+
+  // Set up value input calculation
+  const changedValEl = document.getElementById('adjustChangedValue');
+  changedValEl.oninput = function () {
+    calculateValueAdjusted();
+  };
 
   // Close item detail view and show adjust stock overlay
   document.getElementById('itemDetailOverlay').classList.remove('active');
   document.getElementById('adjustStockOverlay').classList.add('active');
+}
+
+function calculateValueAdjusted() {
+  const currentValue = parseFloat(document.getElementById('adjustCurrentValue').dataset.rawValue) || 0;
+  const changedValue = parseFloat(document.getElementById('adjustChangedValue').value) || 0;
+  const adjusted = changedValue - currentValue;
+  const sign = adjusted >= 0 ? '+' : '';
+  document.getElementById('adjustValueAdjusted').value = sign + adjusted.toFixed(2);
 }
 
 function closeAdjustStockModal() {
@@ -577,10 +648,25 @@ async function submitStockAdjustment(status) {
     return;
   }
 
-  const qtyAdjusted = parseFloat(document.getElementById('adjustQuantityAdjusted').value);
-  if (!qtyAdjusted || qtyAdjusted === 0) {
-    showToast('Please enter a quantity to adjust', 'error');
-    return;
+  const adjustmentType = document.querySelector('input[name="adjustmentType"]:checked')?.value || 'quantity';
+
+  let adjustedValue;
+  if (adjustmentType === 'value') {
+    // Value mode: send the value delta (Changed Value - Current Value)
+    const currentValue = parseFloat(document.getElementById('adjustCurrentValue').dataset.rawValue) || 0;
+    const changedValue = parseFloat(document.getElementById('adjustChangedValue').value) || 0;
+    adjustedValue = changedValue - currentValue;
+    if (adjustedValue === 0) {
+      showToast('Changed value must be different from current value', 'error');
+      return;
+    }
+  } else {
+    // Quantity mode
+    adjustedValue = parseFloat(document.getElementById('adjustQuantityAdjusted').value);
+    if (!adjustedValue || adjustedValue === 0) {
+      showToast('Please enter a quantity to adjust', 'error');
+      return;
+    }
   }
 
   const item = items.find(i => i.id == adjustStockItemId);
@@ -593,7 +679,6 @@ async function submitStockAdjustment(status) {
     const referenceNumber = document.getElementById('adjustStockReference').value || '';
     const description = document.getElementById('adjustStockDescription').value || '';
     const account = document.getElementById('adjustStockAccount').value || '';
-    const adjustmentType = document.querySelector('input[name="adjustmentType"]:checked')?.value || 'quantity';
 
     const response = await fetch('/api/inventory/adjustments', {
       method: 'POST',
@@ -607,7 +692,7 @@ async function submitStockAdjustment(status) {
         status: status,
         items: [{
           item_id: adjustStockItemId,
-          quantity_adjusted: qtyAdjusted
+          quantity_adjusted: adjustedValue
         }]
       })
     });
@@ -618,7 +703,7 @@ async function submitStockAdjustment(status) {
     }
 
     if (status === 'adjusted') {
-      showToast('Inventory Adjustment Added', 'success');
+      showToast(`${adjustmentType === 'value' ? 'Value' : 'Inventory'} Adjustment Applied`, 'success');
     } else {
       showToast('Adjustment saved as draft', 'success');
     }
@@ -891,15 +976,43 @@ function hideSortSubmenu() {
 }
 
 function sortItemsBy(field, direction) {
-  // Update the selected state
-  document.querySelectorAll('.sort-option').forEach(opt => opt.classList.remove('selected'));
-  event.target.closest('.sort-option').classList.add('selected');
-
-  // Sort the items
+  // If clicking same field, toggle direction; otherwise set to given direction
+  if (filters.sort === field) {
+    sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+  } else {
+    sortDirection = direction || 'asc';
+  }
   filters.sort = field;
-  loadItems();
+
+  // Update selected state and arrow
+  document.querySelectorAll('.sort-option').forEach(opt => {
+    opt.classList.remove('selected');
+    const arrow = opt.querySelector('.sort-arrow');
+    if (arrow) arrow.remove();
+  });
+  const clicked = event.target.closest('.sort-option');
+  if (clicked) {
+    clicked.classList.add('selected');
+    const arrowSpan = document.createElement('span');
+    arrowSpan.className = 'sort-arrow';
+    arrowSpan.textContent = sortDirection === 'asc' ? '↑' : '↓';
+    clicked.appendChild(arrowSpan);
+  }
+
+  // Re-render with new sort
+  renderItemsTable();
   closeMoreDropdown();
-  showToast(`Sorted by ${field.replace('_', ' ')}`, 'success');
+  const fieldLabel = field.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  // Contextual direction labels
+  let dirLabel;
+  if (['purchase_rate', 'rate', 'stock_on_hand', 'reorder_level'].includes(field)) {
+    dirLabel = sortDirection === 'asc' ? 'Lowest→Highest' : 'Highest→Lowest';
+  } else if (['created_time', 'last_modified_time'].includes(field)) {
+    dirLabel = sortDirection === 'asc' ? 'Oldest→Newest' : 'Newest→Oldest';
+  } else {
+    dirLabel = sortDirection === 'asc' ? 'A→Z' : 'Z→A';
+  }
+  showToast(`Sorted by ${fieldLabel} (${dirLabel})`, 'success');
 }
 
 function refreshItemsList() {
@@ -1648,7 +1761,17 @@ async function executeBulkUpdate() {
     return;
   }
 
-  const newValue = document.getElementById('bulkUpdateValue').value.trim();
+  // Get value from hidden input, or from numeric/text inline input
+  let newValue = document.getElementById('bulkUpdateValue').value.trim();
+  if (!newValue) {
+    const numInput = document.getElementById('bulkValueNumericInput');
+    const textInput = document.getElementById('bulkValueTextInput');
+    const descInput = document.getElementById('bulkDescriptionInput');
+    if (numInput && numInput.value) newValue = numInput.value.trim();
+    else if (textInput && textInput.value) newValue = textInput.value.trim();
+    else if (descInput && descInput.value) newValue = descInput.value.trim();
+  }
+
   if (!newValue) {
     showToast('Please enter a value', 'error');
     return;
@@ -1658,35 +1781,44 @@ async function executeBulkUpdate() {
     let successCount = 0;
     let errorCount = 0;
 
-    // Prepare the update data - ONLY the selected field
-    let updateData = {
-      _partialUpdate: true  // Flag to indicate single-field update
+    // Map frontend field keys to database column names
+    const fieldToColumn = {
+      'selling_price': 'selling_price',
+      'purchase_cost': 'purchase_cost',
+      'reorder_point': 'reorder_point',
+      'stock_quantity': 'stock_quantity',
+      'sales_description': 'description',
+      'purchase_description': 'purchase_description',
+      'sales_account': 'account',
+      'purchase_account': 'purchase_account',
+      'inventory_account': 'inventory_account',
+      'valuation_method': 'valuation_method',
+      'tax': 'tax_rate',
+      'brand': 'brand',
+      'manufacturer': 'manufacturer',
+      'unit': 'unit',
+      'returnable': 'is_returnable'
     };
 
-    // Handle numeric fields
-    if (['selling_price', 'purchase_cost', 'reorder_point', 'stock_quantity'].includes(selectedBulkField)) {
+    const numericFields = ['selling_price', 'purchase_cost', 'reorder_point', 'stock_quantity'];
+    const dbColumn = fieldToColumn[selectedBulkField] || selectedBulkField;
+
+    let updateData = { _partialUpdate: true };
+
+    if (numericFields.includes(selectedBulkField)) {
       const numValue = parseFloat(newValue);
       if (isNaN(numValue)) {
         showToast('Please enter a valid number', 'error');
         return;
       }
-      // Map field names to API field names
-      const fieldMap = {
-        'selling_price': 'selling_price',
-        'purchase_cost': 'purchase_cost',
-        'reorder_point': 'reorder_point',
-        'stock_quantity': 'stock_quantity'
-      };
-      updateData[fieldMap[selectedBulkField] || selectedBulkField] = numValue;
+      updateData[dbColumn] = numValue;
     } else if (selectedBulkField === 'returnable') {
-      // Handle boolean
-      updateData.is_returnable = newValue.toLowerCase() === 'true' || newValue.toLowerCase() === 'yes' || newValue === '1';
+      updateData[dbColumn] = newValue.toLowerCase() === 'true' || newValue.toLowerCase() === 'yes' || newValue === '1';
     } else {
-      // String fields (name, sku, unit, manufacturer, brand, description, etc.)
-      updateData[selectedBulkField] = newValue;
+      updateData[dbColumn] = newValue;
     }
 
-    // Update each selected item with ONLY the selected field
+    // Update each selected item
     for (const itemId of selectedItems) {
       try {
         const response = await fetch(`/api/items/${itemId}`, {
@@ -2055,9 +2187,52 @@ function openItemDetailView(itemId) {
   document.getElementById('detailPhysicalStock').textContent = ': ' + formatNumber(item.stock_quantity || 0);
   document.getElementById('detailReorderPoint').textContent = formatNumber(item.reorder_point || 0);
 
+  // Fetch committed stock and available for sale
+  fetch(`/api/items/${item.id}/committed-stock`)
+    .then(r => r.json())
+    .then(data => {
+      const committed = parseFloat(data.committed_stock || 0);
+      const available = parseFloat(data.available_for_sale || 0);
+      document.getElementById('detailCommittedStock').textContent = ': ' + formatNumber(committed);
+      document.getElementById('detailAvailableForSale').textContent = ': ' + formatNumber(available);
+      document.getElementById('detailPhysicalCommitted').textContent = ': ' + formatNumber(committed);
+      document.getElementById('detailPhysicalAvailable').textContent = ': ' + formatNumber(available);
+    })
+    .catch(() => {
+      document.getElementById('detailCommittedStock').textContent = ': 0.00';
+      document.getElementById('detailAvailableForSale').textContent = ': 0.00';
+      document.getElementById('detailPhysicalCommitted').textContent = ': 0.00';
+      document.getElementById('detailPhysicalAvailable').textContent = ': 0.00';
+    });
+
+  // Show preferred vendor
+  const vendorEl = document.getElementById('detailPreferredVendor');
+  if (vendorEl) vendorEl.textContent = item.preferred_vendor || '-';
+
   // Update item type display
   const typeMap = { 'goods': 'Inventory Items', 'service': 'Service', 'non-inventory': 'Non-Inventory' };
   document.getElementById('detailItemType').textContent = typeMap[item.type] || 'Inventory Items';
+
+  // Show Added By
+  const addedByEl = document.getElementById('detailAddedBy');
+  if (addedByEl) addedByEl.textContent = item.added_by || '-';
+
+  // Show item group if available
+  const groupRow = document.getElementById('detailItemGroupRow');
+  const groupLink = document.getElementById('detailItemGroupLink');
+  if (groupRow && groupLink) {
+    if (item.group_name && item.group_id) {
+      groupRow.style.display = '';
+      groupLink.textContent = item.group_name;
+      groupLink.href = `/item-groups.html?groupId=${item.group_id}`;
+      groupLink.onclick = function (e) {
+        e.preventDefault();
+        window.location.href = `/item-groups.html?groupId=${item.group_id}`;
+      };
+    } else {
+      groupRow.style.display = 'none';
+    }
+  }
 
   // Show item image or placeholder
   const imgPreview = document.getElementById('detailImagePreview');
@@ -2076,11 +2251,50 @@ function openItemDetailView(itemId) {
 
   // Show the overlay
   document.getElementById('itemDetailOverlay').classList.add('active');
+
+  // If currently on transactions or history tab, reload data for the new item
+  const activeTab = document.querySelector('.item-detail-tab.active');
+  if (activeTab) {
+    const tabName = activeTab.dataset.tab;
+    if (tabName === 'transactions') {
+      loadItemTransactions(currentDetailItemId);
+    } else if (tabName === 'history') {
+      loadItemHistory(currentDetailItemId);
+    }
+  }
+
+  // Load status counts (To be Shipped, Received, Invoiced, Billed)
+  loadItemStatusCounts(itemId);
 }
 
 function closeItemDetailView() {
   document.getElementById('itemDetailOverlay').classList.remove('active');
   currentDetailItemId = null;
+}
+
+// Load item status counts for the detail view cards
+async function loadItemStatusCounts(itemId) {
+  // Reset to 0 first
+  const shipped = document.getElementById('detailToBeShipped');
+  const received = document.getElementById('detailToBeReceived');
+  const invoiced = document.getElementById('detailToBeInvoiced');
+  const billed = document.getElementById('detailToBeBilled');
+  if (shipped) shipped.textContent = '0';
+  if (received) received.textContent = '0';
+  if (invoiced) invoiced.textContent = '0';
+  if (billed) billed.textContent = '0';
+
+  try {
+    const res = await fetch(`/api/items/${itemId}/status-counts`);
+    if (!res.ok) return;
+    const data = await res.json();
+    if (shipped) shipped.textContent = data.to_be_shipped || 0;
+    if (received) received.textContent = data.to_be_received || 0;
+    if (invoiced) invoiced.textContent = data.to_be_invoiced || 0;
+    if (billed) billed.textContent = data.to_be_billed || 0;
+  } catch (error) {
+    console.error('Error loading item status counts:', error);
+  }
 }
 
 // Upload image for current detail item
@@ -2206,11 +2420,139 @@ async function saveOpeningStock() {
 
 function editCurrentItem() {
   if (currentDetailItemId) {
-    // Close detail view first
+    const itemId = currentDetailItemId;
+    // Close detail view first (this sets currentDetailItemId = null)
     closeItemDetailView();
-    // Open edit modal for the current item
-    openItemModal(currentDetailItemId);
+    // Open edit modal for the saved item ID
+    openItemModal(itemId);
   }
+}
+
+// Toggle the More dropdown in detail view
+function toggleDetailMoreDropdown(e) {
+  e.stopPropagation();
+  const dropdown = document.getElementById('detailMoreDropdown');
+  dropdown.classList.toggle('show');
+
+  // Update "Mark as Inactive/Active" label based on current item status
+  if (currentDetailItemId) {
+    const item = items.find(i => i.id === currentDetailItemId);
+    if (item) {
+      const statusItem = dropdown.querySelector('[onclick="toggleItemActiveStatus()"]');
+      if (statusItem) {
+        statusItem.textContent = (item.status === 'inactive') ? 'Mark as Active' : 'Mark as Inactive';
+      }
+    }
+  }
+
+  // Close on outside click
+  function closeDropdown(evt) {
+    if (!dropdown.contains(evt.target)) {
+      dropdown.classList.remove('show');
+      document.removeEventListener('click', closeDropdown);
+    }
+  }
+  if (dropdown.classList.contains('show')) {
+    setTimeout(() => document.addEventListener('click', closeDropdown), 0);
+  }
+}
+
+// Clone the current item
+async function cloneCurrentItem() {
+  document.getElementById('detailMoreDropdown').classList.remove('show');
+  if (!currentDetailItemId) return;
+  const item = items.find(i => i.id === currentDetailItemId);
+  if (!item) return;
+
+  if (!confirm(`Clone item "${item.name}"?`)) return;
+
+  try {
+    const cloneData = {
+      name: item.name + ' (Copy)',
+      sku: '',
+      unit: item.unit,
+      quantity: 0,
+      reorder_point: item.reorder_point,
+      price: item.selling_price,
+      cost: item.purchase_cost,
+      can_be_wholesale: item.can_be_wholesale,
+      manufacturer: item.manufacturer,
+      brand: item.brand,
+      description: item.description,
+      upc: '',
+      ean: '',
+      isbn: '',
+      dimensions: item.dimensions,
+      account: item.account,
+      tax_rate: item.tax_rate,
+      type: item.type,
+      weight: item.weight,
+      purchase_account: item.purchase_account,
+      purchase_description: item.purchase_description,
+      preferred_vendor: item.preferred_vendor
+    };
+    await itemsAPI.create(cloneData);
+    showToast('Item cloned successfully', 'success');
+    closeItemDetailView();
+    await loadItems();
+    renderItemsTable();
+  } catch (error) {
+    console.error('Error cloning item:', error);
+    showToast('Failed to clone item', 'error');
+  }
+}
+
+// Toggle item active/inactive status
+async function toggleItemActiveStatus() {
+  document.getElementById('detailMoreDropdown').classList.remove('show');
+  if (!currentDetailItemId) return;
+  const item = items.find(i => i.id === currentDetailItemId);
+  if (!item) return;
+
+  const newStatus = (item.status === 'inactive') ? 'active' : 'inactive';
+  const label = newStatus === 'inactive' ? 'inactive' : 'active';
+
+  if (!confirm(`Mark "${item.name}" as ${label}?`)) return;
+
+  try {
+    await itemsAPI.update(currentDetailItemId, { status: newStatus, _partialUpdate: true });
+    showToast(`Item marked as ${label}`, 'success');
+    await loadItems();
+    renderItemsTable();
+    // Re-open updated item
+    const updatedItem = items.find(i => i.id === currentDetailItemId);
+    if (updatedItem) openItemDetailView(currentDetailItemId);
+  } catch (error) {
+    console.error('Error updating item status:', error);
+    showToast('Failed to update item status', 'error');
+  }
+}
+
+// Delete current item
+async function deleteCurrentItem() {
+  document.getElementById('detailMoreDropdown').classList.remove('show');
+  if (!currentDetailItemId) return;
+  const item = items.find(i => i.id === currentDetailItemId);
+  if (!item) return;
+
+  if (!confirm(`Are you sure you want to delete "${item.name}"? This action cannot be undone.`)) return;
+
+  try {
+    await itemsAPI.delete(currentDetailItemId);
+    showToast('Item deleted successfully', 'success');
+    closeItemDetailView();
+    await loadItems();
+    renderItemsTable();
+  } catch (error) {
+    console.error('Error deleting item:', error);
+    showToast('Failed to delete item', 'error');
+  }
+}
+
+// Move to another item (placeholder)
+function moveToAnotherItem() {
+  document.getElementById('detailMoreDropdown').classList.remove('show');
+  showToast('Move to another item feature coming soon', 'info');
 }
 
 function renderItemDetailLeftList() {
@@ -3647,19 +3989,19 @@ function resetImageUploadNew() {
 function resetImageUpload() {
   const imageUrlInput = document.getElementById('itemImageUrl');
   const imageFileInput = document.getElementById('imageFileInput');
-  const previewImg = document.getElementById('previewImg');
-  const imagePreview = document.getElementById('imagePreview');
-  const imagePlaceholder = document.getElementById('imagePlaceholder');
-  const imageUploadBox = document.getElementById('imageUploadBox');
+  const previewContainer = document.getElementById('imagePreviewContainer');
+  const previewImg = document.getElementById('imagePreview');
+  const dropzoneContent = document.getElementById('imageDropzoneContent');
+  const dropzone = document.getElementById('imageDropzone');
 
   if (imageUrlInput) imageUrlInput.value = '';
   if (imageFileInput) imageFileInput.value = '';
   if (previewImg) previewImg.src = '';
-  if (imagePreview) imagePreview.style.display = 'none';
-  if (imagePlaceholder) imagePlaceholder.style.display = 'block';
-  if (imageUploadBox) {
-    imageUploadBox.style.border = '2px dashed rgba(29, 22, 22, 0.2)';
-    imageUploadBox.classList.remove('has-image');
+  if (previewContainer) previewContainer.style.display = 'none';
+  if (dropzoneContent) dropzoneContent.style.display = '';
+  if (dropzone) {
+    dropzone.style.border = '2px dashed #d1d5db';
+    dropzone.classList.remove('has-image');
   }
 }
 
@@ -3844,6 +4186,16 @@ function renderItemsTable() {
     case 'inventory':
       filteredItems = filteredItems.filter(item => !item.type || item.type === 'goods');
       break;
+    case 'sales':
+      if (salesFilteredItemIds) {
+        filteredItems = filteredItems.filter(item => salesFilteredItemIds.has(parseInt(item.id)));
+      }
+      break;
+    case 'purchases':
+      if (purchaseFilteredItemIds) {
+        filteredItems = filteredItems.filter(item => purchaseFilteredItemIds.has(parseInt(item.id)));
+      }
+      break;
     default:
       break;
   }
@@ -3903,20 +4255,36 @@ function renderItemsTable() {
   }
 
   // Sort items
+  const dir = sortDirection === 'desc' ? -1 : 1;
   filteredItems.sort((a, b) => {
     switch (filters.sort) {
       case 'name':
-        return a.name.localeCompare(b.name);
+        return dir * (a.name || '').localeCompare(b.name || '');
+      case 'sku':
+        return dir * (a.sku || '').localeCompare(b.sku || '');
+      case 'stock_on_hand':
+        return dir * ((parseFloat(a.stock_quantity) || 0) - (parseFloat(b.stock_quantity) || 0));
+      case 'reorder_level':
+        return dir * ((parseFloat(a.reorder_point) || 0) - (parseFloat(b.reorder_point) || 0));
+      case 'purchase_rate':
+        return dir * ((parseFloat(a.purchase_cost) || 0) - (parseFloat(b.purchase_cost) || 0));
+      case 'rate':
+        return dir * ((parseFloat(a.selling_price) || 0) - (parseFloat(b.selling_price) || 0));
+      case 'created_time':
+        return dir * (new Date(a.created_at || 0) - new Date(b.created_at || 0));
+      case 'last_modified_time':
+        return dir * (new Date(a.updated_at || a.created_at || 0) - new Date(b.updated_at || b.created_at || 0));
+      // Legacy sort keys
       case 'name-desc':
-        return b.name.localeCompare(a.name);
+        return -1 * (a.name || '').localeCompare(b.name || '');
       case 'stock':
-        return (a.stock_quantity || 0) - (b.stock_quantity || 0);
+        return (parseFloat(a.stock_quantity) || 0) - (parseFloat(b.stock_quantity) || 0);
       case 'stock-desc':
-        return (b.stock_quantity || 0) - (a.stock_quantity || 0);
+        return (parseFloat(b.stock_quantity) || 0) - (parseFloat(a.stock_quantity) || 0);
       case 'price':
-        return (a.selling_price || 0) - (b.selling_price || 0);
+        return (parseFloat(a.selling_price) || 0) - (parseFloat(b.selling_price) || 0);
       case 'price-desc':
-        return (b.selling_price || 0) - (a.selling_price || 0);
+        return (parseFloat(b.selling_price) || 0) - (parseFloat(a.selling_price) || 0);
       default:
         return 0;
     }
@@ -4348,6 +4716,9 @@ function openItemModal(itemId = null) {
       document.getElementById('itemPrice').value = item.selling_price || '';
       document.getElementById('itemCost').value = item.purchase_cost || '';
 
+      // Reset image first, then load if exists
+      resetImageUpload();
+
       // Load image if exists
       if (item.image_url) {
         const imageUrlInput = document.getElementById('itemImageUrl');
@@ -4423,6 +4794,7 @@ function openItemModal(itemId = null) {
         const typeRadio = document.querySelector(`input[name="itemType"][value="${item.type}"]`);
         if (typeRadio) typeRadio.checked = true;
       }
+      onItemTypeChange();
 
       // Weight (format: "value unit")
       if (item.weight && document.getElementById('itemWeight')) {
@@ -4444,6 +4816,20 @@ function openItemModal(itemId = null) {
       if (document.getElementById('purchaseDescription')) {
         document.getElementById('purchaseDescription').value = item.purchase_description || '';
       }
+      // Populate preferred vendor
+      if (document.getElementById('preferredVendor')) {
+        document.getElementById('preferredVendor').value = item.preferred_vendor || '';
+      }
+      // Populate Added By
+      if (document.getElementById('itemAddedBy')) {
+        document.getElementById('itemAddedBy').value = item.added_by || '';
+      }
+      const vendorText = document.getElementById('vendorDropdownText');
+      if (vendorText) {
+        vendorText.textContent = item.preferred_vendor || '';
+        if (item.preferred_vendor) vendorText.classList.add('has-value');
+        else vendorText.classList.remove('has-value');
+      }
     }
   } else {
     // Add mode
@@ -4458,6 +4844,13 @@ function openItemModal(itemId = null) {
     document.getElementById('itemSellable').checked = true;
     document.getElementById('itemPurchasable').checked = true;
     document.getElementById('trackInventory').checked = true;
+    // Reset image upload for new items
+    resetImageUpload();
+    // Reset Added By
+    if (document.getElementById('itemAddedBy')) {
+      document.getElementById('itemAddedBy').value = '';
+    }
+    onItemTypeChange();
   }
 
   modal.classList.add('active');
@@ -4509,6 +4902,7 @@ async function saveItem(event) {
   // Purchase information
   const purchaseAccountInput = document.getElementById('purchaseAccount')?.value || null;
   const purchaseDescriptionInput = document.getElementById('purchaseDescription')?.value.trim() || null;
+  const preferredVendorInput = document.getElementById('preferredVendor')?.value?.trim() || null;
 
   // Dimensions - combine into a single string
   const length = document.getElementById('itemLength')?.value || '';
@@ -4584,7 +4978,9 @@ async function saveItem(event) {
     type: typeInput,
     weight: weightInput,
     purchase_account: purchaseAccountInput,
-    purchase_description: purchaseDescriptionInput
+    purchase_description: purchaseDescriptionInput,
+    preferred_vendor: preferredVendorInput,
+    added_by: document.getElementById('itemAddedBy')?.value || null
   };
 
   console.log('Saving item with data:', data);
@@ -5008,6 +5404,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load saved column settings
   loadColumnSettings();
 
+  // Auto-open New Item modal if ?new=true in URL
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('new') === 'true') {
+    setTimeout(() => { if (typeof showAddItemModal === 'function') showAddItemModal(); }, 500);
+    // Clean up URL
+    window.history.replaceState({}, '', '/items.html');
+  }
+
   // Search functionality for product cards
   const globalSearch = document.getElementById('globalSearch');
   if (globalSearch) {
@@ -5156,6 +5560,22 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // Load Added By dropdown options from salespersons
+  fetch('/api/salespersons')
+    .then(r => r.json())
+    .then(data => {
+      const sel = document.getElementById('itemAddedBy');
+      if (sel && Array.isArray(data)) {
+        data.forEach(sp => {
+          const opt = document.createElement('option');
+          opt.value = sp.name;
+          opt.textContent = sp.name;
+          sel.appendChild(opt);
+        });
+      }
+    })
+    .catch(() => { });
 
   // Load initial data
   loadItems().then(() => {

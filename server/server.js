@@ -121,11 +121,23 @@ app.use('/api/invoices', require('./routes/invoices'));
 app.use('/api/sales-receipts', require('./routes/sales-receipts'));
 app.use('/api/payments-received', require('./routes/payments-received'));
 app.use('/api/payments-made', require('./routes/payments-made'));
+app.use('/api/customer-credits', require('./routes/customer-credits'));
 app.use('/api/vendor-credits', require('./routes/vendor-credits'));
 app.use('/api/packages', require('./routes/packages'));
 app.use('/api/shipments', require('./routes/shipments'));
 app.use('/api/sales-returns', require('./routes/sales-returns'));
+app.use('/api/credit-notes', require('./routes/credit-notes'));
 app.use('/api/bills', require('./routes/bills'));
+app.use('/api/uploads', require('./routes/uploads'));
+
+// Taxes API (inline — simple CRUD)
+app.get('/api/taxes', async (req, res) => {
+  try {
+    const db = require('./database').getDb();
+    const result = await db.query('SELECT * FROM taxes WHERE is_active = true ORDER BY name');
+    res.json(result.rows);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
 
 // Get local network IP address
 function getLocalIP() {

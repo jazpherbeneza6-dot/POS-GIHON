@@ -21,15 +21,53 @@
             text-rendering: optimizeLegibility;
         }
 
+        /* Override content background to white */
+        html,
+        body {
+            height: 100%;
+            background-color: white !important;
+        }
+
+        .app-container {
+            min-height: 100%;
+        }
+
+        .content {
+            background-color: white !important;
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 60px);
+            padding: 0 !important;
+        }
+
+        #adjPaginationContainer {
+            background: white;
+            padding: 12px 24px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        #adjPaginationContainer .pagination-wrapper {
+            position: static;
+            background: none;
+            padding: 0;
+            z-index: auto;
+        }
+
+        #adjPaginationContainer {
+            padding-bottom: 12px;
+        }
+
         /* Page Header */
         .page-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 40px 24px 20px 70px;
+            padding: 16px 24px 16px 24px;
             background: white;
             border-bottom: 1px solid #e9ecef;
-            margin: -24px -24px 24px -24px;
         }
 
         .page-title {
@@ -180,7 +218,7 @@
         .submenu {
             position: absolute;
             top: 0;
-            right: 100%;
+            right: calc(100% - 4px);
             min-width: 220px;
             background: white;
             border: 1px solid #e9ecef;
@@ -188,7 +226,17 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
             display: none;
             padding: 8px 0;
-            margin-right: 8px;
+            padding-right: 4px;
+        }
+
+        /* Invisible bridge between menu item and submenu */
+        .more-actions-item:hover>.submenu::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 100%;
+            width: 12px;
+            height: 100%;
         }
 
         .more-actions-item:hover>.submenu {
@@ -225,11 +273,9 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 16px 24px 16px 70px;
+            padding: 10px 24px;
             background: #f8f9fa;
             border-bottom: 1px solid #e9ecef;
-            margin: -24px -24px 24px -24px;
-            margin-top: 0;
         }
 
         .filter-label {
@@ -680,11 +726,9 @@
             display: none;
             align-items: center;
             gap: 16px;
-            padding: 10px 24px 10px 70px;
+            padding: 10px 24px;
             background: #e8f0fe;
             border-bottom: 1px solid #c5d7f7;
-            margin: -24px -24px 0 -24px;
-            margin-top: 0;
         }
 
         .bulk-action-bar.show {
@@ -737,14 +781,14 @@
         /* Adjustments Table */
         .adjustments-table-wrapper {
             background: white;
-            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
             display: none;
+            flex: 1;
         }
 
         .adjustments-table-wrapper.has-data {
-            display: block;
+            display: flex;
+            flex-direction: column;
         }
 
         .adjustments-table {
@@ -893,6 +937,120 @@
             font-size: 16px;
         }
 
+        /* Kebab menu dropdown in sidebar */
+        .adj-kebab-wrap {
+            position: relative;
+            display: inline-block;
+        }
+
+        .adj-kebab-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            right: 0;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.14);
+            min-width: 240px;
+            z-index: 3000;
+            padding: 10px 0;
+        }
+
+        .adj-kebab-dropdown.show {
+            display: block;
+        }
+
+        .adj-kebab-item {
+            padding: 14px 20px;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .adj-kebab-item:hover {
+            background: #f5f7ff;
+        }
+
+        .adj-kebab-item svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            stroke: #4285f4;
+        }
+
+        .adj-kebab-item .kebab-arrow {
+            margin-left: auto;
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        .adj-kebab-separator {
+            height: 1px;
+            background: #eee;
+            margin: 4px 0;
+        }
+
+        /* Kebab submenu */
+        .adj-kebab-item.has-sub {
+            position: relative;
+        }
+
+        .adj-kebab-submenu {
+            display: none;
+            position: absolute;
+            left: calc(100% - 4px);
+            top: -10px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.14);
+            min-width: 220px;
+            z-index: 3001;
+            padding: 8px 0;
+        }
+
+        .adj-kebab-item.has-sub:hover .adj-kebab-submenu {
+            display: block;
+        }
+
+        .adj-kebab-sub-item {
+            padding: 10px 18px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .adj-kebab-sub-item:hover {
+            background: #f0f4ff;
+        }
+
+        .adj-kebab-sub-item.active {
+            background: #4285f4;
+            color: white;
+        }
+
+        .adj-kebab-sub-item .sort-arrow {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
         .adj-sidebar-filters {
             display: flex;
             gap: 8px;
@@ -1000,10 +1158,65 @@
             font-size: 13px;
             color: #333;
             transition: background 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            position: relative;
         }
 
         .adj-toolbar-btn:hover {
             background: #f0f0f0;
+        }
+
+        .adj-toolbar-btn svg {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+        }
+
+        /* Tooltips for toolbar buttons */
+        .adj-toolbar-btn[data-tooltip]::before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.15s ease, visibility 0.15s ease;
+            z-index: 1000;
+            font-family: inherit;
+            letter-spacing: 0.2px;
+            line-height: 1.4;
+        }
+
+        .adj-toolbar-btn[data-tooltip]::after {
+            content: '';
+            position: absolute;
+            bottom: calc(100% + 3px);
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: #333;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.15s ease, visibility 0.15s ease;
+            z-index: 1000;
+        }
+
+        .adj-toolbar-btn[data-tooltip]:hover::before,
+        .adj-toolbar-btn[data-tooltip]:hover::after {
+            opacity: 1;
+            visibility: visible;
         }
 
         .adj-detail-body {
@@ -1931,10 +2144,89 @@
         .btn-cancel:hover {
             background: #555;
         }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .toast {
+            pointer-events: auto;
+            padding: 18px 32px;
+            border-radius: 10px;
+            color: #333;
+            font-weight: 500;
+            font-size: 15px;
+            background: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            border: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            animation: toastSlideDown 0.3s ease;
+            min-width: 340px;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .toast.success {
+            border-left: 4px solid #10b981;
+        }
+
+        .toast.error {
+            border-left: 4px solid #ef4444;
+        }
+
+        .toast.info {
+            border-left: 4px solid #3b82f6;
+        }
+
+        .toast-icon {
+            font-size: 20px;
+        }
+
+        .toast-message {
+            flex: 1;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 18px;
+            opacity: 0.8;
+        }
+
+        .toast-close:hover {
+            opacity: 1;
+            color: #333;
+        }
+
+        @keyframes toastSlideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 
 <body>
+    <div class="toast-container" id="toastContainer"></div>
     <div class="app-container">
         <!-- Sidebar Container -->
         <div id="sidebarContainer"></div>
@@ -2061,10 +2353,8 @@
                             <span>By Value</span>
                             <button class="star-btn" onclick="event.stopPropagation(); toggleFavorite(this)">☆</button>
                         </div>
-                        <div class="dropdown-divider"></div>
-                        <div class="dropdown-item new-view" onclick="openCustomViewModal()">
-                            <span><span class="plus-icon">+</span> New Custom View</span>
-                        </div>
+
+
                     </div>
                 </div>
                 <!-- Custom Period Dropdown -->
@@ -2139,8 +2429,8 @@
                         <!-- Adjustment rows will be inserted here -->
                     </tbody>
                 </table>
-                <div id="adjPaginationContainer"></div>
             </div>
+            <div id="adjPaginationContainer"></div>
         </div>
     </div>
 
@@ -2148,7 +2438,7 @@
     <div class="modal" id="adjustmentModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>New Adjustment</h2>
+                <h2 id="adjustmentModalTitle">New Adjustment</h2>
                 <button class="modal-close" onclick="closeAdjustmentModal()">×</button>
             </div>
             <div class="modal-body">
@@ -2239,14 +2529,6 @@
                 <div class="item-table-section">
                     <div class="item-table-header">
                         <span class="item-table-title">Item Table</span>
-                        <a href="#" class="bulk-actions-link">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <circle cx="12" cy="12" r="10" />
-                                <polyline points="12 6 12 12 16 14" />
-                            </svg>
-                            Bulk Actions
-                        </a>
                     </div>
                     <table class="item-table">
                         <thead>
@@ -2289,7 +2571,6 @@
                                 </td>
                                 <td>
                                     <div class="row-actions">
-                                        <button class="btn-row-menu">⋮</button>
                                         <button class="btn-row-delete" onclick="removeItemRow(this)">✕</button>
                                     </div>
                                 </td>
@@ -2309,7 +2590,10 @@
                 <!-- File Upload Section -->
                 <div class="file-upload-section">
                     <label class="file-upload-label">Attach File(s) to inventory adjustment</label>
-                    <button class="file-upload-btn">
+                    <input type="file" id="adjustmentFileInput" multiple accept="*/*" style="display:none;"
+                        onchange="handleAdjustmentFiles(this.files)">
+                    <button type="button" class="file-upload-btn"
+                        onclick="document.getElementById('adjustmentFileInput').click()">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -2320,6 +2604,7 @@
                         <span>▾</span>
                     </button>
                     <p class="file-upload-hint">You can upload a maximum of 5 files, 10MB each</p>
+                    <div id="adjustmentFileList" style="margin-top:8px;"></div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -2457,7 +2742,69 @@
                     <div class="adj-sidebar-actions">
                         <button class="adj-sidebar-btn adj-sidebar-add"
                             onclick="closeAdjDetailView(); openAdjustmentModal();" title="New">＋</button>
-                        <button class="adj-sidebar-btn" title="More">⋯</button>
+                        <div class="adj-kebab-wrap">
+                            <button class="adj-sidebar-btn" title="More" onclick="toggleAdjKebab(event)">⋯</button>
+                            <div class="adj-kebab-dropdown" id="adjKebabDropdown">
+                                <div class="adj-kebab-item has-sub">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M7 15l5 5 5-5" />
+                                        <path d="M7 9l5-5 5 5" />
+                                    </svg>
+                                    Sort by
+                                    <span class="kebab-arrow">›</span>
+                                    <div class="adj-kebab-submenu">
+                                        <button class="adj-kebab-sub-item active"
+                                            onclick="sortAdjSidebar('date', this)">Date <span
+                                                class="sort-arrow">↑</span></button>
+                                        <button class="adj-kebab-sub-item"
+                                            onclick="sortAdjSidebar('reason', this)">Reason</button>
+                                        <button class="adj-kebab-sub-item"
+                                            onclick="sortAdjSidebar('status', this)">Status</button>
+                                        <button class="adj-kebab-sub-item"
+                                            onclick="sortAdjSidebar('reference', this)">Reference#</button>
+                                        <button class="adj-kebab-sub-item"
+                                            onclick="sortAdjSidebar('type', this)">Type</button>
+                                        <button class="adj-kebab-sub-item"
+                                            onclick="sortAdjSidebar('created_time', this)">Created Time</button>
+                                        <button class="adj-kebab-sub-item"
+                                            onclick="sortAdjSidebar('modified_time', this)">Last Modified Time</button>
+                                    </div>
+                                </div>
+                                <div class="adj-kebab-separator"></div>
+                                <div class="adj-kebab-item has-sub">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                        <polyline points="7 10 12 15 17 10" />
+                                        <line x1="12" y1="15" x2="12" y2="3" />
+                                    </svg>
+                                    Import
+                                    <span class="kebab-arrow">›</span>
+                                    <div class="adj-kebab-submenu">
+                                        <button class="adj-kebab-sub-item" onclick="importAdjustments()">Import
+                                            Inventory Adjustments</button>
+                                    </div>
+                                </div>
+                                <button class="adj-kebab-item" onclick="exportAdjustments()">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                        <polyline points="17 8 12 3 7 8" />
+                                        <line x1="12" y1="3" x2="12" y2="15" />
+                                    </svg>
+                                    Export Inventory Adjustments
+                                </button>
+                                <button class="adj-kebab-item" onclick="refreshAdjList()">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="23 4 23 10 17 10" />
+                                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                                    </svg>
+                                    Refresh List
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="adj-sidebar-filters">
@@ -2503,8 +2850,77 @@
         }
 
         // Modal functions
-        function openAdjustmentModal() {
+        async function openAdjustmentModal() {
+            // Reset form when creating a new adjustment (not editing)
+            if (!editingAdjustmentId) {
+                // Reset mode to Quantity
+                const qtyRadio = document.querySelector('input[name="adjustmentMode"][value="quantity"]');
+                if (qtyRadio) {
+                    qtyRadio.checked = true;
+                    switchAdjustmentMode('quantity');
+                }
+
+                // Fetch next sequential reference number
+                const refInput = document.getElementById('referenceNumber');
+                try {
+                    const numRes = await fetch('/api/inventory/adjustments/next-number');
+                    const numData = numRes.ok ? await numRes.json() : { reference_number: 'ADJ-00001' };
+                    if (refInput) refInput.value = numData.reference_number;
+                } catch (e) {
+                    if (refInput) refInput.value = 'ADJ-' + String(Date.now()).slice(-4).padStart(4, '0');
+                }
+
+                // Reset date to today
+                document.getElementById('adjustmentDate').valueAsDate = new Date();
+
+                // Reset account
+                const accountSelect = document.getElementById('accountSelect');
+                if (accountSelect) accountSelect.selectedIndex = 0;
+
+                // Reset reason
+                document.getElementById('adjustmentReason').value = '';
+                const reasonText = document.getElementById('reasonDropdownText');
+                if (reasonText) reasonText.textContent = 'Select a reason';
+
+                // Reset description
+                const descEl = document.getElementById('adjustmentDescription');
+                if (descEl) descEl.value = '';
+
+                // Reset item table to a fresh empty row
+                document.getElementById('itemTableBody').innerHTML = `
+                    <tr>
+                        <td>
+                            <div class="item-select-cell">
+                                <span class="item-drag-handle">⋮⋮</span>
+                                <div class="item-icon" id="itemIcon_0">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                                        <polyline points="21 15 16 10 5 21"/>
+                                    </svg>
+                                </div>
+                                <div class="item-select-wrapper">
+                                    <input type="text" class="item-select-input" placeholder="Type or click to select an item."
+                                        onfocus="showItemDropdown(this)" oninput="filterItemDropdown(this)">
+                                    <div class="item-dropdown"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td></td>
+                        <td><input type="number" class="quantity-input" value="" step="0.01" placeholder="0.00" oninput="calculateAdjusted(this)"></td>
+                        <td><span class="quantity-adjusted-value"></span></td>
+                        <td><div class="row-actions"><button class="btn-row-delete" onclick="removeItemRow(this)">✕</button></div></td>
+                    </tr>
+                `;
+                itemRowCounter = 1;
+
+                // Set title
+                const titleEl = document.getElementById('adjustmentModalTitle');
+                if (titleEl) titleEl.textContent = 'New Adjustment';
+            }
+
             document.getElementById('adjustmentModal').classList.add('active');
+            resetAdjustmentFiles();
         }
 
         function closeAdjustmentModal() {
@@ -2813,7 +3229,6 @@
                 </td>
                 <td>
                     <div class="row-actions">
-                        <button class="btn-row-menu">⋮</button>
                         <button class="btn-row-delete" onclick="removeItemRow(this)">✕</button>
                     </div>
                 </td>
@@ -2832,9 +3247,148 @@
             }
         }
 
-        // Add items in bulk
-        function addItemsInBulk() {
-            alert('Bulk import feature - select multiple items at once');
+        // ========== ADD ITEMS IN BULK (two-pane picker) ==========
+        let bulkAdjAllItems = [];
+        let bulkAdjSelectedItems = [];
+
+        async function addItemsInBulk() {
+            document.getElementById('bulkAdjModal').classList.add('active');
+            document.getElementById('bulkAdjSearch').value = '';
+            bulkAdjSelectedItems = [];
+
+            try {
+                const res = await fetch('/api/items');
+                bulkAdjAllItems = await res.json();
+            } catch (e) {
+                bulkAdjAllItems = [];
+            }
+
+            renderBulkAdjLeft();
+            renderBulkAdjRight();
+            document.getElementById('bulkAdjSearch').focus();
+        }
+
+        function closeBulkAdjModal() {
+            document.getElementById('bulkAdjModal').classList.remove('active');
+        }
+
+        function renderBulkAdjLeft(filter) {
+            const q = (filter || '').toLowerCase();
+            // Exclude items already in the table
+            const existingIds = new Set();
+            document.querySelectorAll('#itemTableBody .item-select-input').forEach(inp => {
+                if (inp.dataset.itemId) existingIds.add(parseInt(inp.dataset.itemId));
+            });
+
+            const filtered = bulkAdjAllItems.filter(item => {
+                if (existingIds.has(item.id)) return false;
+                if (bulkAdjSelectedItems.find(s => s.id === item.id)) return false;
+                if (!q) return true;
+                return item.name.toLowerCase().includes(q) || (item.sku || '').toLowerCase().includes(q);
+            });
+
+            const list = document.getElementById('bulkAdjItemsList');
+            if (filtered.length === 0) {
+                list.innerHTML = '<div style="padding:20px;text-align:center;color:#999;font-size:13px;">No items found</div>';
+                return;
+            }
+
+            list.innerHTML = filtered.map(item => {
+                const stock = parseFloat(item.stock_quantity || 0);
+                return `<div class="bulk-adj-item" onclick="toggleBulkAdjItem(${item.id})">
+                    <div class="bulk-adj-item-info">
+                        <span class="bulk-adj-item-name">${item.name}</span>
+                        <span class="bulk-adj-item-sku">${item.sku || 'No SKU'}</span>
+                    </div>
+                    <span class="bulk-adj-item-stock">Stock: ${stock}</span>
+                </div>`;
+            }).join('');
+        }
+
+        function toggleBulkAdjItem(id) {
+            const idx = bulkAdjSelectedItems.findIndex(s => s.id === id);
+            if (idx > -1) {
+                bulkAdjSelectedItems.splice(idx, 1);
+            } else {
+                const item = bulkAdjAllItems.find(i => i.id === id);
+                if (item) bulkAdjSelectedItems.push(item);
+            }
+            renderBulkAdjLeft(document.getElementById('bulkAdjSearch').value);
+            renderBulkAdjRight();
+        }
+
+        function renderBulkAdjRight() {
+            const list = document.getElementById('bulkAdjSelected');
+            const badge = document.getElementById('bulkAdjBadge');
+            badge.textContent = bulkAdjSelectedItems.length;
+
+            if (bulkAdjSelectedItems.length === 0) {
+                list.innerHTML = '<div style="padding:30px;text-align:center;color:#999;font-size:13px;">Select items from the left</div>';
+                return;
+            }
+
+            list.innerHTML = bulkAdjSelectedItems.map(item => {
+                return `<div class="bulk-adj-sel-item">
+                    <div class="bulk-adj-sel-info">
+                        <span class="bulk-adj-sel-name">${item.name}</span>
+                        <span class="bulk-adj-sel-sku">${item.sku || ''}</span>
+                    </div>
+                    <button class="bulk-adj-sel-remove" onclick="toggleBulkAdjItem(${item.id})">&times;</button>
+                </div>`;
+            }).join('');
+        }
+
+        function confirmBulkAdjItems() {
+            if (bulkAdjSelectedItems.length === 0) {
+                alert('Please select at least one item.');
+                return;
+            }
+
+            const tbody = document.getElementById('itemTableBody');
+            const mode = document.querySelector('input[name="adjustmentMode"]:checked')?.value || 'quantity';
+
+            // Check if first row is empty
+            const firstRow = tbody.querySelector('tr');
+            const firstInput = firstRow ? firstRow.querySelector('.item-select-input') : null;
+            let startIdx = 0;
+
+            if (firstInput && !firstInput.value.trim() && !firstInput.dataset.itemId && tbody.children.length === 1) {
+                const item = bulkAdjSelectedItems[0];
+                fillAdjRow(firstRow, item, mode);
+                startIdx = 1;
+            }
+
+            for (let i = startIdx; i < bulkAdjSelectedItems.length; i++) {
+                addItemRow();
+                const row = tbody.lastElementChild;
+                fillAdjRow(row, bulkAdjSelectedItems[i], mode);
+            }
+
+            closeBulkAdjModal();
+        }
+
+        function fillAdjRow(row, item, mode) {
+            const inputEl = row.querySelector('.item-select-input');
+            const quantityAvailableTd = row.querySelectorAll('td')[1];
+            const iconDiv = row.querySelector('.item-icon');
+
+            inputEl.value = item.name;
+            inputEl.dataset.itemId = item.id;
+            inputEl.style.color = '#222';
+            inputEl.style.fontWeight = '500';
+
+            if (quantityAvailableTd) {
+                if (mode === 'value') {
+                    const currentValue = (parseFloat(item.purchase_cost) || 0) * (parseFloat(item.stock_quantity) || 0);
+                    quantityAvailableTd.textContent = currentValue.toFixed(2);
+                } else {
+                    quantityAvailableTd.textContent = item.stock_quantity || 0;
+                }
+            }
+
+            if (iconDiv && item.image_url) {
+                iconDiv.innerHTML = `<img src="${item.image_url}" alt="${item.name}">`;
+            }
         }
 
         // Save as Draft
@@ -2871,6 +3425,9 @@
 
                 const result = await response.json();
                 if (response.ok) {
+                    // Upload attached files
+                    const adjId = result.id || editingAdjustmentId;
+                    if (adjId) await uploadAdjustmentFiles(adjId);
                     alert(editingAdjustmentId ? '✅ Adjustment updated!' : 'Adjustment saved as draft!');
                     closeAdjustmentModal();
                     loadAdjustments();
@@ -2929,6 +3486,7 @@
                         headers: { 'Content-Type': 'application/json' }
                     });
                     if (convertRes.ok) {
+                        await uploadAdjustmentFiles(editingAdjustmentId);
                         alert('✅ Adjustment updated and converted! Stock levels have been updated.');
                         closeAdjustmentModal();
                         loadAdjustments();
@@ -2945,6 +3503,7 @@
 
                     const result = await response.json();
                     if (response.ok) {
+                        if (result.id) await uploadAdjustmentFiles(result.id);
                         alert('✅ Adjustment completed successfully!\n\nStock levels have been updated for ' + items.length + ' item(s).');
                         closeAdjustmentModal();
                         loadAdjustments();
@@ -2955,6 +3514,77 @@
             } catch (error) {
                 console.error('Error:', error);
                 alert('Failed to process adjustment. Please try again.');
+            }
+        }
+
+        // ===== File Attachment System =====
+        let adjustmentFiles = [];
+
+        function handleAdjustmentFiles(fileList) {
+            const maxFiles = 5;
+            const maxSize = 10 * 1024 * 1024; // 10MB
+
+            for (let i = 0; i < fileList.length; i++) {
+                if (adjustmentFiles.length >= maxFiles) {
+                    alert('Maximum of 5 files allowed');
+                    break;
+                }
+                if (fileList[i].size > maxSize) {
+                    alert(`File "${fileList[i].name}" exceeds 10MB limit`);
+                    continue;
+                }
+                adjustmentFiles.push(fileList[i]);
+            }
+            // Reset input so same file can be selected again
+            document.getElementById('adjustmentFileInput').value = '';
+            renderAdjustmentFiles();
+        }
+
+        function renderAdjustmentFiles() {
+            const container = document.getElementById('adjustmentFileList');
+            if (adjustmentFiles.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+            container.innerHTML = adjustmentFiles.map((file, idx) => {
+                const sizeKB = (file.size / 1024).toFixed(1);
+                const sizeStr = file.size > 1024 * 1024
+                    ? (file.size / (1024 * 1024)).toFixed(1) + ' MB'
+                    : sizeKB + ' KB';
+                const ext = file.name.split('.').pop().toUpperCase();
+                return `
+                    <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;margin-bottom:4px;background:#f8f9fa;border:1px solid #e5e7eb;border-radius:6px;">
+                        <span style="background:#e5e7eb;color:#374151;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;">${ext}</span>
+                        <span style="flex:1;font-size:13px;color:#374151;">${file.name}</span>
+                        <span style="font-size:11px;color:#9ca3af;">${sizeStr}</span>
+                        <button type="button" onclick="removeAdjustmentFile(${idx})" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:16px;padding:0 4px;" title="Remove">✕</button>
+                    </div>`;
+            }).join('');
+        }
+
+        function removeAdjustmentFile(idx) {
+            adjustmentFiles.splice(idx, 1);
+            renderAdjustmentFiles();
+        }
+
+        function resetAdjustmentFiles() {
+            adjustmentFiles = [];
+            renderAdjustmentFiles();
+        }
+
+        async function uploadAdjustmentFiles(adjustmentId) {
+            if (adjustmentFiles.length === 0) return;
+            const formData = new FormData();
+            adjustmentFiles.forEach(file => {
+                formData.append('files', file);
+            });
+            try {
+                await fetch(`/api/inventory/adjustments/${adjustmentId}/attachments`, {
+                    method: 'POST',
+                    body: formData
+                });
+            } catch (err) {
+                console.error('Error uploading attachments:', err);
             }
         }
 
@@ -3003,12 +3633,24 @@
         // Load adjustments list
         function searchAdjustments() {
             const query = (document.getElementById('adjSearchInput').value || '').toLowerCase();
-            if (!query) { applyFilters(); return; }
+            if (!query) { applyFilter(); return; }
             const filtered = allAdjustments.filter(a => {
-                return (a.reason || '').toLowerCase().includes(query) ||
+                // Format dates for searchability
+                const adjDate = a.adjustment_date ? new Date(a.adjustment_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+                const createdTime = a.created_at ? formatDateTime(a.created_at) : '';
+                const modifiedTime = a.updated_at ? formatDateTime(a.updated_at) : '';
+                const typeDisplay = a.mode === 'value' ? 'value' : 'quantity';
+                const reasonDisplay = (a.reason || '').replace(/_/g, ' ');
+
+                return reasonDisplay.toLowerCase().includes(query) ||
                     (a.description || '').toLowerCase().includes(query) ||
                     (a.reference_number || '').toLowerCase().includes(query) ||
-                    (a.status || '').toLowerCase().includes(query);
+                    (a.status || '').toLowerCase().includes(query) ||
+                    typeDisplay.includes(query) ||
+                    adjDate.toLowerCase().includes(query) ||
+                    createdTime.toLowerCase().includes(query) ||
+                    modifiedTime.toLowerCase().includes(query) ||
+                    'admin'.includes(query);
             });
             displayAdjustments(filtered);
         }
@@ -3122,7 +3764,6 @@
                             <td>${createdTime}</td>
                             <td>Admin</td>
                             <td>${modifiedTime}</td>
-                            <td><span class="adj-search-icon">🔍</span></td>
                         </tr>
                     `;
                 }).join('');
@@ -3130,7 +3771,7 @@
 
             window.adjPager = Pagination.create({
                 data: adjustments,
-                perPage: 14,
+                perPage: 17,
                 containerId: 'adjPaginationContainer',
                 onPageChange: function (pageData) { renderAdjPage(pageData); }
             });
@@ -3234,10 +3875,10 @@
 
             // Update toolbar based on status
             toolbar.innerHTML = `
-                <button class="adj-toolbar-btn" onclick="editAdjustment(${adjustment.id})">✏️ Edit</button>
-                <button class="adj-toolbar-btn" onclick="printAdjustment()">🖨️ PDF/Print</button>
+                <button class="adj-toolbar-btn" data-tooltip="Edit" onclick="editAdjustment(${adjustment.id})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Edit</button>
+                <button class="adj-toolbar-btn" data-tooltip="PDF/Print" onclick="printAdjustment()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> PDF/Print</button>
                 ${isDraft ? `<button class="adj-toolbar-btn adj-convert-btn" onclick="convertDraftToAdjusted(${adjustment.id})">Convert to Adjusted</button>` : ''}
-                <button class="adj-toolbar-btn adj-delete-btn" onclick="deleteAdjustment(${adjustment.id})">🗑️ Delete</button>
+                <button class="adj-toolbar-btn adj-delete-btn" data-tooltip="Delete" onclick="deleteAdjustment(${adjustment.id})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Delete</button>
             `;
 
             const ribbonClass = isDraft ? 'adj-doc-ribbon draft' : 'adj-doc-ribbon';
@@ -3314,6 +3955,10 @@
                 // Close detail view and open the modal
                 document.getElementById('adjDetailOverlay').style.display = 'none';
                 openAdjustmentModal();
+
+                // Set title to Edit Adjustment
+                const titleEl = document.getElementById('adjustmentModalTitle');
+                if (titleEl) titleEl.textContent = 'Edit Adjustment';
 
                 // Pre-populate form fields
                 document.getElementById('referenceNumber').value = adj.reference_number || '';
@@ -3845,34 +4490,1164 @@
             }
         });
 
-        // Sort By function
-        function sortBy(field) {
-            alert('Sorting by ' + field);
-            document.getElementById('moreActionsMenu').classList.remove('show');
+        // Toast notification function
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            if (!container) { console.log(`[${type.toUpperCase()}] ${message}`); return; }
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+            toast.innerHTML = `
+                <span class="toast-icon">${icon}</span>
+                <span class="toast-message">${message}</span>
+                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateY(-20px)';
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, 3000);
         }
 
-        // Import functions
-        function importQuantityAdjustments() {
-            alert('Import Quantity Adjustments - Feature coming soon');
+        // Sort By function
+        let currentSortField = 'date';
+        let currentSortDir = 'desc';
+
+        function sortBy(field) {
+            // Toggle direction if same field clicked again
+            if (currentSortField === field) {
+                currentSortDir = currentSortDir === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSortField = field;
+                currentSortDir = field === 'reason' ? 'asc' : 'desc'; // Reason defaults A-Z, dates default newest first
+            }
+
+            allAdjustments.sort((a, b) => {
+                let valA, valB;
+                switch (field) {
+                    case 'date':
+                        valA = new Date(a.adjustment_date || 0).getTime();
+                        valB = new Date(b.adjustment_date || 0).getTime();
+                        break;
+                    case 'reason':
+                        valA = (a.reason || '').toLowerCase();
+                        valB = (b.reason || '').toLowerCase();
+                        break;
+                    case 'createdTime':
+                        valA = new Date(a.created_at || 0).getTime();
+                        valB = new Date(b.created_at || 0).getTime();
+                        break;
+                    case 'modifiedTime':
+                        valA = new Date(a.updated_at || 0).getTime();
+                        valB = new Date(b.updated_at || 0).getTime();
+                        break;
+                    default:
+                        return 0;
+                }
+
+                if (valA < valB) return currentSortDir === 'asc' ? -1 : 1;
+                if (valA > valB) return currentSortDir === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            // Update sort icons in submenu
+            document.querySelectorAll('.submenu-item .sort-icon').forEach(el => el.remove());
+            const sortItems = document.querySelectorAll('.submenu-item');
+            const fieldMap = { 'date': 0, 'reason': 1, 'createdTime': 2, 'modifiedTime': 3 };
+            const idx = fieldMap[field];
+            if (idx !== undefined && sortItems[idx]) {
+                const arrow = currentSortDir === 'asc' ? '↑' : '↓';
+                sortItems[idx].innerHTML = sortItems[idx].textContent.trim() + ` <span class="sort-icon">${arrow}</span>`;
+            }
+
+            applyFilter();
             document.getElementById('moreActionsMenu').classList.remove('show');
+
+            const fieldLabels = { 'date': 'Date', 'reason': 'Reason', 'createdTime': 'Created Time', 'modifiedTime': 'Last Modified Time' };
+            const isTextField = (field === 'reason');
+            const dirLabel = isTextField
+                ? (currentSortDir === 'asc' ? 'A → Z' : 'Z → A')
+                : (currentSortDir === 'desc' ? 'Newest → Oldest' : 'Oldest → Newest');
+            showToast(`Sorted by ${fieldLabels[field]} (${dirLabel})`, 'info');
+        }
+
+        // ========== IMPORT ADJUSTMENTS ==========
+        let importMode = 'quantity';
+        let importedRows = [];
+        let importItemsCache = [];
+
+        function importQuantityAdjustments() {
+            importMode = 'quantity';
+            document.getElementById('moreActionsMenu').classList.remove('show');
+            openImportModal();
         }
 
         function importValueAdjustments() {
-            alert('Import Value Adjustments - Feature coming soon');
+            importMode = 'value';
             document.getElementById('moreActionsMenu').classList.remove('show');
+            openImportModal();
+        }
+
+        async function openImportModal() {
+            const modal = document.getElementById('importAdjModal');
+            modal.classList.add('active');
+            document.getElementById('importModeLabel').textContent = importMode === 'value' ? 'Value' : 'Quantity';
+            document.getElementById('importColLabel').textContent = importMode === 'value' ? 'Value Adjusted' : 'Quantity Adjusted';
+            document.getElementById('importFile').value = '';
+            document.getElementById('importPreview').style.display = 'none';
+            document.getElementById('importPreviewBody').innerHTML = '';
+            importedRows = [];
+
+            // Fetch items for matching
+            try {
+                const res = await fetch('/api/items');
+                importItemsCache = await res.json();
+            } catch (e) {
+                importItemsCache = [];
+            }
+        }
+
+        function closeImportModal() {
+            document.getElementById('importAdjModal').classList.remove('active');
+        }
+
+        function handleImportFile(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                parseCSV(e.target.result);
+            };
+            reader.readAsText(file);
+        }
+
+        function handleImportDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const dropZone = document.getElementById('importDropZone');
+            dropZone.classList.remove('drag-over');
+            const file = e.dataTransfer.files[0];
+            if (file && (file.name.endsWith('.csv') || file.type === 'text/csv')) {
+                const reader = new FileReader();
+                reader.onload = function (ev) { parseCSV(ev.target.result); };
+                reader.readAsText(file);
+            } else {
+                alert('Please upload a CSV file.');
+            }
+        }
+
+        function parseCSV(text) {
+            const lines = text.trim().split('\n');
+            if (lines.length < 2) {
+                alert('CSV file must have a header row and at least one data row.');
+                return;
+            }
+
+            const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+            const nameIdx = headers.findIndex(h => h.includes('item') && h.includes('name') || h === 'name' || h === 'item');
+            const qtyIdx = headers.findIndex(h => h.includes('quantity') || h.includes('adjusted') || h.includes('value') || h.includes('qty'));
+            const reasonIdx = headers.findIndex(h => h.includes('reason'));
+            const descIdx = headers.findIndex(h => h.includes('description') || h.includes('desc'));
+
+            if (nameIdx === -1 || qtyIdx === -1) {
+                alert('CSV must have columns: Item Name, Quantity Adjusted (or Value Adjusted)');
+                return;
+            }
+
+            importedRows = [];
+            for (let i = 1; i < lines.length; i++) {
+                const cols = lines[i].split(',').map(c => c.trim());
+                const itemName = cols[nameIdx] || '';
+                const qty = parseFloat(cols[qtyIdx]) || 0;
+                const reason = reasonIdx !== -1 ? (cols[reasonIdx] || '') : '';
+                const desc = descIdx !== -1 ? (cols[descIdx] || '') : '';
+
+                if (!itemName || qty === 0) continue;
+
+                // Match to existing item
+                const match = importItemsCache.find(it => it.name.toLowerCase() === itemName.toLowerCase());
+
+                importedRows.push({
+                    itemName,
+                    qty,
+                    reason,
+                    description: desc,
+                    matched: !!match,
+                    itemId: match ? match.id : null,
+                    currentStock: match ? (match.stock_quantity || 0) : '-'
+                });
+            }
+
+            renderImportPreview();
+        }
+
+        function renderImportPreview() {
+            const tbody = document.getElementById('importPreviewBody');
+            const preview = document.getElementById('importPreview');
+            const matchCount = importedRows.filter(r => r.matched).length;
+            document.getElementById('importMatchCount').textContent = `${matchCount} of ${importedRows.length} items matched`;
+
+            tbody.innerHTML = importedRows.map((row, i) => `
+                <tr class="${row.matched ? '' : 'import-unmatched'}">
+                    <td>${i + 1}</td>
+                    <td>${row.itemName}</td>
+                    <td>${row.qty > 0 ? '+' : ''}${row.qty}</td>
+                    <td>${row.currentStock}</td>
+                    <td><span class="import-status ${row.matched ? 'matched' : 'unmatched'}">${row.matched ? '✓ Matched' : '✗ Not Found'}</span></td>
+                </tr>
+            `).join('');
+
+            preview.style.display = 'block';
+        }
+
+        async function submitImport() {
+            const validRows = importedRows.filter(r => r.matched);
+            if (validRows.length === 0) {
+                alert('No matched items to import. Please check item names.');
+                return;
+            }
+
+            const reason = importedRows[0]?.reason || 'imported_adjustment';
+            const description = importedRows[0]?.description || 'Imported from CSV';
+
+            const payload = {
+                reference_number: `IMP-${Date.now()}`,
+                mode: importMode,
+                reason: reason || 'imported_adjustment',
+                description: description,
+                account: 'cogs',
+                status: 'adjusted',
+                items: validRows.map(r => ({
+                    item_id: r.itemId,
+                    quantity_adjusted: r.qty
+                }))
+            };
+
+            try {
+                const res = await fetch('/api/inventory/adjustments', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    closeImportModal();
+                    const skipped = importedRows.length - validRows.length;
+                    alert(`✅ Successfully imported ${validRows.length} ${importMode} adjustment(s).${skipped > 0 ? `\n⚠️ ${skipped} item(s) were skipped (not found in database).` : ''}`);
+                    loadAdjustments();
+                } else {
+                    const err = await res.json();
+                    alert('Error: ' + (err.error || 'Failed to import'));
+                }
+            } catch (e) {
+                console.error('Import error:', e);
+                alert('Failed to import adjustments. Please try again.');
+            }
+        }
+
+        function downloadSampleCSV() {
+            const mode = importMode;
+            const header = mode === 'value'
+                ? 'Item Name,Value Adjusted,Reason,Description'
+                : 'Item Name,Quantity Adjusted,Reason,Description';
+            const sample1 = mode === 'value'
+                ? 'Widget A,500,inventory_revaluation,Imported from CSV'
+                : 'Widget A,5,recount,Imported from CSV';
+            const sample2 = mode === 'value'
+                ? 'Widget B,-200,damaged_goods,Imported from CSV'
+                : 'Widget B,-3,damaged_goods,Imported from CSV';
+            const csv = [header, sample1, sample2].join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sample_${mode}_adjustments.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
         }
 
         // Export function
         function exportInventoryAdjustments() {
-            alert('Exporting Inventory Adjustments - Feature coming soon');
             document.getElementById('moreActionsMenu').classList.remove('show');
+
+            if (!allAdjustments || allAdjustments.length === 0) {
+                alert('No adjustments to export.');
+                return;
+            }
+
+            const headers = ['Date', 'Reason', 'Description', 'Status', 'Reference Number', 'Type', 'Created By', 'Created Time', 'Last Modified By', 'Last Modified Time'];
+
+            const rows = allAdjustments.map(adj => {
+                const adjDate = adj.adjustment_date ? new Date(adj.adjustment_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+                const reasonDisplay = adj.reason ? adj.reason.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : '';
+                const createdTime = adj.created_at ? formatDateTime(adj.created_at) : adjDate;
+                const modifiedTime = adj.updated_at ? formatDateTime(adj.updated_at) : createdTime;
+                const typeDisplay = adj.mode === 'value' ? 'Value' : 'Quantity';
+
+                return [
+                    adjDate,
+                    reasonDisplay,
+                    `"${(adj.description || '').replace(/"/g, '""')}"`,
+                    (adj.status || '').toUpperCase(),
+                    adj.reference_number || '',
+                    typeDisplay,
+                    'Admin',
+                    createdTime,
+                    'Admin',
+                    modifiedTime
+                ].join(',');
+            });
+
+            const csv = [headers.join(','), ...rows].join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const today = new Date().toISOString().split('T')[0];
+            a.download = `inventory_adjustments_${today}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
         }
 
         // Refresh List function
         function refreshList() {
             location.reload();
         }
+
+        // ===== Kebab Menu Dropdown Functions =====
+        function toggleAdjKebab(e) {
+            e.stopPropagation();
+            const dropdown = document.getElementById('adjKebabDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Close kebab menu when clicking outside
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.adj-kebab-wrap')) {
+                const dropdown = document.getElementById('adjKebabDropdown');
+                if (dropdown) dropdown.classList.remove('show');
+            }
+        });
+
+        let adjSortField = 'date';
+        let adjSortDir = 'asc';
+
+        function sortAdjSidebar(field, btn) {
+            // Toggle direction if same field
+            if (adjSortField === field) {
+                adjSortDir = adjSortDir === 'asc' ? 'desc' : 'asc';
+            } else {
+                adjSortField = field;
+                adjSortDir = 'asc';
+            }
+
+            // Update UI - clear all active states
+            document.querySelectorAll('.adj-kebab-sub-item').forEach(item => {
+                item.classList.remove('active');
+                const arrow = item.querySelector('.sort-arrow');
+                if (arrow) arrow.remove();
+            });
+
+            // Set active on clicked
+            btn.classList.add('active');
+            const arrowSpan = document.createElement('span');
+            arrowSpan.className = 'sort-arrow';
+            arrowSpan.textContent = adjSortDir === 'asc' ? '\u2191' : '\u2193';
+            btn.appendChild(arrowSpan);
+
+            // Close menu
+            document.getElementById('adjKebabDropdown').classList.remove('show');
+
+            // Sort the sidebar list
+            const sidebarList = document.getElementById('adjSidebarList');
+            const items = Array.from(sidebarList.children);
+
+            items.sort((a, b) => {
+                let valA, valB;
+                const getField = (el) => {
+                    switch (field) {
+                        case 'date': return el.querySelector('.adj-sidebar-item-date')?.textContent || '';
+                        case 'reason': return el.querySelector('.adj-sidebar-item-reason')?.textContent || '';
+                        case 'status': return el.querySelector('.adj-sidebar-item-status')?.textContent || '';
+                        default: return el.querySelector('.adj-sidebar-item-date')?.textContent || '';
+                    }
+                };
+                valA = getField(a).toLowerCase();
+                valB = getField(b).toLowerCase();
+                if (valA < valB) return adjSortDir === 'asc' ? -1 : 1;
+                if (valA > valB) return adjSortDir === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            items.forEach(item => sidebarList.appendChild(item));
+        }
+
+        function importAdjustments() {
+            document.getElementById('adjKebabDropdown').classList.remove('show');
+
+            // Create import modal
+            const existingModal = document.getElementById('adjImportModal');
+            if (existingModal) existingModal.remove();
+
+            const modal = document.createElement('div');
+            modal.id = 'adjImportModal';
+            modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;';
+            modal.innerHTML = `
+                <div style="background:white;border-radius:12px;padding:32px;width:520px;max-width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.2);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                        <h3 style="margin:0;font-size:18px;color:#333;">Import Inventory Adjustments</h3>
+                        <button onclick="document.getElementById('adjImportModal').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#888;">✕</button>
+                    </div>
+                    <div id="adjImportDropZone" style="border:2px dashed #ccc;border-radius:8px;padding:40px 20px;text-align:center;cursor:pointer;transition:border-color 0.2s;margin-bottom:16px;"
+                         ondragover="event.preventDefault();this.style.borderColor='#4285f4';this.style.background='#f0f4ff'"
+                         ondragleave="this.style.borderColor='#ccc';this.style.background='white'"
+                         ondrop="event.preventDefault();this.style.borderColor='#ccc';this.style.background='white';handleAdjImportFile(event.dataTransfer.files[0])"
+                         onclick="document.getElementById('adjImportFileInput').click()">
+                        <svg style="width:40px;height:40px;margin-bottom:12px;stroke:#4285f4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        <div style="font-size:14px;color:#555;margin-bottom:4px;">Drag & drop a CSV file here, or click to browse</div>
+                        <div id="adjImportFileName" style="font-size:12px;color:#888;margin-top:8px;"></div>
+                    </div>
+                    <input type="file" id="adjImportFileInput" accept=".csv" style="display:none" onchange="handleAdjImportFile(this.files[0])">
+                    <div style="background:#f8f9fb;border-radius:6px;padding:14px;margin-bottom:20px;font-size:12px;color:#666;line-height:1.6;">
+                        <strong>CSV Format Required:</strong><br>
+                        <code style="font-size:11px;background:#eee;padding:2px 6px;border-radius:3px;">Item Name, Quantity Adjusted, Reason, Mode, Account, Description</code><br>
+                        <span style="color:#888;">• Item Name must match an existing item<br>
+                        • Mode: "quantity" or "value" (default: quantity)<br>
+                        • Reason: e.g. stocktaking_results, damaged_goods, etc.</span>
+                    </div>
+                    <div style="display:flex;gap:10px;justify-content:flex-end;">
+                        <button onclick="document.getElementById('adjImportModal').remove()" style="padding:8px 20px;border:1px solid #ddd;border-radius:6px;background:white;cursor:pointer;font-size:13px;">Cancel</button>
+                        <button id="adjImportSubmitBtn" onclick="submitAdjImport()" disabled style="padding:8px 20px;border:none;border-radius:6px;background:#4285f4;color:white;cursor:pointer;font-size:13px;opacity:0.5;">Import</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        let adjImportFileData = null;
+
+        function handleAdjImportFile(file) {
+            if (!file) return;
+            if (!file.name.endsWith('.csv')) {
+                alert('Please select a CSV file.');
+                return;
+            }
+            adjImportFileData = file;
+            document.getElementById('adjImportFileName').textContent = '📄 ' + file.name;
+            const btn = document.getElementById('adjImportSubmitBtn');
+            btn.disabled = false;
+            btn.style.opacity = '1';
+        }
+
+        async function submitAdjImport() {
+            if (!adjImportFileData) return;
+
+            const btn = document.getElementById('adjImportSubmitBtn');
+            btn.disabled = true;
+            btn.textContent = 'Importing...';
+
+            try {
+                const text = await adjImportFileData.text();
+                const lines = text.trim().split('\n');
+
+                if (lines.length < 2) {
+                    alert('CSV must have a header row and at least one data row.');
+                    btn.disabled = false;
+                    btn.textContent = 'Import';
+                    return;
+                }
+
+                // Fetch all items to match names to IDs
+                const itemsRes = await fetch('/api/items');
+                const allItems = itemsRes.ok ? await itemsRes.json() : [];
+
+                // Parse CSV rows (skip header)
+                const adjustments = {};
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+
+                    // Simple CSV parse (handles quoted fields)
+                    const cols = line.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g) || [];
+                    const cleanCols = cols.map(c => c.replace(/^"|"$/g, '').trim());
+
+                    const [itemName, qtyStr, reason, mode, account, description] = cleanCols;
+
+                    if (!itemName || !qtyStr) continue;
+
+                    const matchedItem = allItems.find(it =>
+                        (it.name || '').toLowerCase() === itemName.toLowerCase()
+                    );
+
+                    if (!matchedItem) {
+                        alert(`Item not found: "${itemName}" (row ${i + 1}). Please check the item name.`);
+                        btn.disabled = false;
+                        btn.textContent = 'Import';
+                        return;
+                    }
+
+                    // Group by reason+mode+account to create one adjustment per group
+                    const key = `${reason || 'other'}|${mode || 'quantity'}|${account || 'Cost of Goods Sold'}`;
+                    if (!adjustments[key]) {
+                        adjustments[key] = {
+                            reason: reason || 'other',
+                            mode: mode || 'quantity',
+                            account: account || 'Cost of Goods Sold',
+                            description: description || 'Imported from CSV',
+                            items: []
+                        };
+                    }
+                    adjustments[key].items.push({
+                        item_id: matchedItem.id,
+                        quantity_adjusted: parseFloat(qtyStr)
+                    });
+                }
+
+                // Create adjustments via API
+                let successCount = 0;
+                for (const key in adjustments) {
+                    const adj = adjustments[key];
+                    const res = await fetch('/api/inventory/adjustments', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            mode: adj.mode,
+                            reason: adj.reason,
+                            description: adj.description,
+                            account: adj.account,
+                            status: 'adjusted',
+                            items: adj.items
+                        })
+                    });
+                    if (res.ok) successCount++;
+                }
+
+                document.getElementById('adjImportModal').remove();
+                adjImportFileData = null;
+
+                alert(`Successfully imported ${successCount} adjustment(s).`);
+                loadAdjustments();
+
+            } catch (err) {
+                console.error('Import error:', err);
+                alert('Error importing adjustments: ' + err.message);
+                btn.disabled = false;
+                btn.textContent = 'Import';
+            }
+        }
+
+        function exportAdjustments() {
+            document.getElementById('adjKebabDropdown').classList.remove('show');
+            // Export as CSV
+            try {
+                const rows = document.querySelectorAll('.adjustments-table tbody tr');
+                if (rows.length === 0) {
+                    alert('No adjustments to export.');
+                    return;
+                }
+
+                let csv = 'Date,Reason,Description,Status,Reference Number,Type\n';
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length >= 6) {
+                        const values = [
+                            cells[1]?.textContent?.trim() || '',
+                            cells[2]?.textContent?.trim() || '',
+                            cells[3]?.textContent?.trim() || '',
+                            cells[4]?.textContent?.trim() || '',
+                            cells[5]?.textContent?.trim() || '',
+                            cells[6]?.textContent?.trim() || ''
+                        ].map(v => '"' + v.replace(/"/g, '""') + '"');
+                        csv += values.join(',') + '\n';
+                    }
+                });
+
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'inventory_adjustments_' + new Date().toISOString().slice(0, 10) + '.csv';
+                a.click();
+                URL.revokeObjectURL(url);
+            } catch (err) {
+                console.error('Export error:', err);
+                alert('Error exporting adjustments.');
+            }
+        }
+
+        function refreshAdjList() {
+            document.getElementById('adjKebabDropdown').classList.remove('show');
+            loadAdjustments();
+        }
     </script>
+
+    <!-- Bulk Add Items Modal -->
+    <div class="bulk-adj-overlay" id="bulkAdjModal">
+        <div class="bulk-adj-content">
+            <div class="bulk-adj-header">
+                <h3>Add Items in Bulk</h3>
+                <button class="bulk-adj-close" onclick="closeBulkAdjModal()">&times;</button>
+            </div>
+            <div class="bulk-adj-body">
+                <div class="bulk-adj-left">
+                    <div class="bulk-adj-search-wrap">
+                        <input type="text" id="bulkAdjSearch" placeholder="Search items..."
+                            oninput="renderBulkAdjLeft(this.value)">
+                    </div>
+                    <div class="bulk-adj-items-list" id="bulkAdjItemsList"></div>
+                </div>
+                <div class="bulk-adj-right">
+                    <div class="bulk-adj-right-header">
+                        Selected Items <span class="bulk-adj-badge" id="bulkAdjBadge">0</span>
+                    </div>
+                    <div class="bulk-adj-selected-list" id="bulkAdjSelected"></div>
+                </div>
+            </div>
+            <div class="bulk-adj-footer">
+                <button class="import-btn-cancel" onclick="closeBulkAdjModal()">Cancel</button>
+                <button class="import-btn-submit" onclick="confirmBulkAdjItems()">Add Items</button>
+            </div>
+        </div>
+    </div>
+    <style>
+        .bulk-adj-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .bulk-adj-overlay.active {
+            display: flex;
+        }
+
+        .bulk-adj-content {
+            background: white;
+            border-radius: 12px;
+            width: 740px;
+            max-width: 92%;
+            height: 500px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .bulk-adj-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .bulk-adj-header h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #111;
+        }
+
+        .bulk-adj-close {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: #999;
+            cursor: pointer;
+        }
+
+        .bulk-adj-close:hover {
+            color: #333;
+        }
+
+        .bulk-adj-body {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .bulk-adj-left {
+            width: 50%;
+            border-right: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bulk-adj-right {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bulk-adj-search-wrap {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .bulk-adj-search-wrap input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .bulk-adj-search-wrap input:focus {
+            border-color: #3b82f6;
+        }
+
+        .bulk-adj-items-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .bulk-adj-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            cursor: pointer;
+            border-bottom: 1px solid #f3f4f6;
+            transition: background 0.15s;
+        }
+
+        .bulk-adj-item:hover {
+            background: #eff6ff;
+        }
+
+        .bulk-adj-item-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bulk-adj-item-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: #222;
+        }
+
+        .bulk-adj-item-sku {
+            font-size: 11.5px;
+            color: #888;
+        }
+
+        .bulk-adj-item-stock {
+            font-size: 12px;
+            color: #6b7280;
+            white-space: nowrap;
+        }
+
+        .bulk-adj-right-header {
+            padding: 12px 14px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bulk-adj-badge {
+            background: #3b82f6;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        .bulk-adj-selected-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .bulk-adj-sel-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .bulk-adj-sel-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bulk-adj-sel-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: #222;
+        }
+
+        .bulk-adj-sel-sku {
+            font-size: 11.5px;
+            color: #888;
+        }
+
+        .bulk-adj-sel-remove {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #dc2626;
+            cursor: pointer;
+            padding: 0 4px;
+        }
+
+        .bulk-adj-sel-remove:hover {
+            color: #b91c1c;
+        }
+
+        .bulk-adj-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 14px 24px;
+            border-top: 1px solid #e5e7eb;
+        }
+    </style>
+
+    <!-- Import Adjustments Modal -->
+    <div class="import-adj-overlay" id="importAdjModal">
+        <div class="import-adj-content">
+            <div class="import-adj-header">
+                <h3>Import <span id="importModeLabel">Quantity</span> Adjustments</h3>
+                <button class="import-adj-close" onclick="closeImportModal()">&times;</button>
+            </div>
+            <div class="import-adj-body">
+                <div class="import-instructions">
+                    <p>Upload a CSV file with the following columns:</p>
+                    <div class="import-cols">
+                        <span class="import-col">Item Name</span>
+                        <span class="import-col" id="importColLabel">Quantity Adjusted</span>
+                        <span class="import-col optional">Reason (optional)</span>
+                        <span class="import-col optional">Description (optional)</span>
+                    </div>
+                    <p class="import-hint">Use positive numbers to increase and negative to decrease. <a href="#"
+                            onclick="downloadSampleCSV(); return false;">Download sample CSV</a></p>
+                </div>
+
+                <div class="import-drop-zone" id="importDropZone"
+                    ondragover="event.preventDefault(); this.classList.add('drag-over')"
+                    ondragleave="this.classList.remove('drag-over')" ondrop="handleImportDrop(event)">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="17 8 12 3 7 8" />
+                        <line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                    <p>Drag & drop your CSV file here</p>
+                    <span>or</span>
+                    <label class="import-browse-btn">
+                        Browse Files
+                        <input type="file" id="importFile" accept=".csv" onchange="handleImportFile(this)"
+                            style="display:none">
+                    </label>
+                </div>
+
+                <div class="import-preview" id="importPreview" style="display:none;">
+                    <div class="import-preview-header">
+                        <h4>Preview</h4>
+                        <span class="import-match-count" id="importMatchCount"></span>
+                    </div>
+                    <div class="import-preview-table-wrap">
+                        <table class="import-preview-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Item Name</th>
+                                    <th>Adjusted</th>
+                                    <th>Current Stock</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="importPreviewBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="import-adj-footer">
+                <button class="import-btn-cancel" onclick="closeImportModal()">Cancel</button>
+                <button class="import-btn-submit" onclick="submitImport()">Import & Apply</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .import-adj-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .import-adj-overlay.active {
+            display: flex;
+        }
+
+        .import-adj-content {
+            background: white;
+            border-radius: 12px;
+            width: 720px;
+            max-width: 92%;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .import-adj-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 24px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .import-adj-header h3 {
+            margin: 0;
+            font-size: 17px;
+            font-weight: 600;
+            color: #111;
+        }
+
+        .import-adj-close {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: #999;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .import-adj-close:hover {
+            color: #333;
+        }
+
+        .import-adj-body {
+            padding: 20px 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .import-instructions p {
+            margin: 0 0 10px;
+            font-size: 13.5px;
+            color: #555;
+        }
+
+        .import-cols {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .import-col {
+            background: #eff6ff;
+            color: #2563eb;
+            font-size: 12.5px;
+            font-weight: 500;
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        .import-col.optional {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .import-hint {
+            font-size: 12.5px;
+            color: #888;
+        }
+
+        .import-hint a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        .import-hint a:hover {
+            text-decoration: underline;
+        }
+
+        .import-drop-zone {
+            border: 2px dashed #d1d5db;
+            border-radius: 10px;
+            padding: 32px;
+            text-align: center;
+            color: #9ca3af;
+            margin: 16px 0;
+            transition: all 0.2s;
+        }
+
+        .import-drop-zone.drag-over {
+            border-color: #3b82f6;
+            background: #eff6ff;
+            color: #3b82f6;
+        }
+
+        .import-drop-zone p {
+            margin: 10px 0 4px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .import-drop-zone span {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        .import-browse-btn {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 20px;
+            background: #3b82f6;
+            color: white;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .import-browse-btn:hover {
+            background: #2563eb;
+        }
+
+        .import-preview {
+            margin-top: 16px;
+        }
+
+        .import-preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .import-preview-header h4 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .import-match-count {
+            font-size: 12.5px;
+            color: #6b7280;
+            background: #f3f4f6;
+            padding: 3px 10px;
+            border-radius: 12px;
+        }
+
+        .import-preview-table-wrap {
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+        }
+
+        .import-preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .import-preview-table th {
+            background: #f9fafb;
+            padding: 8px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #555;
+            position: sticky;
+            top: 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .import-preview-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .import-preview-table tr.import-unmatched {
+            background: #fef2f2;
+        }
+
+        .import-status {
+            font-size: 12px;
+            font-weight: 500;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .import-status.matched {
+            background: #ecfdf5;
+            color: #059669;
+        }
+
+        .import-status.unmatched {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .import-adj-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 14px 24px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .import-btn-cancel {
+            padding: 8px 20px;
+            background: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .import-btn-cancel:hover {
+            background: #f9fafb;
+        }
+
+        .import-btn-submit {
+            padding: 8px 20px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .import-btn-submit:hover {
+            background: #2563eb;
+        }
+    </style>
+
 </body>
 
 </html>

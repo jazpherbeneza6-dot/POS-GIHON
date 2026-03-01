@@ -543,7 +543,15 @@
         }
 
         .inv-ribbon.confirmed {
-            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            background: linear-gradient(135deg, #d97706, #f59e0b);
+        }
+
+        .inv-ribbon.overdue {
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+        }
+
+        .inv-ribbon.void {
+            background: linear-gradient(135deg, #374151, #4b5563);
         }
 
         .inv-card-inner {
@@ -798,6 +806,607 @@
             line-height: 1.6;
             font-style: italic;
         }
+
+        /* Dynamic Invoice Status Colors */
+        .status-draft {
+            color: #6b7280;
+            background: #f3f4f6;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-paid {
+            color: #16a34a;
+            background: #dcfce7;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-due {
+            color: #d97706;
+            background: #fef3c7;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-overdue {
+            color: #dc2626;
+            background: #fee2e2;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-confirmed {
+            color: #2563eb;
+            background: #dbeafe;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-void {
+            color: #1f2937;
+            background: #d1d5db;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-decoration: line-through;
+        }
+
+        /* SO-style Badge (for detail view) */
+        .so-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .so-badge.draft {
+            background: #f0f0f0;
+            color: #555;
+        }
+
+        .so-badge.confirmed {
+            background: #2563eb;
+            color: #fff;
+        }
+
+        .so-badge.closed {
+            background: #16a34a;
+            color: #fff;
+        }
+
+        .so-badge.on-hold {
+            background: #f59e0b;
+            color: #fff;
+        }
+
+        .so-badge.cancelled {
+            background: #6b7280;
+            color: #fff;
+        }
+
+        .so-unpaid {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        .so-invoiced {
+            color: #16a34a;
+            font-weight: 600;
+        }
+
+        .so-totals-row {
+            display: flex;
+            justify-content: space-between;
+            width: 300px;
+            font-size: 13px;
+        }
+
+        .so-totals-label {
+            color: #666;
+        }
+
+        .so-totals-value {
+            color: #333;
+        }
+
+        /* ===== SETTINGS ICON & COLUMN DROPDOWN ===== */
+        .inv-filter-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 4px;
+            background: #f0f5ff;
+            border: 1px solid #bfdbfe;
+            transition: all 0.2s ease;
+        }
+
+        .inv-filter-icon:hover {
+            background: #dbeafe;
+            border-color: #93c5fd;
+        }
+
+        .inv-filter-icon svg {
+            transition: all 0.2s ease;
+        }
+
+        .inv-filter-icon:hover svg {
+            fill: #2563eb;
+        }
+
+        .inv-col-dropdown-wrap {
+            position: relative;
+            display: inline-block;
+        }
+
+        .inv-col-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            min-width: 200px;
+            z-index: 9999;
+            padding: 8px 0;
+        }
+
+        .inv-col-dropdown.show {
+            display: block;
+        }
+
+        .inv-col-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #374151;
+            transition: background 0.15s;
+            white-space: nowrap;
+        }
+
+        .inv-col-dropdown-item:hover {
+            background: #f3f4f6;
+        }
+
+        .inv-col-dropdown-item .dd-icon {
+            font-size: 15px;
+            width: 18px;
+            text-align: center;
+            color: #6b7280;
+        }
+
+        /* Customize Columns Modal */
+        .inv-cc-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.15);
+            z-index: 99999;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 60px;
+        }
+
+        .inv-cc-overlay.active {
+            display: flex;
+        }
+
+        .inv-cc-panel {
+            background: #fff;
+            width: 500px;
+            max-height: 85vh;
+            border-radius: 4px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .inv-cc-header {
+            display: flex;
+            align-items: center;
+            padding: 18px 24px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .inv-cc-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 500;
+            color: #333;
+            flex: 1;
+        }
+
+        .inv-cc-title-icon {
+            color: #666;
+            font-size: 18px;
+        }
+
+        .inv-cc-count {
+            font-size: 13px;
+            color: #666;
+            margin-right: 14px;
+        }
+
+        .inv-cc-close {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: #ef4444;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .inv-cc-close:hover {
+            color: #dc2626;
+        }
+
+        .inv-cc-search {
+            padding: 16px 24px;
+        }
+
+        .inv-cc-search input {
+            width: 100%;
+            padding: 10px 14px 10px 36px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 10px center;
+        }
+
+        .inv-cc-search input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+        .inv-cc-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 16px 16px;
+            min-height: 0;
+        }
+
+        .inv-cc-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 14px;
+            margin: 4px 0;
+            background: #f8fafc;
+            border-radius: 8px;
+            gap: 12px;
+            cursor: default;
+            border: 2px solid transparent;
+            transition: all 0.15s;
+        }
+
+        .inv-cc-item:hover {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+        }
+
+        .inv-cc-item.checked {
+            background: #e6f4ff;
+            border-color: #91caff;
+        }
+
+        .inv-cc-item.locked {
+            cursor: default;
+            background: #f5f5f5;
+        }
+
+        .inv-cc-drag {
+            color: #bbb;
+            font-size: 14px;
+            cursor: grab;
+            user-select: none;
+        }
+
+        .inv-cc-lock {
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        .inv-cc-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #3b82f6;
+        }
+
+        .inv-cc-label {
+            font-size: 14px;
+            color: #333;
+            flex: 1;
+        }
+
+        .inv-cc-footer {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 24px;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .inv-cc-save {
+            padding: 8px 20px;
+            background: #3b82f6;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .inv-cc-save:hover {
+            background: #2563eb;
+        }
+
+        .inv-cc-cancel {
+            padding: 8px 20px;
+            background: #f3f4f6;
+            color: #333;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .inv-cc-cancel:hover {
+            background: #e5e7eb;
+        }
+
+        /* ===== INVOICE BULK ACTION BAR ===== */
+        .inv-bulk-bar {
+            display: none;
+            background: #fff;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 8px 20px;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .inv-bulk-bar.show {
+            display: flex;
+        }
+
+        .inv-bulk-btn {
+            padding: 6px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            background: #fff;
+            font-size: 12px;
+            color: #333;
+            cursor: pointer;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .inv-bulk-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .inv-bulk-btn.icon-only {
+            padding: 6px 10px;
+            font-size: 14px;
+        }
+
+        .inv-bulk-count {
+            background: #3b82f6;
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: auto;
+        }
+
+        .inv-bulk-esc {
+            font-size: 12px;
+            color: #666;
+            margin-left: 8px;
+            cursor: pointer;
+        }
+
+        .inv-bulk-close {
+            background: none;
+            border: none;
+            font-size: 16px;
+            color: #ef4444;
+            cursor: pointer;
+            padding: 0 0 0 6px;
+            line-height: 1;
+        }
+
+        .inv-bulk-close:hover {
+            color: #dc2626;
+        }
+
+        .inv-bulk-more-wrap {
+            position: relative;
+            display: inline-block;
+        }
+
+        .inv-bulk-more-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            min-width: 220px;
+            z-index: 9999;
+            padding: 6px 0;
+        }
+
+        .inv-bulk-more-menu.show {
+            display: block;
+        }
+
+        .inv-bulk-more-item {
+            padding: 10px 16px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .inv-bulk-more-item:hover {
+            background: #f5f7fa;
+        }
+
+        .inv-bulk-more-item.danger {
+            color: #ef4444;
+        }
+
+        .inv-bulk-more-item.danger:hover {
+            background: #fef2f2;
+        }
+
+        /* Toast Notification */
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .toast {
+            pointer-events: auto;
+            padding: 14px 28px;
+            border-radius: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+            background: #fff;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            border: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: toastSlideDown 0.3s ease;
+            min-width: 300px;
+            transition: opacity 0.3s ease;
+        }
+
+        .toast.success {
+            border-left: 4px solid #10b981;
+        }
+
+        .toast.info {
+            border-left: 4px solid #3b82f6;
+        }
+
+        .toast-icon {
+            font-size: 18px;
+        }
+
+        .toast-message {
+            flex: 1;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .toast-close:hover {
+            color: #333;
+        }
+
+        @keyframes toastSlideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Filter Dropdown */
+        .inv-filter-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+            min-width: 220px;
+            z-index: 1000;
+            padding: 6px 0;
+            margin-top: 4px;
+        }
+
+        .inv-filter-dropdown.open {
+            display: block;
+        }
+
+        .inv-filter-item {
+            display: block;
+            width: 100%;
+            padding: 9px 18px;
+            border: none;
+            background: none;
+            text-align: left;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .inv-filter-item:hover {
+            background: #f3f4f6;
+        }
+
+        .inv-filter-item.active {
+            color: #2563eb;
+            font-weight: 600;
+            background: #eff6ff;
+        }
     </style>
 </head>
 
@@ -810,12 +1419,51 @@
 
             <!-- ===== TABLE LIST VIEW ===== -->
             <div id="listView">
+                <!-- Bulk Action Bar -->
+                <div class="inv-bulk-bar" id="invBulkBar">
+                    <button class="inv-bulk-btn icon-only" title="Print" onclick="bulkPrintInvoices()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 9V2h12v7" />
+                            <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2" />
+                            <rect x="6" y="14" width="12" height="8" />
+                        </svg>
+                    </button>
+                    <button class="inv-bulk-btn icon-only" title="Export PDF" onclick="bulkExportInvPDF()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+                            <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2" />
+                            <path d="M12 11v6" />
+                            <path d="m9 14 3-3 3 3" />
+                        </svg>
+                    </button>
+                    <button class="inv-bulk-btn" onclick="bulkMarkAsIssued()">Mark as Issued</button>
+                    <div class="inv-bulk-more-wrap">
+                        <button class="inv-bulk-btn" onclick="toggleInvBulkMore(event)">⋯</button>
+                        <div class="inv-bulk-more-menu" id="invBulkMoreMenu">
+                            <div class="inv-bulk-more-item" onclick="bulkVoidInvoices()">Bulk Void Invoices</div>
+                            <div class="inv-bulk-more-item danger" onclick="bulkDeleteInvoices()">Delete</div>
+                        </div>
+                    </div>
+                    <span class="inv-bulk-count" id="invBulkCount">0 Invoices Selected</span>
+                    <span class="inv-bulk-esc" onclick="clearInvBulkSelection()">Esc</span>
+                    <button class="inv-bulk-close" onclick="clearInvBulkSelection()">✕</button>
+                </div>
                 <div class="page-header">
-                    <div class="page-title-wrapper">
-                        <h1 class="page-title">
-                            All Invoices
+                    <div class="page-title-wrapper" style="position:relative;">
+                        <h1 class="page-title" onclick="toggleInvFilterDropdown(event)" style="cursor:pointer;">
+                            <span id="invFilterTitle">All Invoices</span>
                             <span class="dropdown-arrow">▼</span>
                         </h1>
+                        <div class="inv-filter-dropdown" id="invFilterDropdown">
+                            <button class="inv-filter-item active" onclick="applyInvFilter('all')">All Invoices</button>
+                            <button class="inv-filter-item" onclick="applyInvFilter('draft')">Draft</button>
+                            <button class="inv-filter-item" onclick="applyInvFilter('unpaid')">Unpaid</button>
+                            <button class="inv-filter-item" onclick="applyInvFilter('paid')">Paid</button>
+                            <button class="inv-filter-item" onclick="applyInvFilter('overdue')">Overdue</button>
+                            <button class="inv-filter-item" onclick="applyInvFilter('void')">Void</button>
+                        </div>
                     </div>
                     <div class="global-search-container">
                         <span class="global-search-icon">🔍</span>
@@ -823,15 +1471,99 @@
                             placeholder="Search invoices..." oninput="searchInvoices()">
                     </div>
                     <div class="header-actions">
-                        <div class="btn-new-group">
-                            <button class="btn-new" onclick="createInvoice()">
-                                <span>+</span> New
-                            </button>
-                            <button class="btn-new-dropdown">▼</button>
+                        <button class="btn-new" onclick="createInvoice()">
+                            <span>+</span> New
+                        </button>
+                        <div style="position:relative;">
+                            <button class="btn-more" onclick="toggleInvMoreMenu(event)">⋯</button>
+                            <div class="inv-more-menu" id="invMoreMenu"
+                                style="display:none;position:absolute;top:100%;right:0;background:#fff;border:1px solid #e5e7eb;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,0.14);min-width:240px;z-index:1000;padding:6px 0;margin-top:6px;">
+                                <div class="inv-sort-wrap" style="position:relative;"
+                                    onmouseenter="document.getElementById('invSortSub').style.display='block'"
+                                    onmouseleave="document.getElementById('invSortSub').style.display='none'">
+                                    <button class="inv-more-item inv-more-highlight"
+                                        style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:12px 18px;border:none;background:#4285f4;color:#fff;font-size:14px;cursor:pointer;font-family:inherit;border-radius:6px;margin:4px 6px;width:calc(100% - 12px);">
+                                        <span style="display:flex;align-items:center;gap:10px;"><span
+                                                style="font-size:15px;">↑↓</span> Sort by</span>
+                                        <span style="font-size:12px;">›</span>
+                                    </button>
+                                    <div id="invSortSub"
+                                        style="display:none;position:absolute;top:0;right:100%;background:#fff;border:1px solid #e5e7eb;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,0.14);min-width:220px;padding:6px 0;margin-right:4px;">
+                                        <button class="inv-sort-item inv-sort-active"
+                                            onclick="sortInvoicesBy('created_at')"
+                                            style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:10px 18px;border:none;background:#4285f4;color:#fff;font-size:14px;cursor:pointer;font-family:inherit;border-radius:6px;margin:4px 6px;width:calc(100% - 12px);">
+                                            Created Time <span style="font-size:13px;">↓</span>
+                                        </button>
+                                        <button class="inv-sort-item" onclick="sortInvoicesBy('updated_at')"
+                                            style="display:block;width:100%;padding:10px 18px;border:none;background:none;font-size:14px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
+                                            onmouseover="this.style.background='#f3f4f6'"
+                                            onmouseout="this.style.background='none'">Last Modified Time</button>
+                                        <button class="inv-sort-item" onclick="sortInvoicesBy('invoice_date')"
+                                            style="display:block;width:100%;padding:10px 18px;border:none;background:none;font-size:14px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
+                                            onmouseover="this.style.background='#f3f4f6'"
+                                            onmouseout="this.style.background='none'">Date</button>
+                                        <button class="inv-sort-item" onclick="sortInvoicesBy('invoice_number')"
+                                            style="display:block;width:100%;padding:10px 18px;border:none;background:none;font-size:14px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
+                                            onmouseover="this.style.background='#f3f4f6'"
+                                            onmouseout="this.style.background='none'">Invoice#</button>
+                                        <button class="inv-sort-item" onclick="sortInvoicesBy('order_number')"
+                                            style="display:block;width:100%;padding:10px 18px;border:none;background:none;font-size:14px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
+                                            onmouseover="this.style.background='#f3f4f6'"
+                                            onmouseout="this.style.background='none'">Order Number</button>
+                                        <button class="inv-sort-item" onclick="sortInvoicesBy('customer_name')"
+                                            style="display:block;width:100%;padding:10px 18px;border:none;background:none;font-size:14px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
+                                            onmouseover="this.style.background='#f3f4f6'"
+                                            onmouseout="this.style.background='none'">Customer Name</button>
+                                        <button class="inv-sort-item" onclick="sortInvoicesBy('due_date')"
+                                            style="display:block;width:100%;padding:10px 18px;border:none;background:none;font-size:14px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
+                                            onmouseover="this.style.background='#f3f4f6'"
+                                            onmouseout="this.style.background='none'">Due Date</button>
+                                        <button class="inv-sort-item" onclick="sortInvoicesBy('total')"
+                                            style="display:block;width:100%;padding:10px 18px;border:none;background:none;font-size:14px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
+                                            onmouseover="this.style.background='#f3f4f6'"
+                                            onmouseout="this.style.background='none'">Amount</button>
+                                        <button class="inv-sort-item" onclick="sortInvoicesBy('balance_due')"
+                                            style="display:block;width:100%;padding:10px 18px;border:none;background:none;font-size:14px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
+                                            onmouseover="this.style.background='#f3f4f6'"
+                                            onmouseout="this.style.background='none'">Balance Due</button>
+                                    </div>
+                                </div>
+                                <button class="inv-more-item"
+                                    onclick="document.getElementById('invImportFile').click(); toggleInvMoreMenu(event);"
+                                    style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:12px 18px;border:none;background:none;font-size:14px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
+                                    onmouseover="this.style.background='#f3f4f6'"
+                                    onmouseout="this.style.background='none'">
+                                    <span style="display:flex;align-items:center;gap:10px;"><span
+                                            style="font-size:15px;">⬇</span> Import</span>
+                                </button>
+                                <button class="inv-more-item" onclick="exportInvoicesCSV()"
+                                    style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:12px 18px;border:none;background:none;font-size:14px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
+                                    onmouseover="this.style.background='#f3f4f6'"
+                                    onmouseout="this.style.background='none'">
+                                    <span style="display:flex;align-items:center;gap:10px;"><span
+                                            style="font-size:15px;">⬆</span> Export</span>
+                                </button>
+                                <div style="border-top:1px solid #eee;margin:4px 0;"></div>
+                                <button class="inv-more-item" onclick="refreshInvList()"
+                                    style="display:flex;align-items:center;gap:10px;width:100%;padding:12px 18px;border:none;background:none;font-size:14px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
+                                    onmouseover="this.style.background='#f3f4f6'"
+                                    onmouseout="this.style.background='none'">
+                                    <span style="font-size:15px;">🔄</span> Refresh List
+                                </button>
+                                <button class="inv-more-item" onclick="resetInvColWidth()"
+                                    style="display:flex;align-items:center;gap:10px;width:100%;padding:12px 18px;border:none;background:none;font-size:14px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
+                                    onmouseover="this.style.background='#f3f4f6'"
+                                    onmouseout="this.style.background='none'">
+                                    <span style="font-size:15px;">↺</span> Reset Column Width
+                                </button>
+                            </div>
                         </div>
-                        <button class="btn-more">⋯</button>
                     </div>
                 </div>
+
+                <!-- Hidden file input for CSV import -->
+                <input type="file" id="invImportFile" accept=".csv" style="display:none"
+                    onchange="importInvoicesCSV(this)">
 
                 <!-- Empty State -->
                 <div class="empty-state" id="emptyState">
@@ -843,21 +1575,8 @@
 
                 <!-- Invoices Table -->
                 <div id="invoicesContainer" style="display: none;">
-                    <table class="invoices-table">
-                        <thead>
-                            <tr>
-                                <th><input type="checkbox" class="th-checkbox" id="selectAll"
-                                        onchange="toggleSelectAll(this)"></th>
-                                <th>DATE</th>
-                                <th>INVOICE#</th>
-                                <th>ORDER NUMBER</th>
-                                <th>CUSTOMER NAME</th>
-                                <th>STATUS</th>
-                                <th>DUE DATE</th>
-                                <th style="text-align:right;">AMOUNT</th>
-                                <th style="text-align:right;">BALANCE DUE</th>
-                            </tr>
-                        </thead>
+                    <table class="invoices-table" id="invTable">
+                        <thead id="invThead"></thead>
                         <tbody id="invoicesBody"></tbody>
                     </table>
                     <div id="invPaginationContainer"></div>
@@ -871,7 +1590,91 @@
                         <div class="inv-left-title" onclick="backToList()">← All Invoices</div>
                         <div class="inv-left-actions">
                             <button class="inv-left-btn add" onclick="createInvoice()" title="New Invoice">+</button>
-                            <button class="inv-left-btn more" title="More">⋯</button>
+                            <div style="position:relative;">
+                                <button class="inv-left-btn more" title="More"
+                                    onclick="toggleInvLeftMore(event)">⋯</button>
+                                <div id="invLeftMoreMenu" onclick="event.stopPropagation()"
+                                    style="display:none;position:absolute;top:100%;right:0;background:#fff;border:1px solid #e5e7eb;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.12);min-width:200px;z-index:1000;padding:6px 0;margin-top:4px;">
+                                    <div style="position:relative;"
+                                        onmouseenter="document.getElementById('invLeftSortSub').style.display='block'"
+                                        onmouseleave="document.getElementById('invLeftSortSub').style.display='none'">
+                                        <button class="inv-more-item inv-more-highlight"
+                                            style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 16px;border:none;background:none;font-size:13px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
+                                            onmouseover="this.style.background='#f5f5f5'"
+                                            onmouseout="this.style.background='none'">
+                                            <span style="color:#4285f4;font-size:14px;">⇅</span> Sort by <span
+                                                style="margin-left:auto;color:#999;font-size:10px;">›</span>
+                                        </button>
+                                        <div id="invLeftSortSub"
+                                            style="display:none;position:absolute;top:0;left:100%;background:#fff;border:1px solid #e5e7eb;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);min-width:180px;padding:6px 0;margin-left:0;z-index:1001;">
+                                            <button onclick="sortInvoicesBy('created_at');toggleInvLeftMore(event)"
+                                                style="display:block;width:100%;padding:8px 16px;border:none;background:none;font-size:13px;color:#333;cursor:pointer;text-align:left;font-family:inherit;"
+                                                onmouseover="this.style.background='#f5f5f5'"
+                                                onmouseout="this.style.background='none'">Created Time</button>
+                                            <button onclick="sortInvoicesBy('updated_at');toggleInvLeftMore(event)"
+                                                style="display:block;width:100%;padding:8px 16px;border:none;background:none;font-size:13px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
+                                                onmouseover="this.style.background='#f5f5f5'"
+                                                onmouseout="this.style.background='none'">Last Modified Time</button>
+                                            <button onclick="sortInvoicesBy('invoice_date');toggleInvLeftMore(event)"
+                                                style="display:block;width:100%;padding:8px 16px;border:none;background:none;font-size:13px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
+                                                onmouseover="this.style.background='#f5f5f5'"
+                                                onmouseout="this.style.background='none'">Date</button>
+                                            <button onclick="sortInvoicesBy('invoice_number');toggleInvLeftMore(event)"
+                                                style="display:block;width:100%;padding:8px 16px;border:none;background:none;font-size:13px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
+                                                onmouseover="this.style.background='#f5f5f5'"
+                                                onmouseout="this.style.background='none'">Invoice#</button>
+                                            <button onclick="sortInvoicesBy('order_number');toggleInvLeftMore(event)"
+                                                style="display:block;width:100%;padding:8px 16px;border:none;background:none;font-size:13px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
+                                                onmouseover="this.style.background='#f5f5f5'"
+                                                onmouseout="this.style.background='none'">Order Number</button>
+                                            <button onclick="sortInvoicesBy('customer_name');toggleInvLeftMore(event)"
+                                                style="display:block;width:100%;padding:8px 16px;border:none;background:none;font-size:13px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
+                                                onmouseover="this.style.background='#f5f5f5'"
+                                                onmouseout="this.style.background='none'">Customer Name</button>
+                                            <button onclick="sortInvoicesBy('due_date');toggleInvLeftMore(event)"
+                                                style="display:block;width:100%;padding:8px 16px;border:none;background:none;font-size:13px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
+                                                onmouseover="this.style.background='#f5f5f5'"
+                                                onmouseout="this.style.background='none'">Due Date</button>
+                                            <button onclick="sortInvoicesBy('total');toggleInvLeftMore(event)"
+                                                style="display:block;width:100%;padding:8px 16px;border:none;background:none;font-size:13px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
+                                                onmouseover="this.style.background='#f5f5f5'"
+                                                onmouseout="this.style.background='none'">Amount</button>
+                                            <button onclick="sortInvoicesBy('balance_due');toggleInvLeftMore(event)"
+                                                style="display:block;width:100%;padding:8px 16px;border:none;background:none;font-size:13px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
+                                                onmouseover="this.style.background='#f5f5f5'"
+                                                onmouseout="this.style.background='none'">Balance Due</button>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onclick="document.getElementById('invImportFile').click();toggleInvLeftMore(event)"
+                                        style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:9px 16px;border:none;background:none;font-size:13px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
+                                        onmouseover="this.style.background='#f3f4f6'"
+                                        onmouseout="this.style.background='none'">
+                                        <span style="display:flex;align-items:center;gap:10px;"><span
+                                                style="font-size:15px;">⬇</span> Import</span>
+                                    </button>
+                                    <button onclick="exportInvoicesCSV();toggleInvLeftMore(event)"
+                                        style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:9px 16px;border:none;background:none;font-size:13px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
+                                        onmouseover="this.style.background='#f3f4f6'"
+                                        onmouseout="this.style.background='none'">
+                                        <span style="display:flex;align-items:center;gap:10px;"><span
+                                                style="font-size:15px;">⬆</span> Export</span>
+                                    </button>
+                                    <div style="border-top:1px solid #eee;margin:4px 0;"></div>
+                                    <button onclick="refreshInvList();toggleInvLeftMore(event)"
+                                        style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 16px;border:none;background:none;font-size:13px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
+                                        onmouseover="this.style.background='#f3f4f6'"
+                                        onmouseout="this.style.background='none'">
+                                        <span style="font-size:15px;">🔄</span> Refresh List
+                                    </button>
+                                    <button onclick="resetInvColWidth();toggleInvLeftMore(event)"
+                                        style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 16px;border:none;background:none;font-size:13px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
+                                        onmouseover="this.style.background='#f3f4f6'"
+                                        onmouseout="this.style.background='none'">
+                                        <span style="font-size:15px;">↺</span> Reset Column Width
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="inv-left-list" id="invLeftList"></div>
@@ -882,12 +1685,120 @@
         </div>
     </div>
 
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Customize Columns Modal -->
+    <div class="inv-cc-overlay" id="invCCOverlay" onclick="if(event.target===this)closeInvCustomizeCols()">
+        <div class="inv-cc-panel">
+            <div class="inv-cc-header">
+                <div class="inv-cc-title"><span class="inv-cc-title-icon">⚙</span> Customize Columns</div>
+                <span class="inv-cc-count" id="invCCCount"></span>
+                <button class="inv-cc-close" onclick="closeInvCustomizeCols()">✕</button>
+            </div>
+            <div class="inv-cc-search">
+                <input type="text" placeholder="Search" oninput="filterInvCCItems(this.value)">
+            </div>
+            <div class="inv-cc-list" id="invCCList"></div>
+            <div class="inv-cc-footer">
+                <button class="inv-cc-save" onclick="saveInvCols()">Save</button>
+                <button class="inv-cc-cancel" onclick="closeInvCustomizeCols()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Layout Script -->
     <script src="/js/pagination.js"></script>
     <script src="/js/layout.js"></script>
     <script>
         let allInvoices = [];
         let selectedInvoiceId = null;
+        let currentInvFilter = 'all';
+        let currentSortField = 'created_at';
+        let currentSortDir = 'desc';
+        let invTextClipped = false;
+
+        // ===== COLUMN DEFINITIONS =====
+        const invAllColumns = [
+            { key: 'date', label: 'Date', locked: true, visible: true },
+            { key: 'invoice_number', label: 'Invoice#', locked: true, visible: true },
+            { key: 'order_number', label: 'Order Number', locked: false, visible: true },
+            { key: 'customer_name', label: 'Customer Name', locked: true, visible: true },
+            { key: 'status', label: 'Status', locked: true, visible: true },
+            { key: 'due_date', label: 'Due Date', locked: false, visible: true },
+            { key: 'amount', label: 'Amount', locked: false, visible: true },
+            { key: 'balance_due', label: 'Balance Due', locked: false, visible: true },
+            { key: 'salesperson', label: 'Salesperson', locked: false, visible: false },
+            { key: 'payment_terms', label: 'Payment Terms', locked: false, visible: false },
+        ];
+        let invCCState = [];
+
+        function loadInvColState() {
+            const saved = localStorage.getItem('inv_columns');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    invAllColumns.forEach(col => {
+                        const s = parsed.find(c => c.key === col.key);
+                        if (s && !col.locked) col.visible = s.visible;
+                    });
+                } catch (e) { }
+            }
+            const textMode = localStorage.getItem('inv_text_mode');
+            if (textMode === 'clip') invTextClipped = true;
+        }
+        loadInvColState();
+
+        function getVisibleInvCols() { return invAllColumns.filter(c => c.visible); }
+
+        function getInvColValue(inv, key) {
+            const smart = getSmartStatus(inv);
+            switch (key) {
+                case 'date': return formatDate(inv.invoice_date);
+                case 'invoice_number': return `<span class="inv-number-link">${inv.invoice_number}</span>`;
+                case 'order_number': return inv.order_number || '';
+                case 'customer_name': return inv.customer_name || '';
+                case 'status': return `<span class="${smart.cls}">${smart.label}</span>`;
+                case 'due_date': return formatDate(inv.due_date);
+                case 'amount': return formatCurrency(inv.total);
+                case 'balance_due': return formatCurrency(inv.balance_due || inv.total);
+                case 'reference': return inv.reference_number || '';
+                case 'salesperson': return inv.salesperson_name || '';
+                case 'payment_terms': return inv.payment_terms || '';
+                default: return '';
+            }
+        }
+
+        function getInvColAlign(key) {
+            return ['amount', 'balance_due'].includes(key) ? 'text-align:right;' : '';
+        }
+
+        function renderInvThead() {
+            const cols = getVisibleInvCols();
+            const textLabel = invTextClipped ? 'Wrap Text' : 'Clip Text';
+            const textIcon = invTextClipped ? '↩' : '✂';
+            document.getElementById('invThead').innerHTML = `<tr>
+                <th style="width:40px;min-width:40px;text-align:center;padding:14px 8px;">
+                    <div class="inv-col-dropdown-wrap">
+                        <span class="inv-filter-icon" onclick="toggleInvColDropdown(event)">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" style="fill:#3b82f6;">
+                                <path d="M1 2.5h14a.5.5 0 000-1H1a.5.5 0 000 1zm0 4h14a.5.5 0 000-1H1a.5.5 0 000 1zm0 4h14a.5.5 0 000-1H1a.5.5 0 000 1zm0 4h14a.5.5 0 000-1H1a.5.5 0 000 1z"/>
+                            </svg>
+                        </span>
+                        <div class="inv-col-dropdown" id="invColDropdown">
+                            <div class="inv-col-dropdown-item" onclick="openInvCustomizeCols()">
+                                <span class="dd-icon">⚙</span> Customize Columns
+                            </div>
+                            <div class="inv-col-dropdown-item" id="invTextModeBtn" onclick="toggleInvTextMode()">
+                                <span class="dd-icon">${textIcon}</span> <span id="invTextModeLabel">${textLabel}</span>
+                            </div>
+                        </div>
+                    </div>
+                </th>
+                <th><input type="checkbox" class="th-checkbox" id="selectAll" onchange="toggleSelectAll(this)"></th>
+                ${cols.map(col => `<th style="${getInvColAlign(col.key)}">${col.label.toUpperCase()}</th>`).join('')}
+            </tr>`;
+        }
 
         function createInvoice() {
             window.location.href = '/new-invoice.html';
@@ -898,6 +1809,35 @@
             const d = new Date(dateStr);
             const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
             return `${String(d.getDate()).padStart(2, '0')} ${months[d.getMonth()]} ${d.getFullYear()}`;
+        }
+
+        // Compute smart status from backend fields
+        function getSmartStatus(inv) {
+            const s = (inv.status || '').toUpperCase();
+            if (s === 'DRAFT') return { label: 'DRAFT', cls: 'status-draft', category: 'draft' };
+            if (s === 'VOID') return { label: 'VOID', cls: 'status-void', category: 'void' };
+            if (s === 'PAID') return { label: 'Paid', cls: 'status-paid', category: 'paid' };
+            if (s === 'PARTIALLY_PAID') return { label: 'Partially Paid', cls: 'status-due', category: 'unpaid' };
+            const bal = parseFloat(inv.balance_due);
+            if (!isNaN(bal) && bal <= 0) return { label: 'Paid', cls: 'status-paid', category: 'paid' };
+            // Try backend days_diff first, then calculate client-side
+            let diff = parseInt(inv.days_diff);
+            if (isNaN(diff) && inv.due_date) {
+                const today = new Date(); today.setHours(0, 0, 0, 0);
+                const due = new Date(inv.due_date); due.setHours(0, 0, 0, 0);
+                diff = Math.round((due - today) / 86400000);
+            }
+            if (inv.due_date && !isNaN(diff)) {
+                if (diff < 0) {
+                    return { label: 'Overdue by ' + Math.abs(diff) + ' day' + (Math.abs(diff) !== 1 ? 's' : ''), cls: 'status-overdue', category: 'overdue' };
+                } else if (diff === 0) {
+                    return { label: 'Due today', cls: 'status-due', category: 'unpaid' };
+                } else {
+                    return { label: 'Due in ' + diff + ' day' + (diff !== 1 ? 's' : ''), cls: 'status-due', category: 'unpaid' };
+                }
+            }
+            // No due_date set — treat as due today
+            return { label: 'Due today', cls: 'status-due', category: 'unpaid' };
         }
 
         function getStatusClass(status) {
@@ -913,18 +1853,59 @@
 
         function toggleSelectAll(checkbox) {
             document.querySelectorAll('.inv-checkbox').forEach(cb => cb.checked = checkbox.checked);
+            updateInvBulkBar();
+        }
+
+        // Filter dropdown
+        function toggleInvFilterDropdown(e) {
+            e.stopPropagation();
+            document.getElementById('invFilterDropdown').classList.toggle('open');
+        }
+
+        function applyInvFilter(filter) {
+            currentInvFilter = filter;
+            const titles = { all: 'All Invoices', draft: 'Draft Invoices', unpaid: 'Unpaid Invoices', paid: 'Paid Invoices', overdue: 'Overdue Invoices', void: 'Void Invoices' };
+            document.getElementById('invFilterTitle').textContent = titles[filter] || 'All Invoices';
+            document.getElementById('invFilterDropdown').classList.remove('open');
+            document.querySelectorAll('.inv-filter-item').forEach(el => {
+                el.classList.remove('active');
+                if (el.textContent.trim().toLowerCase().startsWith(filter === 'all' ? 'all' : filter)) el.classList.add('active');
+            });
+            renderFilteredInvoices();
+        }
+
+        function getFilteredInvoices() {
+            if (currentInvFilter === 'all') return allInvoices;
+            return allInvoices.filter(inv => {
+                const smart = getSmartStatus(inv);
+                if (currentInvFilter === 'unpaid') return smart.category === 'unpaid' || smart.category === 'overdue';
+                return smart.category === currentInvFilter;
+            });
         }
 
         function searchInvoices() {
             const query = (document.getElementById('invSearchInput').value || '').toLowerCase();
-            if (!query) { loadInvoices(); return; }
-            const filtered = allInvoices.filter(inv => {
+            if (!query) { renderFilteredInvoices(); return; }
+            const base = getFilteredInvoices();
+            const filtered = base.filter(inv => {
+                const smart = getSmartStatus(inv);
                 return (inv.invoice_number || '').toLowerCase().includes(query) ||
                     (inv.customer_name || '').toLowerCase().includes(query) ||
                     (inv.order_number || '').toLowerCase().includes(query) ||
-                    (inv.status || '').toLowerCase().includes(query);
+                    (smart.label || '').toLowerCase().includes(query) ||
+                    (formatDate(inv.invoice_date) || '').toLowerCase().includes(query) ||
+                    (formatDate(inv.due_date) || '').toLowerCase().includes(query) ||
+                    (formatCurrency(inv.total) || '').toLowerCase().includes(query) ||
+                    (String(inv.total || '')).includes(query) ||
+                    (inv.notes || '').toLowerCase().includes(query) ||
+                    (inv.salesperson || '').toLowerCase().includes(query) ||
+                    (inv.reference_number || '').toLowerCase().includes(query);
             });
-            if (filtered.length === 0) {
+            renderInvList(filtered);
+        }
+
+        function renderInvList(data) {
+            if (data.length === 0) {
                 document.getElementById('emptyState').style.display = 'flex';
                 document.getElementById('invoicesContainer').style.display = 'none';
                 document.getElementById('invPaginationContainer').innerHTML = '';
@@ -932,26 +1913,28 @@
             }
             document.getElementById('emptyState').style.display = 'none';
             document.getElementById('invoicesContainer').style.display = 'block';
+            renderInvThead();
             function renderPage(pageData) {
+                const cols = getVisibleInvCols();
                 document.getElementById('invoicesBody').innerHTML = pageData.map(inv => {
-                    const statusCls = 'status-' + getStatusClass(inv.status);
+                    const tds = cols.map(col => `<td style="${getInvColAlign(col.key)}">${getInvColValue(inv, col.key)}</td>`).join('');
                     return `<tr onclick="openInvoiceDetail(${inv.id})" style="cursor:pointer;">
-                        <td><input type="checkbox" class="inv-checkbox" value="${inv.id}" onclick="event.stopPropagation()"></td>
-                        <td>${formatDate(inv.invoice_date)}</td>
-                        <td><span class="inv-number-link">${inv.invoice_number}</span></td>
-                        <td>${inv.order_number || ''}</td>
-                        <td>${inv.customer_name || ''}</td>
-                        <td><span class="${statusCls}">${(inv.status || 'DRAFT').toUpperCase()}</span></td>
-                        <td>${formatDate(inv.due_date)}</td>
-                        <td style="text-align:right;">${formatCurrency(inv.total)}</td>
-                        <td style="text-align:right;">${formatCurrency(inv.total)}</td>
+                        <td style="width:40px;min-width:40px;"></td>
+                        <td><input type="checkbox" class="inv-checkbox" value="${inv.id}" onclick="event.stopPropagation()" onchange="updateInvBulkBar()"></td>
+                        ${tds}
                     </tr>`;
                 }).join('');
+                if (invTextClipped) applyInvClipMode();
             }
             window.invPager = Pagination.create({
-                data: filtered, perPage: 14, containerId: 'invPaginationContainer',
+                data: data, perPage: 14, containerId: 'invPaginationContainer',
                 onPageChange: function (pageData) { renderPage(pageData); }
             });
+        }
+
+        function renderFilteredInvoices() {
+            const data = getFilteredInvoices();
+            renderInvList(data);
         }
 
         // ===== LOAD TABLE LIST =====
@@ -960,45 +1943,7 @@
                 const res = await fetch('/api/invoices');
                 if (!res.ok) return;
                 allInvoices = await res.json();
-
-                if (allInvoices.length === 0) {
-                    document.getElementById('emptyState').style.display = 'flex';
-                    document.getElementById('invoicesContainer').style.display = 'none';
-                    document.getElementById('invPaginationContainer').innerHTML = '';
-                    return;
-                }
-
-                document.getElementById('emptyState').style.display = 'none';
-                document.getElementById('invoicesContainer').style.display = 'block';
-
-                function renderInvPage(pageData) {
-                    const tbody = document.getElementById('invoicesBody');
-                    tbody.innerHTML = pageData.map(inv => {
-                        const statusCls = 'status-' + getStatusClass(inv.status);
-                        return `<tr onclick="openInvoiceDetail(${inv.id})" style="cursor:pointer;">
-                            <td><input type="checkbox" class="inv-checkbox" value="${inv.id}" onclick="event.stopPropagation()"></td>
-                            <td>${formatDate(inv.invoice_date)}</td>
-                            <td><span class="inv-number-link">${inv.invoice_number}</span></td>
-                            <td>${inv.order_number || ''}</td>
-                            <td>${inv.customer_name || ''}</td>
-                            <td><span class="${statusCls}">${(inv.status || 'DRAFT').toUpperCase()}</span></td>
-                            <td>${formatDate(inv.due_date)}</td>
-                            <td style="text-align:right;">${formatCurrency(inv.total)}</td>
-                            <td style="text-align:right;">${formatCurrency(inv.total)}</td>
-                        </tr>`;
-                    }).join('');
-                }
-
-                if (!window.invPager) {
-                    window.invPager = Pagination.create({
-                        data: allInvoices,
-                        perPage: 14,
-                        containerId: 'invPaginationContainer',
-                        onPageChange: function (pageData) { renderInvPage(pageData); }
-                    });
-                } else {
-                    window.invPager.updateData(allInvoices);
-                }
+                renderFilteredInvoices();
             } catch (err) {
                 console.error('Error loading invoices:', err);
             }
@@ -1012,7 +1957,7 @@
             // Build left sidebar list
             const list = document.getElementById('invLeftList');
             list.innerHTML = allInvoices.map(inv => {
-                const statusCls = getStatusClass(inv.status);
+                const smart = getSmartStatus(inv);
                 return `<div class="inv-left-item ${inv.id === invoiceId ? 'active' : ''}" data-id="${inv.id}" onclick="selectInvoice(${inv.id})">
                     <div class="inv-left-item-top">
                         <span class="inv-left-item-name">${inv.customer_name || 'No Customer'}</span>
@@ -1023,7 +1968,7 @@
                         <span>·</span>
                         <span>${formatDate(inv.invoice_date)}</span>
                     </div>
-                    <div class="inv-left-item-status ${statusCls}">${(inv.status || 'DRAFT').toUpperCase()}</div>
+                    <div class="inv-left-item-status" style="font-size:11px;"><span class="${smart.cls}">${smart.label}</span></div>
                 </div>`;
             }).join('');
 
@@ -1047,82 +1992,75 @@
             }
         }
 
-        function renderDetail(invoice) {
+        async function renderDetail(invoice) {
             const panel = document.getElementById('invRightPanel');
-            const statusCls = getStatusClass(invoice.status);
             const statusLabel = (invoice.status || 'DRAFT').toUpperCase();
             const items = invoice.items || [];
             const subTotal = items.reduce((sum, i) => sum + parseFloat(i.amount || 0), 0);
+            const totalQty = items.reduce((sum, i) => sum + parseFloat(i.quantity || 0), 0);
             const total = parseFloat(invoice.total || subTotal);
             const discountAmount = parseFloat(invoice.discount || 0);
             const shippingCharges = parseFloat(invoice.shipping_charges || 0);
             const adjustment = parseFloat(invoice.adjustment || 0);
-            const balanceDue = total; // No payments tracked yet
+            const balanceDue = parseFloat(invoice.balance_due != null ? invoice.balance_due : total);
+            const paymentMade = total - balanceDue;
+
+            const invSmart = getSmartStatus(invoice);
 
             // Build address
             function buildAddress(street, city, state, zip, country) {
+                const parts = [street, city, state, zip, country].filter(p => p && p.trim());
+                if (parts.length === 0) return '';
                 const lines = [];
                 if (street) lines.push(street);
-                if (city) lines.push(city);
-                if (state) lines.push(state);
+                const cityState = [city, state].filter(p => p && p.trim()).join(', ');
+                if (cityState) lines.push(cityState);
                 if (country) lines.push(country);
                 if (zip) lines.push(zip);
                 return lines.join('<br>');
             }
-
             const billingAddr = buildAddress(invoice.billing_street, invoice.billing_city, invoice.billing_state, invoice.billing_zip, invoice.billing_country);
 
-            // Ribbon class
-            let ribbonClass = 'draft';
-            let ribbonText = 'Draft';
-            if (statusLabel === 'PAID') {
-                ribbonClass = 'paid';
-                ribbonText = 'Paid';
-            } else if (statusLabel === 'CONFIRMED') {
-                ribbonClass = 'confirmed';
-                ribbonText = 'Confirmed';
-            }
-
-            // Format payment terms
+            // Format terms
             function formatTerms(val) {
-                const map = {
-                    'due_on_receipt': 'Due on Receipt',
-                    'net_15': 'Net 15',
-                    'net_30': 'Net 30',
-                    'net_45': 'Net 45',
-                    'net_60': 'Net 60',
-                    'due_end_of_next_month': 'Due end of next month',
-                    'end_of_month': 'Due end of the month'
-                };
+                const map = { 'due_on_receipt': 'Due on Receipt', 'net_15': 'Net 15', 'net_30': 'Net 30', 'net_45': 'Net 45', 'net_60': 'Net 60', 'due_end_of_next_month': 'Due end of next month', 'end_of_month': 'Due end of the month' };
                 return map[val] || val || 'Due on Receipt';
             }
 
-            // Build items rows
-            const itemsHtml = items.length > 0 ? items.map((item, idx) => `
-                <tr>
-                    <td>${idx + 1}</td>
-                    <td>${item.item_name || ''}</td>
-                    <td class="qty-cell">${parseFloat(item.quantity || 0).toFixed(2)}<span class="qty-unit">pcs</span></td>
-                    <td class="rate-cell">${parseFloat(item.rate || 0).toFixed(2)}</td>
-                    <td class="amount-cell">${parseFloat(item.amount || 0).toFixed(2)}</td>
-                </tr>`).join('') : '<tr><td colspan="5" style="text-align:center;padding:24px;color:#999;">No items</td></tr>';
+            // Status badge class
+            let badgeCls = 'draft';
+            if (statusLabel === 'ISSUED') badgeCls = 'confirmed';
+            else if (statusLabel === 'VOID') badgeCls = 'cancelled';
+            else if (invSmart.category === 'paid') badgeCls = 'closed';
+            else if (invSmart.category === 'overdue') badgeCls = 'on-hold';
 
-            // Build totals rows
-            let totalsRows = '';
-            totalsRows += `<tr><td class="t-label">Sub Total</td><td class="t-value">${subTotal.toFixed(2)}</td></tr>`;
+            // Payment status
+            const isPaid = invSmart.category === 'paid';
+            const paymentStatus = isPaid ? 'Paid' : (paymentMade > 0 ? 'Partially Paid' : 'Unpaid');
+
+            // Fetch existing payments for this invoice
+            let invoicePayments = [];
+            try {
+                const payRes = await fetch('/api/payments-received');
+                if (payRes.ok) {
+                    const allPay = await payRes.json();
+                    invoicePayments = allPay.filter(p => String(p.invoice_id) === String(invoice.id));
+                }
+            } catch (e) { }
+            const showRecordPayment = invoicePayments.length === 0 && !isPaid && statusLabel !== 'DRAFT' && statusLabel !== 'VOID';
+            const paymentCls = isPaid ? 'so-invoiced' : 'so-unpaid';
+
+            // Extra totals
+            let extraTotalsRows = '';
             if (discountAmount > 0) {
-                totalsRows += `<tr><td class="t-label">Discount</td><td class="t-value t-negative">(-) ${discountAmount.toFixed(2)}</td></tr>`;
+                extraTotalsRows += `<div class="so-totals-row"><span class="so-totals-label">Discount</span><span class="so-totals-value" style="color:#dc2626;">-${formatCurrency(discountAmount)}</span></div>`;
             }
             if (shippingCharges > 0) {
-                totalsRows += `<tr><td class="t-label">Shipping Charges</td><td class="t-value">${shippingCharges.toFixed(2)}</td></tr>`;
+                extraTotalsRows += `<div class="so-totals-row"><span class="so-totals-label">Shipping Charges</span><span class="so-totals-value">${formatCurrency(shippingCharges)}</span></div>`;
             }
             if (adjustment !== 0) {
-                totalsRows += `<tr><td class="t-label">Adjustment</td><td class="t-value">${adjustment >= 0 ? '' : '(-) '}${Math.abs(adjustment).toFixed(2)}</td></tr>`;
+                extraTotalsRows += `<div class="so-totals-row"><span class="so-totals-label">Adjustment</span><span class="so-totals-value">${adjustment >= 0 ? '' : '-'}${formatCurrency(Math.abs(adjustment))}</span></div>`;
             }
-
-            totalsRows += `<tr class="t-total"><td class="t-label"><strong>Total</strong></td><td class="t-value"><strong>${formatCurrency(total)}</strong></td></tr>`;
-            totalsRows += `<tr class="t-payment"><td class="t-label">Payment Made</td><td class="t-value t-negative">(-) ${total.toFixed(2)}</td></tr>`;
-            totalsRows += `<tr class="t-balance-due"><td class="t-label"><strong>Balance Due</strong></td><td class="t-value"><strong>${formatCurrency(balanceDue)}</strong></td></tr>`;
 
             panel.innerHTML = `
                 <div class="inv-right-header">
@@ -1131,138 +2069,349 @@
                         <span class="inv-right-inv-num">${invoice.invoice_number}</span>
                     </div>
                     <div class="inv-right-header-actions">
-                        <button title="Print" onclick="window.print()">🖨</button>
-                        <button title="Fullscreen">⛶</button>
                         <button title="Close" style="font-size:20px;" onclick="backToList()">✕</button>
                     </div>
                 </div>
 
                 <div class="inv-action-bar">
-                    <button class="inv-action-btn">✏️ Edit</button>
-                    <button class="inv-action-btn">📄 PDF/Print ▾</button>
+                    ${statusLabel !== 'VOID' ? `<button class="inv-action-btn" onclick="window.location.href='/new-invoice.html?editId=' + selectedInvoiceId">✏️ Edit</button>` : ''}
+                    <button class="inv-action-btn" onclick="window.print()">📄 PDF/Print</button>
                     <div class="inv-action-separator"></div>
-                    ${statusLabel === 'DRAFT' ? '<button class="inv-action-btn" style="color:#2563eb;font-weight:600;" onclick="markAsConfirmed()">✅ Mark as Confirmed</button><div class="inv-action-separator"></div>' : ''}
-                    ${statusLabel !== 'PAID' ? '<button class="inv-action-btn" onclick="recordPayment()">💳 Record Payment</button><div class="inv-action-separator"></div>' : ''}
-                    <button class="inv-action-btn">📧 Send ▾</button>
-                    <div class="inv-action-separator"></div>
-                    <button class="inv-action-btn">⋯</button>
-                    <div class="inv-pdf-toggle">
-                        <span>⚙ Customize</span>
-                    </div>
-                </div>
-
-                <div class="inv-detail-scroll">
-                    <div class="inv-detail-card">
-                        <div class="inv-ribbon ${ribbonClass}">${ribbonText}</div>
-                        <div class="inv-card-inner">
-
-                            <div class="inv-doc-header">
-                                <div class="inv-company-info">
-                                    <div class="inv-company-name">GIHON</div>
-                                    <div>Philippines</div>
-                                    <div>gihon@business.com</div>
-                                </div>
-                                <div class="inv-doc-title-block">
-                                    <h1 class="inv-doc-title">INVOICE</h1>
-                                    <div class="inv-doc-number"># ${invoice.invoice_number}</div>
-                                </div>
-                            </div>
-
-                            <div class="inv-balance-box">
-                                <div class="inv-balance-label">Balance Due</div>
-                                <div class="inv-balance-amount">${formatCurrency(balanceDue)}</div>
-                            </div>
-
-                            <div class="inv-bill-fields-row">
-                                <div class="inv-bill-to">
-                                    <div class="inv-bill-to-label">Bill To</div>
-                                    <div class="inv-bill-to-name">${invoice.customer_name || 'N/A'}</div>
-                                    <div class="inv-bill-to-addr">${billingAddr || '<span style="color:#999;">No address</span>'}</div>
-                                </div>
-                                <div class="inv-fields-right">
-                                    <table class="inv-fields-table">
-                                        <tr><td class="f-label">Invoice Date :</td><td class="f-value">${formatDate(invoice.invoice_date)}</td></tr>
-                                        <tr><td class="f-label">Terms :</td><td class="f-value">${formatTerms(invoice.payment_terms)}</td></tr>
-                                        <tr><td class="f-label">Due Date :</td><td class="f-value">${invoice.due_date ? formatDate(invoice.due_date) : 'N/A'}</td></tr>
-                                        <tr><td class="f-label">P.O.# :</td><td class="f-value">${invoice.order_number || 'N/A'}</td></tr>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <table class="inv-doc-table">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Item & Description</th>
-                                        <th style="text-align:center;width:80px;">Qty</th>
-                                        <th style="text-align:right;width:100px;">Rate</th>
-                                        <th style="text-align:right;width:110px;">Amount</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${itemsHtml}
-                                </tbody>
-                            </table>
-
-                            <div class="inv-doc-totals">
-                                <table class="inv-doc-totals-table">
-                                    ${totalsRows}
-                                </table>
-                            </div>
-
-                            ${invoice.notes ? `
-                            <div class="inv-doc-notes">
-                                <div class="inv-doc-notes-title">Notes</div>
-                                <div class="inv-doc-notes-text">${invoice.notes}</div>
-                            </div>` : ''}
-
-                            ${invoice.terms_conditions ? `
-                            <div class="inv-doc-notes" style="margin-top: 20px;">
-                                <div class="inv-doc-notes-title">Terms & Conditions</div>
-                                <div class="inv-doc-notes-text">${invoice.terms_conditions}</div>
-                            </div>` : ''}
-
+                    ${statusLabel === 'DRAFT' ? '<button class="inv-action-btn" style="background:#16a34a;color:#fff;border-color:#16a34a;font-weight:600;padding:6px 18px;border-radius:4px;" onclick="markAsIssued()">✅ Mark as Issued</button><div class="inv-action-separator"></div>' : ''}
+                    ${showRecordPayment ? '<button class="inv-action-btn" onclick="recordPayment()">💳 Record Payment</button><div class="inv-action-separator"></div>' : ''}
+                    <div class="so-kebab-wrap" style="position:relative;">
+                        <button class="inv-action-btn" onclick="toggleInvKebab(event)">⋯</button>
+                        <div class="inv-kebab-menu" id="invKebabMenu" style="display:none;position:absolute;top:100%;right:0;background:#fff;border:1px solid #e5e7eb;border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,0.12);min-width:180px;z-index:1000;padding:4px 0;margin-top:4px;">
+                            ${(statusLabel !== 'DRAFT' && !isPaid && invSmart.category !== 'void') ? `
+                                <button class="so-kebab-item" onclick="voidInvoice()" style="display:flex;align-items:center;gap:8px;width:100%;padding:8px 16px;border:none;background:none;color:#dc2626;font-size:13px;cursor:pointer;font-family:inherit;text-align:left;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'"><span>🚫</span> Void Invoice</button>
+                            ` : ''}
+                            <button class="so-kebab-item" onclick="deleteInvoice()" style="display:flex;align-items:center;gap:8px;width:100%;padding:8px 16px;border:none;background:none;color:#dc2626;font-size:13px;cursor:pointer;font-family:inherit;text-align:left;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'"><span>🗑️</span> Delete Invoice</button>
                         </div>
                     </div>
                 </div>
+
+                <!-- Associated Tabs: Payments Received + Sales Orders (at TOP, before document card) -->
+                ${invoicePayments.length > 0 || invoice.order_number ? `
+                <div style="margin:0 16px;">
+                    <div style="display:flex;gap:0;border-bottom:2px solid #e9ecef;">
+                        ${invoicePayments.length > 0 ? `<div class="inv-assoc-tab active" onclick="switchInvAssocTab(this,'invPaymentsPanel')" style="padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid #4285f4;margin-bottom:-2px;color:#4285f4;">Payments Received <span style="background:#e6eefa;color:#4285f4;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:4px;">${invoicePayments.length}</span></div>` : ''}
+                        ${invoice.order_number ? `<div class="inv-assoc-tab ${invoicePayments.length === 0 ? 'active' : ''}" onclick="switchInvAssocTab(this,'invSalesOrdersPanel')" style="padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;${invoicePayments.length === 0 ? 'border-bottom:2px solid #4285f4;margin-bottom:-2px;color:#4285f4;' : 'color:#666;'}">
+                            Associated sales orders <span style="background:#e6eefa;color:#4285f4;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:4px;">1</span></div>` : ''}
+                    </div>
+
+                    ${invoicePayments.length > 0 ? `<div id="invPaymentsPanel">
+                        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                            <thead><tr style="border-bottom:1px solid #e9ecef;">
+                                <th style="text-align:left;padding:10px 16px;font-size:11px;color:#666;font-weight:600;">Date</th>
+                                <th style="text-align:left;padding:10px 16px;font-size:11px;color:#666;font-weight:600;">Payment #</th>
+                                <th style="text-align:left;padding:10px 16px;font-size:11px;color:#666;font-weight:600;">Reference#</th>
+                                <th style="text-align:left;padding:10px 16px;font-size:11px;color:#666;font-weight:600;">Status</th>
+                                <th style="text-align:left;padding:10px 16px;font-size:11px;color:#666;font-weight:600;">Payment Mode</th>
+                                <th style="text-align:left;padding:10px 16px;font-size:11px;color:#666;font-weight:600;">Amount</th>
+                                <th style="padding:10px 16px;"></th>
+                            </tr></thead>
+                            <tbody>${invoicePayments.map(function (p) {
+                var pDate = p.payment_date ? new Date(p.payment_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+                var pSt = (p.status || 'Draft').charAt(0).toUpperCase() + (p.status || 'draft').slice(1).toLowerCase();
+                var pAmt = 'PHP' + Number(p.amount_received || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                return '<tr style="border-bottom:1px solid #f0f0f0;"><td style="padding:12px 16px;">' + pDate + '</td><td style="padding:12px 16px;"><a href="/payments-received.html" style="color:#4285f4;text-decoration:none;font-weight:500;">' + (p.payment_number || '-') + '</a></td><td style="padding:12px 16px;">' + (p.reference_number || '') + '</td><td style="padding:12px 16px;">' + pSt + '</td><td style="padding:12px 16px;">' + (p.payment_mode || 'Cash') + '</td><td style="padding:12px 16px;">' + pAmt + '</td><td style="padding:12px 16px;text-align:right;"><a href="/record-invoice-payment.html?edit=' + p.id + '" style="color:#4285f4;text-decoration:none;font-size:12px;">\u270f Edit</a> <span style="color:#ccc;cursor:pointer;" title="Delete">\ud83d\uddd1</span></td></tr>';
+            }).join('')}</tbody>
+                        </table>
+                    </div>` : ''}
+
+                    ${invoice.order_number ? `<div id="invSalesOrdersPanel" style="${invoicePayments.length > 0 ? 'display:none;' : ''}">
+                        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                            <thead><tr style="border-bottom:1px solid #e9ecef;">
+                                <th style="text-align:left;padding:10px 16px;font-size:11px;color:#666;font-weight:600;">Sales Order#</th>
+                                <th style="text-align:left;padding:10px 16px;font-size:11px;color:#666;font-weight:600;">Date</th>
+                                <th style="text-align:left;padding:10px 16px;font-size:11px;color:#666;font-weight:600;">Status</th>
+                            </tr></thead>
+                            <tbody>
+                                <tr style="border-bottom:1px solid #f0f0f0;">
+                                    <td style="padding:12px 16px;"><a href="/sales-orders.html" style="color:#4285f4;text-decoration:none;font-weight:500;">${invoice.order_number}</a></td>
+                                    <td style="padding:12px 16px;">${formatDate(invoice.invoice_date)}</td>
+                                    <td style="padding:12px 16px;color:#16a34a;font-weight:600;">CLOSED</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>` : ''}
+                </div>` : ''}
+
+                <div class="inv-detail-scroll">
+                    <div class="inv-detail-card" style="border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:32px;overflow:visible;">
+                        <div class="so-detail-top" style="display:flex;justify-content:space-between;margin-bottom:24px;">
+                            <div>
+                                <h2 style="font-size:18px;font-weight:700;color:#333;margin:0 0 4px 0;">INVOICE</h2>
+                                <p style="font-size:13px;color:#666;margin:0;">Invoice# ${invoice.invoice_number}</p>
+                            </div>
+                            <div>
+                                <div style="text-align:right;margin-bottom:20px;">
+                                    <div style="font-size:11px;font-weight:600;color:#888;text-transform:uppercase;margin-bottom:4px;">BILLING ADDRESS</div>
+                                    <div style="font-size:13px;font-weight:600;color:#4285f4;margin-bottom:4px;">${invoice.customer_name || 'N/A'}</div>
+                                    <div style="font-size:12px;color:#666;line-height:1.6;">${billingAddr || '<span style="color:#999;">No billing address</span>'}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid #f0f0f0;">
+                            <div style="display:grid;grid-template-columns:100px 1fr;gap:10px 16px;font-size:13px;">
+                                <span style="color:#888;font-weight:500;">Invoice</span>
+                                <span><span class="so-badge ${badgeCls}">${invSmart.label}</span></span>
+                                <span style="color:#888;font-weight:500;">Payment</span>
+                                <span class="${paymentCls}">${paymentStatus}</span>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid #f0f0f0;">
+                            <div style="display:grid;grid-template-columns:160px 1fr;gap:10px 20px;font-size:13px;">
+                                <span style="color:#888;font-weight:600;text-transform:uppercase;font-size:11px;">REFERENCE</span>
+                                <span style="color:#333;">${invoice.order_number || 'N/A'}</span>
+                                <span style="color:#888;font-weight:600;text-transform:uppercase;font-size:11px;">INVOICE DATE</span>
+                                <span style="color:#333;">${formatDate(invoice.invoice_date)}</span>
+                                <span style="color:#888;font-weight:600;text-transform:uppercase;font-size:11px;">DUE DATE</span>
+                                <span style="color:#333;">${invoice.due_date ? formatDate(invoice.due_date) : 'N/A'}</span>
+                                <span style="color:#888;font-weight:600;text-transform:uppercase;font-size:11px;">PAYMENT TERMS</span>
+                                <span style="color:#333;">${formatTerms(invoice.payment_terms)}</span>
+                                <span style="color:#888;font-weight:600;text-transform:uppercase;font-size:11px;">SALESPERSON</span>
+                                <span style="color:#333;">${invoice.salesperson_name || 'N/A'}</span>
+                                ${invoice.subject ? `
+                                <span style="color:#888;font-weight:600;text-transform:uppercase;font-size:11px;">SUBJECT</span>
+                                <span style="color:#333;">${invoice.subject}</span>` : ''}
+                            </div>
+                        </div>
+
+                        <table class="so-items-table" style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:left;padding:10px 12px;font-size:11px;font-weight:600;color:#888;text-transform:uppercase;border-bottom:2px solid #e9ecef;background:#f9fafb;">ITEMS & DESCRIPTION</th>
+                                    <th style="text-align:center;width:80px;padding:10px 12px;font-size:11px;font-weight:600;color:#888;text-transform:uppercase;border-bottom:2px solid #e9ecef;background:#f9fafb;">QTY</th>
+                                    <th style="text-align:right;width:100px;padding:10px 12px;font-size:11px;font-weight:600;color:#888;text-transform:uppercase;border-bottom:2px solid #e9ecef;background:#f9fafb;">RATE</th>
+                                    <th style="text-align:right;width:100px;padding:10px 12px;font-size:11px;font-weight:600;color:#888;text-transform:uppercase;border-bottom:2px solid #e9ecef;background:#f9fafb;">AMOUNT</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${items.length > 0 ? items.map(item => `
+                                <tr>
+                                    <td style="padding:12px;font-size:13px;color:#333;border-bottom:1px solid #f0f0f0;">
+                                        <div style="display:flex;align-items:center;gap:6px;">
+                                            <span style="width:32px;height:32px;border-radius:4px;background:#e9ecef;display:inline-flex;align-items:center;justify-content:center;font-size:14px;color:#999;">📦</span>
+                                            <span style="color:#4285f4;font-weight:500;">${item.item_name || ''}</span>
+                                        </div>
+                                    </td>
+                                    <td style="text-align:center;padding:12px;font-size:13px;color:#333;border-bottom:1px solid #f0f0f0;">${parseFloat(item.quantity || 0)}<br><span style="font-size:11px;color:#888;">pcs</span></td>
+                                    <td style="text-align:right;padding:12px;font-size:13px;color:#333;border-bottom:1px solid #f0f0f0;">${formatCurrency(item.rate)}</td>
+                                    <td style="text-align:right;padding:12px;font-size:13px;color:#333;border-bottom:1px solid #f0f0f0;">${formatCurrency(item.amount)}</td>
+                                </tr>`).join('') : '<tr><td colspan="4" style="text-align:center;padding:20px;color:#999;">No items</td></tr>'}
+                            </tbody>
+                        </table>
+
+                        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;margin-top:16px;">
+                            <div style="display:flex;justify-content:space-between;width:300px;font-size:13px;border-top:1px solid #e9ecef;padding-top:12px;font-weight:600;">
+                                <span style="color:#666;">Sub Total</span>
+                                <span style="color:#333;">${formatCurrency(subTotal)}</span>
+                            </div>
+                            ${extraTotalsRows}
+                            <div style="display:flex;justify-content:space-between;width:300px;font-size:13px;">
+                                <span style="color:#888;font-size:12px;">Total Quantity : ${totalQty}</span>
+                                <span></span>
+                            </div>
+                            ${paymentMade > 0 ? `
+                            <div style="display:flex;justify-content:space-between;width:300px;font-size:13px;">
+                                <span style="color:#666;">Payment Made</span>
+                                <span style="color:#dc2626;">(-) ${formatCurrency(paymentMade)}</span>
+                            </div>` : ''}
+                            <div style="display:flex;justify-content:space-between;width:300px;font-size:15px;border-top:2px solid #333;padding-top:12px;font-weight:700;">
+                                <span style="color:#666;">Balance Due</span>
+                                <span style="color:#333;">${formatCurrency(balanceDue)}</span>
+                            </div>
+                        </div>
+
+                        ${invoice.notes || invoice.terms_conditions ? `
+                        <div style="margin-top:32px;padding-top:20px;border-top:1px solid #f0f0f0;">
+                            <h3 style="font-size:14px;font-weight:600;color:#333;margin:0 0 12px 0;">More Information</h3>
+                            <div style="display:grid;grid-template-columns:120px 1fr;gap:8px 16px;font-size:13px;">
+                                ${invoice.notes ? `<span style="color:#888;font-weight:500;">Notes</span><span style="color:#333;">: ${invoice.notes}</span>` : ''}
+                                ${invoice.terms_conditions ? `<span style="color:#888;font-weight:500;">Terms</span><span style="color:#333;">: ${invoice.terms_conditions}</span>` : ''}
+                            </div>
+                        </div>` : ''}
+                    </div>
+                </div>
+
+                <!-- Customer Credits Banner (populated by JS) -->
+                <div id="creditsBanner" style="display:none;"></div>
             `;
+
+            // Check for customer credits
+            if (invoice.customer_id && !isPaid && statusLabel !== 'VOID') {
+                checkCustomerCredits(invoice.customer_id, invoice.id, invoice.invoice_number, invoice.customer_name, balanceDue);
+            }
         }
 
-        // ===== MARK AS CONFIRMED =====
-        async function markAsConfirmed() {
+        async function checkCustomerCredits(customerId, invoiceId, invoiceNumber, customerName, balanceDue) {
+            try {
+                const res = await fetch('/api/customer-credits/' + customerId);
+                if (!res.ok) return;
+                const data = await res.json();
+                if (data.balance > 0) {
+                    const banner = document.getElementById('creditsBanner');
+                    if (!banner) return;
+                    banner.style.display = 'block';
+                    banner.innerHTML = `
+                        <div style="margin:0 16px 16px;padding:14px 18px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;display:flex;align-items:center;justify-content:space-between;">
+                            <div style="font-size:13px;color:#1e40af;">
+                                <strong>💳 This customer has <span style="font-size:15px;">PHP ${data.balance.toFixed(2)}</span> available credits.</strong>
+                            </div>
+                            <button onclick="applyCreditsToInvoice(${customerId}, ${invoiceId}, '${(invoiceNumber || '').replace(/'/g, "\\'")}', '${(customerName || '').replace(/'/g, "\\'")}', ${data.balance}, ${balanceDue})"
+                                style="padding:7px 16px;background:#2563eb;color:#fff;border:none;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">
+                                Apply Credits
+                            </button>
+                        </div>
+                    `;
+                }
+            } catch (e) { console.error('Error checking credits:', e); }
+        }
+
+        async function applyCreditsToInvoice(customerId, invoiceId, invoiceNumber, customerName, availableCredits, balanceDue) {
+            const maxApply = Math.min(availableCredits, balanceDue);
+            const isPartial = availableCredits < balanceDue;
+            const promptMsg = isPartial
+                ? `Apply full available credit of PHP ${availableCredits.toFixed(2)}?\n(Invoice balance: PHP ${balanceDue.toFixed(2)}, Remaining after: PHP ${(balanceDue - availableCredits).toFixed(2)})\n\nEnter amount to apply (max PHP ${maxApply.toFixed(2)}):`
+                : `How much credit to apply? (max PHP ${maxApply.toFixed(2)})`;
+            const input = prompt(promptMsg, maxApply.toFixed(2));
+            if (input === null) return;
+            const amount = parseFloat(input);
+            if (isNaN(amount) || amount <= 0) { alert('Please enter a valid positive amount.'); return; }
+            if (amount > maxApply + 0.01) { alert('Amount exceeds the maximum of PHP ' + maxApply.toFixed(2)); return; }
+
+            try {
+                const res = await fetch('/api/customer-credits/apply', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        customer_id: customerId,
+                        customer_name: customerName,
+                        invoice_id: invoiceId,
+                        invoice_number: invoiceNumber,
+                        amount: amount
+                    })
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    alert('Error: ' + (err.error || 'Failed to apply credits'));
+                    return;
+                }
+                const result = await res.json();
+                const newBalance = balanceDue - amount;
+                const statusMsg = newBalance <= 0 ? 'Invoice is now fully paid.' : `Remaining balance to be paid: PHP ${newBalance.toFixed(2)}.`;
+                alert(`Applied PHP ${amount.toFixed(2)} to Invoice ${invoiceNumber}.\n${statusMsg}\nRemaining customer credits: PHP ${(result.remaining_balance || 0).toFixed(2)}.`);
+                // Refresh the invoice detail
+                await selectInvoice(invoiceId);
+                // Refresh the invoice list
+                await loadInvoices();
+            } catch (e) {
+                console.error('Error applying credits:', e);
+                alert('Failed to apply credits.');
+            }
+        }
+
+        // ===== MARK AS ISSUED =====
+        async function markAsIssued() {
             if (!selectedInvoiceId) return;
             try {
                 const res = await fetch(`/api/invoices/${selectedInvoiceId}/status`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ status: 'CONFIRMED' })
+                    body: JSON.stringify({ status: 'ISSUED' })
                 });
                 if (!res.ok) {
-                    alert('Failed to update invoice status.');
+                    alert('Failed to issue invoice.');
                     return;
                 }
                 // Update the local data
                 const idx = allInvoices.findIndex(inv => inv.id === selectedInvoiceId);
-                if (idx !== -1) allInvoices[idx].status = 'CONFIRMED';
-                // Update left sidebar item status
-                const leftItem = document.querySelector(`.inv-left-item[data-id="${selectedInvoiceId}"]`);
-                if (leftItem) {
-                    const statusEl = leftItem.querySelector('.inv-left-item-status');
-                    if (statusEl) {
-                        statusEl.className = 'inv-left-item-status confirmed';
-                        statusEl.textContent = 'CONFIRMED';
-                    }
-                }
+                if (idx !== -1) allInvoices[idx].status = 'ISSUED';
+                // Sync flag for main list
+                localStorage.setItem('invoice_refresh_needed', 'true');
+                // Re-render left sidebar with smart statuses
+                await loadInvoices();
                 // Re-render detail
                 selectInvoice(selectedInvoiceId);
             } catch (err) {
-                console.error('Error marking invoice as confirmed:', err);
-                alert('Failed to mark invoice as confirmed.');
+                console.error('Error issuing invoice:', err);
+                alert('Failed to issue invoice.');
+            }
+        }
+
+        // ===== KEBAB MENU =====
+        function toggleInvKebab(e) {
+            e.stopPropagation();
+            var menu = document.getElementById('invKebabMenu');
+            if (menu) menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+        }
+
+        async function deleteInvoice() {
+            var menu = document.getElementById('invKebabMenu');
+            if (menu) menu.style.display = 'none';
+            if (!selectedInvoiceId) return;
+            if (!confirm('Are you sure you want to permanently delete this invoice? This cannot be undone.')) return;
+            try {
+                const res = await fetch('/api/invoices/' + selectedInvoiceId, { method: 'DELETE' });
+                if (!res.ok) { alert('Failed to delete invoice.'); return; }
+                allInvoices = allInvoices.filter(inv => inv.id !== selectedInvoiceId);
+                localStorage.setItem('invoice_refresh_needed', 'true');
+                backToList();
+                renderFilteredInvoices();
+            } catch (err) {
+                console.error('Error deleting invoice:', err);
+                alert('Failed to delete invoice.');
+            }
+        }
+
+        async function voidInvoice() {
+            var menu = document.getElementById('invKebabMenu');
+            if (menu) menu.style.display = 'none';
+            if (!selectedInvoiceId) return;
+            if (!confirm('Are you sure you want to void this invoice?')) return;
+            try {
+                const res = await fetch('/api/invoices/' + selectedInvoiceId + '/status', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'VOID' })
+                });
+                if (!res.ok) { alert('Failed to void invoice.'); return; }
+                const idx = allInvoices.findIndex(inv => inv.id === selectedInvoiceId);
+                if (idx !== -1) allInvoices[idx].status = 'VOID';
+                localStorage.setItem('invoice_refresh_needed', 'true');
+                await loadInvoices();
+                selectInvoice(selectedInvoiceId);
+            } catch (err) {
+                console.error('Error voiding invoice:', err);
+                alert('Failed to void invoice.');
             }
         }
 
         // ===== BACK TO LIST =====
         // Record Payment - navigate to payment form for this invoice
+        function switchInvAssocTab(tabEl, panelId) {
+            // Deactivate all tabs
+            tabEl.parentElement.querySelectorAll('.inv-assoc-tab').forEach(function (t) {
+                t.classList.remove('active');
+                t.style.borderBottom = 'none';
+                t.style.marginBottom = '0';
+                t.style.color = '#666';
+            });
+            tabEl.classList.add('active');
+            tabEl.style.borderBottom = '2px solid #4285f4';
+            tabEl.style.marginBottom = '-2px';
+            tabEl.style.color = '#4285f4';
+            // Hide all panels
+            ['invPaymentsPanel', 'invSalesOrdersPanel'].forEach(function (id) {
+                var el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            });
+            var target = document.getElementById(panelId);
+            if (target) target.style.display = 'block';
+        }
         function recordPayment() {
             if (!selectedInvoiceId) return;
             window.location.href = `/record-invoice-payment.html?invoice_id=${selectedInvoiceId}`;
@@ -1272,9 +2421,621 @@
             document.getElementById('detailView').classList.remove('active');
             document.getElementById('listView').style.display = 'block';
             selectedInvoiceId = null;
+            // Refresh list if changes were made
+            if (localStorage.getItem('invoice_refresh_needed') === 'true') {
+                localStorage.removeItem('invoice_refresh_needed');
+                loadInvoices();
+            }
         }
 
-        loadInvoices();
+        function sortInvoicesBy(field) {
+            var labels = { created_at: 'Created Time', updated_at: 'Last Modified Time', invoice_date: 'Date', invoice_number: 'Invoice#', order_number: 'Order Number', customer_name: 'Customer Name', due_date: 'Due Date', total: 'Amount', balance_due: 'Balance Due' };
+            // Toggle direction if same field clicked again
+            if (currentSortField === field) {
+                currentSortDir = currentSortDir === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSortField = field;
+                // Default direction: dates/numbers = desc (newest/highest first), strings = asc (A-Z)
+                if (field === 'total' || field === 'balance_due' || field.includes('date') || field.includes('created') || field.includes('updated')) {
+                    currentSortDir = 'desc';
+                } else {
+                    currentSortDir = 'asc';
+                }
+            }
+            var dir = currentSortDir;
+            allInvoices.sort(function (a, b) {
+                var va = a[field], vb = b[field];
+                var result = 0;
+                if (field.includes('date') || field.includes('created') || field.includes('updated')) {
+                    va = va ? new Date(va).getTime() : 0;
+                    vb = vb ? new Date(vb).getTime() : 0;
+                    result = va - vb;
+                } else if (field === 'total' || field === 'balance_due') {
+                    result = (parseFloat(va) || 0) - (parseFloat(vb) || 0);
+                } else {
+                    va = (va || '').toString().toLowerCase();
+                    vb = (vb || '').toString().toLowerCase();
+                    result = va.localeCompare(vb);
+                }
+                return dir === 'asc' ? result : -result;
+            });
+            renderFilteredInvoices();
+            // Close menus
+            var mm = document.getElementById('invMoreMenu');
+            if (mm) mm.style.display = 'none';
+            var ss = document.getElementById('invSortSub');
+            if (ss) ss.style.display = 'none';
+            // Also re-render left panel list if in detail view
+            var detailView = document.getElementById('detailView');
+            if (detailView && detailView.classList.contains('active')) {
+                var list = document.getElementById('invLeftList');
+                if (list) {
+                    list.innerHTML = allInvoices.map(function (inv) {
+                        var smart = getSmartStatus(inv);
+                        return '<div class="inv-left-item ' + (inv.id === selectedInvoiceId ? 'active' : '') + '" data-id="' + inv.id + '" onclick="selectInvoice(' + inv.id + ')">' +
+                            '<div class="inv-left-item-top">' +
+                            '<span class="inv-left-item-name">' + (inv.customer_name || 'No Customer') + '</span>' +
+                            '<span class="inv-left-item-amount">' + formatCurrency(inv.total) + '</span>' +
+                            '</div>' +
+                            '<div class="inv-left-item-bottom">' +
+                            '<span>' + inv.invoice_number + '</span>' +
+                            '<span>·</span>' +
+                            '<span>' + formatDate(inv.invoice_date) + '</span>' +
+                            '</div>' +
+                            '<div class="inv-left-item-status" style="font-size:11px;"><span class="' + smart.cls + '">' + smart.label + '</span></div>' +
+                            '</div>';
+                    }).join('');
+                }
+            }
+            // Build toast message with contextual direction label
+            var dirLabel = '';
+            if (field === 'total' || field === 'balance_due') {
+                dirLabel = dir === 'desc' ? 'Highest → Lowest' : 'Lowest → Highest';
+            } else if (field.includes('date') || field.includes('created') || field.includes('updated')) {
+                dirLabel = dir === 'desc' ? 'Newest → Oldest' : 'Oldest → Newest';
+            } else if (field === 'invoice_number' || field === 'order_number') {
+                dirLabel = dir === 'asc' ? 'Ascending' : 'Descending';
+            } else {
+                dirLabel = dir === 'asc' ? 'A → Z' : 'Z → A';
+            }
+            showToast((labels[field] || field) + ': ' + dirLabel, 'info');
+        }
+
+        function showToast(message, type) {
+            type = type || 'info';
+            var container = document.getElementById('toastContainer');
+            if (!container) return;
+            var toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast.innerHTML = '<span class="toast-icon">' + (type === 'success' ? '✅' : 'ℹ️') + '</span><span class="toast-message">' + message + '</span><button class="toast-close" onclick="this.parentElement.remove()">✕</button>';
+            container.appendChild(toast);
+            setTimeout(function () { toast.style.opacity = '0'; setTimeout(function () { toast.remove(); }, 300); }, 3000);
+        }
+
+        function exportInvoicesCSV() {
+            var mm = document.getElementById('invMoreMenu');
+            if (mm) mm.style.display = 'none';
+            var headers = ['Invoice#', 'Date', 'Order Number', 'Customer Name', 'Status', 'Due Date', 'Amount', 'Balance Due'];
+            var rows = [headers.join(',')];
+            var data = allInvoices;
+            if (currentInvFilter !== 'all') {
+                data = data.filter(function (inv) {
+                    var s = getSmartStatus(inv);
+                    return s.category === currentInvFilter || (currentInvFilter === 'void' && (inv.status || '').toUpperCase() === 'VOID');
+                });
+            }
+            data.forEach(function (inv) {
+                var s = getSmartStatus(inv);
+                rows.push([
+                    '"' + (inv.invoice_number || '') + '"',
+                    '"' + formatDate(inv.invoice_date) + '"',
+                    '"' + (inv.order_number || '') + '"',
+                    '"' + (inv.customer_name || '') + '"',
+                    '"' + s.label + '"',
+                    '"' + formatDate(inv.due_date) + '"',
+                    (parseFloat(inv.total) || 0).toFixed(2),
+                    (parseFloat(inv.balance_due) || 0).toFixed(2)
+                ].join(','));
+            });
+            var csv = rows.join('\n');
+            var blob = new Blob([csv], { type: 'text/csv' });
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'invoices_export_' + new Date().toISOString().slice(0, 10) + '.csv';
+            a.click();
+            showToast('Exported ' + data.length + ' invoices as CSV', 'success');
+        }
+
+        async function importInvoicesCSV(input) {
+            if (!input.files || !input.files[0]) return;
+            var file = input.files[0];
+            var reader = new FileReader();
+            reader.onload = async function (e) {
+                try {
+                    var lines = e.target.result.split('\n').filter(function (l) { return l.trim(); });
+                    if (lines.length < 2) { showToast('CSV file is empty or has no data rows', 'info'); return; }
+                    var headers = lines[0].split(',').map(function (h) { return h.replace(/"/g, '').trim().toLowerCase(); });
+                    var count = 0;
+                    for (var i = 1; i < lines.length; i++) {
+                        var vals = lines[i].match(/("[^"]*"|[^,]+)/g) || [];
+                        vals = vals.map(function (v) { return v.replace(/^"|"$/g, '').trim(); });
+                        var obj = {};
+                        headers.forEach(function (h, idx) { obj[h] = vals[idx] || ''; });
+                        try {
+                            var res = await fetch('/api/invoices', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    invoice_number: obj['invoice#'] || obj['invoice_number'] || '',
+                                    customer_name: obj['customer name'] || obj['customer_name'] || '',
+                                    invoice_date: obj['date'] || obj['invoice_date'] || new Date().toISOString().slice(0, 10),
+                                    due_date: obj['due date'] || obj['due_date'] || '',
+                                    order_number: obj['order number'] || obj['order_number'] || '',
+                                    total: parseFloat(obj['amount'] || obj['total'] || 0),
+                                    status: 'DRAFT'
+                                })
+                            });
+                            if (res.ok) count++;
+                        } catch (err) { console.error('Row import error:', err); }
+                    }
+                    await loadInvoices();
+                    showToast('Imported ' + count + ' invoices from CSV', 'success');
+                } catch (err) {
+                    showToast('Failed to import CSV: ' + err.message, 'info');
+                }
+            };
+            reader.readAsText(file);
+            input.value = '';
+        }
+
+        async function refreshInvList() {
+            var mm = document.getElementById('invMoreMenu');
+            if (mm) mm.style.display = 'none';
+            await loadInvoices();
+            showToast('Invoice list refreshed', 'success');
+        }
+
+        function resetInvColWidth() {
+            var mm = document.getElementById('invMoreMenu');
+            if (mm) mm.style.display = 'none';
+            var table = document.querySelector('.inv-table');
+            if (table) {
+                var ths = table.querySelectorAll('th');
+                ths.forEach(function (th) { th.style.width = ''; th.style.minWidth = ''; th.style.maxWidth = ''; });
+                var tds = table.querySelectorAll('td');
+                tds.forEach(function (td) { td.style.width = ''; td.style.minWidth = ''; td.style.maxWidth = ''; });
+            }
+            showToast('Column widths reset to default', 'success');
+        }
+
+        // ===== SETTINGS DROPDOWN & CUSTOMIZE COLUMNS =====
+        function toggleInvColDropdown(e) {
+            e.stopPropagation();
+            document.getElementById('invColDropdown').classList.toggle('show');
+        }
+
+        function toggleInvTextMode() {
+            invTextClipped = !invTextClipped;
+            localStorage.setItem('inv_text_mode', invTextClipped ? 'clip' : 'wrap');
+            const label = document.getElementById('invTextModeLabel');
+            if (invTextClipped) {
+                label.textContent = 'Wrap Text';
+                applyInvClipMode();
+            } else {
+                label.textContent = 'Clip Text';
+                removeInvClipMode();
+            }
+            document.getElementById('invColDropdown').classList.remove('show');
+        }
+
+        function applyInvClipMode() {
+            const table = document.getElementById('invTable');
+            if (!table) return;
+            table.style.tableLayout = 'fixed';
+            table.querySelectorAll('td').forEach(td => {
+                td.style.overflow = 'hidden';
+                td.style.textOverflow = 'ellipsis';
+                td.style.whiteSpace = 'nowrap';
+                td.style.maxWidth = '150px';
+            });
+        }
+
+        function removeInvClipMode() {
+            const table = document.getElementById('invTable');
+            if (!table) return;
+            table.style.tableLayout = '';
+            table.querySelectorAll('td').forEach(td => {
+                td.style.overflow = '';
+                td.style.textOverflow = '';
+                td.style.whiteSpace = '';
+                td.style.maxWidth = '';
+            });
+        }
+
+        document.addEventListener('click', function (e) {
+            const dd = document.getElementById('invColDropdown');
+            if (dd && !dd.parentElement.contains(e.target)) dd.classList.remove('show');
+        });
+
+        function openInvCustomizeCols() {
+            document.getElementById('invColDropdown').classList.remove('show');
+            invCCState = invAllColumns.map(c => ({ ...c }));
+            renderInvCCList();
+            document.getElementById('invCCOverlay').classList.add('active');
+        }
+
+        function closeInvCustomizeCols() {
+            document.getElementById('invCCOverlay').classList.remove('active');
+        }
+
+        function renderInvCCList(filter) {
+            const list = document.getElementById('invCCList');
+            const q = (filter || '').toLowerCase();
+            let html = '';
+            invCCState.forEach((col, i) => {
+                if (q && !col.label.toLowerCase().includes(q)) return;
+                const checkedClass = col.visible ? 'checked' : '';
+                const lockedClass = col.locked ? 'locked' : '';
+                if (col.locked) {
+                    html += `<div class="inv-cc-item ${lockedClass} ${checkedClass}">
+                        <span class="inv-cc-drag">\u2807</span>
+                        <span class="inv-cc-lock">\ud83d\udd12</span>
+                        <span class="inv-cc-label">${col.label}</span>
+                    </div>`;
+                } else {
+                    html += `<div class="inv-cc-item ${checkedClass}" onclick="toggleInvCCCol(${i})">
+                        <span class="inv-cc-drag">\u2807</span>
+                        <input type="checkbox" class="inv-cc-checkbox" ${col.visible ? 'checked' : ''} onclick="event.stopPropagation(); toggleInvCCCol(${i})">
+                        <span class="inv-cc-label">${col.label}</span>
+                    </div>`;
+                }
+            });
+            list.innerHTML = html;
+            updateInvCCCount();
+        }
+
+        function toggleInvCCCol(index) {
+            if (invCCState[index].locked) return;
+            invCCState[index].visible = !invCCState[index].visible;
+            renderInvCCList(document.querySelector('.inv-cc-search input').value);
+        }
+
+        function updateInvCCCount() {
+            const sel = invCCState.filter(c => c.visible).length;
+            document.getElementById('invCCCount').textContent = `${sel} of ${invCCState.length} Selected`;
+        }
+
+        function filterInvCCItems(query) {
+            renderInvCCList(query);
+        }
+
+        function saveInvCols() {
+            invAllColumns.forEach((col, i) => { col.visible = invCCState[i].visible; });
+            localStorage.setItem('inv_columns', JSON.stringify(invAllColumns.map(c => ({ key: c.key, visible: c.visible }))));
+            closeInvCustomizeCols();
+            renderFilteredInvoices();
+        }
+
+        function toggleInvMoreMenu(e) {
+            e.stopPropagation();
+            var menu = document.getElementById('invMoreMenu');
+            if (menu) menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function toggleInvLeftMore(e) {
+            e.stopPropagation();
+            var menu = document.getElementById('invLeftMoreMenu');
+            if (menu) menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+        }
+        document.addEventListener('click', function () {
+            var menu = document.getElementById('invLeftMoreMenu');
+            if (menu) menu.style.display = 'none';
+        });
+
+        // ===== INVOICE BULK ACTION BAR =====
+        function updateInvBulkBar() {
+            const checked = document.querySelectorAll('.inv-checkbox:checked');
+            const bar = document.getElementById('invBulkBar');
+            const header = document.querySelector('.page-header');
+            if (checked.length > 0) {
+                bar.classList.add('show');
+                if (header) header.style.display = 'none';
+                document.getElementById('invBulkCount').textContent = checked.length + ' Invoice' + (checked.length !== 1 ? 's' : '') + ' Selected';
+            } else {
+                bar.classList.remove('show');
+                if (header) header.style.display = '';
+            }
+        }
+
+        function clearInvBulkSelection() {
+            document.querySelectorAll('.inv-checkbox').forEach(cb => cb.checked = false);
+            const selectAll = document.getElementById('selectAll');
+            if (selectAll) selectAll.checked = false;
+            document.getElementById('invBulkBar').classList.remove('show');
+            document.getElementById('invBulkMoreMenu').classList.remove('show');
+            const header = document.querySelector('.page-header');
+            if (header) header.style.display = '';
+        }
+
+        function getSelectedInvoiceIds() {
+            return Array.from(document.querySelectorAll('.inv-checkbox:checked')).map(cb => parseInt(cb.value));
+        }
+
+        function toggleInvBulkMore(e) {
+            e.stopPropagation();
+            document.getElementById('invBulkMoreMenu').classList.toggle('show');
+        }
+
+        // Event delegation for dynamically created checkboxes
+        document.addEventListener('change', function (e) {
+            if (e.target.classList.contains('inv-checkbox')) updateInvBulkBar();
+        });
+
+        async function bulkMarkAsIssued() {
+            const ids = getSelectedInvoiceIds();
+            if (ids.length === 0) return;
+
+            // Filter only DRAFT invoices
+            const draftIds = ids.filter(id => {
+                const inv = allInvoices.find(i => i.id === id);
+                return inv && (inv.status || '').toUpperCase() === 'DRAFT';
+            });
+
+            if (draftIds.length === 0) {
+                showToast('No DRAFT invoices selected. Only DRAFT invoices can be marked as Issued.', 'info');
+                return;
+            }
+
+            if (!confirm('Mark ' + draftIds.length + ' selected invoice' + (draftIds.length !== 1 ? 's' : '') + ' as Issued?')) return;
+
+            let successCount = 0;
+            for (const id of draftIds) {
+                try {
+                    const res = await fetch('/api/invoices/' + id + '/status', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status: 'ISSUED' })
+                    });
+                    if (res.ok) successCount++;
+                } catch (e) { console.error(e); }
+            }
+
+            const skipped = ids.length - draftIds.length;
+            let msg = successCount + ' invoice' + (successCount !== 1 ? 's' : '') + ' marked as Issued.';
+            if (skipped > 0) msg += ' ' + skipped + ' non-DRAFT invoice' + (skipped !== 1 ? 's' : '') + ' skipped.';
+            showToast(msg, 'success');
+            clearInvBulkSelection();
+            localStorage.setItem('invoice_refresh_needed', 'true');
+            loadInvoices();
+        }
+
+        async function bulkVoidInvoices() {
+            document.getElementById('invBulkMoreMenu').classList.remove('show');
+            const ids = getSelectedInvoiceIds();
+            if (ids.length === 0) return;
+
+            // Filter: allow Issued/Due/Overdue, NOT PAID, NOT DRAFT, NOT VOID
+            const eligibleIds = ids.filter(id => {
+                const inv = allInvoices.find(i => i.id === id);
+                if (!inv) return false;
+                const smart = getSmartStatus(inv);
+                const status = (inv.status || '').toUpperCase();
+                // Don't void PAID, DRAFT, or already VOID invoices
+                if (smart.category === 'paid' || status === 'DRAFT' || status === 'VOID') return false;
+                return true;
+            });
+
+            if (eligibleIds.length === 0) {
+                showToast('No eligible invoices to void. PAID, DRAFT, and already VOID invoices cannot be voided.', 'info');
+                return;
+            }
+
+            const paidSkipped = ids.length - eligibleIds.length;
+            if (!confirm('Are you sure you want to VOID ' + eligibleIds.length + ' selected invoice' + (eligibleIds.length !== 1 ? 's' : '') + '? This cannot be undone.')) return;
+
+            let successCount = 0;
+            for (const id of eligibleIds) {
+                try {
+                    const res = await fetch('/api/invoices/' + id + '/status', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status: 'VOID' })
+                    });
+                    if (res.ok) successCount++;
+                } catch (e) { console.error(e); }
+            }
+
+            let msg = successCount + ' invoice' + (successCount !== 1 ? 's' : '') + ' voided.';
+            if (paidSkipped > 0) msg += ' ' + paidSkipped + ' invoice' + (paidSkipped !== 1 ? 's' : '') + ' skipped (PAID/DRAFT/VOID).';
+            showToast(msg, 'success');
+            clearInvBulkSelection();
+            localStorage.setItem('invoice_refresh_needed', 'true');
+            loadInvoices();
+        }
+
+        async function bulkDeleteInvoices() {
+            document.getElementById('invBulkMoreMenu').classList.remove('show');
+            const ids = getSelectedInvoiceIds();
+            if (ids.length === 0) return;
+
+            // Filter: only DRAFT or VOID can be deleted
+            const eligibleIds = ids.filter(id => {
+                const inv = allInvoices.find(i => i.id === id);
+                if (!inv) return false;
+                const status = (inv.status || '').toUpperCase();
+                return status === 'DRAFT' || status === 'VOID';
+            });
+
+            if (eligibleIds.length === 0) {
+                showToast('No eligible invoices to delete. Only DRAFT and VOID invoices can be deleted.', 'info');
+                return;
+            }
+
+            if (!confirm('Permanently DELETE ' + eligibleIds.length + ' selected invoice' + (eligibleIds.length !== 1 ? 's' : '') + '?')) return;
+
+            let successCount = 0;
+            for (const id of eligibleIds) {
+                try {
+                    const res = await fetch('/api/invoices/' + id, { method: 'DELETE' });
+                    if (res.ok) successCount++;
+                } catch (e) { console.error(e); }
+            }
+
+            const skipped = ids.length - eligibleIds.length;
+            let msg = successCount + ' invoice' + (successCount !== 1 ? 's' : '') + ' deleted.';
+            if (skipped > 0) msg += ' ' + skipped + ' invoice' + (skipped !== 1 ? 's' : '') + ' skipped (only DRAFT/VOID can be deleted).';
+            showToast(msg, 'success');
+            clearInvBulkSelection();
+            localStorage.setItem('invoice_refresh_needed', 'true');
+            loadInvoices();
+        }
+
+        async function bulkPrintInvoices() {
+            const ids = getSelectedInvoiceIds();
+            if (ids.length === 0) return;
+            showToast('Preparing ' + ids.length + ' invoice' + (ids.length !== 1 ? 's' : '') + ' for printing...', 'info');
+
+            // Fetch all invoice data
+            const invoices = [];
+            for (const id of ids) {
+                try {
+                    const res = await fetch('/api/invoices/' + id);
+                    if (res.ok) invoices.push(await res.json());
+                } catch (e) { console.error(e); }
+            }
+            if (invoices.length === 0) { showToast('No invoices loaded.', 'info'); return; }
+
+            // Build print-friendly HTML
+            const pagesHTML = invoices.map((inv, idx) => {
+                const items = inv.items || [];
+                const subTotal = items.reduce((s, i) => s + parseFloat(i.amount || 0), 0);
+                const total = parseFloat(inv.total || subTotal);
+                const discount = parseFloat(inv.discount || 0);
+                const shipping = parseFloat(inv.shipping_charges || 0);
+                const adjustment = parseFloat(inv.adjustment || 0);
+                const balanceDue = parseFloat(inv.balance_due || total);
+                const paymentMade = total - balanceDue;
+                const addr = [inv.billing_street, inv.billing_city, inv.billing_state, inv.billing_zip, inv.billing_country].filter(Boolean).join(', ');
+
+                const itemRows = items.map((item, i) => `
+                    <tr>
+                        <td style="padding:8px 10px;border-bottom:1px solid #eee;">${i + 1}</td>
+                        <td style="padding:8px 10px;border-bottom:1px solid #eee;">${item.item_name || ''}</td>
+                        <td style="padding:8px 10px;border-bottom:1px solid #eee;text-align:center;">${parseFloat(item.quantity || 1)}</td>
+                        <td style="padding:8px 10px;border-bottom:1px solid #eee;text-align:right;">${formatCurrency(item.rate || 0)}</td>
+                        <td style="padding:8px 10px;border-bottom:1px solid #eee;text-align:right;">${formatCurrency(item.amount || 0)}</td>
+                    </tr>
+                `).join('');
+
+                let extraTotals = '';
+                if (discount > 0) extraTotals += `<tr><td style="padding:6px 10px;text-align:right;">Discount</td><td style="padding:6px 10px;text-align:right;color:#dc2626;">-${formatCurrency(discount)}</td></tr>`;
+                if (shipping > 0) extraTotals += `<tr><td style="padding:6px 10px;text-align:right;">Shipping</td><td style="padding:6px 10px;text-align:right;">${formatCurrency(shipping)}</td></tr>`;
+                if (adjustment !== 0) extraTotals += `<tr><td style="padding:6px 10px;text-align:right;">Adjustment</td><td style="padding:6px 10px;text-align:right;">${formatCurrency(adjustment)}</td></tr>`;
+
+                return `
+                <div class="invoice-page" style="${idx < invoices.length - 1 ? 'page-break-after:always;' : ''}padding:40px;max-width:800px;margin:0 auto;">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:30px;">
+                        <div>
+                            <h1 style="margin:0;font-size:22px;color:#333;">INVOICE</h1>
+                            <div style="color:#666;font-size:13px;margin-top:4px;">Invoice# ${inv.invoice_number || ''}</div>
+                        </div>
+                        <div style="text-align:right;font-size:13px;color:#555;">
+                            <div style="font-weight:600;">${inv.customer_name || ''}</div>
+                            ${addr ? '<div>' + addr + '</div>' : ''}
+                        </div>
+                    </div>
+
+                    <table style="width:100%;margin-bottom:20px;font-size:13px;border-collapse:collapse;">
+                        <tr>
+                            <td style="padding:4px 0;color:#888;width:120px;">Invoice Date</td>
+                            <td style="padding:4px 0;">${formatDate(inv.invoice_date)}</td>
+                            <td style="padding:4px 0;color:#888;width:120px;">Due Date</td>
+                            <td style="padding:4px 0;">${inv.due_date ? formatDate(inv.due_date) : 'N/A'}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:4px 0;color:#888;">Payment Terms</td>
+                            <td style="padding:4px 0;">${inv.payment_terms || 'N/A'}</td>
+                            <td style="padding:4px 0;color:#888;">Status</td>
+                            <td style="padding:4px 0;font-weight:600;">${(inv.status || 'DRAFT').toUpperCase()}</td>
+                        </tr>
+                    </table>
+
+                    <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:20px;">
+                        <thead>
+                            <tr style="background:#f9fafb;border-bottom:2px solid #e5e7eb;">
+                                <th style="padding:10px;text-align:left;color:#888;font-size:11px;font-weight:600;">#</th>
+                                <th style="padding:10px;text-align:left;color:#888;font-size:11px;font-weight:600;">ITEM</th>
+                                <th style="padding:10px;text-align:center;color:#888;font-size:11px;font-weight:600;">QTY</th>
+                                <th style="padding:10px;text-align:right;color:#888;font-size:11px;font-weight:600;">RATE</th>
+                                <th style="padding:10px;text-align:right;color:#888;font-size:11px;font-weight:600;">AMOUNT</th>
+                            </tr>
+                        </thead>
+                        <tbody>${itemRows || '<tr><td colspan="5" style="padding:16px;text-align:center;color:#aaa;">No items</td></tr>'}</tbody>
+                    </table>
+
+                    <table style="width:300px;margin-left:auto;font-size:13px;border-collapse:collapse;">
+                        <tr><td style="padding:6px 10px;text-align:right;color:#666;">Sub Total</td><td style="padding:6px 10px;text-align:right;">${formatCurrency(subTotal)}</td></tr>
+                        ${extraTotals}
+                        <tr style="border-top:2px solid #333;font-weight:700;font-size:14px;">
+                            <td style="padding:8px 10px;text-align:right;">Total</td>
+                            <td style="padding:8px 10px;text-align:right;">${formatCurrency(total)}</td>
+                        </tr>
+                        ${paymentMade > 0 ? '<tr><td style="padding:6px 10px;text-align:right;color:#666;">Payment Made</td><td style="padding:6px 10px;text-align:right;color:#16a34a;">(-) ' + formatCurrency(paymentMade) + '</td></tr>' : ''}
+                        <tr style="font-weight:700;font-size:15px;">
+                            <td style="padding:8px 10px;text-align:right;">Balance Due</td>
+                            <td style="padding:8px 10px;text-align:right;">${formatCurrency(balanceDue)}</td>
+                        </tr>
+                    </table>
+                    ${inv.customer_notes ? '<div style="margin-top:20px;font-size:12px;color:#666;border-top:1px solid #eee;padding-top:10px;"><strong>Notes:</strong> ' + inv.customer_notes + '</div>' : ''}
+                </div>`;
+            }).join('');
+
+            // Open popup and print
+            const printWin = window.open('', '_blank', 'width=900,height=700');
+            printWin.document.write(`<!DOCTYPE html><html><head><title>Print Invoices</title>
+                <style>
+                    * { margin:0; padding:0; box-sizing:border-box; }
+                    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color:#333; }
+                    @media print { body { margin:0; } .invoice-page { padding:20px !important; } }
+                </style>
+            </head><body>${pagesHTML}</body></html>`);
+            printWin.document.close();
+            printWin.focus();
+            setTimeout(() => { printWin.print(); }, 500);
+        }
+
+        async function bulkExportInvPDF() {
+            // Same as print — browser "Save as PDF" from print dialog
+            await bulkPrintInvoices();
+        }
+
+        // Close dropdowns on outside click
+        document.addEventListener('click', function () {
+            var dd = document.getElementById('invFilterDropdown');
+            if (dd) dd.classList.remove('open');
+            var km = document.getElementById('invKebabMenu');
+            if (km) km.style.display = 'none';
+            var mm = document.getElementById('invMoreMenu');
+            if (mm) mm.style.display = 'none';
+            var bm = document.getElementById('invBulkMoreMenu');
+            if (bm) bm.classList.remove('show');
+        });
+
+        loadInvoices().then(() => {
+            // Auto-open invoice detail from URL params (e.g. from Save and Print)
+            const urlParams = new URLSearchParams(window.location.search);
+            const invoiceId = urlParams.get('invoiceId');
+            if (invoiceId) {
+                const id = parseInt(invoiceId);
+                if (id && allInvoices.find(inv => inv.id === id)) {
+                    openInvoiceDetail(id);
+                    // Auto-trigger print if requested
+                    if (urlParams.get('print') === 'true') {
+                        setTimeout(() => window.print(), 800);
+                    }
+                }
+            }
+        });
     </script>
 </body>
 

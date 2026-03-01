@@ -1584,6 +1584,7 @@
         let allItems = [];
         let bulkSelectedItems = {};
         const urlParams = new URLSearchParams(window.location.search);
+        let backorderSoId = null; // Set when loading backorder data, used to update SO status after PO save
         const preselectedVendorId = urlParams.get('vendorId');
         const paymentTermsData = [
             { value: 'due-end-next-month', label: 'Due end of next month' },
@@ -1613,6 +1614,11 @@
                 if (preselectedVendorId) { sel.value = preselectedVendorId; onVendorChange(); }
                 const editId = urlParams.get('id');
                 if (editId) { await loadEditData(); } else { await generateNextPONumber(); }
+                // Check for backorder data
+                const backorderParam = urlParams.get('backorder');
+                if (backorderParam && !editId) {
+                    loadBackorderData();
+                }
             } catch (e) { console.error('Error loading vendors:', e); }
         }
 
@@ -1879,6 +1885,7 @@
                 else res = await fetch('/api/purchases', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(fd) });
                 const result = await res.json();
                 if (!res.ok) { alert('Error: ' + (result.error || 'Failed to save')); return; }
+                await updateBackorderSOStatus();
                 window.location.href = '/purchase-order-detail.html?id=' + (eid || result.id);
             } catch (e) { console.error(e); alert('Failed to save purchase order'); }
         }
@@ -1906,6 +1913,7 @@
                 else res = await fetch('/api/purchases', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(fd) });
                 const result = await res.json();
                 if (!res.ok) { alert('Error: ' + (result.error || 'Failed to save')); return; }
+                await updateBackorderSOStatus();
                 const poId = eid || result.id;
 
                 // Fetch full PO data to build print document
@@ -2016,6 +2024,7 @@ ${po.notes ? '<div style="margin-top:30px;"><div style="font-size:11px;color:#99
                 else res = await fetch('/api/purchases', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(fd) });
                 const result = await res.json();
                 if (!res.ok) { alert('Error: ' + (result.error || 'Failed to save')); return; }
+                await updateBackorderSOStatus();
                 window.location.href = '/purchase-order-detail.html?id=' + (eid || result.id);
             } catch (e) { console.error(e); alert('Failed to save purchase order'); }
         }
@@ -2060,6 +2069,63 @@ ${po.notes ? '<div style="margin-top:30px;"><div style="font-size:11px;color:#99
                 }
             } catch (e) {
                 console.error('Error fetching next PO number:', e);
+            }
+        }
+
+        function loadBackorderData() {
+            const raw = sessionStorage.getItem('backorderData');
+            if (!raw) return;
+            try {
+                const data = JSON.parse(raw);
+                // Store SO ID for deferred status update after PO save
+                backorderSoId = data.so_id || null;
+                sessionStorage.removeItem('backorderData');
+
+                // Set Reference# to SO number
+                document.getElementById('referenceNumber').value = data.so_number || '';
+
+                // Update page title in header
+                document.getElementById('pageTitle').textContent = 'New Purchase Order (Backorder from ' + data.so_number + ')';
+
+                // Add link banner between page header and form
+                const pageHeader = document.querySelector('.page-header');
+                if (pageHeader) {
+                    const banner = document.createElement('div');
+                    banner.style.cssText = 'background:#eff6ff;border:1px solid #93c5fd;border-radius:6px;padding:10px 16px;margin:0 0 0 0;font-size:13px;color:#1d4ed8;display:flex;align-items:center;gap:8px;';
+                    banner.innerHTML = '<span style="font-size:16px;">🔗</span> This purchase order is linked to <strong>' + data.so_number + '</strong> (Backorder)';
+                    pageHeader.after(banner);
+                }
+
+                // Pre-fill items using exact same HTML as addNewRow()
+                if (data.items && data.items.length > 0) {
+                    const tbody = document.getElementById('itemTableBody');
+                    tbody.innerHTML = '';
+                    data.items.forEach(item => {
+                        const rate = parseFloat(item.rate) || 0;
+                        const qty = parseFloat(item.missing_qty) || 1;
+                        const amt = (qty * rate).toFixed(2);
+                        const tr = document.createElement('tr');
+                        tr.setAttribute('data-item-id', item.item_id || '');
+                        tr.innerHTML = '<td><div class="item-image">🖼️</div></td><td><div class="item-autocomplete-wrap"><input type="text" value="' + (item.item_name || '').replace(/"/g, '&quot;') + '" class="item-name-input" onfocus="openItemDropdown(this)" oninput="filterItemDropdown(this)"><div class="item-autocomplete-dropdown"></div></div></td><td><select><option value="">Select account</option><option value="inventory" selected>Inventory Asset</option><option value="expense">Expense</option></select></td><td class="center"><input type="number" value="' + qty + '" style="text-align:center;" class="qty-input" onchange="updateRowAmount(this)"></td><td class="center"><input type="number" value="' + rate.toFixed(2) + '" style="text-align:right;" class="rate-input" onchange="updateRowAmount(this)"></td><td><select><option value="">Select Tax</option><option value="12">VAT 12%</option><option value="0">Exempt</option></select></td><td class="center row-amount" style="font-weight:500;">' + amt + '</td><td class="center"><button class="delete-row-btn" onclick="deleteRow(this)">×</button></td>';
+                        tbody.appendChild(tr);
+                    });
+                    recalculateTotals();
+                }
+            } catch (e) {
+                console.error('Error loading backorder data:', e);
+            }
+        }
+
+        async function updateBackorderSOStatus() {
+            if (!backorderSoId) return;
+            try {
+                await fetch('/api/sales-orders/' + backorderSoId + '/status', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'ON HOLD' })
+                });
+            } catch (e) {
+                console.error('Error updating SO status:', e);
             }
         }
     </script>

@@ -1,6 +1,30 @@
 const express = require('express');
 const router = express.Router();
 const database = require('../database');
+const multer = require('multer');
+const path = require('path');
+
+// Multer config for customer profile images
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, path.join(__dirname, '../../public/uploads/customers'));
+    },
+    filename: (req, file, cb) => {
+        const ext = path.extname(file.originalname);
+        cb(null, `customer_${Date.now()}${ext}`);
+    }
+});
+const upload = multer({
+    storage,
+    limits: { fileSize: 5 * 1024 * 1024 },
+    fileFilter: (req, file, cb) => {
+        const allowed = /jpeg|jpg|png|gif|webp|bmp/;
+        const ext = allowed.test(path.extname(file.originalname).toLowerCase());
+        const mime = allowed.test(file.mimetype);
+        if (ext && mime) cb(null, true);
+        else cb(new Error('Only image files are allowed'));
+    }
+});
 
 // Get all customers
 router.get('/', async (req, res) => {
@@ -123,7 +147,7 @@ router.post('/', async (req, res) => {
         const {
             customer_type, salutation, first_name, last_name,
             company_name, display_name, email, work_phone,
-            mobile, website, payment_terms, currency,
+            mobile, website, payment_terms, currency, profile_image, remarks,
             billing_street, billing_city, billing_state, billing_zip, billing_country,
             shipping_street, shipping_city, shipping_state, shipping_zip, shipping_country
         } = req.body;
@@ -135,10 +159,10 @@ router.post('/', async (req, res) => {
         const db = database.getDb();
         const result = await db.query(`
       INSERT INTO customers (customer_type, salutation, first_name, last_name,
-        company_name, display_name, email, work_phone, mobile, website, payment_terms, currency,
+        company_name, display_name, email, work_phone, mobile, website, payment_terms, currency, profile_image, remarks,
         billing_street, billing_city, billing_state, billing_zip, billing_country,
         shipping_street, shipping_city, shipping_state, shipping_zip, shipping_country)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24)
       RETURNING *
     `, [
             customer_type || 'Business',
@@ -153,6 +177,8 @@ router.post('/', async (req, res) => {
             website || null,
             payment_terms || null,
             currency || 'PHP',
+            profile_image || null,
+            remarks || null,
             billing_street || null,
             billing_city || null,
             billing_state || null,
@@ -186,7 +212,7 @@ router.put('/:id', async (req, res) => {
         const fields = [
             'customer_type', 'salutation', 'first_name', 'last_name',
             'company_name', 'display_name', 'email', 'work_phone',
-            'mobile', 'website', 'payment_terms', 'currency', 'status',
+            'mobile', 'website', 'payment_terms', 'currency', 'status', 'profile_image', 'remarks',
             'billing_street', 'billing_city', 'billing_state', 'billing_zip', 'billing_country',
             'shipping_street', 'shipping_city', 'shipping_state', 'shipping_zip', 'shipping_country'
         ];
@@ -232,6 +258,15 @@ router.put('/:id', async (req, res) => {
             }
         }
 
+        // Always cascade: sync customer_name in related tables
+        const newName = result.rows[0].display_name;
+        const customerId = req.params.id;
+        await db.query('UPDATE sales_orders SET customer_name = $1 WHERE customer_id = $2', [newName, customerId]);
+        await db.query('UPDATE invoices SET customer_name = $1 WHERE customer_id = $2', [newName, customerId]);
+        await db.query('UPDATE payments_received SET customer_name = $1 WHERE customer_id = $2', [newName, customerId]);
+        await db.query('UPDATE sales_returns SET customer_name = $1 WHERE sales_order_id IN (SELECT id FROM sales_orders WHERE customer_id = $2)', [newName, customerId]);
+        await db.query('UPDATE packages SET customer_name = $1 WHERE sales_order_id IN (SELECT id FROM sales_orders WHERE customer_id = $2)', [newName, customerId]);
+
         res.json(result.rows[0]);
     } catch (error) {
         console.error('Error updating customer:', error);
@@ -251,6 +286,32 @@ router.get('/:id/changes', async (req, res) => {
     } catch (error) {
         console.error('Error fetching customer changes:', error);
         res.status(500).json({ error: 'Failed to fetch changes' });
+    }
+});
+
+// Upload customer profile image
+router.post('/:id/upload-image', upload.single('profile_image'), async (req, res) => {
+    try {
+        if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+        const imageUrl = '/uploads/customers/' + req.file.filename;
+        const db = database.getDb();
+        await db.query('UPDATE customers SET profile_image = $1 WHERE id = $2', [imageUrl, req.params.id]);
+        res.json({ profile_image: imageUrl });
+    } catch (error) {
+        console.error('Error uploading profile image:', error);
+        res.status(500).json({ error: 'Failed to upload image' });
+    }
+});
+
+// Upload profile image for new customer (no ID yet)
+router.post('/upload-temp-image', upload.single('profile_image'), async (req, res) => {
+    try {
+        if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+        const imageUrl = '/uploads/customers/' + req.file.filename;
+        res.json({ profile_image: imageUrl });
+    } catch (error) {
+        console.error('Error uploading temp image:', error);
+        res.status(500).json({ error: 'Failed to upload image' });
     }
 });
 
@@ -284,10 +345,11 @@ router.post('/:id/contacts', async (req, res) => {
                 // Skip empty rows (no name or email)
                 if (!cp.first_name && !cp.last_name && !cp.email) continue;
                 await db.query(
-                    `INSERT INTO contact_persons (customer_id, salutation, first_name, last_name, email, work_phone, mobile)
-                     VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+                    `INSERT INTO contact_persons (customer_id, salutation, first_name, last_name, email, work_phone, mobile, designation, department, is_primary, profile_image)
+                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
                     [req.params.id, cp.salutation || null, cp.first_name || null, cp.last_name || null,
-                    cp.email || null, cp.work_phone || null, cp.mobile || null]
+                    cp.email || null, cp.work_phone || null, cp.mobile || null,
+                    cp.designation || null, cp.department || null, cp.is_primary || false, cp.profile_image || null]
                 );
             }
         }
@@ -300,6 +362,61 @@ router.post('/:id/contacts', async (req, res) => {
     } catch (error) {
         console.error('Error saving contact persons:', error);
         res.status(500).json({ error: 'Failed to save contact persons' });
+    }
+});
+
+// PUT update a single contact person
+router.put('/:id/contacts/:contactId', async (req, res) => {
+    try {
+        const db = database.getDb();
+        const allowedFields = ['salutation', 'first_name', 'last_name', 'email', 'work_phone', 'mobile', 'designation', 'department', 'profile_image', 'is_primary'];
+        const updates = [];
+        const values = [];
+        let paramIndex = 1;
+        for (const field of allowedFields) {
+            if (req.body[field] !== undefined) {
+                updates.push(`${field} = $${paramIndex++}`);
+                values.push(req.body[field] || null);
+            }
+        }
+        if (updates.length === 0) return res.status(400).json({ error: 'No fields to update' });
+        values.push(req.params.contactId, req.params.id);
+        const result = await db.query(
+            `UPDATE contact_persons SET ${updates.join(', ')} WHERE id=$${paramIndex++} AND customer_id=$${paramIndex} RETURNING *`,
+            values
+        );
+        if (result.rows.length === 0) return res.status(404).json({ error: 'Contact not found' });
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Error updating contact person:', error);
+        res.status(500).json({ error: 'Failed to update contact person' });
+    }
+});
+
+// PUT mark contact as primary
+router.put('/:id/contacts/:contactId/primary', async (req, res) => {
+    try {
+        const db = database.getDb();
+        // Unset all others
+        await db.query('UPDATE contact_persons SET is_primary = FALSE WHERE customer_id = $1', [req.params.id]);
+        // Set this one
+        await db.query('UPDATE contact_persons SET is_primary = TRUE WHERE id = $1 AND customer_id = $2', [req.params.contactId, req.params.id]);
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error marking primary:', error);
+        res.status(500).json({ error: 'Failed to mark as primary' });
+    }
+});
+
+// DELETE a single contact person
+router.delete('/:id/contacts/:contactId', async (req, res) => {
+    try {
+        const db = database.getDb();
+        await db.query('DELETE FROM contact_persons WHERE id = $1 AND customer_id = $2', [req.params.contactId, req.params.id]);
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error deleting contact person:', error);
+        res.status(500).json({ error: 'Failed to delete contact person' });
     }
 });
 
@@ -317,6 +434,53 @@ router.delete('/:id', async (req, res) => {
     } catch (error) {
         console.error('Error deleting customer:', error);
         res.status(500).json({ error: error.message || 'Failed to delete customer' });
+    }
+});
+// ===== CUSTOMER COMMENTS =====
+
+// GET comments for a customer
+router.get('/:id/comments', async (req, res) => {
+    try {
+        const db = database.getDb();
+        const result = await db.query(
+            'SELECT * FROM customer_comments WHERE customer_id = $1 ORDER BY created_at DESC',
+            [req.params.id]
+        );
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching comments:', error);
+        res.status(500).json({ error: 'Failed to fetch comments' });
+    }
+});
+
+// POST add a comment
+router.post('/:id/comments', async (req, res) => {
+    try {
+        const db = database.getDb();
+        const { comment_html } = req.body;
+        if (!comment_html || !comment_html.trim()) {
+            return res.status(400).json({ error: 'Comment cannot be empty' });
+        }
+        const result = await db.query(
+            'INSERT INTO customer_comments (customer_id, comment_html) VALUES ($1, $2) RETURNING *',
+            [req.params.id, comment_html]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        console.error('Error adding comment:', error);
+        res.status(500).json({ error: 'Failed to add comment' });
+    }
+});
+
+// DELETE a comment
+router.delete('/:customerId/comments/:commentId', async (req, res) => {
+    try {
+        const db = database.getDb();
+        await db.query('DELETE FROM customer_comments WHERE id = $1 AND customer_id = $2', [req.params.commentId, req.params.customerId]);
+        res.json({ message: 'Comment deleted' });
+    } catch (error) {
+        console.error('Error deleting comment:', error);
+        res.status(500).json({ error: 'Failed to delete comment' });
     }
 });
 

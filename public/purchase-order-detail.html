@@ -785,7 +785,7 @@
                 document.getElementById('detailStatusBadge').innerHTML =
                     `<span class="status-badge ${badgeClass}">${mainStatus}</span>`;
 
-                // Show/hide Receive button based on receive_status
+                // Show/hide Receive button based on receive_status OR existing receives
                 const receiveBtn = document.getElementById('receiveBtn');
                 if (recvStatus === 'RECEIVED') {
                     receiveBtn.style.display = 'none';
@@ -844,6 +844,11 @@
                             const key = r.item_id || ('name:' + (r.item_name || ''));
                             receivedByItem[key] = (receivedByItem[key] || 0) + (parseFloat(r.total_received) || 0);
                         });
+                        // Hide Receive button if any purchase receive exists (even draft)
+                        if (recData.length > 0) {
+                            const receiveBtn = document.getElementById('receiveBtn');
+                            if (receiveBtn) receiveBtn.style.display = 'none';
+                        }
                     }
                 } catch (e) {
                     console.error('Error fetching received data:', e);

@@ -6,7 +6,27 @@ const database = require('../database');
 router.get('/', async (req, res) => {
     try {
         const pool = database.getDb();
-        const result = await pool.query('SELECT * FROM invoices ORDER BY created_at DESC');
+        const result = await pool.query(`
+            SELECT inv.*,
+                   GREATEST(0,
+                     LEAST(
+                       COALESCE(inv.balance_due, inv.total),
+                       COALESCE(inv.total, 0) - COALESCE(paid.total_paid, 0)
+                     )
+                   ) AS balance_due,
+                   CASE WHEN inv.due_date IS NOT NULL
+                        THEN (inv.due_date::date - CURRENT_DATE)
+                        ELSE NULL
+                   END AS days_diff
+            FROM invoices inv
+            LEFT JOIN (
+                SELECT invoice_id, SUM(amount_received) AS total_paid
+                FROM payments_received
+                WHERE status = 'PAID'
+                GROUP BY invoice_id
+            ) paid ON paid.invoice_id = inv.id
+            ORDER BY inv.created_at DESC
+        `);
         res.json(result.rows);
     } catch (err) {
         console.error('Error fetching invoices:', err);
@@ -98,6 +118,7 @@ router.get('/reports/receivable-summary', async (req, res) => {
             LEFT JOIN (
                 SELECT invoice_id, SUM(amount_received) AS total_paid
                 FROM payments_received
+                WHERE status = 'PAID'
                 GROUP BY invoice_id
             ) paid ON paid.invoice_id = inv.id
             WHERE 1=1 ${dateFilter}
@@ -237,6 +258,7 @@ router.get('/reports/invoice-details', async (req, res) => {
             LEFT JOIN (
                 SELECT invoice_id, SUM(amount_received) AS total_paid
                 FROM payments_received
+                WHERE status = 'PAID'
                 GROUP BY invoice_id
             ) paid ON paid.invoice_id = inv.id
             ${dateFilter}
@@ -257,9 +279,25 @@ router.get('/:id', async (req, res) => {
         const invoiceResult = await pool.query(
             `SELECT inv.*,
                     c.billing_street, c.billing_city, c.billing_state, c.billing_zip, c.billing_country,
-                    c.shipping_street, c.shipping_city, c.shipping_state, c.shipping_zip, c.shipping_country
+                    c.shipping_street, c.shipping_city, c.shipping_state, c.shipping_zip, c.shipping_country,
+                    GREATEST(0,
+                      LEAST(
+                        COALESCE(inv.balance_due, inv.total),
+                        COALESCE(inv.total, 0) - COALESCE(paid.total_paid, 0)
+                      )
+                    ) AS balance_due,
+                    CASE WHEN inv.due_date IS NOT NULL
+                         THEN (inv.due_date::date - CURRENT_DATE)
+                         ELSE NULL
+                    END AS days_diff
              FROM invoices inv
              LEFT JOIN customers c ON inv.customer_id = c.id
+             LEFT JOIN (
+                 SELECT invoice_id, SUM(amount_received) AS total_paid
+                 FROM payments_received
+                 WHERE status = 'PAID'
+                 GROUP BY invoice_id
+             ) paid ON paid.invoice_id = inv.id
              WHERE inv.id = $1`,
             [req.params.id]
         );
@@ -336,15 +374,70 @@ router.post('/', async (req, res) => {
     }
 });
 
+// PUT update full invoice (edit mode)
+router.put('/:id', async (req, res) => {
+    try {
+        const pool = database.getDb();
+        const {
+            invoice_date, due_date, order_number, customer_id, customer_name,
+            salesperson_name, payment_terms, subject, status, notes,
+            terms_conditions, sub_total, discount, discount_type, discount_value,
+            shipping_charges, adjustment, total, items
+        } = req.body;
+
+        const result = await pool.query(
+            `UPDATE invoices SET invoice_date=$1, due_date=$2, order_number=$3, customer_id=$4,
+             customer_name=$5, salesperson_name=$6, payment_terms=$7, subject=$8, status=$9,
+             notes=$10, terms_conditions=$11, sub_total=$12, discount=$13, discount_type=$14,
+             discount_value=$15, shipping_charges=$16, adjustment=$17, total=$18, updated_at=CURRENT_TIMESTAMP
+             WHERE id=$19 RETURNING *`,
+            [invoice_date, due_date, order_number, customer_id, customer_name, salesperson_name,
+                payment_terms, subject, status, notes, terms_conditions, sub_total || 0, discount || 0,
+                discount_type || '%', discount_value || 0, shipping_charges || 0, adjustment || 0,
+                total || 0, req.params.id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Invoice not found' });
+        }
+
+        const invoice = result.rows[0];
+
+        // Replace items
+        await pool.query('DELETE FROM invoice_items WHERE invoice_id = $1', [invoice.id]);
+        if (items && items.length > 0) {
+            for (const item of items) {
+                await pool.query(
+                    `INSERT INTO invoice_items (invoice_id, item_name, quantity, rate, tax, amount, discounts)
+                     VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+                    [invoice.id, item.item_name, item.quantity || 1, item.rate || 0, item.tax, item.amount || 0, JSON.stringify(item.discounts || [])]
+                );
+            }
+        }
+
+        res.json(invoice);
+    } catch (err) {
+        console.error('Error updating invoice:', err);
+        res.status(500).json({ error: 'Failed to update invoice' });
+    }
+});
+
 // PUT update invoice status
 router.put('/:id/status', async (req, res) => {
     try {
         const pool = database.getDb();
         const { status } = req.body;
-        const result = await pool.query(
-            'UPDATE invoices SET status = $1 WHERE id = $2 RETURNING *',
-            [status, req.params.id]
-        );
+
+        // If voiding, also zero out balance_due
+        let query, params;
+        if (status === 'VOID') {
+            query = 'UPDATE invoices SET status = $1, balance_due = 0, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING *';
+            params = [status, req.params.id];
+        } else {
+            query = 'UPDATE invoices SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING *';
+            params = [status, req.params.id];
+        }
+        const result = await pool.query(query, params);
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Invoice not found' });
         }

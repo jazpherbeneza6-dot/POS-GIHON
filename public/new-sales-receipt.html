@@ -1074,6 +1074,7 @@
 
         .btn-save-group {
             display: flex;
+            position: relative;
         }
 
         .btn-save {
@@ -1102,6 +1103,51 @@
             font-size: 10px;
         }
 
+        .btn-save-dropdown:hover {
+            background: #2a56c6;
+        }
+
+        .save-dropdown-menu {
+            display: none;
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            padding: 6px 0;
+            margin-bottom: 4px;
+            z-index: 200;
+        }
+
+        .save-dropdown-menu.open {
+            display: block;
+        }
+
+        .save-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .save-dropdown-item:hover {
+            background: #4285f4;
+            color: white;
+        }
+
+        .save-dropdown-item .sdi-icon {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+
         .btn-cancel {
             padding: 8px 16px;
             background: #333;
@@ -1122,6 +1168,328 @@
             position: relative;
             max-width: 200px;
         }
+
+        /* === Add Items in Bulk Modal === */
+        .bulk-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1200;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .bulk-overlay.open {
+            display: flex;
+        }
+
+        .bulk-modal {
+            background: #fff;
+            border-radius: 10px;
+            width: 880px;
+            max-width: 95vw;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.22);
+        }
+
+        .bulk-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 24px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .bulk-header h2 {
+            margin: 0;
+            font-size: 17px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .bulk-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #e74c3c;
+            cursor: pointer;
+        }
+
+        .bulk-body {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        .bulk-left {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #eee;
+            min-width: 0;
+        }
+
+        .bulk-search-wrap {
+            padding: 14px 18px;
+        }
+
+        .bulk-search {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .bulk-search:focus {
+            border-color: #4285f4;
+        }
+
+        .bulk-items-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        .bulk-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 18px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .bulk-item:hover {
+            background: #f5f8ff;
+        }
+
+        .bulk-item.selected {
+            background: #eef6ee;
+        }
+
+        .bulk-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .bulk-item-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .bulk-item.selected .bulk-item-name {
+            color: #1a8a1a;
+        }
+
+        .bulk-item-meta {
+            font-size: 11px;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .bulk-item.selected .bulk-item-meta {
+            color: #1a8a1a;
+        }
+
+        .bulk-item-stock {
+            text-align: right;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .bulk-item-stock-label {
+            font-size: 10px;
+            color: #888;
+        }
+
+        .bulk-item-stock-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a8a1a;
+        }
+
+        .bulk-item-check {
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+        }
+
+        .bulk-item-check-box {
+            width: 22px;
+            height: 22px;
+            border-radius: 4px;
+            border: 2px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: white;
+            background: white;
+        }
+
+        .bulk-item.selected .bulk-item-check-box {
+            background: #22c55e;
+            border-color: #22c55e;
+        }
+
+        .bulk-right {
+            width: 380px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bulk-right-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 18px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .bulk-right-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .bulk-right-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #4285f4;
+            color: white;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            min-width: 22px;
+            height: 22px;
+            padding: 0 6px;
+            margin-left: 8px;
+        }
+
+        .bulk-right-qty {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .bulk-selected-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+
+        .bulk-sel-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 18px;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .bulk-sel-name {
+            font-size: 13px;
+            color: #333;
+        }
+
+        .bulk-sel-sku {
+            color: #888;
+            font-weight: 500;
+        }
+
+        .bulk-qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 0;
+        }
+
+        .bulk-qty-btn {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ddd;
+            background: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+
+        .bulk-qty-btn:first-child {
+            border-radius: 4px 0 0 4px;
+        }
+
+        .bulk-qty-btn:last-child {
+            border-radius: 0 4px 4px 0;
+        }
+
+        .bulk-qty-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .bulk-qty-input {
+            width: 40px;
+            height: 30px;
+            border: 1px solid #ddd;
+            border-left: none;
+            border-right: none;
+            text-align: center;
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .bulk-footer {
+            display: flex;
+            gap: 10px;
+            padding: 16px 18px;
+            border-top: 1px solid #eee;
+        }
+
+        .bulk-btn-add {
+            padding: 10px 24px;
+            background: #4285f4;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .bulk-btn-add:hover {
+            background: #3367d6;
+        }
+
+        .bulk-btn-cancel {
+            padding: 10px 24px;
+            background: #f0f0f0;
+            color: #333;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .bulk-btn-cancel:hover {
+            background: #e0e0e0;
+        }
     </style>
 </head>
 
@@ -1138,7 +1506,6 @@
                     <h1 class="page-title">New Sales Receipt</h1>
                 </div>
                 <div class="header-actions">
-                    <button class="header-icon-btn">⚙</button>
                     <button class="close-btn" onclick="goBack()">×</button>
                 </div>
             </div>
@@ -1172,6 +1539,26 @@
                                 </div>
                                 <button class="input-add-btn"
                                     onclick="window.location.href='/new-customer.html'">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Billing / Shipping Address -->
+                    <div id="addressSection" style="display:none; margin-top:8px;">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:500px;margin:0 auto;">
+                            <div>
+                                <div
+                                    style="font-size:12px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">
+                                    Billing Address</div>
+                                <div id="invBillingAddress"
+                                    style="font-size:13px;color:#333;line-height:1.6;min-height:40px;">—</div>
+                            </div>
+                            <div>
+                                <div
+                                    style="font-size:12px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">
+                                    Shipping Address</div>
+                                <div id="invShippingAddress"
+                                    style="font-size:13px;color:#333;line-height:1.6;min-height:40px;">—</div>
                             </div>
                         </div>
                     </div>
@@ -1255,14 +1642,17 @@
                     <div class="form-section">
                         <div class="attach-section">
                             <div class="attach-title">Attach File(s) to Sales Receipt</div>
-                            <button class="upload-btn" type="button">📤 Upload File ▼</button>
+                            <input type="file" id="fileUploadInput" multiple
+                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.xls,.xlsx,.csv" style="display:none"
+                                onchange="handleFileUpload(this)">
+                            <button class="upload-btn" type="button"
+                                onclick="document.getElementById('fileUploadInput').click()">📤 Upload File ▼</button>
                             <p class="upload-help">Max 10 files, 10MB each</p>
+                            <div id="uploadedFilesList" style="margin-top: 8px;"></div>
                         </div>
                     </div>
 
-                    <!-- Additional Fields -->
-                    <a href="#" class="additional-link">Additional Fields: Add custom fields via Settings >> Sales
-                        Receipts</a>
+
                 </div>
 
                 <!-- Right Column -->
@@ -1272,7 +1662,6 @@
                         <div class="item-table-header">
                             <span class="item-table-title">Item Table</span>
                             <div class="table-actions">
-                                <a class="action-link">⚡ Bulk Actions</a>
                             </div>
                         </div>
 
@@ -1315,7 +1704,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <select
+                                        <select class="tax-select"
                                             style="font-size:10px;padding:4px;border:1px solid #e0e0e0;border-radius:3px;">
                                             <option value="">Select a Tax</option>
                                         </select>
@@ -1329,7 +1718,7 @@
 
                         <div class="add-row-buttons">
                             <button class="add-row-btn" onclick="addNewRow()">+ Add New Row</button>
-                            <button class="add-row-btn secondary">+ Add Items in Bulk</button>
+                            <button class="add-row-btn secondary" onclick="openBulkModal()">+ Add Items in Bulk</button>
                         </div>
                     </div>
 
@@ -1375,8 +1764,18 @@
             <!-- Footer -->
             <div class="form-footer">
                 <div class="footer-left">
-                    <button class="btn-draft" onclick="saveAsDraft()">Save as Draft</button>
-                    <button class="btn-save" onclick="saveAndPrint()" style="border-radius:4px;">Save and Print</button>
+                    <div class="btn-save-group">
+                        <button class="btn-save" onclick="saveAsPaid()">Save as Paid</button>
+                        <button class="btn-save-dropdown" onclick="toggleSaveDropdown(event)">▲</button>
+                        <div class="save-dropdown-menu" id="saveDropdownMenu">
+                            <div class="save-dropdown-item" onclick="saveAndPrint()">
+                                <span class="sdi-icon">🖨️</span> Save and Print
+                            </div>
+                            <div class="save-dropdown-item" onclick="saveAsPaid()">
+                                <span class="sdi-icon">✅</span> Save as Paid
+                            </div>
+                        </div>
+                    </div>
                     <button class="btn-cancel" onclick="goBack()">Cancel</button>
                 </div>
                 <div class="footer-right">
@@ -1428,27 +1827,184 @@
         let overallDiscType = '%';
 
         // ===== Init =====
-        document.addEventListener('DOMContentLoaded', () => {
-            // Set today's date
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('receiptDate').value = today;
+        let editingReceiptId = null;
+        let allTaxes = [];
 
-            // Generate receipt number
-            generateReceiptNumber();
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            editingReceiptId = urlParams.get('id');
+
+            if (editingReceiptId) {
+                document.querySelector('.page-title').textContent = 'Edit Sales Receipt';
+                // Change button text from "Save as Paid" to "Save"
+                const saveBtn = document.querySelector('.btn-save');
+                if (saveBtn) saveBtn.textContent = 'Save';
+                // Update dropdown item text too
+                document.querySelectorAll('.save-dropdown-item').forEach(item => {
+                    if (item.textContent.includes('Save as Paid')) {
+                        item.innerHTML = '<span class="sdi-icon">✅</span> Save';
+                    }
+                });
+            } else {
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('receiptDate').value = today;
+                generateReceiptNumber();
+            }
             loadCustomers();
             loadSalespersons();
+            loadTaxes();
         });
+
+        async function loadTaxes() {
+            try {
+                const res = await fetch('/api/taxes');
+                if (res.ok) {
+                    allTaxes = await res.json();
+                    populateTaxSelects();
+                }
+            } catch (err) {
+                console.error('Error loading taxes:', err);
+            }
+        }
+
+        function populateTaxSelects() {
+            document.querySelectorAll('.tax-select').forEach(sel => {
+                const currentVal = sel.value;
+                // Keep only the first "Select a Tax" option
+                sel.innerHTML = '<option value="">Select a Tax</option>';
+                allTaxes.forEach(tax => {
+                    const rate = parseFloat(tax.rate || 0);
+                    const opt = document.createElement('option');
+                    opt.value = tax.name;
+                    opt.textContent = `${tax.name} (${rate}%)`;
+                    sel.appendChild(opt);
+                });
+                // Restore previous selection if any
+                if (currentVal) sel.value = currentVal;
+            });
+        }
 
         async function generateReceiptNumber() {
             try {
-                const res = await fetch('/api/sales-receipts');
+                const res = await fetch('/api/sales-receipts/next-number');
                 if (res.ok) {
-                    const receipts = await res.json();
-                    const num = (receipts.length || 0) + 1;
-                    document.getElementById('receiptNumber').value = 'SR-' + String(num).padStart(5, '0');
+                    const data = await res.json();
+                    document.getElementById('receiptNumber').value = data.receipt_number;
                 }
             } catch (err) {
                 console.error('Error generating receipt number:', err);
+            }
+        }
+
+        async function loadReceiptForEdit(id) {
+            try {
+                const res = await fetch('/api/sales-receipts/' + id);
+                if (!res.ok) { alert('Receipt not found'); return; }
+                const r = await res.json();
+
+                // Populate basic fields
+                document.getElementById('receiptNumber').value = r.receipt_number || '';
+                document.getElementById('receiptDate').value = r.receipt_date ? r.receipt_date.split('T')[0] : '';
+                document.getElementById('referenceNumber').value = r.reference_number || '';
+                document.getElementById('notes').value = r.notes || '';
+                document.getElementById('termsConditions').value = r.terms_conditions || '';
+                document.getElementById('shippingCharges').value = r.shipping_charges || '';
+                document.getElementById('adjustmentValue').value = r.adjustment || '';
+
+                // Payment mode
+                const pmSelect = document.getElementById('paymentMode');
+                if (pmSelect && r.payment_mode) {
+                    for (let opt of pmSelect.options) {
+                        if (opt.value === r.payment_mode || opt.textContent === r.payment_mode) {
+                            pmSelect.value = opt.value;
+                            break;
+                        }
+                    }
+                }
+
+                // Deposit to
+                const dtSelect = document.getElementById('depositTo');
+                if (dtSelect && r.deposit_to) {
+                    for (let opt of dtSelect.options) {
+                        if (opt.value === r.deposit_to || opt.textContent === r.deposit_to) {
+                            dtSelect.value = opt.value;
+                            break;
+                        }
+                    }
+                }
+
+                // Customer
+                if (r.customer_id) {
+                    selectCustDd(r.customer_id, r.customer_name || '');
+                }
+
+                // Salesperson (try to select after salespersons list is loaded)
+                if (r.salesperson_name) {
+                    const waitForSp = setInterval(() => {
+                        if (salespersonsList.length > 0 || document.getElementById('salesperson')) {
+                            clearInterval(waitForSp);
+                            const spInput = document.getElementById('salesperson');
+                            if (spInput) spInput.value = r.salesperson_name;
+                        }
+                    }, 200);
+                    setTimeout(() => clearInterval(waitForSp), 3000);
+                }
+
+                // Populate items
+                if (r.items && r.items.length > 0) {
+                    const tbody = document.getElementById('itemsBody');
+                    tbody.innerHTML = '';
+                    // Wait for allItems to be loaded
+                    const waitForItems = setInterval(() => {
+                        if (allItems.length > 0) {
+                            clearInterval(waitForItems);
+                            r.items.forEach((item, index) => {
+                                addNewRow();
+                                const tr = tbody.lastElementChild;
+                                const cell = tr.querySelector('.item-picker-cell');
+                                const input = cell.querySelector('.item-picker-input');
+                                const hiddenInput = cell.querySelector('.item-id-hidden');
+
+                                hiddenInput.value = item.item_id || '';
+                                input.value = item.item_name || '';
+                                input.style.display = 'none';
+
+                                // Find item image
+                                const matchedItem = allItems.find(i => i.id == item.item_id);
+                                const imgUrl = matchedItem ? matchedItem.image_url : '';
+                                const imgHtml = imgUrl
+                                    ? `<img src="${imgUrl}" onerror="this.outerHTML='<div class=\\'item-selected-placeholder\\'>📦</div>'">`
+                                    : '<div class="item-selected-placeholder">📦</div>';
+                                const display = document.createElement('div');
+                                display.className = 'item-selected-display';
+                                display.innerHTML = `${imgHtml}<span class="item-selected-name">${item.item_name || ''}</span>`;
+                                display.style.cursor = 'pointer';
+                                const itemName = item.item_name || '';
+                                display.onclick = function () {
+                                    display.remove();
+                                    input.style.display = '';
+                                    input.value = itemName;
+                                    input.focus();
+                                };
+                                cell.insertBefore(display, input);
+
+                                tr.querySelector('.qty-input').value = item.quantity || 1;
+                                tr.querySelector('.rate-input').value = item.rate || 0;
+                                recalcRow(tr.querySelector('.rate-input'));
+                            });
+                            recalcTotals();
+                        }
+                    }, 200);
+                    setTimeout(() => clearInterval(waitForItems), 5000);
+                }
+
+                // Load attachments
+                if (r.attachments && r.attachments.length > 0) {
+                    uploadedFiles = r.attachments;
+                    renderUploadedFiles();
+                }
+            } catch (err) {
+                console.error('Error loading receipt for edit:', err);
             }
         }
 
@@ -1459,6 +2015,17 @@
                 if (res.ok) {
                     allCustomers = await res.json();
                     renderCustDdOptions();
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const preselect = urlParams.get('customerId');
+                    if (preselect) {
+                        const c = allCustomers.find(x => String(x.id) === preselect);
+                        if (c) {
+                            const name = c.display_name || [c.first_name, c.last_name].filter(Boolean).join(' ') || 'Unnamed';
+                            selectCustDd(c.id, name);
+                        }
+                    }
+                    // If editing, load receipt data after customers are ready
+                    if (editingReceiptId) loadReceiptForEdit(editingReceiptId);
                 }
             } catch (err) {
                 console.error('Error loading customers:', err);
@@ -1487,6 +2054,18 @@
             label.textContent = name;
             label.style.color = '#333';
             closeAllDds();
+            populateCustomerAddress(id);
+        }
+
+        function populateCustomerAddress(customerId) {
+            const c = allCustomers.find(x => String(x.id) === String(customerId));
+            const section = document.getElementById('addressSection');
+            if (!c) { section.style.display = 'none'; return; }
+            const billingParts = [c.billing_street, c.billing_city, c.billing_state, c.billing_zip, c.billing_country].filter(Boolean);
+            const shippingParts = [c.shipping_street, c.shipping_city, c.shipping_state, c.shipping_zip, c.shipping_country].filter(Boolean);
+            document.getElementById('invBillingAddress').textContent = billingParts.length > 0 ? billingParts.join(', ') : '—';
+            document.getElementById('invShippingAddress').textContent = shippingParts.length > 0 ? shippingParts.join(', ') : '—';
+            section.style.display = 'block';
         }
 
         function toggleCustDd() {
@@ -1791,7 +2370,7 @@
                 <td class="center"><input type="number" class="rate-input" value="0" style="text-align:center;width:65px;" onchange="recalcRow(this)"></td>
                 ${discCells}
                 <td>
-                    <select style="font-size:10px;padding:4px;border:1px solid #e0e0e0;border-radius:3px;">
+                    <select class="tax-select" style="font-size:10px;padding:4px;border:1px solid #e0e0e0;border-radius:3px;">
                         <option value="">Select a Tax</option>
                     </select>
                 </td>
@@ -1799,6 +2378,7 @@
                 <td class="center"><button class="delete-row-btn" onclick="deleteRow(this)">×</button></td>
             `;
             tbody.appendChild(tr);
+            populateTaxSelects();
         }
 
         function deleteRow(btn) {
@@ -2056,6 +2636,72 @@
         }
 
         // ===== Save Functions =====
+        // ===== File Upload =====
+        let uploadedFiles = [];
+
+        async function handleFileUpload(input) {
+            const files = input.files;
+            if (!files || files.length === 0) return;
+
+            if (uploadedFiles.length + files.length > 10) {
+                alert('Maximum 10 files allowed.');
+                input.value = '';
+                return;
+            }
+
+            for (const file of files) {
+                if (file.size > 10 * 1024 * 1024) {
+                    alert(`File "${file.name}" exceeds 10MB limit.`);
+                    continue;
+                }
+
+                const formData = new FormData();
+                formData.append('files', file);
+
+                try {
+                    const res = await fetch('/api/uploads', { method: 'POST', body: formData });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.files && data.files.length > 0) {
+                            uploadedFiles.push(...data.files);
+                            renderUploadedFiles();
+                        }
+                    } else {
+                        alert('Failed to upload ' + file.name);
+                    }
+                } catch (err) {
+                    console.error('Upload error:', err);
+                    alert('Failed to upload ' + file.name);
+                }
+            }
+            input.value = '';
+        }
+
+        function renderUploadedFiles() {
+            const container = document.getElementById('uploadedFilesList');
+            if (uploadedFiles.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+            container.innerHTML = uploadedFiles.map((f, i) => `
+                <div style="display:flex; align-items:center; gap:8px; padding:4px 0; font-size:13px; color:#333;">
+                    <span>📎</span>
+                    <a href="${f.url}" target="_blank" style="color:#1a73e8; text-decoration:none;">${f.originalName}</a>
+                    <span style="color:#999; font-size:11px;">(${(f.size / 1024).toFixed(1)} KB)</span>
+                    <button type="button" onclick="removeUploadedFile(${i})" style="background:none; border:none; color:#d93025; cursor:pointer; font-size:14px;" title="Remove">✕</button>
+                </div>
+            `).join('');
+        }
+
+        async function removeUploadedFile(index) {
+            const file = uploadedFiles[index];
+            try {
+                await fetch('/api/uploads/' + file.filename, { method: 'DELETE' });
+            } catch (e) { /* ignore */ }
+            uploadedFiles.splice(index, 1);
+            renderUploadedFiles();
+        }
+
         function collectData() {
             const items = [];
             document.querySelectorAll('#itemsBody tr').forEach(row => {
@@ -2086,7 +2732,8 @@
                 shipping_charges: parseFloat(document.getElementById('shippingCharges').value) || 0,
                 adjustment: parseFloat(document.getElementById('adjustmentValue').value) || 0,
                 total: parseFloat((document.getElementById('totalDisplay').textContent || '0').replace(/,/g, '')) || 0,
-                items: items
+                items: items,
+                attachments: uploadedFiles
             };
         }
 
@@ -2111,22 +2758,24 @@
             return true;
         }
 
-        async function saveAsDraft() {
+        async function saveAndPrint() {
             if (!verifySalespersonPassword()) return;
             const data = collectData();
-            data.status = 'DRAFT';
+            data.status = 'PAID';
             try {
-                const res = await fetch('/api/sales-receipts', {
-                    method: 'POST',
+                const url = editingReceiptId ? '/api/sales-receipts/' + editingReceiptId : '/api/sales-receipts';
+                const method = editingReceiptId ? 'PUT' : 'POST';
+                const res = await fetch(url, {
+                    method: method,
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
                 if (res.ok) {
                     const result = await res.json();
-                    alert('Sales Receipt ' + (result.receipt_number || '') + ' saved as draft!');
-                    goBack();
+                    window.location.href = '/sales-receipt-detail.html?id=' + (editingReceiptId || result.id) + '&print=true';
                 } else {
-                    alert('Error saving sales receipt');
+                    const errData = await res.json().catch(() => null);
+                    alert(errData?.error || 'Error saving sales receipt');
                 }
             } catch (err) {
                 console.error('Error:', err);
@@ -2134,29 +2783,243 @@
             }
         }
 
-        async function saveAndPrint() {
+        async function saveAsPaid() {
             if (!verifySalespersonPassword()) return;
             const data = collectData();
-            data.status = 'CONFIRMED';
+            data.status = 'PAID';
             try {
-                const res = await fetch('/api/sales-receipts', {
-                    method: 'POST',
+                const url = editingReceiptId ? '/api/sales-receipts/' + editingReceiptId : '/api/sales-receipts';
+                const method = editingReceiptId ? 'PUT' : 'POST';
+                const res = await fetch(url, {
+                    method: method,
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
                 if (res.ok) {
                     const result = await res.json();
-                    alert('Sales Receipt ' + (result.receipt_number || '') + ' saved!');
+                    alert('Sales Receipt ' + (result.receipt_number || '') + ' saved as paid!');
                     goBack();
                 } else {
-                    alert('Error saving sales receipt');
+                    const errData = await res.json().catch(() => null);
+                    alert(errData?.error || 'Error saving sales receipt');
                 }
             } catch (err) {
                 console.error('Error:', err);
                 alert('Error saving sales receipt');
             }
         }
+
+        function toggleSaveDropdown(e) {
+            e.stopPropagation();
+            document.getElementById('saveDropdownMenu').classList.toggle('open');
+        }
+
+        document.addEventListener('click', function () {
+            document.getElementById('saveDropdownMenu')?.classList.remove('open');
+        });
+
+        // ===== Add Items in Bulk Modal =====
+        let bulkSelected = []; // [{id, name, sku, selling_price, stock_quantity, unit, qty}]
+
+        function openBulkModal() {
+            bulkSelected = [];
+            document.getElementById('bulkSearch').value = '';
+            renderBulkItems('');
+            updateBulkSelected();
+            document.getElementById('bulkOverlay').classList.add('open');
+        }
+
+        function closeBulkModal() {
+            document.getElementById('bulkOverlay').classList.remove('open');
+        }
+
+        function renderBulkItems(filter) {
+            const q = (filter || '').toLowerCase();
+            const filtered = allItems.filter(item =>
+                item.name.toLowerCase().includes(q) ||
+                (item.sku && item.sku.toLowerCase().includes(q))
+            );
+            const list = document.getElementById('bulkItemsList');
+            if (filtered.length === 0) {
+                list.innerHTML = '<div style="padding:30px;text-align:center;color:#999;">No items found</div>';
+                return;
+            }
+            list.innerHTML = filtered.map(item => {
+                const isSelected = bulkSelected.some(s => s.id === item.id);
+                const stock = parseFloat(item.stock_quantity || 0).toFixed(2);
+                const unit = item.unit || 'pcs';
+                const rate = formatNum(item.selling_price || 0);
+                return `<div class="bulk-item ${isSelected ? 'selected' : ''}" onclick="toggleBulkItem(${item.id})">
+                    <div class="bulk-item-info">
+                        <div class="bulk-item-name">${item.name}</div>
+                        <div class="bulk-item-meta">SKU: ${item.sku || 'N/A'} Rate: PHP${rate}</div>
+                    </div>
+                    <div class="bulk-item-stock">
+                        <div class="bulk-item-stock-label">Stock on Hand</div>
+                        <div class="bulk-item-stock-value">${stock} ${unit}</div>
+                    </div>
+                    <div class="bulk-item-check">
+                        <div class="bulk-item-check-box">${isSelected ? '✓' : ''}</div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function toggleBulkItem(id) {
+            const idx = bulkSelected.findIndex(s => s.id === id);
+            if (idx >= 0) {
+                bulkSelected.splice(idx, 1);
+            } else {
+                const item = allItems.find(i => i.id === id);
+                if (item) {
+                    bulkSelected.push({
+                        id: item.id,
+                        name: item.name,
+                        sku: item.sku || '',
+                        selling_price: item.selling_price || 0,
+                        stock_quantity: item.stock_quantity || 0,
+                        unit: item.unit || 'pcs',
+                        image_url: item.image_url || '',
+                        qty: 1
+                    });
+                }
+            }
+            const q = document.getElementById('bulkSearch').value;
+            renderBulkItems(q);
+            updateBulkSelected();
+        }
+
+        function updateBulkSelected() {
+            const count = bulkSelected.length;
+            const totalQty = bulkSelected.reduce((sum, s) => sum + s.qty, 0);
+            document.getElementById('bulkBadge').textContent = count;
+            document.getElementById('bulkTotalQty').textContent = 'Total Quantity: ' + totalQty;
+
+            const list = document.getElementById('bulkSelectedList');
+            if (count === 0) {
+                list.innerHTML = '<div style="padding:30px;text-align:center;color:#999;font-size:13px;">No items selected</div>';
+                return;
+            }
+            list.innerHTML = bulkSelected.map((s, i) => {
+                return `<div class="bulk-sel-item">
+                    <div class="bulk-sel-name"><span class="bulk-sel-sku">[${s.sku}]</span> ${s.name}</div>
+                    <div class="bulk-qty-controls">
+                        <button class="bulk-qty-btn" onclick="adjustBulkQty(${i}, -1)">−</button>
+                        <input class="bulk-qty-input" type="number" value="${s.qty}" min="1"
+                            onchange="setBulkQty(${i}, this.value)">
+                        <button class="bulk-qty-btn" onclick="adjustBulkQty(${i}, 1)">+</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function adjustBulkQty(idx, delta) {
+            bulkSelected[idx].qty = Math.max(1, bulkSelected[idx].qty + delta);
+            updateBulkSelected();
+        }
+
+        function setBulkQty(idx, val) {
+            bulkSelected[idx].qty = Math.max(1, parseInt(val) || 1);
+            updateBulkSelected();
+        }
+
+        function addBulkItemsToTable() {
+            if (bulkSelected.length === 0) return;
+            const tbody = document.getElementById('itemsBody');
+
+            // Check if first row is empty and can be reused
+            const firstRow = tbody.querySelector('tr');
+            let reuseFirst = false;
+            if (firstRow) {
+                const hiddenInput = firstRow.querySelector('.item-id-hidden');
+                if (hiddenInput && !hiddenInput.value) {
+                    reuseFirst = true;
+                }
+            }
+
+            bulkSelected.forEach((item, index) => {
+                let tr;
+                if (index === 0 && reuseFirst) {
+                    tr = firstRow;
+                } else {
+                    addNewRow();
+                    tr = tbody.lastElementChild;
+                }
+
+                // Set item data
+                const cell = tr.querySelector('.item-picker-cell');
+                const input = cell.querySelector('.item-picker-input');
+                const hiddenInput = cell.querySelector('.item-id-hidden');
+                hiddenInput.value = item.id;
+                input.value = item.name;
+                input.style.display = 'none';
+
+                // Remove existing display
+                const existing = cell.querySelector('.item-selected-display');
+                if (existing) existing.remove();
+
+                // Create display
+                const imgHtml = item.image_url
+                    ? `<img src="${item.image_url}" onerror="this.outerHTML='<div class=\\'item-selected-placeholder\\'>📦</div>'">`
+                    : '<div class="item-selected-placeholder">📦</div>';
+                const display = document.createElement('div');
+                display.className = 'item-selected-display';
+                display.innerHTML = `${imgHtml}<span class="item-selected-name">${item.name}</span>`;
+                display.style.cursor = 'pointer';
+                const itemName = item.name;
+                display.onclick = function () {
+                    display.remove();
+                    input.style.display = '';
+                    input.value = itemName;
+                    input.focus();
+                };
+                cell.insertBefore(display, input);
+
+                // Set qty and rate
+                tr.querySelector('.qty-input').value = item.qty;
+                tr.querySelector('.rate-input').value = item.selling_price;
+
+                recalcRow(tr.querySelector('.rate-input'));
+            });
+
+            closeBulkModal();
+            recalcTotals();
+        }
     </script>
+
+    <!-- Add Items in Bulk Modal -->
+    <div class="bulk-overlay" id="bulkOverlay" onclick="closeBulkModal()">
+        <div class="bulk-modal" onclick="event.stopPropagation()">
+            <div class="bulk-header">
+                <h2>Add Items in Bulk</h2>
+                <button class="bulk-close" onclick="closeBulkModal()">✕</button>
+            </div>
+            <div class="bulk-body">
+                <div class="bulk-left">
+                    <div class="bulk-search-wrap">
+                        <input type="text" class="bulk-search" id="bulkSearch"
+                            placeholder="Type to search or scan the barcode of the item"
+                            oninput="renderBulkItems(this.value)">
+                    </div>
+                    <div class="bulk-items-list" id="bulkItemsList"></div>
+                    <div class="bulk-footer">
+                        <button class="bulk-btn-add" onclick="addBulkItemsToTable()">Add Items</button>
+                        <button class="bulk-btn-cancel" onclick="closeBulkModal()">Cancel</button>
+                    </div>
+                </div>
+                <div class="bulk-right">
+                    <div class="bulk-right-header">
+                        <div>
+                            <span class="bulk-right-title">Selected Items</span>
+                            <span class="bulk-right-badge" id="bulkBadge">0</span>
+                        </div>
+                        <span class="bulk-right-qty" id="bulkTotalQty">Total Quantity: 0</span>
+                    </div>
+                    <div class="bulk-selected-list" id="bulkSelectedList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

@@ -549,7 +549,7 @@
 
         document.addEventListener('DOMContentLoaded', async function () {
             // Set today's date
-            document.getElementById('creditDate').value = new Date().toISOString().split('T')[0];
+            const _d = new Date(); document.getElementById('creditDate').value = _d.getFullYear() + '-' + String(_d.getMonth() + 1).padStart(2, '0') + '-' + String(_d.getDate()).padStart(2, '0');
 
             // Get next credit number
             try {

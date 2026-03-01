@@ -251,6 +251,25 @@ async function init() {
         ALTER TABLE items ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'active';
       `);
 
+      // Add preferred_vendor column to items table
+      await pool.query(`
+        ALTER TABLE items ADD COLUMN IF NOT EXISTS preferred_vendor VARCHAR(255);
+      `);
+
+      // Add inventory_account, valuation_method, is_returnable columns
+      await pool.query(`
+        ALTER TABLE items ADD COLUMN IF NOT EXISTS inventory_account VARCHAR(255) DEFAULT 'Inventory Asset';
+      `);
+      await pool.query(`
+        ALTER TABLE items ADD COLUMN IF NOT EXISTS valuation_method VARCHAR(100) DEFAULT 'FIFO';
+      `);
+      await pool.query(`
+        ALTER TABLE items ADD COLUMN IF NOT EXISTS is_returnable BOOLEAN DEFAULT TRUE;
+      `);
+      await pool.query(`
+        ALTER TABLE items ADD COLUMN IF NOT EXISTS added_by VARCHAR(255);
+      `);
+
       // High-precision NUMERIC(38,10) migration for existing columns
       // This upgrades INTEGER columns to support extremely large values (up to 10^38)
       console.log('Running high-precision NUMERIC migration...');
@@ -339,6 +358,9 @@ async function init() {
 
       console.log('Inventory adjustments tables created');
 
+      // Clean up empty reference numbers (set to NULL so unique constraint allows multiple blanks)
+      await pool.query(`UPDATE inventory_adjustments SET reference_number = NULL WHERE reference_number = '';`);
+
       // Add tax_rate column to customers table
       await pool.query(`
         ALTER TABLE customers ADD COLUMN IF NOT EXISTS tax_rate VARCHAR(50);
@@ -373,6 +395,10 @@ async function init() {
         CREATE INDEX IF NOT EXISTS idx_customer_changes_customer_id ON customer_changes(customer_id);
       `);
 
+      // Add profile_image column to customers
+      await pool.query(`ALTER TABLE customers ADD COLUMN IF NOT EXISTS profile_image TEXT;`);
+      await pool.query(`ALTER TABLE customers ADD COLUMN IF NOT EXISTS remarks TEXT;`);
+
       // Create contact_persons table
       await pool.query(`
         CREATE TABLE IF NOT EXISTS contact_persons (
@@ -384,10 +410,18 @@ async function init() {
           email VARCHAR(255),
           work_phone VARCHAR(50),
           mobile VARCHAR(50),
+          designation VARCHAR(255),
+          department VARCHAR(255),
+          is_primary BOOLEAN DEFAULT FALSE,
+          profile_image TEXT,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
         );
       `);
+      await pool.query(`ALTER TABLE contact_persons ADD COLUMN IF NOT EXISTS designation VARCHAR(255);`);
+      await pool.query(`ALTER TABLE contact_persons ADD COLUMN IF NOT EXISTS department VARCHAR(255);`);
+      await pool.query(`ALTER TABLE contact_persons ADD COLUMN IF NOT EXISTS is_primary BOOLEAN DEFAULT FALSE;`);
+      await pool.query(`ALTER TABLE contact_persons ADD COLUMN IF NOT EXISTS profile_image TEXT;`);
 
       // ========== Vendor (Suppliers) table expansion ==========
       await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS salutation VARCHAR(10);`);
@@ -444,7 +478,7 @@ async function init() {
           id SERIAL PRIMARY KEY,
           payment_number VARCHAR(50),
           invoice_id INTEGER,
-          invoice_number VARCHAR(50),
+          invoice_number TEXT,
           customer_id INTEGER,
           customer_name VARCHAR(255),
           amount_received DECIMAL(12,2) DEFAULT 0,
@@ -467,7 +501,20 @@ async function init() {
       await pool.query(`CREATE INDEX IF NOT EXISTS idx_payments_received_invoice ON payments_received(invoice_id);`);
       // Migration: add salesperson_name if missing
       await pool.query(`ALTER TABLE payments_received ADD COLUMN IF NOT EXISTS salesperson_name VARCHAR(255);`);
+      // Migration: widen invoice_number to TEXT for multi-invoice payments
+      await pool.query(`ALTER TABLE payments_received ALTER COLUMN invoice_number TYPE TEXT;`);
       console.log('Payments received table created');
+
+      // Customer comments table
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS customer_comments (
+          id SERIAL PRIMARY KEY,
+          customer_id INTEGER NOT NULL,
+          comment_html TEXT NOT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+      console.log('Customer comments table created');
 
       // Packages table
       await pool.query(`
@@ -727,6 +774,91 @@ async function init() {
       console.log('Activity log table created');
     } catch (migrationError) {
       console.log('Activity log migration note:', migrationError.message);
+    }
+
+    // One-time sync: update customer_name in all related tables from customers.display_name
+    try {
+      await pool.query(`UPDATE sales_orders so SET customer_name = c.display_name FROM customers c WHERE so.customer_id = c.id AND so.customer_name IS DISTINCT FROM c.display_name`);
+      await pool.query(`UPDATE invoices i SET customer_name = c.display_name FROM customers c WHERE i.customer_id = c.id AND i.customer_name IS DISTINCT FROM c.display_name`);
+      await pool.query(`UPDATE payments_received pr SET customer_name = c.display_name FROM customers c WHERE pr.customer_id = c.id AND pr.customer_name IS DISTINCT FROM c.display_name`);
+      console.log('Customer name sync completed');
+    } catch (syncErr) {
+      console.log('Customer name sync note:', syncErr.message);
+    }
+
+    // ========== Taxes table ==========
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS taxes (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        rate DECIMAL(8,4) NOT NULL DEFAULT 0,
+        type VARCHAR(50) DEFAULT 'percentage',
+        is_active BOOLEAN DEFAULT true,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+    // Seed default taxes if empty
+    const taxCount = await pool.query('SELECT COUNT(*) FROM taxes');
+    if (parseInt(taxCount.rows[0].count) === 0) {
+      await pool.query(`
+        INSERT INTO taxes (name, rate) VALUES
+          ('VAT (12%)', 12),
+          ('Non-VAT', 0),
+          ('Zero-Rated (0%)', 0),
+          ('VAT Exempt', 0),
+          ('Withholding Tax (1%)', 1),
+          ('Withholding Tax (2%)', 2),
+          ('Withholding Tax (5%)', 5)
+      `);
+    }
+    console.log('Taxes table created');
+
+    // Migration: add balance_due column to invoices if missing
+    await pool.query(`ALTER TABLE invoices ADD COLUMN IF NOT EXISTS balance_due DECIMAL(12,2);`);
+    // Initialize balance_due to total where null
+    await pool.query(`UPDATE invoices SET balance_due = total WHERE balance_due IS NULL;`);
+
+    // ========== Customer Credits table ==========
+    try {
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS customer_credits (
+          id SERIAL PRIMARY KEY,
+          customer_id INTEGER,
+          customer_name VARCHAR(255),
+          amount DECIMAL(12,2) DEFAULT 0,
+          type VARCHAR(50) DEFAULT 'OVERPAYMENT',
+          reference_type VARCHAR(50),
+          reference_id INTEGER,
+          description TEXT,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+      await pool.query(`CREATE INDEX IF NOT EXISTS idx_customer_credits_customer ON customer_credits(customer_id);`);
+      console.log('Customer credits table created');
+    } catch (ccErr) {
+      console.log('Customer credits table note:', ccErr.message);
+    }
+
+    // ========== Accounting Entries table ==========
+    try {
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS accounting_entries (
+          id SERIAL PRIMARY KEY,
+          entry_type VARCHAR(50) NOT NULL,
+          customer_id INTEGER,
+          customer_name VARCHAR(255),
+          amount DECIMAL(12,2) DEFAULT 0,
+          account VARCHAR(255) DEFAULT 'Unearned Revenue',
+          reference_type VARCHAR(50),
+          reference_id INTEGER,
+          description TEXT,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+      await pool.query(`CREATE INDEX IF NOT EXISTS idx_accounting_entries_customer ON accounting_entries(customer_id);`);
+      console.log('Accounting entries table created');
+    } catch (aeErr) {
+      console.log('Accounting entries table note:', aeErr.message);
     }
   } catch (error) {
     console.error('Database initialization error:', error);

@@ -73,6 +73,153 @@
         .dropdown-arrow {
             font-size: 10px;
             color: #666;
+            transition: transform 0.2s;
+        }
+
+        .dropdown-arrow.open {
+            transform: rotate(180deg);
+        }
+
+        .so-filter-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #fff;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            min-width: 260px;
+            z-index: 999;
+            display: none;
+            margin-top: 4px;
+        }
+
+        .so-filter-dropdown.show {
+            display: block;
+        }
+
+        .so-filter-search {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-bottom: 1px solid #e9ecef;
+            gap: 6px;
+        }
+
+        .so-filter-search input {
+            border: none;
+            outline: none;
+            font-size: 13px;
+            flex: 1;
+            padding: 4px 0;
+        }
+
+        .so-filter-search .search-icon {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .so-filter-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .so-filter-item:hover {
+            background: #f5f7fa;
+        }
+
+        .so-filter-item:last-child {
+            border-bottom: none;
+        }
+
+        .so-filter-item .star {
+            color: #ccc;
+            font-size: 16px;
+        }
+
+        .page-title-wrapper {
+            position: relative;
+        }
+
+        .so-filter-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 4px;
+            background: #f0f5ff;
+            border: 1px solid #bfdbfe;
+            transition: all 0.2s ease;
+        }
+
+        .so-filter-icon:hover {
+            background: #dbeafe;
+            border-color: #93c5fd;
+        }
+
+        .so-filter-icon svg {
+            transition: all 0.2s ease;
+        }
+
+        .so-filter-icon:hover svg {
+            fill: #2563eb;
+        }
+
+        .icon.fill-linkblue {
+            fill: #3b82f6;
+        }
+
+        .so-col-dropdown-wrap {
+            position: relative;
+            display: inline-block;
+        }
+
+        .so-col-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            min-width: 200px;
+            z-index: 9999;
+            padding: 8px 0;
+        }
+
+        .so-col-dropdown.show {
+            display: block;
+        }
+
+        .so-col-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #374151;
+            transition: background 0.15s;
+            white-space: nowrap;
+        }
+
+        .so-col-dropdown-item:hover {
+            background: #f3f4f6;
+        }
+
+        .so-col-dropdown-item .dd-icon {
+            font-size: 15px;
+            width: 18px;
+            text-align: center;
+            color: #6b7280;
         }
 
         .header-actions {
@@ -232,13 +379,25 @@
         }
 
         .status-confirmed {
-            color: #16a34a;
+            color: #2563eb;
             font-weight: 600;
             font-size: 12px;
         }
 
         .status-closed {
             color: #16a34a;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .status-on-hold {
+            color: #d97706;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .status-cancelled {
+            color: #dc2626;
             font-weight: 600;
             font-size: 12px;
         }
@@ -409,11 +568,19 @@
         }
 
         .so-left-item-status.confirmed {
-            color: #16a34a;
+            color: #2563eb;
         }
 
         .so-left-item-status.closed {
             color: #16a34a;
+        }
+
+        .so-left-item-status.on-hold {
+            color: #d97706;
+        }
+
+        .so-left-item-status.cancelled {
+            color: #dc2626;
         }
 
         /* Right Panel */
@@ -670,12 +837,22 @@
         }
 
         .so-badge.confirmed {
-            background: #16a34a;
+            background: #2563eb;
             color: #fff;
         }
 
         .so-badge.closed {
             background: #2563eb;
+            color: #fff;
+        }
+
+        .so-badge.on-hold {
+            background: #f59e0b;
+            color: #fff;
+        }
+
+        .so-badge.cancelled {
+            background: #dc2626;
             color: #fff;
         }
 
@@ -691,6 +868,11 @@
 
         .so-not-invoiced {
             color: #888;
+        }
+
+        .so-draft-invoice {
+            color: #e67c00;
+            font-weight: 600;
         }
 
         .so-invoiced {
@@ -2001,10 +2183,400 @@
             color: #555;
             line-height: 1.5;
         }
+
+        /* Customize Columns Modal */
+        .so-cc-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.15);
+            z-index: 99999;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 60px;
+        }
+
+        .so-cc-overlay.active {
+            display: flex;
+        }
+
+        .so-cc-panel {
+            background: #fff;
+            width: 500px;
+            max-height: 85vh;
+            border-radius: 4px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .so-cc-header {
+            display: flex;
+            align-items: center;
+            padding: 18px 24px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .so-cc-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 500;
+            color: #333;
+            flex: 1;
+        }
+
+        .so-cc-title-icon {
+            color: #666;
+            font-size: 18px;
+        }
+
+        .so-cc-count {
+            font-size: 13px;
+            color: #666;
+            margin-right: 14px;
+        }
+
+        .so-cc-close {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: #ef4444;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .so-cc-close:hover {
+            color: #dc2626;
+        }
+
+        .so-cc-search {
+            padding: 16px 24px;
+        }
+
+        .so-cc-search input {
+            width: 100%;
+            padding: 10px 14px 10px 36px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 10px center;
+        }
+
+        .so-cc-search input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+        .so-cc-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 16px 16px;
+            min-height: 0;
+        }
+
+        .so-cc-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 14px;
+            margin: 4px 0;
+            background: #f8fafc;
+            border-radius: 8px;
+            gap: 12px;
+            cursor: default;
+            border: 2px solid transparent;
+            transition: all 0.15s;
+        }
+
+        .so-cc-item:hover {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+        }
+
+        .so-cc-item.checked {
+            background: #e6f4ff;
+            border-color: #91caff;
+        }
+
+        .so-cc-item.locked {
+            cursor: default;
+            background: #f5f5f5;
+        }
+
+        .so-cc-drag {
+            color: #bbb;
+            font-size: 14px;
+            cursor: grab;
+            user-select: none;
+        }
+
+        .so-cc-lock {
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        .so-cc-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #3b82f6;
+        }
+
+        .so-cc-label {
+            font-size: 14px;
+            color: #333;
+            flex: 1;
+        }
+
+        .so-cc-footer {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 24px;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .so-cc-save {
+            padding: 8px 20px;
+            background: #3b82f6;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .so-cc-save:hover {
+            background: #2563eb;
+        }
+
+        .so-cc-cancel {
+            padding: 8px 20px;
+            background: #f3f4f6;
+            color: #333;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .so-cc-cancel:hover {
+            background: #e5e7eb;
+        }
+
+        /* Bulk Action Bar */
+        .so-bulk-bar {
+            display: none;
+            background: #fff;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 8px 20px;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .so-bulk-bar.show {
+            display: flex;
+        }
+
+        .so-bulk-btn {
+            padding: 6px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            background: #fff;
+            font-size: 12px;
+            color: #333;
+            cursor: pointer;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .so-bulk-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .so-bulk-btn.icon-only {
+            padding: 6px 10px;
+            font-size: 14px;
+        }
+
+        .so-bulk-count {
+            background: #3b82f6;
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: auto;
+        }
+
+        .so-bulk-esc {
+            font-size: 12px;
+            color: #666;
+            margin-left: 8px;
+            cursor: pointer;
+        }
+
+        .so-bulk-close {
+            background: none;
+            border: none;
+            font-size: 16px;
+            color: #ef4444;
+            cursor: pointer;
+            padding: 0 0 0 6px;
+            line-height: 1;
+        }
+
+        .so-bulk-close:hover {
+            color: #dc2626;
+        }
+
+        .so-bulk-more-wrap {
+            position: relative;
+            display: inline-block;
+        }
+
+        .so-bulk-more-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            min-width: 220px;
+            z-index: 9999;
+            padding: 6px 0;
+        }
+
+        .so-bulk-more-menu.show {
+            display: block;
+        }
+
+        .so-bulk-more-item {
+            padding: 10px 16px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .so-bulk-more-item:hover {
+            background: #f5f7fa;
+        }
+
+        .so-bulk-more-item:first-child {
+            background: #3b82f6;
+            color: #fff;
+            margin: 4px 8px 6px;
+            border-radius: 6px;
+            padding: 10px 16px;
+            font-weight: 500;
+        }
+
+        .so-bulk-more-item:first-child:hover {
+            background: #2563eb;
+        }
+
+        .so-bulk-more-item.danger {
+            color: #ef4444;
+        }
+
+        .so-bulk-more-item.danger:hover {
+            background: #fef2f2;
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .toast {
+            pointer-events: auto;
+            padding: 18px 32px;
+            border-radius: 10px;
+            color: #333;
+            font-weight: 500;
+            font-size: 15px;
+            background: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            border: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            animation: toastSlideDown 0.3s ease;
+            min-width: 340px;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .toast.success {
+            border-left: 4px solid #10b981;
+        }
+
+        .toast.error {
+            border-left: 4px solid #ef4444;
+        }
+
+        .toast.info {
+            border-left: 4px solid #3b82f6;
+        }
+
+        .toast-icon {
+            font-size: 20px;
+        }
+
+        .toast-message {
+            flex: 1;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 18px;
+            opacity: 0.8;
+        }
+
+        .toast-close:hover {
+            opacity: 1;
+            color: #333;
+        }
+
+        @keyframes toastSlideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 
 <body>
+    <div class="toast-container" id="toastContainer"></div>
+
     <!-- Sidebar Container -->
     <div id="sidebarContainer"></div>
 
@@ -2013,12 +2585,64 @@
 
             <!-- ===== TABLE LIST VIEW ===== -->
             <div id="listView">
+                <!-- Bulk Action Bar -->
+                <div class="so-bulk-bar" id="soBulkBar">
+                    <button class="so-bulk-btn icon-only" title="Print" onclick="bulkPrintOrders()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 9V2h12v7" />
+                            <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2" />
+                            <rect x="6" y="14" width="12" height="8" />
+                        </svg>
+                    </button>
+                    <button class="so-bulk-btn icon-only" title="Export PDF" onclick="bulkExportPDF()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+                            <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2" />
+                            <path d="M12 11v6" />
+                            <path d="m9 14 3-3 3 3" />
+                        </svg>
+                    </button>
+                    <button class="so-bulk-btn" onclick="bulkMarkConfirmed()">Mark as Confirmed</button>
+                    <div class="so-bulk-more-wrap">
+                        <button class="so-bulk-btn" onclick="toggleBulkMore(event)">⋯</button>
+                        <div class="so-bulk-more-menu" id="soBulkMoreMenu">
+                            <div class="so-bulk-more-item" onclick="bulkCancelOrders()">Bulk Cancel Orders</div>
+                            <div class="so-bulk-more-item" onclick="bulkReopenOrders()">Bulk Reopen Orders</div>
+                            <div class="so-bulk-more-item danger" onclick="bulkDeleteOrders()">Delete</div>
+                        </div>
+                    </div>
+                    <span class="so-bulk-count" id="soBulkCount">0 Selected</span>
+                    <span class="so-bulk-esc" onclick="clearBulkSelection()">Esc</span>
+                    <button class="so-bulk-close" onclick="clearBulkSelection()">✕</button>
+                </div>
                 <div class="page-header">
                     <div class="page-title-wrapper">
-                        <h1 class="page-title">
-                            All Sales Orders
-                            <span class="dropdown-arrow">▼</span>
+                        <h1 class="page-title" onclick="toggleSOFilterDropdown()">
+                            <span id="soFilterLabel">All Sales Orders</span>
+                            <span class="dropdown-arrow" id="soFilterArrow">▼</span>
                         </h1>
+                        <div class="so-filter-dropdown" id="soFilterDropdown">
+                            <div class="so-filter-search">
+                                <span class="search-icon">🔍</span>
+                                <input type="text" placeholder="" oninput="filterDropdownItems(this.value)">
+                            </div>
+                            <div id="soFilterOptions">
+                                <div class="so-filter-item" onclick="applySOFilter('all')">All <span
+                                        class="star">☆</span></div>
+                                <div class="so-filter-item" onclick="applySOFilter('draft')">Draft <span
+                                        class="star">☆</span></div>
+                                <div class="so-filter-item" onclick="applySOFilter('confirmed')">Confirmed <span
+                                        class="star">☆</span></div>
+                                <div class="so-filter-item" onclick="applySOFilter('on hold')">On Hold <span
+                                        class="star">☆</span></div>
+                                <div class="so-filter-item" onclick="applySOFilter('closed')">Closed <span
+                                        class="star">☆</span></div>
+                                <div class="so-filter-item" onclick="applySOFilter('cancelled')">Cancelled <span
+                                        class="star">☆</span></div>
+                            </div>
+                        </div>
                     </div>
                     <div class="global-search-container">
                         <span class="global-search-icon">🔍</span>
@@ -2026,13 +2650,89 @@
                             placeholder="Search sales orders..." oninput="searchOrders()">
                     </div>
                     <div class="header-actions">
-                        <a href="#" class="view-stats-link">
-                            <span style="color: #16a34a;">●</span> View Order Stats
-                        </a>
                         <button class="btn-new" onclick="window.location.href='/new-sales-order.html'">
                             <span>+</span> New
                         </button>
-                        <button class="btn-more">⋯</button>
+                        <div style="position:relative;">
+                            <button class="btn-more" onclick="toggleHeaderKebab(event)">⋯</button>
+                            <div id="soHeaderKebab"
+                                style="display:none;position:absolute;top:100%;right:0;margin-top:6px;background:#fff;border-radius:8px;box-shadow:0 4px 24px rgba(0,0,0,0.15);min-width:260px;z-index:1000;overflow:visible;">
+                                <div id="soSortByWrap" style="position:relative;"
+                                    onmouseenter="document.getElementById('soSortSubmenu').style.display='block'"
+                                    onmouseleave="document.getElementById('soSortSubmenu').style.display='none'">
+                                    <div
+                                        style="display:flex;align-items:center;gap:10px;padding:12px 18px;cursor:pointer;background:#4285f4;color:#fff;font-size:14px;font-weight:500;">
+                                        <span style="font-size:16px;">⇅</span> Sort by <span
+                                            style="margin-left:auto;font-size:12px;">›</span>
+                                    </div>
+                                    <div id="soSortSubmenu"
+                                        style="display:none;position:absolute;top:0;right:calc(100% - 10px);padding-right:10px;z-index:1001;">
+                                        <div
+                                            style="background:#fff;border-radius:8px;box-shadow:0 4px 24px rgba(0,0,0,0.15);min-width:240px;overflow:hidden;">
+                                            <div class="so-sort-item" onclick="applySortBy('order_date')"
+                                                style="padding:12px 18px;cursor:pointer;font-size:14px;color:#333;"
+                                                onmouseover="this.style.background='#f5f5f5'"
+                                                onmouseout="if(!this.classList.contains('active'))this.style.background='#fff'">
+                                                Date</div>
+                                            <div class="so-sort-item" onclick="applySortBy('order_number')"
+                                                style="padding:12px 18px;cursor:pointer;font-size:14px;color:#333;"
+                                                onmouseover="this.style.background='#f5f5f5'"
+                                                onmouseout="if(!this.classList.contains('active'))this.style.background='#fff'">
+                                                Sales Order#</div>
+                                            <div class="so-sort-item" onclick="applySortBy('reference_number')"
+                                                style="padding:12px 18px;cursor:pointer;font-size:14px;color:#333;"
+                                                onmouseover="this.style.background='#f5f5f5'"
+                                                onmouseout="if(!this.classList.contains('active'))this.style.background='#fff'">
+                                                Reference#</div>
+                                            <div class="so-sort-item" onclick="applySortBy('customer_name')"
+                                                style="padding:12px 18px;cursor:pointer;font-size:14px;color:#333;"
+                                                onmouseover="this.style.background='#f5f5f5'"
+                                                onmouseout="if(!this.classList.contains('active'))this.style.background='#fff'">
+                                                Customer Name</div>
+                                            <div class="so-sort-item" onclick="applySortBy('total')"
+                                                style="padding:12px 18px;cursor:pointer;font-size:14px;color:#333;"
+                                                onmouseover="this.style.background='#f5f5f5'"
+                                                onmouseout="if(!this.classList.contains('active'))this.style.background='#fff'">
+                                                Amount</div>
+                                            <div class="so-sort-item active" onclick="applySortBy('created_at')"
+                                                style="padding:12px 18px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:8px;color:#4285f4;font-weight:600;"
+                                                onmouseover="this.style.background='#f5f5f5'"
+                                                onmouseout="this.style.background='#fff'">
+                                                Created Time <span style="margin-left:auto;color:#4285f4;">↓</span>
+                                            </div>
+                                            <div class="so-sort-item" onclick="applySortBy('updated_at')"
+                                                style="padding:12px 18px;cursor:pointer;font-size:14px;color:#333;"
+                                                onmouseover="this.style.background='#f5f5f5'"
+                                                onmouseout="if(!this.classList.contains('active'))this.style.background='#fff'">
+                                                Last Modified Time</div>
+                                            <div class="so-sort-item" onclick="applySortBy('expected_shipment_date')"
+                                                style="padding:12px 18px;cursor:pointer;font-size:14px;color:#333;"
+                                                onmouseover="this.style.background='#f5f5f5'"
+                                                onmouseout="if(!this.classList.contains('active'))this.style.background='#fff'">
+                                                Expected Shipment Date</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div onclick="importSalesOrders()"
+                                    style="display:flex;align-items:center;gap:10px;padding:12px 18px;cursor:pointer;font-size:14px;color:#333;"
+                                    onmouseover="this.style.background='#f5f5f5'"
+                                    onmouseout="this.style.background='#fff'">
+                                    <span style="font-size:16px;">📥</span> Import Sales Orders
+                                </div>
+                                <div onclick="exportSalesOrders()"
+                                    style="display:flex;align-items:center;gap:10px;padding:12px 18px;cursor:pointer;font-size:14px;color:#333;"
+                                    onmouseover="this.style.background='#f5f5f5'"
+                                    onmouseout="this.style.background='#fff'">
+                                    <span style="font-size:16px;">📤</span> Export Sales Orders
+                                </div>
+                                <div onclick="refreshSalesOrders()"
+                                    style="display:flex;align-items:center;gap:10px;padding:12px 18px;cursor:pointer;font-size:14px;color:#333;"
+                                    onmouseover="this.style.background='#f5f5f5'"
+                                    onmouseout="this.style.background='#fff'">
+                                    <span style="font-size:16px;">🔄</span> Refresh List
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -2049,6 +2749,27 @@
                     <table class="orders-table">
                         <thead>
                             <tr>
+                                <th style="width:40px;min-width:40px;text-align:center;padding:14px 8px;">
+                                    <div class="so-col-dropdown-wrap">
+                                        <span class="so-filter-icon" onclick="toggleColDropdown(event)">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                viewBox="0 0 16 16" class="icon fill-linkblue">
+                                                <path
+                                                    d="M1 2.5h14a.5.5 0 000-1H1a.5.5 0 000 1zm0 4h14a.5.5 0 000-1H1a.5.5 0 000 1zm0 4h14a.5.5 0 000-1H1a.5.5 0 000 1zm0 4h14a.5.5 0 000-1H1a.5.5 0 000 1z" />
+                                            </svg>
+                                        </span>
+                                        <div class="so-col-dropdown" id="soColDropdown">
+                                            <div class="so-col-dropdown-item" onclick="openSOCustomizeCols()">
+                                                <span class="dd-icon">⚙</span> Customize Columns
+                                            </div>
+                                            <div class="so-col-dropdown-item" id="soTextModeBtn"
+                                                onclick="toggleSOTextMode()">
+                                                <span class="dd-icon">✂</span> <span id="soTextModeLabel">Clip
+                                                    Text</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </th>
                                 <th><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)"></th>
                                 <th><span class="filter-icon">⇕</span> DATE</th>
                                 <th>SALES ORDER#</th>
@@ -2075,7 +2796,67 @@
                         <div class="so-left-actions">
                             <button class="so-left-btn add" onclick="window.location.href='/new-sales-order.html'"
                                 title="New Sales Order">+</button>
-                            <button class="so-left-btn more" title="More">⋯</button>
+                            <div style="position:relative;">
+                                <button class="so-left-btn more" title="More"
+                                    onclick="toggleMoreDropdown(event)">⋯</button>
+                                <div id="soMoreDropdown" onclick="event.stopPropagation()"
+                                    style="display:none;position:absolute;top:100%;right:0;background:#fff;border:1px solid #e5e7eb;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.12);min-width:200px;z-index:1000;padding:6px 0;margin-top:4px;">
+                                    <div style="position:relative;"
+                                        onmouseenter="document.getElementById('soMoreSortSubmenu').style.display='block'"
+                                        onmouseleave="document.getElementById('soMoreSortSubmenu').style.display='none'">
+                                        <button
+                                            style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 16px;border:none;background:none;font-size:13px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
+                                            onmouseover="this.style.background='#f5f5f5'"
+                                            onmouseout="this.style.background='none'">
+                                            <span style="color:#4285f4;font-size:14px;">⇅</span> Sort by <span
+                                                style="margin-left:auto;color:#999;font-size:10px;">›</span>
+                                        </button>
+                                        <div id="soMoreSortSubmenu"
+                                            style="display:none;position:absolute;left:100%;top:0;background:#fff;border:1px solid #e5e7eb;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);min-width:180px;padding:6px 0;z-index:1001;">
+                                            <button onclick="applySortBy('order_date');closeMoreDropdown()"
+                                                style="display:block;width:100%;padding:8px 16px;border:none;background:none;font-size:13px;color:#333;cursor:pointer;text-align:left;font-family:inherit;"
+                                                onmouseover="this.style.background='#f5f5f5'"
+                                                onmouseout="this.style.background='none'">Date</button>
+                                            <button onclick="applySortBy('order_number');closeMoreDropdown()"
+                                                style="display:block;width:100%;padding:8px 16px;border:none;background:none;font-size:13px;color:#333;cursor:pointer;text-align:left;font-family:inherit;"
+                                                onmouseover="this.style.background='#f5f5f5'"
+                                                onmouseout="this.style.background='none'">Sales Order#</button>
+                                            <button onclick="applySortBy('customer_name');closeMoreDropdown()"
+                                                style="display:block;width:100%;padding:8px 16px;border:none;background:none;font-size:13px;color:#333;cursor:pointer;text-align:left;font-family:inherit;"
+                                                onmouseover="this.style.background='#f5f5f5'"
+                                                onmouseout="this.style.background='none'">Customer Name</button>
+                                            <button onclick="applySortBy('total');closeMoreDropdown()"
+                                                style="display:block;width:100%;padding:8px 16px;border:none;background:none;font-size:13px;color:#333;cursor:pointer;text-align:left;font-family:inherit;"
+                                                onmouseover="this.style.background='#f5f5f5'"
+                                                onmouseout="this.style.background='none'">Amount</button>
+                                            <button onclick="applySortBy('created_at');closeMoreDropdown()"
+                                                style="display:block;width:100%;padding:8px 16px;border:none;background:none;font-size:13px;color:#333;cursor:pointer;text-align:left;font-family:inherit;"
+                                                onmouseover="this.style.background='#f5f5f5'"
+                                                onmouseout="this.style.background='none'">Created Time</button>
+                                        </div>
+                                    </div>
+                                    <hr style="border:none;border-top:1px solid #f0f0f0;margin:4px 0;">
+                                    <button onclick="importSalesOrders();closeMoreDropdown()"
+                                        style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 16px;border:none;background:none;font-size:13px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
+                                        onmouseover="this.style.background='#f5f5f5'"
+                                        onmouseout="this.style.background='none'">
+                                        <span style="color:#4285f4;font-size:14px;">⬇</span> Import
+                                    </button>
+                                    <button onclick="exportSalesOrders();closeMoreDropdown()"
+                                        style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 16px;border:none;background:none;font-size:13px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
+                                        onmouseover="this.style.background='#f5f5f5'"
+                                        onmouseout="this.style.background='none'">
+                                        <span style="color:#4285f4;font-size:14px;">⬆</span> Export Sales Orders
+                                    </button>
+                                    <hr style="border:none;border-top:1px solid #f0f0f0;margin:4px 0;">
+                                    <button onclick="loadOrders();closeMoreDropdown()"
+                                        style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 16px;border:none;background:none;font-size:13px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
+                                        onmouseover="this.style.background='#f5f5f5'"
+                                        onmouseout="this.style.background='none'">
+                                        <span style="color:#4285f4;font-size:14px;">↻</span> Refresh List
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="so-left-list" id="soLeftList"></div>
@@ -2092,6 +2873,260 @@
     <script>
         let allOrders = [];
         let selectedOrderId = null;
+        let currentSOFilter = 'all';
+        let soTextClipped = false;
+
+        function toggleColDropdown(e) {
+            e.stopPropagation();
+            const dd = document.getElementById('soColDropdown');
+            dd.classList.toggle('show');
+        }
+
+        function toggleSOTextMode() {
+            soTextClipped = !soTextClipped;
+            const table = document.querySelector('.orders-table');
+            const label = document.getElementById('soTextModeLabel');
+            if (soTextClipped) {
+                table.style.tableLayout = 'fixed';
+                table.querySelectorAll('td').forEach(td => {
+                    td.style.overflow = 'hidden';
+                    td.style.textOverflow = 'ellipsis';
+                    td.style.whiteSpace = 'nowrap';
+                    td.style.maxWidth = '150px';
+                });
+                label.textContent = 'Wrap Text';
+            } else {
+                table.style.tableLayout = '';
+                table.querySelectorAll('td').forEach(td => {
+                    td.style.overflow = '';
+                    td.style.textOverflow = '';
+                    td.style.whiteSpace = '';
+                    td.style.maxWidth = '';
+                });
+                label.textContent = 'Clip Text';
+            }
+            document.getElementById('soColDropdown').classList.remove('show');
+        }
+
+        document.addEventListener('click', function (e) {
+            const dd = document.getElementById('soColDropdown');
+            if (dd && !dd.parentElement.contains(e.target)) {
+                dd.classList.remove('show');
+            }
+        });
+
+        // ===== CUSTOMIZE COLUMNS =====
+        const soAllColumns = [
+            { key: 'date', label: 'Date', locked: true, visible: true },
+            { key: 'sales_order', label: 'Sales Order#', locked: true, visible: true },
+            { key: 'reference', label: 'Reference#', locked: false, visible: true },
+            { key: 'customer_name', label: 'Customer Name', locked: true, visible: true },
+            { key: 'order_status', label: 'Order Status', locked: true, visible: true },
+            { key: 'invoiced', label: 'Invoiced', locked: false, visible: true },
+            { key: 'payment', label: 'Payment', locked: false, visible: true },
+            { key: 'packed', label: 'Packed', locked: false, visible: true },
+            { key: 'shipped', label: 'Shipped', locked: false, visible: true },
+            { key: 'amount', label: 'Amount', locked: true, visible: false },
+            { key: 'delivery_method', label: 'Delivery Method', locked: false, visible: true },
+            { key: 'expected_shipment', label: 'Expected Shipment Date', locked: false, visible: false },
+            { key: 'company_name', label: 'Company Name', locked: false, visible: false },
+            { key: 'invoiced_amount', label: 'Invoiced Amount', locked: false, visible: false },
+            { key: 'sales_person', label: 'Sales person', locked: false, visible: false },
+        ];
+        let soCCState = [];
+
+        function loadSOColState() {
+            const saved = localStorage.getItem('so_columns');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    soAllColumns.forEach(col => {
+                        const s = parsed.find(c => c.key === col.key);
+                        if (s && !col.locked) col.visible = s.visible;
+                    });
+                } catch (e) { }
+            }
+        }
+        loadSOColState();
+
+        function openSOCustomizeCols() {
+            document.getElementById('soColDropdown').classList.remove('show');
+            soCCState = soAllColumns.map(c => ({ ...c }));
+            renderSOCCList();
+            document.getElementById('soCCOverlay').classList.add('active');
+        }
+
+        function closeSOCustomizeCols() {
+            document.getElementById('soCCOverlay').classList.remove('active');
+        }
+
+        function renderSOCCList(filter) {
+            const list = document.getElementById('soCCList');
+            const q = (filter || '').toLowerCase();
+            let html = '';
+            soCCState.forEach((col, i) => {
+                if (q && !col.label.toLowerCase().includes(q)) return;
+                const checkedClass = col.visible ? 'checked' : '';
+                const lockedClass = col.locked ? 'locked' : '';
+                if (col.locked) {
+                    html += `<div class="so-cc-item ${lockedClass} ${checkedClass}">
+                        <span class="so-cc-drag">\u2807</span>
+                        <span class="so-cc-lock">\ud83d\udd12</span>
+                        <span class="so-cc-label">${col.label}</span>
+                    </div>`;
+                } else {
+                    html += `<div class="so-cc-item ${checkedClass}" onclick="toggleSOCCCol(${i})">
+                        <span class="so-cc-drag">\u2807</span>
+                        <input type="checkbox" class="so-cc-checkbox" ${col.visible ? 'checked' : ''} onclick="event.stopPropagation(); toggleSOCCCol(${i})">
+                        <span class="so-cc-label">${col.label}</span>
+                    </div>`;
+                }
+            });
+            list.innerHTML = html;
+            updateSOCCCount();
+        }
+
+        function toggleSOCCCol(index) {
+            if (soCCState[index].locked) return;
+            soCCState[index].visible = !soCCState[index].visible;
+            renderSOCCList(document.querySelector('.so-cc-search input').value);
+        }
+
+        function updateSOCCCount() {
+            const sel = soCCState.filter(c => c.visible).length;
+            document.getElementById('soCCCount').textContent = `${sel} of ${soCCState.length} Selected`;
+        }
+
+        function filterSOCCItems(query) {
+            renderSOCCList(query);
+        }
+
+        function saveSOCols() {
+            soAllColumns.forEach((col, i) => { col.visible = soCCState[i].visible; });
+            localStorage.setItem('so_columns', JSON.stringify(soAllColumns.map(c => ({ key: c.key, visible: c.visible }))));
+            closeSOCustomizeCols();
+            // Re-render table with updated columns
+            renderFilteredOrders();
+        }
+
+        function toggleSOFilterDropdown() {
+            const dd = document.getElementById('soFilterDropdown');
+            const arrow = document.getElementById('soFilterArrow');
+            dd.classList.toggle('show');
+            arrow.classList.toggle('open');
+        }
+
+        function filterDropdownItems(query) {
+            const items = document.querySelectorAll('#soFilterOptions .so-filter-item');
+            const q = query.toLowerCase();
+            items.forEach(item => {
+                item.style.display = item.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+        }
+
+        function applySOFilter(status) {
+            currentSOFilter = status;
+            const labels = { all: 'All Sales Orders', draft: 'Draft', confirmed: 'Confirmed', 'on hold': 'On Hold', closed: 'Closed', cancelled: 'Cancelled' };
+            document.getElementById('soFilterLabel').textContent = labels[status] || 'All Sales Orders';
+            document.getElementById('soFilterDropdown').classList.remove('show');
+            document.getElementById('soFilterArrow').classList.remove('open');
+            renderFilteredOrders();
+        }
+
+        function getColValue(order, key, dots, statusCls) {
+            switch (key) {
+                case 'date': return formatDate(order.order_date);
+                case 'sales_order': return `<span class="order-number-link">${order.order_number}</span>`;
+                case 'reference': return order.reference_number || '';
+                case 'customer_name': return order.customer_name || '';
+                case 'order_status': return `<span class="${statusCls}">${(order.status || 'DRAFT').toUpperCase()}</span>`;
+                case 'invoiced': return dots.invoiced ? `<span class="status-dot ${dots.invoiced}"></span>` : '';
+                case 'payment': return dots.payment ? `<span class="status-dot ${dots.payment}"></span>` : '';
+                case 'packed': return dots.packed ? `<span class="status-dot ${dots.packed}"></span>` : '';
+                case 'shipped': return dots.shipped ? `<span class="status-dot ${dots.shipped}"></span>` : '';
+                case 'amount': return formatCurrency(order.total);
+                case 'delivery_method': return order.delivery_method || '';
+                case 'expected_shipment': return order.expected_shipment_date ? formatDate(order.expected_shipment_date) : '';
+                case 'company_name': return order.company_name || '';
+                case 'invoiced_amount': return Number(order.invoiced_amount) ? formatCurrency(order.invoiced_amount) : '';
+                case 'sales_person': return order.salesperson_name || '';
+                case 'status': return (order.status || 'Draft');
+                default: return '';
+            }
+        }
+        function getColAlign(key) {
+            return ['invoiced', 'payment', 'packed', 'shipped', 'amount', 'invoiced_amount'].includes(key) ? 'text-align:center;' : '';
+        }
+
+        function renderFilteredOrders() {
+            let filtered = allOrders;
+            if (currentSOFilter !== 'all') {
+                filtered = allOrders.filter(o => (o.status || '').toLowerCase() === currentSOFilter);
+            }
+            if (filtered.length === 0) {
+                document.getElementById('emptyState').style.display = 'flex';
+                document.getElementById('ordersContainer').style.display = 'none';
+                document.getElementById('soPaginationContainer').innerHTML = '';
+                return;
+            }
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('ordersContainer').style.display = 'block';
+
+            // Build dynamic header
+            const visibleCols = soAllColumns.filter(c => c.visible);
+            const thead = document.querySelector('.orders-table thead tr');
+            let headerHtml = `<th style="width:40px;min-width:40px;text-align:center;padding:14px 8px;">
+                <div class="so-col-dropdown-wrap">
+                    <span class="so-filter-icon" onclick="toggleColDropdown(event)">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" class="icon fill-linkblue">
+                            <path d="M1 2.5h14a.5.5 0 000-1H1a.5.5 0 000 1zm0 4h14a.5.5 0 000-1H1a.5.5 0 000 1zm0 4h14a.5.5 0 000-1H1a.5.5 0 000 1zm0 4h14a.5.5 0 000-1H1a.5.5 0 000 1z"/>
+                        </svg>
+                    </span>
+                    <div class="so-col-dropdown" id="soColDropdown">
+                        <div class="so-col-dropdown-item" onclick="openSOCustomizeCols()">
+                            <span class="dd-icon">⚙</span> Customize Columns
+                        </div>
+                        <div class="so-col-dropdown-item" id="soTextModeBtn" onclick="toggleSOTextMode()">
+                            <span class="dd-icon">✂</span> <span id="soTextModeLabel">${soTextClipped ? 'Wrap Text' : 'Clip Text'}</span>
+                        </div>
+                    </div>
+                </div>
+            </th>`;
+            headerHtml += `<th><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)"></th>`;
+            visibleCols.forEach(col => {
+                const align = getColAlign(col.key);
+                const sortIcon = col.key === 'date' ? '<span class="filter-icon">⇕</span> ' : '';
+                headerHtml += `<th style="${align}">${sortIcon}${col.label.toUpperCase()}</th>`;
+            });
+            thead.innerHTML = headerHtml;
+
+            function renderPage(pageData) {
+                document.getElementById('ordersBody').innerHTML = pageData.map(order => {
+                    const dots = getStatusDots(order);
+                    const statusCls = 'status-' + getStatusClass(order.status);
+                    let cells = `<td></td><td><input type="checkbox" class="order-checkbox" value="${order.id}" onclick="event.stopPropagation()"></td>`;
+                    visibleCols.forEach(col => {
+                        const align = getColAlign(col.key);
+                        cells += `<td style="${align}">${getColValue(order, col.key, dots, statusCls)}</td>`;
+                    });
+                    return `<tr onclick="openOrderDetail(${order.id})" style="cursor:pointer;">${cells}</tr>`;
+                }).join('');
+            }
+            window.soPager = Pagination.create({
+                data: filtered, perPage: 14, containerId: 'soPaginationContainer',
+                onPageChange: function (pageData) { renderPage(pageData); }
+            });
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (e) {
+            const dd = document.getElementById('soFilterDropdown');
+            const wrapper = document.querySelector('.page-title-wrapper');
+            if (dd && wrapper && !wrapper.contains(e.target)) {
+                dd.classList.remove('show');
+                document.getElementById('soFilterArrow').classList.remove('open');
+            }
+        });
 
         function formatDate(dateStr) {
             if (!dateStr) return '';
@@ -2104,6 +3139,8 @@
             const s = (status || '').toUpperCase();
             if (s === 'DRAFT') return 'draft';
             if (s === 'CLOSED') return 'closed';
+            if (s === 'ON HOLD') return 'on-hold';
+            if (s === 'CANCELLED') return 'cancelled';
             return 'confirmed';
         }
 
@@ -2128,17 +3165,589 @@
 
         function toggleSelectAll(checkbox) {
             document.querySelectorAll('.order-checkbox').forEach(cb => cb.checked = checkbox.checked);
+            updateBulkBar();
+        }
+
+        function updateBulkBar() {
+            const checked = document.querySelectorAll('.order-checkbox:checked');
+            const bar = document.getElementById('soBulkBar');
+            const header = document.querySelector('.page-header');
+            if (checked.length > 0) {
+                bar.classList.add('show');
+                if (header) header.style.display = 'none';
+                document.getElementById('soBulkCount').textContent = checked.length + ' Selected';
+            } else {
+                bar.classList.remove('show');
+                if (header) header.style.display = '';
+            }
+        }
+
+        // Event delegation for dynamically created checkboxes
+        document.addEventListener('change', function (e) {
+            if (e.target.classList.contains('order-checkbox')) updateBulkBar();
+        });
+
+        function clearBulkSelection() {
+            document.querySelectorAll('.order-checkbox').forEach(cb => cb.checked = false);
+            const selectAll = document.getElementById('selectAll');
+            if (selectAll) selectAll.checked = false;
+            document.getElementById('soBulkBar').classList.remove('show');
+            document.getElementById('soBulkMoreMenu').classList.remove('show');
+            const header = document.querySelector('.page-header');
+            if (header) header.style.display = '';
+        }
+
+        function getSelectedOrderIds() {
+            return Array.from(document.querySelectorAll('.order-checkbox:checked')).map(cb => parseInt(cb.value));
+        }
+
+        // Header kebab menu
+        function toggleHeaderKebab(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('soHeaderKebab');
+            if (menu) menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+        }
+        document.addEventListener('click', function (e) {
+            const menu = document.getElementById('soHeaderKebab');
+            if (menu && !menu.parentElement.contains(e.target)) menu.style.display = 'none';
+        });
+
+        let currentSortField = 'created_at';
+        let currentSortDir = 'desc';
+
+        function applySortBy(field) {
+            if (currentSortField === field) {
+                currentSortDir = currentSortDir === 'desc' ? 'asc' : 'desc';
+            } else {
+                currentSortField = field;
+                currentSortDir = 'desc';
+            }
+
+            const labels = {
+                order_date: 'Date', order_number: 'Sales Order#', reference_number: 'Reference#',
+                customer_name: 'Customer Name', total: 'Amount', created_at: 'Created Time',
+                updated_at: 'Last Modified Time', expected_shipment_date: 'Expected Shipment Date'
+            };
+
+            // Sort allOrders
+            allOrders.sort((a, b) => {
+                let valA = a[field] || '';
+                let valB = b[field] || '';
+                if (field === 'total') {
+                    valA = parseFloat(valA) || 0;
+                    valB = parseFloat(valB) || 0;
+                } else {
+                    valA = String(valA).toLowerCase();
+                    valB = String(valB).toLowerCase();
+                }
+                if (valA < valB) return currentSortDir === 'asc' ? -1 : 1;
+                if (valA > valB) return currentSortDir === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            // Update active highlight in submenu
+            document.querySelectorAll('.so-sort-item').forEach(el => {
+                el.classList.remove('active');
+                el.style.background = '#fff';
+                el.style.color = '#333';
+                el.style.fontWeight = '';
+                el.innerHTML = el.textContent.replace(/ ↓| ↑/g, '').trim();
+            });
+            document.querySelectorAll('.so-sort-item').forEach(el => {
+                const text = el.textContent.trim();
+                if (text === labels[field]) {
+                    el.classList.add('active');
+                    el.style.color = '#4285f4';
+                    el.style.fontWeight = '600';
+                    el.style.display = 'flex';
+                    el.style.alignItems = 'center';
+                    el.style.gap = '8px';
+                    el.innerHTML = text + ' <span style="margin-left:auto;color:#4285f4;">' + (currentSortDir === 'desc' ? '↓' : '↑') + '</span>';
+                }
+            });
+
+            // Re-render the appropriate view
+            const detailView = document.getElementById('detailView');
+            if (detailView && detailView.classList.contains('active')) {
+                // In detail/split view — re-render the left panel list
+                refreshLeftList();
+            } else {
+                // In main table view
+                try { renderFilteredOrders(); } catch (e) { console.warn('renderFilteredOrders error:', e); }
+            }
+
+            const textFields = ['customer_name'];
+            const numFields = ['total'];
+            const seqFields = ['order_number', 'reference_number'];
+            let dirLabel;
+            if (textFields.includes(field)) {
+                dirLabel = currentSortDir === 'asc' ? 'A → Z' : 'Z → A';
+            } else if (numFields.includes(field)) {
+                dirLabel = currentSortDir === 'desc' ? 'Highest → Lowest' : 'Lowest → Highest';
+            } else if (seqFields.includes(field)) {
+                dirLabel = currentSortDir === 'asc' ? 'Ascending' : 'Descending';
+            } else {
+                dirLabel = currentSortDir === 'desc' ? 'Newest → Oldest' : 'Oldest → Newest';
+            }
+            showToast('Sorted by ' + labels[field] + ' (' + dirLabel + ')', 'info');
+            var _hk = document.getElementById('soHeaderKebab'); if (_hk) _hk.style.display = 'none';
+            var _ss = document.getElementById('soSortSubmenu'); if (_ss) _ss.style.display = 'none';
+            var _ms = document.getElementById('soMoreSortSubmenu'); if (_ms) _ms.style.display = 'none';
+        }
+
+        // Re-render the left panel list in detail view after sorting
+        function refreshLeftList() {
+            const list = document.getElementById('soLeftList');
+            if (!list) return;
+            list.innerHTML = allOrders.map(order => {
+                const statusCls = getStatusClass(order.status);
+                return `<div class="so-left-item ${order.id === selectedOrderId ? 'active' : ''}" data-id="${order.id}" onclick="selectOrder(${order.id})">
+                    <div class="so-left-item-top">
+                        <span class="so-left-item-name">${order.customer_name || 'No Customer'}</span>
+                        <span class="so-left-item-amount">${formatCurrency(order.total)}</span>
+                    </div>
+                    <div class="so-left-item-bottom">
+                        <span>${order.order_number}</span>
+                        <span>·</span>
+                        <span>${formatDate(order.order_date)}</span>
+                    </div>
+                    <div class="so-left-item-status ${statusCls}">${(order.status || 'DRAFT').toUpperCase()}</div>
+                </div>`;
+            }).join('');
+        }
+
+        // Import Sales Orders from CSV
+        function importSalesOrders() {
+            document.getElementById('soHeaderKebab').style.display = 'none';
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.csv';
+            input.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const text = await file.text();
+                const lines = text.split('\n').filter(l => l.trim());
+                if (lines.length < 2) {
+                    showToast('CSV file is empty or has no data rows.', 'error');
+                    return;
+                }
+                const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/['"]/g, ''));
+                let imported = 0, failed = 0;
+                for (let i = 1; i < lines.length; i++) {
+                    const vals = lines[i].split(',').map(v => v.trim().replace(/^["']|["']$/g, ''));
+                    const row = {};
+                    headers.forEach((h, idx) => { row[h] = vals[idx] || ''; });
+                    try {
+                        const body = {
+                            customer_name: row['customer name'] || row['customer_name'] || '',
+                            order_date: row['date'] || row['order_date'] || (function(){const _d=new Date();return _d.getFullYear()+'-'+String(_d.getMonth()+1).padStart(2,'0')+'-'+String(_d.getDate()).padStart(2,'0')})(),
+                            reference_number: row['reference'] || row['reference_number'] || row['reference#'] || '',
+                            delivery_method: row['delivery method'] || row['delivery_method'] || '',
+                            expected_shipment_date: row['expected shipment date'] || row['expected_shipment_date'] || '',
+                            salesperson_name: row['sales person'] || row['salesperson_name'] || row['salesperson'] || '',
+                            notes: row['notes'] || '',
+                            items: []
+                        };
+                        const res = await fetch('/api/sales-orders', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(body)
+                        });
+                        if (res.ok) imported++;
+                        else failed++;
+                    } catch (err) { failed++; }
+                }
+                await loadOrders();
+                let msg = `Imported ${imported} sales order(s) successfully.`;
+                if (failed > 0) msg += ` ${failed} failed.`;
+                showToast(msg, failed > 0 ? 'error' : 'success');
+            };
+            input.click();
+        }
+
+        // Export Sales Orders to CSV
+        function exportSalesOrders() {
+            document.getElementById('soHeaderKebab').style.display = 'none';
+            const orders = allOrders;
+            if (!orders || orders.length === 0) {
+                showToast('No sales orders to export.', 'error');
+                return;
+            }
+            const headers = ['Date', 'Sales Order#', 'Reference#', 'Customer Name', 'Status', 'Amount', 'Delivery Method', 'Expected Shipment Date', 'Sales Person'];
+            const rows = orders.map(o => [
+                o.order_date ? new Date(o.order_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '',
+                o.order_number || '',
+                o.reference_number || '',
+                o.customer_name || '',
+                (o.status || 'DRAFT').toUpperCase(),
+                o.total || '0',
+                o.delivery_method || '',
+                o.expected_shipment_date ? new Date(o.expected_shipment_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '',
+                o.salesperson_name || ''
+            ]);
+            let csv = headers.join(',') + '\n';
+            rows.forEach(r => {
+                csv += r.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',') + '\n';
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'sales_orders_' + new Date().toISOString().slice(0, 10) + '.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast(`Exported ${orders.length} sales order(s) to CSV.`, 'success');
+        }
+
+        // Refresh Sales Orders List
+        async function refreshSalesOrders() {
+            document.getElementById('soHeaderKebab').style.display = 'none';
+            await loadOrders();
+            showToast('Sales orders list refreshed.', 'info');
+        }
+
+        function toggleBulkMore(e) {
+            e.stopPropagation();
+            document.getElementById('soBulkMoreMenu').classList.toggle('show');
+        }
+
+        document.addEventListener('click', function (e) {
+            const menu = document.getElementById('soBulkMoreMenu');
+            if (menu && !menu.parentElement.contains(e.target)) menu.classList.remove('show');
+        });
+
+        async function bulkMarkConfirmed() {
+            const ids = getSelectedOrderIds();
+            if (ids.length === 0) return;
+            if (!confirm('Mark ' + ids.length + ' order(s) as Confirmed?')) return;
+            try {
+                for (const id of ids) {
+                    await fetch('/api/sales-orders/' + id + '/status', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'CONFIRMED' }) });
+                }
+                clearBulkSelection();
+                loadOrders();
+            } catch (e) { console.error(e); }
+        }
+
+
+
+        async function bulkDeleteOrders() {
+            const ids = getSelectedOrderIds();
+            if (ids.length === 0) return;
+            if (!confirm('Delete ' + ids.length + ' sales order(s)? This cannot be undone.')) return;
+            try {
+                for (const id of ids) {
+                    await fetch('/api/sales-orders/' + id, { method: 'DELETE' });
+                }
+                clearBulkSelection();
+                loadOrders();
+            } catch (e) { console.error(e); }
+        }
+
+        async function bulkCancelOrders() {
+            document.getElementById('soBulkMoreMenu').classList.remove('show');
+            const ids = getSelectedOrderIds();
+            if (ids.length === 0) return;
+
+            // Fetch each order and validate
+            const validOrders = [];
+            let skippedCount = 0;
+            for (const id of ids) {
+                try {
+                    const res = await fetch('/api/sales-orders/' + id);
+                    if (!res.ok) { skippedCount++; continue; }
+                    const order = await res.json();
+                    const status = (order.status || '').toUpperCase();
+
+                    // Only allow CONFIRMED or ON HOLD with no shipments
+                    if ((status === 'CONFIRMED' || status === 'ON HOLD')) {
+                        // Check for shipments
+                        let hasShipment = false;
+                        try {
+                            const shipRes = await fetch('/api/shipments');
+                            if (shipRes.ok) {
+                                const ships = await shipRes.json();
+                                hasShipment = ships.some(s => parseInt(s.sales_order_id) === id);
+                            }
+                        } catch (e) { /* ignore */ }
+
+                        if (!hasShipment) {
+                            validOrders.push(order);
+                        } else {
+                            skippedCount++;
+                        }
+                    } else {
+                        skippedCount++;
+                    }
+                } catch (e) { skippedCount++; }
+            }
+
+            // Show toast for skipped orders
+            if (skippedCount > 0) {
+                showToast('Some orders were skipped because they are already shipped or closed.');
+            }
+
+            if (validOrders.length === 0) {
+                if (skippedCount > 0) return; // toast already shown
+                alert('No eligible orders to cancel.');
+                return;
+            }
+
+            // Confirmation
+            if (!confirm('Are you sure you want to cancel the ' + validOrders.length + ' selected Sales Orders? This will permanently stop fulfillment and release all committed stock.')) return;
+
+            // Execute cancellation
+            try {
+                for (const order of validOrders) {
+                    // Update status to CANCELLED
+                    await fetch('/api/sales-orders/' + order.id + '/status', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status: 'CANCELLED' })
+                    });
+
+                    // Uncommit stock
+                    const items = order.items || [];
+                    for (const item of items) {
+                        if (item.item_id) {
+                            try {
+                                const itemRes = await fetch('/api/items/' + item.item_id);
+                                if (itemRes.ok) {
+                                    const dbItem = await itemRes.json();
+                                    const currentStock = parseFloat(dbItem.stock_quantity) || 0;
+                                    const orderedQty = parseFloat(item.quantity) || 0;
+                                    await fetch('/api/items/' + item.item_id, {
+                                        method: 'PUT',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ stock_quantity: currentStock + orderedQty })
+                                    });
+                                }
+                            } catch (e) { console.error('Error uncommitting stock for item:', e); }
+                        }
+                    }
+                }
+
+                clearBulkSelection();
+                await loadOrders();
+                showToast(validOrders.length + ' order(s) cancelled successfully.');
+            } catch (e) {
+                console.error('Error in bulk cancel:', e);
+                alert('An error occurred during bulk cancellation.');
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            if (!container) { console.log(`[${type.toUpperCase()}] ${message}`); return; }
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+            toast.innerHTML = `
+                <span class="toast-icon">${icon}</span>
+                <span class="toast-message">${message}</span>
+                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateY(-20px)';
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, 3000);
+        }
+
+        async function bulkReopenOrders() {
+            document.getElementById('soBulkMoreMenu').classList.remove('show');
+            const ids = getSelectedOrderIds();
+            if (ids.length === 0) return;
+
+            // Fetch and validate — only CANCELLED orders
+            const validOrders = [];
+            let skippedCount = 0;
+            for (const id of ids) {
+                try {
+                    const res = await fetch('/api/sales-orders/' + id);
+                    if (!res.ok) { skippedCount++; continue; }
+                    const order = await res.json();
+                    if ((order.status || '').toUpperCase() === 'CANCELLED') {
+                        validOrders.push(order);
+                    } else {
+                        skippedCount++;
+                    }
+                } catch (e) { skippedCount++; }
+            }
+
+            if (skippedCount > 0) {
+                showToast('Some orders were skipped because they are not in Cancelled status.');
+            }
+            if (validOrders.length === 0) {
+                if (skippedCount === 0) alert('No cancelled orders selected.');
+                return;
+            }
+
+            if (!confirm('Reopening ' + validOrders.length + ' orders. This will re-commit inventory. Continue?')) return;
+
+            let confirmedCount = 0;
+            let onHoldCount = 0;
+
+            try {
+                // Process sequentially for accurate stock tracking
+                for (const order of validOrders) {
+                    const items = order.items || [];
+                    let hasShortage = false;
+
+                    // Re-commit stock and check availability
+                    for (const item of items) {
+                        if (!item.item_id) continue;
+                        try {
+                            const itemRes = await fetch('/api/items/' + item.item_id);
+                            if (!itemRes.ok) continue;
+                            const dbItem = await itemRes.json();
+                            const currentStock = parseFloat(dbItem.stock_quantity) || 0;
+                            const orderedQty = parseFloat(item.quantity) || 0;
+
+                            // Re-commit: decrease available stock
+                            const newStock = currentStock - orderedQty;
+                            await fetch('/api/items/' + item.item_id, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ stock_quantity: newStock })
+                            });
+
+                            if (newStock < 0) hasShortage = true;
+                        } catch (e) { console.error('Error re-committing stock:', e); }
+                    }
+
+                    // Set status based on stock availability
+                    const newStatus = hasShortage ? 'ON HOLD' : 'CONFIRMED';
+                    await fetch('/api/sales-orders/' + order.id + '/status', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status: newStatus })
+                    });
+
+                    if (hasShortage) onHoldCount++;
+                    else confirmedCount++;
+                }
+
+                clearBulkSelection();
+                await loadOrders();
+
+                let msg = 'Successfully reopened ' + validOrders.length + ' order(s).';
+                if (onHoldCount > 0) msg += ' ' + onHoldCount + ' moved to On Hold due to stock shortages.';
+                showToast(msg);
+            } catch (e) {
+                console.error('Error in bulk reopen:', e);
+                alert('An error occurred during bulk reopen.');
+            }
+        }
+
+        async function buildPrintHTML(ids) {
+            let pages = '';
+            for (const id of ids) {
+                const res = await fetch('/api/sales-orders/' + id);
+                const order = await res.json();
+                const items = order.items || [];
+                const itemRows = items.map((it, i) => `
+                    <tr>
+                        <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">${i + 1}</td>
+                        <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">${it.item_name || ''}</td>
+                        <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;text-align:center;">${it.quantity || 0}</td>
+                        <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;text-align:right;">${Number(it.rate || 0).toFixed(2)}</td>
+                        <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;text-align:right;">${Number(it.amount || 0).toFixed(2)}</td>
+                    </tr>
+                `).join('');
+                pages += `
+                <div style="page-break-after:always;padding:40px;font-family:Arial,sans-serif;">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:30px;">
+                        <div>
+                            <h1 style="margin:0;font-size:24px;color:#333;">SALES ORDER</h1>
+                            <p style="margin:4px 0;color:#666;font-size:14px;">${order.order_number || ''}</p>
+                        </div>
+                        <div style="text-align:right;">
+                            <p style="margin:2px 0;font-size:13px;color:#666;">Date: ${formatDate(order.order_date)}</p>
+                            <p style="margin:2px 0;font-size:13px;color:#666;">Status: <strong>${(order.status || 'DRAFT').toUpperCase()}</strong></p>
+                            ${order.reference_number ? '<p style="margin:2px 0;font-size:13px;color:#666;">Ref: ' + order.reference_number + '</p>' : ''}
+                        </div>
+                    </div>
+                    <div style="margin-bottom:24px;padding:16px;background:#f8fafc;border-radius:6px;">
+                        <p style="margin:0 0 4px;font-size:12px;color:#999;text-transform:uppercase;">Bill To</p>
+                        <p style="margin:0;font-size:15px;font-weight:600;color:#333;">${order.customer_name || ''}</p>
+                        ${order.delivery_method ? '<p style="margin:4px 0 0;font-size:13px;color:#666;">Delivery: ' + order.delivery_method + '</p>' : ''}
+                        ${order.salesperson_name ? '<p style="margin:4px 0 0;font-size:13px;color:#666;">Salesperson: ' + order.salesperson_name + '</p>' : ''}
+                    </div>
+                    <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+                        <thead>
+                            <tr style="background:#f1f5f9;">
+                                <th style="padding:10px 12px;text-align:left;font-size:12px;color:#666;border-bottom:2px solid #e2e8f0;">#</th>
+                                <th style="padding:10px 12px;text-align:left;font-size:12px;color:#666;border-bottom:2px solid #e2e8f0;">ITEM</th>
+                                <th style="padding:10px 12px;text-align:center;font-size:12px;color:#666;border-bottom:2px solid #e2e8f0;">QTY</th>
+                                <th style="padding:10px 12px;text-align:right;font-size:12px;color:#666;border-bottom:2px solid #e2e8f0;">RATE</th>
+                                <th style="padding:10px 12px;text-align:right;font-size:12px;color:#666;border-bottom:2px solid #e2e8f0;">AMOUNT</th>
+                            </tr>
+                        </thead>
+                        <tbody>${itemRows}</tbody>
+                    </table>
+                    <div style="display:flex;justify-content:flex-end;">
+                        <div style="width:250px;">
+                            <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;color:#666;"><span>Sub Total</span><span>PHP ${Number(order.sub_total || 0).toFixed(2)}</span></div>
+                            ${Number(order.discount || 0) > 0 ? '<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;color:#666;"><span>Discount</span><span>-PHP ' + Number(order.discount).toFixed(2) + '</span></div>' : ''}
+                            ${Number(order.shipping_charges || 0) > 0 ? '<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;color:#666;"><span>Shipping</span><span>PHP ' + Number(order.shipping_charges).toFixed(2) + '</span></div>' : ''}
+                            <div style="display:flex;justify-content:space-between;padding:10px 0;font-size:16px;font-weight:700;color:#333;border-top:2px solid #333;"><span>Total</span><span>PHP ${Number(order.total || 0).toFixed(2)}</span></div>
+                        </div>
+                    </div>
+                    ${order.notes ? '<div style="margin-top:20px;padding:12px;background:#fffbeb;border-radius:6px;font-size:13px;color:#666;"><strong>Notes:</strong> ' + order.notes + '</div>' : ''}
+                </div>`;
+            }
+            return `<!DOCTYPE html><html><head><title>Sales Orders</title></head><body style="margin:0;">${pages}</body></html>`;
+        }
+
+        async function bulkPrintOrders() {
+            const ids = getSelectedOrderIds();
+            if (ids.length === 0) return;
+            const html = await buildPrintHTML(ids);
+            const w = window.open('', '_blank');
+            w.document.write(html);
+            w.document.close();
+            setTimeout(function () { w.print(); }, 500);
+        }
+
+        async function bulkExportPDF() {
+            const ids = getSelectedOrderIds();
+            if (ids.length === 0) return;
+            const html = await buildPrintHTML(ids);
+            const w = window.open('', '_blank');
+            w.document.write(html);
+            w.document.close();
+            setTimeout(function () { w.print(); }, 500);
         }
 
         // ===== LOAD TABLE LIST =====
         function searchOrders() {
-            const query = (document.getElementById('soSearchInput').value || '').toLowerCase();
-            if (!query) { loadOrders(); return; }
-            const filtered = allOrders.filter(o => {
+            const query = (document.getElementById('soSearchInput').value || '').toLowerCase().trim();
+            if (!query) {
+                renderFilteredOrders();
+                return;
+            }
+            let base = allOrders;
+            if (currentSOFilter !== 'all') {
+                base = allOrders.filter(o => (o.status || '').toLowerCase() === currentSOFilter);
+            }
+            const filtered = base.filter(o => {
                 return (o.order_number || '').toLowerCase().includes(query) ||
                     (o.customer_name || '').toLowerCase().includes(query) ||
                     (o.reference_number || '').toLowerCase().includes(query) ||
-                    (o.status || '').toLowerCase().includes(query);
+                    (o.status || '').toLowerCase().includes(query) ||
+                    (o.delivery_method || '').toLowerCase().includes(query) ||
+                    (o.salesperson_name || '').toLowerCase().includes(query) ||
+                    (o.company_name || '').toLowerCase().includes(query) ||
+                    (o.notes || '').toLowerCase().includes(query) ||
+                    (o.payment_terms || '').toLowerCase().includes(query) ||
+                    formatDate(o.order_date).toLowerCase().includes(query) ||
+                    formatDate(o.expected_shipment_date).toLowerCase().includes(query) ||
+                    String(o.total || '').includes(query) ||
+                    String(o.invoiced_amount || '').includes(query);
             });
             if (filtered.length === 0) {
                 document.getElementById('emptyState').style.display = 'flex';
@@ -2148,22 +3757,45 @@
             }
             document.getElementById('emptyState').style.display = 'none';
             document.getElementById('ordersContainer').style.display = 'block';
+
+            const visibleCols = soAllColumns.filter(c => c.visible);
+            // Rebuild header
+            const thead = document.querySelector('.orders-table thead tr');
+            let headerHtml = `<th style="width:40px;min-width:40px;text-align:center;padding:14px 8px;">
+                <div class="so-col-dropdown-wrap">
+                    <span class="so-filter-icon" onclick="toggleColDropdown(event)">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" class="icon fill-linkblue">
+                            <path d="M1 2.5h14a.5.5 0 000-1H1a.5.5 0 000 1zm0 4h14a.5.5 0 000-1H1a.5.5 0 000 1zm0 4h14a.5.5 0 000-1H1a.5.5 0 000 1zm0 4h14a.5.5 0 000-1H1a.5.5 0 000 1z"/>
+                        </svg>
+                    </span>
+                    <div class="so-col-dropdown" id="soColDropdown">
+                        <div class="so-col-dropdown-item" onclick="openSOCustomizeCols()">
+                            <span class="dd-icon">\u2699</span> Customize Columns
+                        </div>
+                        <div class="so-col-dropdown-item" id="soTextModeBtn" onclick="toggleSOTextMode()">
+                            <span class="dd-icon">\u2702</span> <span id="soTextModeLabel">${soTextClipped ? 'Wrap Text' : 'Clip Text'}</span>
+                        </div>
+                    </div>
+                </div>
+            </th>`;
+            headerHtml += `<th><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)"></th>`;
+            visibleCols.forEach(col => {
+                const align = getColAlign(col.key);
+                const sortIcon = col.key === 'date' ? '<span class="filter-icon">\u21d5</span> ' : '';
+                headerHtml += `<th style="${align}">${sortIcon}${col.label.toUpperCase()}</th>`;
+            });
+            thead.innerHTML = headerHtml;
+
             function renderPage(pageData) {
                 document.getElementById('ordersBody').innerHTML = pageData.map(order => {
                     const dots = getStatusDots(order);
                     const statusCls = 'status-' + getStatusClass(order.status);
-                    return `<tr onclick="openOrderDetail(${order.id})" style="cursor:pointer;">
-                        <td><input type="checkbox" class="order-checkbox" value="${order.id}" onclick="event.stopPropagation()"></td>
-                        <td>${formatDate(order.order_date)}</td>
-                        <td><span class="order-number-link">${order.order_number}</span></td>
-                        <td>${order.reference_number || ''}</td>
-                        <td>${order.customer_name || ''}</td>
-                        <td><span class="${statusCls}">${(order.status || 'DRAFT').toUpperCase()}</span></td>
-                        <td style="text-align: center;">${dots.invoiced ? `<span class="status-dot ${dots.invoiced}"></span>` : ''}</td>
-                        <td style="text-align: center;">${dots.payment ? `<span class="status-dot ${dots.payment}"></span>` : ''}</td>
-                        <td style="text-align: center;">${dots.packed ? `<span class="status-dot ${dots.packed}"></span>` : ''}</td>
-                        <td style="text-align: center;">${dots.shipped ? `<span class="status-dot ${dots.shipped}"></span>` : ''}</td>
-                    </tr>`;
+                    let cells = `<td></td><td><input type="checkbox" class="order-checkbox" value="${order.id}" onclick="event.stopPropagation()"></td>`;
+                    visibleCols.forEach(col => {
+                        const align = getColAlign(col.key);
+                        cells += `<td style="${align}">${getColValue(order, col.key, dots, statusCls)}</td>`;
+                    });
+                    return `<tr onclick="openOrderDetail(${order.id})" style="cursor:pointer;">${cells}</tr>`;
                 }).join('');
             }
             window.soPager = Pagination.create({
@@ -2177,47 +3809,14 @@
                 const res = await fetch('/api/sales-orders');
                 if (!res.ok) return;
                 allOrders = await res.json();
-
-                if (allOrders.length === 0) {
-                    document.getElementById('emptyState').style.display = 'flex';
-                    document.getElementById('ordersContainer').style.display = 'none';
-                    document.getElementById('soPaginationContainer').innerHTML = '';
-                    return;
-                }
-
-                document.getElementById('emptyState').style.display = 'none';
-                document.getElementById('ordersContainer').style.display = 'block';
-
-                function renderSOPage(pageData) {
-                    const tbody = document.getElementById('ordersBody');
-                    tbody.innerHTML = pageData.map(order => {
-                        const dots = getStatusDots(order);
-                        const statusCls = 'status-' + getStatusClass(order.status);
-                        return `<tr onclick="openOrderDetail(${order.id})" style="cursor:pointer;">
-                            <td><input type="checkbox" class="order-checkbox" value="${order.id}" onclick="event.stopPropagation()"></td>
-                            <td>${formatDate(order.order_date)}</td>
-                            <td><span class="order-number-link">${order.order_number}</span></td>
-                            <td>${order.reference_number || ''}</td>
-                            <td>${order.customer_name || ''}</td>
-                            <td><span class="${statusCls}">${(order.status || 'DRAFT').toUpperCase()}</span></td>
-                            <td style="text-align: center;">${dots.invoiced ? `<span class="status-dot ${dots.invoiced}"></span>` : ''}</td>
-                            <td style="text-align: center;">${dots.payment ? `<span class="status-dot ${dots.payment}"></span>` : ''}</td>
-                            <td style="text-align: center;">${dots.packed ? `<span class="status-dot ${dots.packed}"></span>` : ''}</td>
-                            <td style="text-align: center;">${dots.shipped ? `<span class="status-dot ${dots.shipped}"></span>` : ''}</td>
-                        </tr>`;
-                    }).join('');
-                }
-
-                if (!window.soPager) {
-                    window.soPager = Pagination.create({
-                        data: allOrders,
-                        perPage: 14,
-                        containerId: 'soPaginationContainer',
-                        onPageChange: function (pageData) { renderSOPage(pageData); }
-                    });
+                const detailView = document.getElementById('detailView');
+                if (detailView && detailView.classList.contains('active')) {
+                    refreshLeftList();
                 } else {
-                    window.soPager.updateData(allOrders);
+                    renderFilteredOrders();
                 }
+
+
             } catch (err) {
                 console.error('Error loading orders:', err);
             }
@@ -2264,21 +3863,28 @@
 
                 // Check if invoice exists for this SO
                 let hasInvoice = false;
+                let invoiceStatus = '';
+                let matchedInvoices = [];
                 try {
                     const invRes = await fetch('/api/invoices');
                     if (invRes.ok) {
                         const invoices = await invRes.json();
-                        hasInvoice = invoices.some(inv => inv.order_number === order.order_number);
+                        matchedInvoices = invoices.filter(inv => inv.order_number === order.order_number);
+                        if (matchedInvoices.length > 0) {
+                            hasInvoice = true;
+                            invoiceStatus = (matchedInvoices[0].status || 'DRAFT').toUpperCase();
+                        }
                     }
                 } catch (e) { /* ignore */ }
 
                 // Check if packages exist for this SO
                 let hasPackage = false;
+                let matchedPackages = [];
                 try {
                     const pkgRes = await fetch(`/api/packages/by-order/${orderId}`);
                     if (pkgRes.ok) {
-                        const pkgs = await pkgRes.json();
-                        hasPackage = pkgs.length > 0;
+                        matchedPackages = await pkgRes.json();
+                        hasPackage = matchedPackages.length > 0;
                     }
                 } catch (e) { /* ignore */ }
 
@@ -2294,21 +3900,37 @@
 
                 // Check if sales returns exist for this SO
                 let hasReturn = false;
+                let matchedReturns = [];
                 try {
                     const retRes = await fetch(`/api/sales-returns/by-order/${orderId}`);
                     if (retRes.ok) {
-                        const returns = await retRes.json();
-                        hasReturn = returns.length > 0;
+                        matchedReturns = await retRes.json();
+                        hasReturn = matchedReturns.length > 0;
                     }
                 } catch (e) { /* ignore */ }
 
-                renderDetail(order, hasInvoice, hasPackage, hasShipment, hasReturn);
+                renderDetail(order, hasInvoice, hasPackage, hasShipment, hasReturn, invoiceStatus, matchedInvoices, matchedPackages, matchedReturns);
+
+                // Check stock warnings for all item rows (runs for all statuses)
+                checkItemStockWarnings(order);
+
+                // Check for backorder-eligible items (CONFIRMED or ON HOLD orders with stock shortages)
+                const orderStatus = (order.status || '').toUpperCase();
+                if (orderStatus === 'CONFIRMED' || orderStatus === 'ON HOLD') {
+                    checkBackorderForDetail(order);
+                } else {
+                    hideBackorderBanner();
+                }
             } catch (err) {
                 console.error('Error loading order detail:', err);
             }
         }
 
-        function renderDetail(order, hasInvoice, hasPackage, hasShipment, hasReturn) {
+        function renderDetail(order, hasInvoice, hasPackage, hasShipment, hasReturn, invoiceStatus, matchedInvoices, matchedPackages, matchedReturns) {
+            matchedInvoices = matchedInvoices || [];
+            matchedPackages = matchedPackages || [];
+            matchedReturns = matchedReturns || [];
+            invoiceStatus = invoiceStatus || '';
             const panel = document.getElementById('soRightPanel');
             const statusCls = getStatusClass(order.status);
             const statusLabel = (order.status || 'DRAFT').toUpperCase();
@@ -2368,8 +3990,6 @@
                         <span class="so-right-order-num">${order.order_number}</span>
                     </div>
                     <div class="so-right-header-actions">
-                        <button title="Print" onclick="window.print()">🖨</button>
-                        <button title="Fullscreen">⛶</button>
                         <button title="Close" style="font-size:20px;" onclick="backToList()">✕</button>
                     </div>
                 </div>
@@ -2388,24 +4008,100 @@
                         </div>
                     </div>
                     <div class="so-action-separator"></div>
-                    ${!hasInvoice ? '<button class="so-action-btn" onclick="convertToInvoice()">🔄 Convert to Invoice</button><div class="so-action-separator"></div>' : ''}
-                    <div class="create-dropdown-wrap">
-                        <button class="create-dropdown-btn" onclick="toggleCreateDropdown(event)">
-                            <span class="create-icon">+</span> Create <span style="font-size:10px;">▾</span>
-                        </button>
-                        <div class="create-dropdown-menu" id="createDropdownMenu">
-                            ${!hasPackage ? '<button class="create-dropdown-item primary" onclick="createPackage()">Package</button>' : ''}
-                            ${!hasShipment ? '<button class="create-dropdown-item" onclick="createShipment()">Shipment</button>' : ''}
-                            ${hasShipment ? '<button class="create-dropdown-item" onclick="openSalesReturnForm()">Sales Return</button>' : ''}
+                    ${statusLabel === 'DRAFT' ? `
+                        <button class="so-action-btn" onclick="markAsConfirmed()" style="background:#16a34a;color:#fff;border-color:#16a34a;font-weight:600;padding:6px 18px;border-radius:4px;">✅ Mark as Confirmed</button>
+                    ` : (statusLabel === 'CANCELLED' ? '' : `
+                        ${(!hasInvoice || invoiceStatus === 'DRAFT') ? '<button class="so-action-btn" onclick="convertToInvoice()">🔄 Convert to Invoice</button><div class="so-action-separator"></div>' : ''}
+                        ${!hasPackage ? '<button class="so-action-btn create-dropdown-btn" onclick="createPackage()"><span class="create-icon">+</span> Create Package</button>' : ''}
+                    `)}
+                    <div class="so-action-separator"></div>
+                    ${(hasInvoice && hasPackage && hasShipment && !hasReturn) ? '<button class="so-action-btn create-dropdown-btn" onclick="createSalesReturn()"><span class="create-icon">+</span> Create Sales Return</button><div class="so-action-separator"></div>' : ''}
+                    <div class="so-kebab-wrap" style="position:relative;">
+                        <button class="so-action-btn" onclick="toggleKebabMenu(event)">⋯</button>
+                        <div class="so-kebab-menu" id="soKebabMenu" style="display:none;position:absolute;top:100%;right:0;background:#fff;border:1px solid #e5e7eb;border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,0.12);min-width:180px;z-index:1000;padding:4px 0;margin-top:4px;">
+                            ${statusLabel === 'CANCELLED' ? `
+                                <button class="so-kebab-item" onclick="reopenOrder()" style="display:flex;align-items:center;gap:8px;width:100%;padding:8px 16px;border:none;background:none;color:#16a34a;font-size:13px;cursor:pointer;font-family:inherit;text-align:left;" onmouseover="this.style.background='#f0fdf4'" onmouseout="this.style.background='none'"><span>🔓</span> Reopen Order</button>
+                                <button class="so-kebab-item" onclick="deleteOrder()" style="display:flex;align-items:center;gap:8px;width:100%;padding:8px 16px;border:none;background:none;color:#dc2626;font-size:13px;cursor:pointer;font-family:inherit;text-align:left;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'"><span>🗑️</span> Delete Order</button>
+                            ` : (statusLabel === 'DRAFT' ? `
+                                <button class="so-kebab-item" onclick="cancelOrder()" style="display:flex;align-items:center;gap:8px;width:100%;padding:8px 16px;border:none;background:none;color:#dc2626;font-size:13px;cursor:pointer;font-family:inherit;text-align:left;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'"><span>🚫</span> Cancel Order</button>
+                                <button class="so-kebab-item" onclick="deleteOrder()" style="display:flex;align-items:center;gap:8px;width:100%;padding:8px 16px;border:none;background:none;color:#dc2626;font-size:13px;cursor:pointer;font-family:inherit;text-align:left;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'"><span>🗑️</span> Delete Order</button>
+                            ` : ((statusLabel === 'CONFIRMED' || statusLabel === 'ON HOLD') && !hasShipment ? `
+                                <button class="so-kebab-item" onclick="cancelOrder()" style="display:flex;align-items:center;gap:8px;width:100%;padding:8px 16px;border:none;background:none;color:#dc2626;font-size:13px;cursor:pointer;font-family:inherit;text-align:left;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'"><span>🚫</span> Cancel Order</button>
+                            ` : ''))}
                         </div>
                     </div>
-                    <div class="so-action-separator"></div>
-                    <button class="so-action-btn">⋯</button>
-                    <div class="so-pdf-toggle">
-                        <span>Show PDF View</span>
-                        <input type="checkbox">
-                    </div>
+
+
                 </div>
+
+                <div id="boNotificationBanner" style="display:none;background:#fef3c7;border:1px solid #f59e0b;border-radius:6px;padding:10px 16px;margin:10px 16px 0;font-size:13px;color:#92400e;align-items:center;gap:10px;">
+                    <span style="font-size:16px;">⚠️</span>
+                    <span>Some items need backordering.</span>
+                    <a href="#" onclick="event.preventDefault();openBackorderModal();" style="color:#2563eb;font-weight:600;text-decoration:none;">Back order now</a>
+                </div>
+
+                <!-- Associated Tabs: Invoices, Packages, Returns -->
+                ${(hasInvoice || hasPackage || hasReturn) ? `
+                <div style="margin:0 16px;">
+                    <div style="display:flex;gap:0;border-bottom:2px solid #e9ecef;" id="soAssocTabsBar">
+                        ${hasInvoice ? `<div class="so-assoc-tab active" onclick="switchSoAssocTab(this,'soTabInvoices')" style="padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid #4285f4;margin-bottom:-2px;color:#4285f4;">Invoices <span style="background:#e6eefa;color:#4285f4;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:4px;">${matchedInvoices.length}</span></div>` : ''}
+                        ${hasPackage ? `<div class="so-assoc-tab ${!hasInvoice ? 'active' : ''}" onclick="switchSoAssocTab(this,'soTabPackages')" style="padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;${!hasInvoice ? 'border-bottom:2px solid #4285f4;margin-bottom:-2px;color:#4285f4;' : 'color:#666;'}">Packages <span style="background:#e6eefa;color:#4285f4;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:4px;">${matchedPackages.length}</span></div>` : ''}
+                        ${hasReturn ? `<div class="so-assoc-tab ${!hasInvoice && !hasPackage ? 'active' : ''}" onclick="switchSoAssocTab(this,'soTabReturns')" style="padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;${!hasInvoice && !hasPackage ? 'border-bottom:2px solid #4285f4;margin-bottom:-2px;color:#4285f4;' : 'color:#666;'}">Returns & Cancellation <span style="background:#e6eefa;color:#4285f4;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:4px;">${matchedReturns.length}</span></div>` : ''}
+                    </div>
+
+                    ${hasInvoice ? `<div id="soTabInvoices">
+                        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                            <thead><tr style="border-bottom:1px solid #e9ecef;">
+                                <th style="text-align:left;padding:10px 16px;font-size:11px;color:#666;font-weight:600;">INVOICE#</th>
+                                <th style="text-align:left;padding:10px 16px;font-size:11px;color:#666;font-weight:600;">DATE</th>
+                                <th style="text-align:left;padding:10px 16px;font-size:11px;color:#666;font-weight:600;">STATUS</th>
+                                <th style="text-align:right;padding:10px 16px;font-size:11px;color:#666;font-weight:600;">AMOUNT</th>
+                            </tr></thead>
+                            <tbody>${matchedInvoices.map(function (inv) {
+                var invDate = inv.invoice_date ? new Date(inv.invoice_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+                var invSt = (inv.status || 'DRAFT').toUpperCase();
+                var stColor = invSt === 'PAID' ? '#16a34a' : invSt === 'ISSUED' ? '#2563eb' : invSt === 'VOID' ? '#dc2626' : '#f59e0b';
+                var invAmt = 'PHP' + Number(inv.total || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                return '<tr style="border-bottom:1px solid #f0f0f0;"><td style="padding:12px 16px;"><a href="/invoices.html?invoiceId=' + inv.id + '" style="color:#4285f4;text-decoration:none;font-weight:500;">' + (inv.invoice_number || '-') + '</a></td><td style="padding:12px 16px;">' + invDate + '</td><td style="padding:12px 16px;color:' + stColor + ';font-weight:600;">' + invSt + '</td><td style="padding:12px 16px;text-align:right;">' + invAmt + '</td></tr>';
+            }).join('')}</tbody>
+                        </table>
+                    </div>` : ''}
+
+                    ${hasPackage ? `<div id="soTabPackages" style="${hasInvoice ? 'display:none;' : ''}">
+                        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                            <thead><tr style="border-bottom:1px solid #e9ecef;">
+                                <th style="text-align:left;padding:10px 16px;font-size:11px;color:#666;font-weight:600;">PACKAGE#</th>
+                                <th style="text-align:left;padding:10px 16px;font-size:11px;color:#666;font-weight:600;">DATE</th>
+                                <th style="text-align:left;padding:10px 16px;font-size:11px;color:#666;font-weight:600;">STATUS</th>
+                                <th style="text-align:left;padding:10px 16px;font-size:11px;color:#666;font-weight:600;">TRACKING#</th>
+                            </tr></thead>
+                            <tbody>${matchedPackages.map(function (pkg) {
+                var pkgDate = pkg.package_date ? new Date(pkg.package_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+                var pkgSt = (pkg.status || 'NOT SHIPPED').toUpperCase();
+                var stColor2 = pkgSt === 'SHIPPED' ? '#16a34a' : pkgSt === 'DELIVERED' ? '#2563eb' : '#f59e0b';
+                return '<tr style="border-bottom:1px solid #f0f0f0;"><td style="padding:12px 16px;"><a href="/packages.html?view_id=' + pkg.id + '" style="color:#4285f4;text-decoration:none;font-weight:500;">' + (pkg.package_number || '-') + '</a></td><td style="padding:12px 16px;">' + pkgDate + '</td><td style="padding:12px 16px;color:' + stColor2 + ';font-weight:600;">' + pkgSt + '</td><td style="padding:12px 16px;">' + (pkg.tracking_number || '-') + '</td></tr>';
+            }).join('')}</tbody>
+                        </table>
+                    </div>` : ''}
+
+                    ${hasReturn ? `<div id="soTabReturns" style="${hasInvoice || hasPackage ? 'display:none;' : ''}">
+                        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                            <thead><tr style="border-bottom:1px solid #e9ecef;">
+                                <th style="text-align:left;padding:10px 16px;font-size:11px;color:#666;font-weight:600;">RMA#</th>
+                                <th style="text-align:left;padding:10px 16px;font-size:11px;color:#666;font-weight:600;">DATE</th>
+                                <th style="text-align:left;padding:10px 16px;font-size:11px;color:#666;font-weight:600;">STATUS</th>
+                                <th style="text-align:right;padding:10px 16px;font-size:11px;color:#666;font-weight:600;">AMOUNT</th>
+                            </tr></thead>
+                            <tbody>${matchedReturns.map(function (ret) {
+                var retDate = ret.return_date ? new Date(ret.return_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+                var retSt = (ret.status || 'PENDING').toUpperCase();
+                var stColor3 = retSt === 'APPROVED' ? '#16a34a' : retSt === 'DECLINED' ? '#dc2626' : '#f59e0b';
+                var retAmt = 'PHP' + Number(ret.total || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                return '<tr style="border-bottom:1px solid #f0f0f0;"><td style="padding:12px 16px;"><a href="/sales-returns.html?view_id=' + ret.id + '" style="color:#4285f4;text-decoration:none;font-weight:500;">' + (ret.rma_number || '-') + '</a></td><td style="padding:12px 16px;">' + retDate + '</td><td style="padding:12px 16px;color:' + stColor3 + ';font-weight:600;">' + retSt + '</td><td style="padding:12px 16px;text-align:right;">' + retAmt + '</td></tr>';
+            }).join('')}</tbody>
+                        </table>
+                    </div>` : ''}
+                </div>` : ''}
 
                 <div class="so-detail-scroll">
                     <div class="so-detail-card">
@@ -2432,9 +4128,9 @@
                                 <span class="so-status-label">Order</span>
                                 <span class="so-status-value"><span class="so-badge ${statusCls}">${statusLabel}</span></span>
                                 <span class="so-status-label">Invoice</span>
-                                <span class="so-status-value ${hasInvoice ? 'so-invoiced' : 'so-not-invoiced'}">${hasInvoice ? 'Invoiced' : 'Not Invoiced'}</span>
+                                <span class="so-status-value ${hasInvoice ? (invoiceStatus === 'DRAFT' ? 'so-draft-invoice' : 'so-invoiced') : 'so-not-invoiced'}">${hasInvoice ? (invoiceStatus === 'DRAFT' ? 'Draft' : 'Invoiced') : 'Not Invoiced'}</span>
                                 <span class="so-status-label">Payment</span>
-                                <span class="so-status-value so-unpaid">Unpaid</span>
+                                <span class="so-status-value ${invoiceStatus === 'PAID' ? 'so-invoiced' : 'so-unpaid'}">${invoiceStatus === 'PAID' ? 'Paid' : (invoiceStatus === 'PARTIALLY_PAID' ? 'Partially Paid' : 'Unpaid')}</span>
                                 <span class="so-status-label">Shipment</span>
                                 <span class="so-status-value ${hasShipment ? 'so-invoiced' : 'so-pending'}">${hasShipment ? 'Shipped' : 'Pending'}</span>
                             </div>
@@ -2469,11 +4165,12 @@
                             </thead>
                             <tbody>
                                 ${items.length > 0 ? items.map(item => `
-                                <tr>
+                                <tr data-item-id="${item.item_id || ''}" data-ordered-qty="${parseFloat(item.quantity || 0)}">
                                     <td>
-                                        <div style="display:flex;align-items:center;">
+                                        <div style="display:flex;align-items:center;gap:6px;">
                                             <span class="so-item-placeholder">📦</span>
                                             <span class="so-item-name-link">${item.item_name}</span>
+                                            <span class="stock-warning-badge" style="display:none;"></span>
                                         </div>
                                     </td>
                                     <td style="text-align:center;">${parseFloat(item.quantity || 0)}<br><span style="font-size:11px;color:#888;">pcs</span></td>
@@ -2581,6 +4278,7 @@
                         .so-badge.draft { background: #e8f0fe; color: #1a73e8; }
                         .so-badge.confirmed { background: #e6f4ea; color: #137333; }
                         .so-badge.closed { background: #fce8e6; color: #c5221f; }
+                        .so-badge.on-hold { background: #fef3c7; color: #d97706; }
                         .so-invoiced { color: #137333; font-weight: 600; }
                         .so-not-invoiced { color: #c5221f; }
                         .so-unpaid { color: #e37400; font-weight: 600; }
@@ -2737,6 +4435,17 @@
                 const statusText = (inv.status || 'DRAFT').toUpperCase();
                 const ribbonClass = statusText === 'SENT' ? 'sent' : statusText === 'OVERDUE' ? 'overdue' : 'draft';
 
+                // Check if payments already exist for this invoice
+                let invoicePayments = [];
+                try {
+                    const payRes = await fetch('/api/payments-received');
+                    if (payRes.ok) {
+                        const allPayments = await payRes.json();
+                        invoicePayments = allPayments.filter(p => String(p.invoice_id) === String(inv.id));
+                    }
+                } catch (e) { }
+                const showRecordPayment = invoicePayments.length === 0;
+
                 panel.innerHTML = `
                     <div class="inv-detail-header">
                         <div class="inv-detail-header-left">
@@ -2759,16 +4468,16 @@
                         <button class="inv-action-btn"><span class="icon">🔗</span> Share</button>
                         <button class="inv-action-btn"><span class="icon">🔔</span> Reminders <span class="arrow">▾</span></button>
                         <button class="inv-action-btn"><span class="icon">📄</span> PDF/Print <span class="arrow">▾</span></button>
-                        <button class="inv-action-btn primary" onclick="window.location.href='/record-invoice-payment.html?invoice_id=${inv.id}'">Record Payment</button>
+                        ${showRecordPayment ? `<button class="inv-action-btn primary" onclick="window.location.href='/record-invoice-payment.html?invoice_id=${inv.id}'">Record Payment</button>` : ''}
                         <button class="inv-action-btn"><span class="icon">⋯</span></button>
                     </div>
 
-                    <div class="inv-info-banner">
+                    ${showRecordPayment ? `<div class="inv-info-banner">
                         <span class="star">★</span>
                         <span>WHAT'S NEXT? Invoice has been sent. Record payment for it as soon as you receive payment.</span>
                         <a href="javascript:void(0)">Learn More</a>
                         <button class="inv-action-btn primary" style="margin-left:auto;" onclick="window.location.href='/record-invoice-payment.html?invoice_id=${inv.id}'">Record Payment</button>
-                    </div>
+                    </div>` : ''}
 
                     <div class="inv-setup-banner">
                         <span>💳</span>
@@ -2776,9 +4485,34 @@
                         <a href="javascript:void(0)">Set Up Now ›</a>
                     </div>
 
-                    <div class="inv-detail-tabs">
-                        <div class="inv-detail-tab active">Associated sales orders <span class="tab-count">1</span></div>
+                    <div class="inv-detail-tabs" style="display:flex;gap:0;border-bottom:2px solid #e9ecef;">
+                        ${invoicePayments.length > 0 ? `<div class="inv-detail-tab active" onclick="switchInvTab(this,'invTabPayments')" style="cursor:pointer;">Payments Received <span class="tab-count">${invoicePayments.length}</span></div>` : ''}
+                        <div class="inv-detail-tab ${invoicePayments.length === 0 ? 'active' : ''}" onclick="switchInvTab(this,'invTabSalesOrders')" style="cursor:pointer;">Associated sales orders <span class="tab-count">1</span></div>
                     </div>
+
+                    ${invoicePayments.length > 0 ? `<div class="inv-tab-panel" id="invTabPayments" style="padding:0;">
+                        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                            <thead><tr style="border-bottom:1px solid #e9ecef;">
+                                <th style="text-align:left;padding:10px 16px;font-size:11px;color:#666;font-weight:600;">Date</th>
+                                <th style="text-align:left;padding:10px 16px;font-size:11px;color:#666;font-weight:600;">Payment #</th>
+                                <th style="text-align:left;padding:10px 16px;font-size:11px;color:#666;font-weight:600;">Reference#</th>
+                                <th style="text-align:left;padding:10px 16px;font-size:11px;color:#666;font-weight:600;">Status</th>
+                                <th style="text-align:left;padding:10px 16px;font-size:11px;color:#666;font-weight:600;">Payment Mode</th>
+                                <th style="text-align:left;padding:10px 16px;font-size:11px;color:#666;font-weight:600;">Amount</th>
+                                <th style="padding:10px 16px;"></th>
+                            </tr></thead>
+                            <tbody>
+                                ${invoicePayments.map(p => {
+                    const pDate = p.payment_date ? new Date(p.payment_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+                    const pStatus = (p.status || 'Draft').charAt(0).toUpperCase() + (p.status || 'draft').slice(1).toLowerCase();
+                    const pAmt = 'PHP' + Number(p.amount_received || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    return '<tr style="border-bottom:1px solid #f0f0f0;"><td style="padding:12px 16px;">' + pDate + '</td><td style="padding:12px 16px;"><a href="/payments-received.html" style="color:#4285f4;text-decoration:none;font-weight:500;">' + (p.payment_number || '-') + '</a></td><td style="padding:12px 16px;">' + (p.reference_number || '') + '</td><td style="padding:12px 16px;">' + pStatus + '</td><td style="padding:12px 16px;">' + (p.payment_mode || 'Cash') + '</td><td style="padding:12px 16px;">' + pAmt + '</td><td style="padding:12px 16px;text-align:right;"><a href="/record-invoice-payment.html?edit=' + p.id + '" style="color:#4285f4;text-decoration:none;font-size:12px;">✏ Edit</a> <span style="color:#ccc;cursor:pointer;" title="Delete">🗑</span></td></tr>';
+                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>` : ''}
+
+                    <div class="inv-tab-panel" id="invTabSalesOrders" style="${invoicePayments.length > 0 ? 'display:none;' : ''}padding:0;">
 
                     <div class="inv-detail-content">
                         <div class="inv-doc-card">
@@ -2868,6 +4602,7 @@
                             ` : ''}
                         </div>
                     </div>
+                    </div>
                 `;
             } catch (err) {
                 console.error('Error loading invoice detail:', err);
@@ -2875,7 +4610,42 @@
             }
         }
 
+        // ===== INVOICE DETAIL TABS =====
+        function switchInvTab(tabEl, panelId) {
+            // Deactivate all tabs
+            const tabsBar = tabEl.parentElement;
+            tabsBar.querySelectorAll('.inv-detail-tab').forEach(t => t.classList.remove('active'));
+            tabEl.classList.add('active');
+            // Hide all panels
+            const panels = ['invTabPayments', 'invTabSalesOrders'];
+            panels.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            });
+            const target = document.getElementById(panelId);
+            if (target) target.style.display = 'block';
+        }
+
         // ===== BACK TO LIST =====
+        function switchSoAssocTab(tabEl, panelId) {
+            tabEl.parentElement.querySelectorAll('.so-assoc-tab').forEach(function (t) {
+                t.classList.remove('active');
+                t.style.borderBottom = 'none';
+                t.style.marginBottom = '0';
+                t.style.color = '#666';
+            });
+            tabEl.classList.add('active');
+            tabEl.style.borderBottom = '2px solid #4285f4';
+            tabEl.style.marginBottom = '-2px';
+            tabEl.style.color = '#4285f4';
+            ['soTabInvoices', 'soTabPackages', 'soTabReturns'].forEach(function (id) {
+                var el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            });
+            var target = document.getElementById(panelId);
+            if (target) target.style.display = 'block';
+        }
+
         function backToList() {
             document.getElementById('detailView').classList.remove('active');
             document.getElementById('listView').style.display = 'block';
@@ -2896,54 +4666,27 @@
 
         async function createPackage() {
             if (!selectedOrderId) return;
-            document.getElementById('createDropdownMenu').classList.remove('open');
-
-            // Fetch the order detail
+            // Fetch the order to get customer_id
             try {
-                const orderRes = await fetch(`/api/sales-orders/${selectedOrderId}`);
-                if (!orderRes.ok) return;
-                const order = await orderRes.json();
-
-                // Fetch next package number
-                const numRes = await fetch('/api/packages/next-number');
-                const numData = await numRes.json();
-
-                // Fetch existing packages for this order to calculate packed quantities
-                const pkgsRes = await fetch(`/api/packages/by-order/${selectedOrderId}`);
-                const existingPkgs = await pkgsRes.json();
-
-                // Calculate already-packed quantities per item
-                const packedMap = {};
-                for (const pkg of existingPkgs) {
-                    const pkgDetail = await fetch(`/api/packages/${pkg.id}`);
-                    const pkgData = await pkgDetail.json();
-                    if (pkgData.items) {
-                        for (const pi of pkgData.items) {
-                            packedMap[pi.item_name] = (packedMap[pi.item_name] || 0) + parseFloat(pi.quantity_to_pack || 0);
-                        }
-                    }
-                }
-
-                // Fetch stock for items
-                let stockMap = {};
-                try {
-                    const itemsRes = await fetch('/api/items');
-                    const allItems = await itemsRes.json();
-                    for (const item of allItems) {
-                        stockMap[item.name] = parseFloat(item.stock_quantity || 0);
-                    }
-                } catch (e) { /* ignore */ }
-
-                showPackageForm(order, numData.package_number, packedMap, stockMap);
+                const res = await fetch(`/api/sales-orders/${selectedOrderId}`);
+                if (!res.ok) return;
+                const order = await res.json();
+                const customerId = order.customer_id || '';
+                window.location.href = `/new-package.html?customerId=${customerId}&soId=${selectedOrderId}`;
             } catch (err) {
-                console.error('Error creating package:', err);
-                alert('Error loading order details.');
+                console.error('Error:', err);
+                window.location.href = `/new-package.html?soId=${selectedOrderId}`;
             }
+        }
+
+        function createSalesReturn() {
+            if (!selectedOrderId) return;
+            window.location.href = '/new-sales-return.html?from_so=' + selectedOrderId;
         }
 
         function showPackageForm(order, packageNumber, packedMap, stockMap) {
             const panel = document.getElementById('soRightPanel');
-            const today = new Date().toISOString().split('T')[0];
+            const _td = new Date(); const today = _td.getFullYear() + '-' + String(_td.getMonth()+1).padStart(2,'0') + '-' + String(_td.getDate()).padStart(2,'0');
             const todayDisplay = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
             const items = order.items || [];
 
@@ -3250,7 +4993,7 @@
 
             const payload = {
                 rma_number: rmaNumber,
-                return_date: parsedDate.toISOString().split('T')[0],
+                return_date: parsedDate.getFullYear() + '-' + String(parsedDate.getMonth()+1).padStart(2,'0') + '-' + String(parsedDate.getDate()).padStart(2,'0'),
                 warehouse_location: warehouse,
                 reason: reason,
                 credit_only: creditOnly,
@@ -3291,6 +5034,66 @@
 
             if (orderId) {
                 openOrderDetail(parseInt(orderId));
+                // Auto-trigger print if print=true is in URL
+                if (params.get('print') === 'true') {
+                    setTimeout(function () {
+                        var docCard = document.querySelector('.so-detail-card');
+                        if (!docCard) return;
+                        var iframe = document.createElement('iframe');
+                        iframe.style.position = 'fixed';
+                        iframe.style.right = '0';
+                        iframe.style.bottom = '0';
+                        iframe.style.width = '0';
+                        iframe.style.height = '0';
+                        iframe.style.border = '0';
+                        document.body.appendChild(iframe);
+                        var doc = iframe.contentWindow.document;
+                        doc.open();
+                        doc.write('<!DOCTYPE html><html><head><title>Sales Order</title>');
+                        doc.write('<style>');
+                        doc.write('* { margin: 0; padding: 0; box-sizing: border-box; }');
+                        doc.write('body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 0; color: #333; }');
+                        doc.write('.so-detail-card { width: 100%; max-width: 750px; margin: 20px auto; padding: 40px 50px; }');
+                        doc.write('.so-detail-top { display: flex; justify-content: space-between; margin-bottom: 24px; }');
+                        doc.write('.so-detail-title { font-size: 20px; font-weight: 700; color: #333; margin: 0 0 4px 0; }');
+                        doc.write('.so-detail-subtitle { font-size: 13px; color: #666; margin: 0; }');
+                        doc.write('.so-address-block { text-align: right; }');
+                        doc.write('.so-address-label { font-size: 11px; font-weight: 600; color: #888; text-transform: uppercase; margin-bottom: 4px; }');
+                        doc.write('.so-address-name { font-size: 14px; font-weight: 600; color: #333; }');
+                        doc.write('.so-address-text { font-size: 13px; color: #555; line-height: 1.5; }');
+                        doc.write('.so-status-section { background: #f8f9fa; border-radius: 6px; padding: 16px 20px; margin-bottom: 24px; }');
+                        doc.write('.so-status-grid { display: grid; grid-template-columns: auto 1fr auto 1fr; gap: 8px 16px; align-items: center; }');
+                        doc.write('.so-status-label { font-size: 12px; font-weight: 600; color: #888; text-transform: uppercase; }');
+                        doc.write('.so-status-value { font-size: 13px; }');
+                        doc.write('.so-badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }');
+                        doc.write('.so-badge.confirmed { background: #e6f4ea; color: #137333; }');
+                        doc.write('.so-badge.draft { background: #e8f0fe; color: #1a73e8; }');
+                        doc.write('.so-fields-section { margin-bottom: 24px; }');
+                        doc.write('.so-fields-grid { display: grid; grid-template-columns: 160px 1fr; gap: 6px 16px; }');
+                        doc.write('.so-field-label { font-size: 12px; font-weight: 600; color: #888; text-transform: uppercase; }');
+                        doc.write('.so-field-value { font-size: 13px; color: #333; }');
+                        doc.write('.so-items-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }');
+                        doc.write('.so-items-table thead { background: #1a73e8; }');
+                        doc.write('.so-items-table thead th { color: #fff; font-size: 11px; font-weight: 600; padding: 10px 14px; text-align: left; text-transform: uppercase; }');
+                        doc.write('.so-items-table tbody td { padding: 12px 14px; font-size: 13px; color: #333; border-bottom: 1px solid #f0f0f0; }');
+                        doc.write('.so-item-placeholder { display: inline-block; width: 28px; height: 28px; background: #f0f0f0; border-radius: 4px; text-align: center; line-height: 28px; font-size: 14px; margin-right: 8px; }');
+                        doc.write('.so-item-name-link { color: #1a73e8; font-weight: 500; }');
+                        doc.write('.so-totals { display: flex; flex-direction: column; align-items: flex-end; padding: 16px 0; }');
+                        doc.write('.so-totals-row { display: flex; justify-content: space-between; width: 300px; padding: 4px 0; }');
+                        doc.write('.so-totals-row.subtotal { border-bottom: 1px solid #eee; padding-bottom: 8px; }');
+                        doc.write('.so-totals-row.total { border-top: 2px solid #333; padding-top: 8px; margin-top: 4px; }');
+                        doc.write('.so-totals-label { font-size: 13px; color: #555; }');
+                        doc.write('.so-totals-value { font-size: 13px; font-weight: 600; }');
+                        doc.write('.so-ribbon { position: absolute; top: 30px; right: -35px; transform: rotate(45deg); background: #137333; color: #fff; padding: 6px 40px; font-size: 11px; font-weight: 700; text-transform: uppercase; }');
+                        doc.write('</style></head><body>');
+                        doc.write(docCard.outerHTML);
+                        doc.write('</body></html>');
+                        doc.close();
+                        iframe.contentWindow.focus();
+                        iframe.contentWindow.print();
+                        setTimeout(function () { document.body.removeChild(iframe); }, 2000);
+                    }, 1500);
+                }
             }
 
             // Handle dashboard filter parameters
@@ -3328,6 +5131,7 @@
                                 const dots = getStatusDots(order);
                                 const statusCls = 'status-' + getStatusClass(order.status);
                                 return `<tr onclick="openOrderDetail(${order.id})" style="cursor:pointer;">
+                                    <td></td>
                                     <td><input type="checkbox" class="order-checkbox" value="${order.id}" onclick="event.stopPropagation()"></td>
                                     <td>${formatDate(order.order_date)}</td>
                                     <td><span class="order-number-link">${order.order_number}</span></td>
@@ -3349,6 +5153,528 @@
                 }
             }
         });
+
+        // ===== AUTO-REFRESH ON PO RECEIVE =====
+        // When user returns to this page after receiving a PO, auto-refresh and highlight changed rows
+        let _prevStatuses = {};
+        function snapshotStatuses() {
+            _prevStatuses = {};
+            allOrders.forEach(o => { _prevStatuses[o.id] = (o.status || '').toUpperCase(); });
+        }
+        snapshotStatuses(); // initial snapshot
+
+        async function autoRefreshIfNeeded() {
+            const flag = localStorage.getItem('so_refresh_needed');
+            if (!flag) return;
+            localStorage.removeItem('so_refresh_needed');
+
+            // Snapshot before refresh
+            snapshotStatuses();
+            await loadOrders();
+
+            // Find rows whose status changed (e.g. ON HOLD → CONFIRMED)
+            const changedIds = [];
+            allOrders.forEach(o => {
+                const prev = _prevStatuses[o.id];
+                const curr = (o.status || '').toUpperCase();
+                if (prev && prev !== curr) {
+                    changedIds.push(o.id);
+                }
+            });
+
+            // Highlight changed rows with green flash
+            if (changedIds.length > 0) {
+                setTimeout(() => {
+                    changedIds.forEach(id => {
+                        const row = document.querySelector(`tr[onclick*="openOrderDetail(${id})"]`);
+                        if (row) {
+                            row.style.transition = 'background 0.5s ease';
+                            row.style.background = '#d1fae5';
+                            setTimeout(() => { row.style.background = ''; }, 2500);
+                        }
+                    });
+                    const count = changedIds.length;
+                    showToast(`${count} sales order${count > 1 ? 's' : ''} updated after PO receive.`, 'success');
+                }, 300);
+            }
+
+            snapshotStatuses();
+        }
+
+        // Listen for page visibility change (user switches back to this tab)
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') autoRefreshIfNeeded();
+        });
+        // Also listen for window focus (user navigates back)
+        window.addEventListener('focus', autoRefreshIfNeeded);
+        // Also listen for pageshow (bfcache — browser back/forward buttons)
+        window.addEventListener('pageshow', (e) => {
+            if (e.persisted) autoRefreshIfNeeded();
+        });
+        // Cross-tab sync: if another tab sets the flag, refresh immediately
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'so_refresh_needed' && e.newValue) autoRefreshIfNeeded();
+        });
+        // Also check on initial load
+        autoRefreshIfNeeded();
+
+        // ===== BACKORDER SYSTEM =====
+        let boItems = [];
+        let boCurrentOrder = null;
+
+        async function checkBackorderForDetail(order) {
+            boCurrentOrder = order;
+            const items = order.items || [];
+            const itemsWithId = items.filter(i => i.item_id);
+            if (itemsWithId.length === 0) { hideBackorderBanner(); return; }
+
+            try {
+                // Fetch stock data and linked POs in parallel
+                const [itemsRes, poRes] = await Promise.all([
+                    fetch('/api/items'),
+                    fetch('/api/purchases')
+                ]);
+                const allItemsData = await itemsRes.json();
+                const allPOs = await poRes.json();
+
+                // Check for existing linked PO (backorder sets reference_number = SO order_number)
+                const linkedPO = allPOs.find(po =>
+                    po.reference_number === order.order_number
+                );
+
+                boItems = [];
+                itemsWithId.forEach(orderItem => {
+                    const dbItem = allItemsData.find(i => i.id === parseInt(orderItem.item_id));
+                    if (dbItem) {
+                        const stock = parseFloat(dbItem.stock_quantity) || 0;
+                        const ordered = parseFloat(orderItem.quantity) || 0;
+                        if (stock < ordered) {
+                            boItems.push({
+                                item_id: orderItem.item_id,
+                                item_name: orderItem.item_name,
+                                ordered_qty: ordered,
+                                stock_on_hand: stock,
+                                missing_qty: ordered - stock,
+                                rate: parseFloat(dbItem.purchase_cost) || parseFloat(orderItem.rate) || 0,
+                                checked: true
+                            });
+                        }
+                    }
+                });
+
+                if (boItems.length > 0) {
+                    if (linkedPO) {
+                        const poStatus = (linkedPO.receive_status || 'NOT RECEIVED').toUpperCase();
+                        if (poStatus === 'RECEIVED') {
+                            // PO is received — stock should be sufficient now, hide banner
+                            hideBackorderBanner();
+                            enableFulfillmentButtons();
+                            // Auto-restore from ON HOLD
+                            if ((order.status || '').toUpperCase() === 'ON HOLD') {
+                                try {
+                                    await fetch('/api/sales-orders/' + order.id + '/status', {
+                                        method: 'PUT',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ status: 'CONFIRMED' })
+                                    });
+                                    selectOrder(order.id);
+                                } catch (e) { console.error('Error restoring SO:', e); }
+                            }
+                        } else {
+                            // PO exists but not received — show informative banner
+                            showBackorderBanner('in-progress', linkedPO);
+                            disableFulfillmentButtons();
+                        }
+                    } else {
+                        // No linked PO — show Backorder Now
+                        showBackorderBanner('new');
+                        disableFulfillmentButtons();
+                    }
+                } else {
+                    hideBackorderBanner();
+                    enableFulfillmentButtons();
+                    // Auto-restore from ON HOLD
+                    if ((order.status || '').toUpperCase() === 'ON HOLD') {
+                        try {
+                            await fetch('/api/sales-orders/' + order.id + '/status', {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ status: 'CONFIRMED' })
+                            });
+                            selectOrder(order.id);
+                        } catch (e) { console.error('Error restoring SO:', e); }
+                    }
+                }
+            } catch (e) {
+                console.error('Error checking stock for backorder:', e);
+                hideBackorderBanner();
+            }
+        }
+
+        function disableFulfillmentButtons() {
+            const tooltip = 'Cannot fulfill until backordered stock is received.';
+            // Disable Package and Shipment buttons
+            document.querySelectorAll('.create-dropdown-item').forEach(btn => {
+                const text = btn.textContent.trim();
+                if (text === 'Package' || text === 'Shipment') {
+                    btn.disabled = true;
+                    btn.title = tooltip;
+                    btn.style.opacity = '0.4';
+                    btn.style.cursor = 'not-allowed';
+                    btn.style.pointerEvents = 'none';
+                    if (!btn.parentElement.classList.contains('bo-tooltip-wrap')) {
+                        const wrap = document.createElement('span');
+                        wrap.className = 'bo-tooltip-wrap';
+                        wrap.title = tooltip;
+                        wrap.style.cssText = 'display:block;cursor:not-allowed;';
+                        btn.parentElement.insertBefore(wrap, btn);
+                        wrap.appendChild(btn);
+                    }
+                }
+            });
+            // Disable Convert to Invoice button
+            document.querySelectorAll('.so-action-btn').forEach(btn => {
+                if (btn.textContent.includes('Convert to Invoice')) {
+                    btn.disabled = true;
+                    btn.title = tooltip;
+                    btn.style.opacity = '0.4';
+                    btn.style.cursor = 'not-allowed';
+                    btn.style.pointerEvents = 'none';
+                }
+            });
+            // Disable Create dropdown button
+            document.querySelectorAll('.create-dropdown-btn').forEach(btn => {
+                btn.disabled = true;
+                btn.title = tooltip;
+                btn.style.opacity = '0.4';
+                btn.style.cursor = 'not-allowed';
+                btn.style.pointerEvents = 'none';
+            });
+        }
+
+        function enableFulfillmentButtons() {
+            document.querySelectorAll('.bo-tooltip-wrap').forEach(wrap => {
+                const btn = wrap.querySelector('.create-dropdown-item');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.title = '';
+                    btn.style.opacity = '';
+                    btn.style.cursor = '';
+                    btn.style.pointerEvents = '';
+                    wrap.parentElement.insertBefore(btn, wrap);
+                    wrap.remove();
+                }
+            });
+            // Re-enable Convert to Invoice button
+            document.querySelectorAll('.so-action-btn').forEach(btn => {
+                if (btn.textContent.includes('Convert to Invoice')) {
+                    btn.disabled = false;
+                    btn.title = '';
+                    btn.style.opacity = '';
+                    btn.style.cursor = '';
+                    btn.style.pointerEvents = '';
+                }
+            });
+            // Re-enable Create dropdown button
+            document.querySelectorAll('.create-dropdown-btn').forEach(btn => {
+                btn.disabled = false;
+                btn.title = '';
+                btn.style.opacity = '';
+                btn.style.cursor = '';
+                btn.style.pointerEvents = '';
+            });
+        }
+
+        // ===== ITEM-LEVEL STOCK WARNINGS =====
+        async function checkItemStockWarnings(order) {
+            try {
+                const res = await fetch('/api/items');
+                const allItemsData = await res.json();
+                const rows = document.querySelectorAll('.so-items-table tbody tr[data-item-id]');
+                rows.forEach(row => {
+                    const itemId = row.getAttribute('data-item-id');
+                    const orderedQty = parseFloat(row.getAttribute('data-ordered-qty')) || 0;
+                    const badge = row.querySelector('.stock-warning-badge');
+                    if (!badge || !itemId) return;
+
+                    const dbItem = allItemsData.find(i => i.id === parseInt(itemId));
+                    if (!dbItem) return;
+
+                    const stock = parseFloat(dbItem.stock_quantity) || 0;
+                    if (stock < orderedQty) {
+                        badge.style.cssText = 'display:inline-flex;align-items:center;gap:2px;cursor:help;font-size:14px;';
+                        badge.title = `Current Inventory: ${stock} | Required for Order: ${orderedQty}`;
+                        badge.innerHTML = '⚠️ <span style="font-size:10px;color:#dc2626;font-weight:600;">Low Stock</span>';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                });
+            } catch (e) {
+                console.error('Error checking item stock warnings:', e);
+            }
+        }
+
+        function showBackorderBanner(mode, linkedPO) {
+            const banner = document.getElementById('boNotificationBanner');
+            if (!banner) return;
+            if (mode === 'in-progress' && linkedPO) {
+                const poNum = linkedPO.po_number || 'PO-' + linkedPO.id;
+                const poStatus = (linkedPO.receive_status || 'Not Received').replace(/^\w/, c => c.toUpperCase());
+                banner.style.display = 'flex';
+                banner.style.background = '#eff6ff';
+                banner.style.borderColor = '#93c5fd';
+                banner.style.color = '#1e40af';
+                banner.innerHTML = `
+                    <span style="font-size:16px;">📦</span>
+                    <span>Backorder in Progress: Linked to <strong>${poNum}</strong>. Status: <strong>${poStatus}</strong>.</span>
+                    <a href="/purchase-order-detail.html?id=${linkedPO.id}" style="color:#2563eb;font-weight:600;text-decoration:none;margin-left:auto;">View PO →</a>
+                `;
+            } else {
+                banner.style.display = 'flex';
+                banner.style.background = '#fef3c7';
+                banner.style.borderColor = '#f59e0b';
+                banner.style.color = '#92400e';
+                banner.innerHTML = `
+                    <span style="font-size:16px;">⚠️</span>
+                    <span>Some items need backordering.</span>
+                    <a href="#" onclick="event.preventDefault();openBackorderModal();" style="color:#2563eb;font-weight:600;text-decoration:none;">Back order now</a>
+                `;
+            }
+        }
+
+        function hideBackorderBanner() {
+            const banner = document.getElementById('boNotificationBanner');
+            if (banner) banner.style.display = 'none';
+        }
+
+        async function openBackorderModal() {
+            // Guard: Check if a linked PO already exists
+            if (boCurrentOrder) {
+                try {
+                    const poRes = await fetch('/api/purchases');
+                    const allPOs = await poRes.json();
+                    const linkedPO = allPOs.find(po => po.reference_number === boCurrentOrder.order_number);
+                    if (linkedPO) {
+                        // Redirect to existing PO instead of creating a new one
+                        window.location.href = '/purchase-order-detail.html?id=' + linkedPO.id;
+                        return;
+                    }
+                } catch (e) { /* proceed to modal */ }
+            }
+
+            const tbody = document.getElementById('boItemsBody');
+            tbody.innerHTML = boItems.map((item, i) => `
+                <tr>
+                    <td style="text-align:center;"><input type="checkbox" class="bo-check" data-index="${i}" ${item.checked ? 'checked' : ''}></td>
+                    <td>${item.item_name}</td>
+                    <td style="text-align:center;">${item.ordered_qty}</td>
+                    <td style="text-align:center;">${item.stock_on_hand}</td>
+                    <td style="text-align:center;font-weight:600;color:#dc2626;">${item.missing_qty}</td>
+                </tr>
+            `).join('');
+            document.getElementById('boModal').style.display = 'flex';
+        }
+
+        function closeBackorderModal() {
+            document.getElementById('boModal').style.display = 'none';
+        }
+
+        async function proceedBackorder() {
+            const checks = document.querySelectorAll('.bo-check');
+            const selectedItems = [];
+            checks.forEach(cb => {
+                if (cb.checked) {
+                    selectedItems.push(boItems[parseInt(cb.dataset.index)]);
+                }
+            });
+
+            if (selectedItems.length === 0) {
+                alert('Please select at least one item to backorder.');
+                return;
+            }
+
+            const copyDesc = document.getElementById('boCopyDesc').checked;
+
+            // Store backorder data in sessionStorage (DO NOT update SO status yet — wait for PO save)
+            sessionStorage.setItem('backorderData', JSON.stringify({
+                so_number: boCurrentOrder.order_number,
+                so_id: boCurrentOrder.id,
+                copy_descriptions: copyDesc,
+                items: selectedItems
+            }));
+
+            // Redirect to new purchase order page
+            window.location.href = '/new-purchase-order.html?backorder=' + encodeURIComponent(boCurrentOrder.order_number);
+        }
+
+        // ===== KEBAB MENU =====
+        function toggleKebabMenu(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('soKebabMenu');
+            if (menu) menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function toggleMoreDropdown(e) {
+            e.stopPropagation();
+            const dd = document.getElementById('soMoreDropdown');
+            if (dd) dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function closeMoreDropdown() {
+            const dd = document.getElementById('soMoreDropdown');
+            if (dd) dd.style.display = 'none';
+        }
+
+        document.addEventListener('click', function () {
+            const menu = document.getElementById('soKebabMenu');
+            if (menu) menu.style.display = 'none';
+            closeMoreDropdown();
+        });
+
+        async function markAsConfirmed() {
+            if (!selectedOrderId) return;
+            try {
+                const res = await fetch('/api/sales-orders/' + selectedOrderId + '/status', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'CONFIRMED' })
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    alert(err.error || 'Failed to confirm order.');
+                    return;
+                }
+                showToast('Order confirmed successfully!', 'success');
+
+                // Update allOrders so the main list is in sync when user goes back
+                const idx = allOrders.findIndex(o => o.id === selectedOrderId);
+                if (idx !== -1) allOrders[idx].status = 'CONFIRMED';
+                refreshLeftList();
+
+                // Refresh the detail view to show the new status and unhide fulfillment buttons
+                selectOrder(selectedOrderId);
+            } catch (err) {
+                console.error('Error confirming order:', err);
+                alert('Failed to confirm order.');
+            }
+        }
+
+        async function cancelOrder() {
+            document.getElementById('soKebabMenu').style.display = 'none';
+            if (!selectedOrderId) return;
+
+            const confirmed = confirm('Are you sure? This will cancel the order and release all committed inventory.');
+            if (!confirmed) return;
+
+            try {
+                // Update SO status to CANCELLED
+                const res = await fetch('/api/sales-orders/' + selectedOrderId + '/status', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'CANCELLED' })
+                });
+                if (!res.ok) {
+                    alert('Failed to cancel order.');
+                    return;
+                }
+
+                // Uncommit stock: restore item quantities
+                try {
+                    const orderRes = await fetch('/api/sales-orders/' + selectedOrderId);
+                    if (orderRes.ok) {
+                        const order = await orderRes.json();
+                        const items = order.items || [];
+                        for (const item of items) {
+                            if (item.item_id) {
+                                const itemRes = await fetch('/api/items/' + item.item_id);
+                                if (itemRes.ok) {
+                                    const dbItem = await itemRes.json();
+                                    const currentStock = parseFloat(dbItem.stock_quantity) || 0;
+                                    const orderedQty = parseFloat(item.quantity) || 0;
+                                    await fetch('/api/items/' + item.item_id, {
+                                        method: 'PUT',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ stock_quantity: currentStock + orderedQty })
+                                    });
+                                }
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error uncommitting stock:', e);
+                }
+
+                // Sync allOrders + refresh views
+                const idx = allOrders.findIndex(o => o.id === selectedOrderId);
+                if (idx !== -1) allOrders[idx].status = 'CANCELLED';
+                refreshLeftList();
+                showToast('Order cancelled.', 'info');
+                selectOrder(selectedOrderId);
+            } catch (e) {
+                console.error('Error cancelling order:', e);
+                alert('An error occurred while cancelling the order.');
+            }
+        }
+
+        async function reopenOrder() {
+            document.getElementById('soKebabMenu').style.display = 'none';
+            if (!selectedOrderId) return;
+
+            try {
+                const res = await fetch('/api/sales-orders/' + selectedOrderId + '/status', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'CONFIRMED' })
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    alert(err.error || 'Failed to reopen order.');
+                    return;
+                }
+
+                // Sync allOrders
+                const idx = allOrders.findIndex(o => o.id === selectedOrderId);
+                if (idx !== -1) allOrders[idx].status = 'CONFIRMED';
+                refreshLeftList();
+                showToast('Order reopened and confirmed!', 'success');
+
+                // Refresh detail view — this will re-run stock warnings and backorder checks
+                selectOrder(selectedOrderId);
+            } catch (err) {
+                console.error('Error reopening order:', err);
+                alert('Failed to reopen order.');
+            }
+        }
+
+        async function deleteOrder() {
+            document.getElementById('soKebabMenu').style.display = 'none';
+            if (!selectedOrderId) return;
+
+            const confirmed = confirm('Are you sure you want to permanently delete this Sales Order? This action cannot be undone.');
+            if (!confirmed) return;
+
+            try {
+                const res = await fetch('/api/sales-orders/' + selectedOrderId, {
+                    method: 'DELETE'
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    alert(err.error || 'Failed to delete order.');
+                    return;
+                }
+
+                // Remove from allOrders
+                allOrders = allOrders.filter(o => o.id !== selectedOrderId);
+                showToast('Sales order deleted.', 'info');
+
+                // Go back to list
+                backToList();
+                renderFilteredOrders();
+            } catch (err) {
+                console.error('Error deleting order:', err);
+                alert('Failed to delete order.');
+            }
+        }
     </script>
 
     <!-- Sales Return Form Overlay -->
@@ -3384,7 +5710,8 @@
                 </div>
 
                 <div class="sr-info-bar">
-                    ⚠️ You can also select or scan the items to be included from the package. <a href="#">Select or Scan
+                    ⚠️ You can also select or scan the items to be included from the package. <a href="#">Select or
+                        Scan
                         Items</a>
                 </div>
 
@@ -3414,6 +5741,68 @@
         </div>
     </div>
 
+    <!-- Customize Columns Modal -->
+    <div class="so-cc-overlay" id="soCCOverlay" onclick="if(event.target===this)closeSOCustomizeCols()">
+        <div class="so-cc-panel">
+            <div class="so-cc-header">
+                <div class="so-cc-title"><span class="so-cc-title-icon">⚙</span> Customize Columns</div>
+                <span class="so-cc-count" id="soCCCount"></span>
+                <button class="so-cc-close" onclick="closeSOCustomizeCols()">✕</button>
+            </div>
+            <div class="so-cc-search">
+                <input type="text" placeholder="Search" oninput="filterSOCCItems(this.value)">
+            </div>
+            <div class="so-cc-list" id="soCCList"></div>
+            <div class="so-cc-footer">
+                <button class="so-cc-save" onclick="saveSOCols()">Save</button>
+                <button class="so-cc-cancel" onclick="closeSOCustomizeCols()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Backorder Modal -->
+    <div id="boModal"
+        style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:100000;align-items:center;justify-content:center;background:rgba(0,0,0,0.4);">
+        <div
+            style="background:#fff;border-radius:10px;width:680px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+            <div
+                style="display:flex;justify-content:space-between;align-items:center;padding:16px 24px;border-bottom:1px solid #e5e7eb;">
+                <h3 style="margin:0;font-size:16px;font-weight:600;color:#333;">Choose items to be backordered</h3>
+                <button onclick="closeBackorderModal()"
+                    style="background:none;border:none;font-size:20px;color:#999;cursor:pointer;">×</button>
+            </div>
+            <div style="padding:16px 24px;overflow-y:auto;flex:1;">
+                <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                    <thead>
+                        <tr style="background:#f9fafb;">
+                            <th style="padding:10px 12px;text-align:center;width:40px;border-bottom:2px solid #e5e7eb;">
+                                ✓</th>
+                            <th style="padding:10px 12px;text-align:left;border-bottom:2px solid #e5e7eb;">Item Name
+                            </th>
+                            <th style="padding:10px 12px;text-align:center;border-bottom:2px solid #e5e7eb;">Ordered
+                            </th>
+                            <th style="padding:10px 12px;text-align:center;border-bottom:2px solid #e5e7eb;">Stock
+                            </th>
+                            <th style="padding:10px 12px;text-align:center;border-bottom:2px solid #e5e7eb;">Missing
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="boItemsBody"></tbody>
+                </table>
+                <label
+                    style="display:flex;align-items:center;gap:8px;margin-top:16px;font-size:13px;color:#555;cursor:pointer;">
+                    <input type="checkbox" id="boCopyDesc">
+                    Copy the sales order item descriptions to the new purchase order
+                </label>
+            </div>
+            <div style="display:flex;gap:10px;padding:16px 24px;border-top:1px solid #e5e7eb;">
+                <button onclick="proceedBackorder()"
+                    style="padding:8px 20px;background:#2563eb;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Backorder</button>
+                <button onclick="closeBackorderModal()"
+                    style="padding:8px 20px;background:#fff;color:#333;border:1px solid #d1d5db;border-radius:6px;font-size:13px;cursor:pointer;font-family:inherit;">Cancel</button>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

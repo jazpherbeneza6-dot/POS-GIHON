@@ -369,6 +369,27 @@ CREATE TABLE IF NOT EXISTS sales_receipt_items (
 CREATE INDEX IF NOT EXISTS idx_sales_receipts_status ON sales_receipts(status);
 CREATE INDEX IF NOT EXISTS idx_sales_receipts_date ON sales_receipts(receipt_date);
 
+-- Add stock_deducted flag to sales_receipts (prevents double-deduction)
+ALTER TABLE sales_receipts ADD COLUMN IF NOT EXISTS stock_deducted BOOLEAN DEFAULT FALSE;
+ALTER TABLE sales_receipts ADD COLUMN IF NOT EXISTS attachments JSONB DEFAULT '[]';
+
+-- Accounting entries table
+CREATE TABLE IF NOT EXISTS accounting_entries (
+    id SERIAL PRIMARY KEY,
+    entry_date DATE DEFAULT CURRENT_DATE,
+    entry_type VARCHAR(50) NOT NULL,
+    account_name VARCHAR(255) NOT NULL,
+    debit DECIMAL(12,2) DEFAULT 0,
+    credit DECIMAL(12,2) DEFAULT 0,
+    reference_number VARCHAR(100),
+    reference_type VARCHAR(50),
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_accounting_entries_ref ON accounting_entries(reference_number);
+CREATE INDEX IF NOT EXISTS idx_accounting_entries_type ON accounting_entries(entry_type);
+
 -- Purchase receives table (tracks individual receive transactions against a PO)
 CREATE TABLE IF NOT EXISTS purchase_receives (
     id SERIAL PRIMARY KEY,
@@ -399,3 +420,25 @@ CREATE TABLE IF NOT EXISTS purchase_receive_items (
 
 CREATE INDEX IF NOT EXISTS idx_purchase_receives_purchase_id ON purchase_receives(purchase_id);
 CREATE INDEX IF NOT EXISTS idx_purchase_receives_status ON purchase_receives(status);
+
+-- Refunds table (tracks refund transactions from credit notes)
+CREATE TABLE IF NOT EXISTS refunds (
+    id SERIAL PRIMARY KEY,
+    refund_number VARCHAR(50) UNIQUE,
+    credit_note_id INTEGER,
+    customer_id INTEGER,
+    customer_name VARCHAR(255),
+    amount DECIMAL(12,2) DEFAULT 0,
+    refund_date DATE DEFAULT CURRENT_DATE,
+    payment_mode VARCHAR(100),
+    from_account VARCHAR(255),
+    reference VARCHAR(100),
+    description TEXT,
+    status VARCHAR(50) DEFAULT 'COMPLETED',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (credit_note_id) REFERENCES credit_notes(id) ON DELETE SET NULL,
+    FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_refunds_credit_note_id ON refunds(credit_note_id);
+CREATE INDEX IF NOT EXISTS idx_refunds_customer_id ON refunds(customer_id);

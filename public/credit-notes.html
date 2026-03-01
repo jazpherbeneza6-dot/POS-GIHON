@@ -37,7 +37,7 @@
             background: white;
         }
 
-        /* Page Header */
+        /* ===== LIST VIEW ===== */
         .page-header {
             display: flex;
             align-items: center;
@@ -134,7 +134,6 @@
             background: #f5f5f5;
         }
 
-        /* Empty State */
         .empty-state {
             display: flex;
             flex-direction: column;
@@ -172,9 +171,8 @@
             text-decoration: underline;
         }
 
-        /* Credit Notes Table */
         .notes-container {
-            padding: 24px;
+            padding: 0;
         }
 
         .notes-table {
@@ -201,70 +199,1755 @@
             font-size: 13px;
             color: #333;
         }
+
+        .notes-table tr:hover {
+            background: #f8f9ff;
+        }
+
+        /* ===== DETAIL VIEW ===== */
+        .detail-view {
+            display: none;
+            height: calc(100vh - 0px);
+        }
+
+        .detail-view.active {
+            display: flex;
+        }
+
+        .cn-left-panel {
+            width: 300px;
+            min-width: 300px;
+            border-right: 1px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .cn-left-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f9fafb;
+        }
+
+        .cn-left-header-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .cn-left-back {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: #4285f4;
+            padding: 4px 8px;
+        }
+
+        .cn-left-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .cn-left-item {
+            padding: 14px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .cn-left-item:hover {
+            background: #f5f7ff;
+        }
+
+        .cn-left-item.active {
+            background: #e8f0fe;
+            border-left: 3px solid #4285f4;
+        }
+
+        .cn-left-item-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .cn-left-item-name {
+            font-weight: 500;
+            color: #333;
+            font-size: 13px;
+        }
+
+        .cn-left-item-amount {
+            font-weight: 600;
+            color: #333;
+            font-size: 13px;
+        }
+
+        .cn-left-item-bottom {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            color: #888;
+        }
+
+        .cn-left-item-status {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 10px;
+        }
+
+        .cn-right-panel {
+            flex: 1;
+            overflow-y: auto;
+            background: #f5f6fa;
+        }
+
+        /* Detail Header */
+        .cn-detail-top {
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .cn-detail-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 24px;
+        }
+
+        .cn-detail-header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .cn-detail-loc {
+            font-size: 11px;
+            color: #888;
+        }
+
+        .cn-detail-number {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .cn-detail-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cn-detail-header-actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            padding: 4px 8px;
+        }
+
+        /* Action bar */
+        .cn-action-bar {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            padding: 8px 24px;
+            border-bottom: 1px solid #e9ecef;
+            flex-wrap: wrap;
+        }
+
+        .cn-action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 6px 12px;
+            font-size: 12px;
+            color: #555;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            border-radius: 4px;
+        }
+
+        .cn-action-btn:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .cn-action-sep {
+            width: 1px;
+            height: 20px;
+            background: #e0e0e0;
+            margin: 0 4px;
+        }
+
+        /* What's Next banner */
+        .cn-whats-next {
+            padding: 14px 24px;
+            background: #f0f7ff;
+            border-bottom: 1px solid #d0e3f7;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .cn-whats-next-label {
+            font-size: 12px;
+            color: #555;
+        }
+
+        .cn-whats-next-label strong {
+            color: #333;
+        }
+
+        .cn-whats-next .btn-send {
+            padding: 6px 16px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .cn-whats-next .btn-send:hover {
+            background: #3367d6;
+        }
+
+        .cn-whats-next .btn-convert {
+            padding: 6px 16px;
+            background: white;
+            color: #333;
+            border: 1px solid #d0d5dd;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .cn-whats-next .btn-convert:hover {
+            background: #f5f5f5;
+        }
+
+        /* Document Card */
+        .cn-doc-card {
+            margin: 24px;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cn-doc-ribbon {
+            position: absolute;
+            top: 20px;
+            left: -35px;
+            width: 140px;
+            text-align: center;
+            padding: 6px 0;
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
+            transform: rotate(-45deg);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            z-index: 2;
+        }
+
+        .cn-doc-ribbon.draft {
+            background: #6c757d;
+        }
+
+        .cn-doc-ribbon.open {
+            background: #28a745;
+        }
+
+        .cn-doc-ribbon.closed {
+            background: #dc3545;
+        }
+
+        .cn-doc-inner {
+            padding: 40px 40px 30px;
+        }
+
+        .cn-doc-top {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .cn-doc-company {
+            font-size: 14px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .cn-doc-company-sub {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .cn-doc-title-block {
+            text-align: right;
+        }
+
+        .cn-doc-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #333;
+            letter-spacing: 1px;
+        }
+
+        .cn-doc-cn-number {
+            font-size: 13px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .cn-doc-credits-label {
+            font-size: 11px;
+            color: #888;
+            margin-top: 10px;
+        }
+
+        .cn-doc-credits-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .cn-doc-billto {
+            margin-bottom: 20px;
+        }
+
+        .cn-doc-billto-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+
+        .cn-doc-billto-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #4285f4;
+        }
+
+        .cn-doc-billto-addr {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .cn-doc-date-row {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+            gap: 12px;
+        }
+
+        .cn-doc-date-label {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .cn-doc-date-value {
+            font-size: 12px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* Items table in doc */
+        .cn-items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .cn-items-table th {
+            background: #3a5ba0;
+            color: white;
+            padding: 10px 14px;
+            font-size: 11px;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        .cn-items-table th:last-child {
+            text-align: right;
+        }
+
+        .cn-items-table td {
+            padding: 12px 14px;
+            font-size: 12px;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .cn-items-table td:last-child {
+            text-align: right;
+        }
+
+        .cn-doc-totals {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .cn-doc-totals-table {
+            width: 280px;
+        }
+
+        .cn-doc-totals-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 12px;
+        }
+
+        .cn-doc-totals-row.total {
+            font-weight: 700;
+            font-size: 13px;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 10px;
+            margin-top: 6px;
+        }
+
+        .cn-doc-credits-bar {
+            background: #e8f4fd;
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+        /* More Info section */
+        .cn-more-info {
+            margin: 0 24px 24px;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 20px 24px;
+        }
+
+        .cn-more-info h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 14px;
+        }
+
+        .cn-more-info-row {
+            display: flex;
+            padding: 6px 0;
+            font-size: 12px;
+        }
+
+        .cn-more-info-label {
+            width: 180px;
+            color: #888;
+        }
+
+        .cn-more-info-value {
+            color: #333;
+        }
+
+        /* === Refund Form === */
+        .refund-page-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            padding: 20px 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .refund-info-bar {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            padding: 16px 24px;
+            border-bottom: 1px solid #e9ecef;
+            background: #fafbfc;
+        }
+
+        .refund-info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .refund-info-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #888;
+        }
+
+        .refund-info-text {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .refund-info-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .refund-amount-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            border-bottom: 1px solid #e9ecef;
+            background: #f8f9fd;
+        }
+
+        .refund-amount-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .refund-amount-label {
+            font-size: 13px;
+            color: #e53935;
+            font-weight: 500;
+        }
+
+        .refund-amount-prefix {
+            font-size: 13px;
+            color: #888;
+            font-weight: 500;
+        }
+
+        .refund-amount-input {
+            width: 120px;
+            padding: 8px 10px;
+            border: 1px solid #4285f4;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .refund-balance {
+            font-size: 13px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .refund-form-body {
+            padding: 24px;
+        }
+
+        .refund-form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px 40px;
+            max-width: 700px;
+        }
+
+        .refund-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .refund-field label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #e53935;
+        }
+
+        .refund-field label.optional {
+            color: #555;
+        }
+
+        .refund-field input,
+        .refund-field select,
+        .refund-field textarea {
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .refund-field input:focus,
+        .refund-field select:focus,
+        .refund-field textarea:focus {
+            border-color: #4285f4;
+        }
+
+        .refund-field textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        .refund-field-full {
+            grid-column: 1 / -1;
+        }
+
+        .refund-actions {
+            display: flex;
+            gap: 10px;
+            padding: 24px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .refund-btn-save {
+            padding: 9px 24px;
+            background: #4285f4;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .refund-btn-save:hover {
+            background: #3367d6;
+        }
+
+        .refund-btn-cancel {
+            padding: 9px 24px;
+            background: #f0f0f0;
+            color: #333;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .refund-btn-cancel:hover {
+            background: #e0e0e0;
+        }
+
+        /* ===== APPLY CREDITS MODAL ===== */
+        .ac-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 5000;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 40px;
+        }
+
+        .ac-overlay.open {
+            display: flex;
+        }
+
+        .ac-modal {
+            background: #fff;
+            border-radius: 8px;
+            width: 92%;
+            max-width: 980px;
+            max-height: calc(100vh - 80px);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+            animation: acSlideIn 0.25s ease;
+        }
+
+        @keyframes acSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .ac-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .ac-header h2 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .ac-close {
+            font-size: 20px;
+            color: #e53935;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-weight: 600;
+            line-height: 1;
+        }
+
+        .ac-close:hover {
+            color: #c62828;
+        }
+
+        .ac-info-bar {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            padding: 18px 24px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .ac-info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ac-info-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .ac-info-icon.blue {
+            background: #e8f0fe;
+            color: #4285f4;
+        }
+
+        .ac-info-icon.green {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .ac-info-label {
+            font-size: 11px;
+            color: #888;
+        }
+
+        .ac-info-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .ac-info-link {
+            font-size: 12px;
+            color: #4285f4;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .ac-info-link:hover {
+            text-decoration: underline;
+        }
+
+        .ac-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 24px;
+        }
+
+        .ac-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .ac-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .ac-toggle-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #555;
+        }
+
+        .ac-toggle {
+            width: 36px;
+            height: 20px;
+            background: #ccc;
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .ac-toggle.on {
+            background: #4285f4;
+        }
+
+        .ac-toggle::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.2s;
+        }
+
+        .ac-toggle.on::after {
+            transform: translateX(16px);
+        }
+
+        .ac-clear-link {
+            font-size: 12px;
+            color: #4285f4;
+            cursor: pointer;
+            text-align: right;
+            margin-bottom: 6px;
+        }
+
+        .ac-clear-link:hover {
+            text-decoration: underline;
+        }
+
+        .ac-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .ac-table thead th {
+            text-align: left;
+            padding: 10px 12px;
+            background: #f8f9fa;
+            color: #555;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 11px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .ac-table thead th:nth-child(n+4) {
+            text-align: right;
+        }
+
+        .ac-table tbody td {
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #333;
+        }
+
+        .ac-table tbody td:nth-child(n+4) {
+            text-align: right;
+        }
+
+        .ac-apply-input {
+            width: 90px;
+            padding: 6px 8px;
+            border: 1px solid #d0d5dd;
+            border-radius: 4px;
+            font-size: 13px;
+            text-align: right;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .ac-apply-input:focus {
+            border-color: #4285f4;
+        }
+
+        .ac-pay-full {
+            font-size: 11px;
+            color: #4285f4;
+            cursor: pointer;
+            display: block;
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        .ac-pay-full:hover {
+            text-decoration: underline;
+        }
+
+        .ac-totals {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .ac-totals-box {
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 12px 20px;
+            min-width: 240px;
+        }
+
+        .ac-totals-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            font-size: 13px;
+        }
+
+        .ac-totals-label {
+            color: #555;
+        }
+
+        .ac-totals-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .ac-footer {
+            display: flex;
+            gap: 10px;
+            padding: 16px 24px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .ac-btn-save {
+            padding: 9px 24px;
+            background: #4285f4;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .ac-btn-save:hover {
+            background: #3367d6;
+        }
+
+        .ac-btn-save:disabled {
+            background: #9fc2f7;
+            cursor: not-allowed;
+        }
+
+        .ac-btn-cancel {
+            padding: 9px 24px;
+            background: none;
+            color: #555;
+            border: none;
+            font-size: 13px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .ac-btn-cancel:hover {
+            color: #333;
+        }
+
+        .ac-empty {
+            padding: 20px 24px;
+            font-size: 13px;
+            color: #555;
+        }
     </style>
 </head>
 
 <body>
-    <!-- Sidebar Container -->
     <div id="sidebarContainer"></div>
 
     <div class="main-layout">
         <div class="content" id="content">
-            <!-- Page Header -->
-            <div class="page-header">
-                <div class="page-title-wrapper">
-                    <h1 class="page-title">
-                        All Credit Notes
-                        <span class="dropdown-arrow">▼</span>
-                    </h1>
-                </div>
-                <div class="header-actions">
-                    <div class="btn-new-group">
-                        <button class="btn-new" onclick="createCreditNote()">
-                            <span>+</span> New
-                        </button>
-                        <button class="btn-new-dropdown">▼</button>
+            <!-- ===== LIST VIEW ===== -->
+            <div id="listView">
+                <div class="page-header">
+                    <div class="page-title-wrapper">
+                        <h1 class="page-title">
+                            All Credit Notes
+                            <span class="dropdown-arrow">▼</span>
+                        </h1>
                     </div>
-                    <button class="btn-more">⋯</button>
+                    <div class="header-actions">
+                        <div class="btn-new-group">
+                            <button class="btn-new" onclick="createCreditNote()">
+                                <span>+</span> New
+                            </button>
+                            <button class="btn-new-dropdown">▼</button>
+                        </div>
+                        <button class="btn-more">⋯</button>
+                    </div>
+                </div>
+
+                <div class="empty-state" id="emptyState">
+                    <button class="btn-create" onclick="createCreditNote()">CREATE NEW CREDIT NOTE</button>
+                    <a href="/import-credit-notes.html" class="import-link">Import Credit Notes</a>
+                </div>
+
+                <div class="notes-container" id="notesContainer" style="display: none;">
+                    <table class="notes-table">
+                        <thead>
+                            <tr>
+                                <th>DATE</th>
+                                <th>CREDIT NOTE#</th>
+                                <th>REFERENCE#</th>
+                                <th>CUSTOMER NAME</th>
+                                <th>STATUS</th>
+                                <th style="text-align:right;">AMOUNT</th>
+                                <th style="text-align:right;">BALANCE</th>
+                            </tr>
+                        </thead>
+                        <tbody id="notesBody"></tbody>
+                    </table>
                 </div>
             </div>
 
-            <!-- Empty State -->
-            <div class="empty-state" id="emptyState">
-                <button class="btn-create" onclick="createCreditNote()">CREATE NEW CREDIT NOTE</button>
-                <a href="/import-credit-notes.html" class="import-link">Import Credit Notes</a>
-            </div>
-
-            <!-- Credit Notes Container (hidden when empty) -->
-            <div class="notes-container" id="notesContainer" style="display: none;">
-                <table class="notes-table">
-                    <thead>
-                        <tr>
-                            <th>DATE</th>
-                            <th>CREDIT NOTE#</th>
-                            <th>REFERENCE#</th>
-                            <th>CUSTOMER NAME</th>
-                            <th>STATUS</th>
-                            <th>AMOUNT</th>
-                            <th>BALANCE</th>
-                        </tr>
-                    </thead>
-                    <tbody id="notesBody">
-                        <!-- Credit Notes will be added here -->
-                    </tbody>
-                </table>
+            <!-- ===== DETAIL VIEW ===== -->
+            <div id="detailView" class="detail-view">
+                <div class="cn-left-panel">
+                    <div class="cn-left-header">
+                        <button class="cn-left-back" onclick="backToList()">‹ Back</button>
+                        <span class="cn-left-header-title">Credit Notes</span>
+                    </div>
+                    <div class="cn-left-list" id="cnLeftList"></div>
+                </div>
+                <div class="cn-right-panel" id="cnRightPanel">
+                    <!-- Rendered dynamically -->
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Layout Script -->
     <script src="/js/layout.js"></script>
     <script>
-        // Create new credit note
-        function createCreditNote() {
-            window.location.href = '/new-credit-note.html';
+        let allNotes = [];
+        let selectedCnId = null;
+        let currentCn = null;
+
+        function createCreditNote() { window.location.href = '/new-credit-note.html'; }
+
+        function formatDate(d) {
+            if (!d) return '';
+            const dt = new Date(d);
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            return dt.getDate() + ' ' + months[dt.getMonth()] + ' ' + dt.getFullYear();
         }
+
+        function formatCurrency(v) {
+            return 'PHP' + parseFloat(v || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function statusColor(s) {
+            const c = { 'DRAFT': '#6c757d', 'OPEN': '#28a745', 'CLOSED': '#dc3545', 'VOID': '#999' };
+            return c[(s || '').toUpperCase()] || '#6c757d';
+        }
+
+        function getStatusBadgeHtml(status) {
+            const s = (status || 'DRAFT').toUpperCase();
+            return `<span style="color:${statusColor(s)};font-weight:600;font-size:11px;text-transform:uppercase;">${s}</span>`;
+        }
+
+        // ===== LIST VIEW =====
+        async function loadCreditNotes() {
+            try {
+                const res = await fetch('/api/credit-notes');
+                if (!res.ok) return;
+                allNotes = await res.json();
+
+                const emptyState = document.getElementById('emptyState');
+                const container = document.getElementById('notesContainer');
+                const tbody = document.getElementById('notesBody');
+
+                if (allNotes.length === 0) {
+                    emptyState.style.display = 'flex';
+                    container.style.display = 'none';
+                    return;
+                }
+
+                emptyState.style.display = 'none';
+                container.style.display = 'block';
+
+                tbody.innerHTML = allNotes.map(cn => {
+                    const total = parseFloat(cn.total || 0);
+                    return `
+                        <tr style="cursor:pointer;" onclick="viewCreditNote(${cn.id})">
+                            <td>${formatDate(cn.credit_note_date)}</td>
+                            <td style="color:#4285f4;font-weight:500;">${cn.credit_note_number || ''}</td>
+                            <td>${cn.reference || ''}</td>
+                            <td>${cn.customer_name || ''}</td>
+                            <td>${getStatusBadgeHtml(cn.status)}</td>
+                            <td style="text-align:right;">${formatCurrency(total)}</td>
+                            <td style="text-align:right;">${formatCurrency(total)}</td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error('Error loading credit notes:', err);
+            }
+        }
+
+        // ===== DETAIL VIEW =====
+        async function viewCreditNote(id) {
+            selectedCnId = id;
+
+            // Switch to detail view
+            document.getElementById('listView').style.display = 'none';
+            document.getElementById('detailView').classList.add('active');
+
+            // Render left list
+            renderLeftList();
+
+            // Load detail
+            try {
+                const res = await fetch('/api/credit-notes/' + id);
+                if (!res.ok) return;
+                currentCn = await res.json();
+                await renderDetail(currentCn);
+            } catch (err) {
+                console.error('Error loading credit note:', err);
+            }
+        }
+
+        function renderLeftList() {
+            const list = document.getElementById('cnLeftList');
+            list.innerHTML = allNotes.map(cn => {
+                const isActive = cn.id === selectedCnId;
+                const total = parseFloat(cn.total || 0);
+                const status = (cn.status || 'DRAFT').toUpperCase();
+                return `
+                    <div class="cn-left-item ${isActive ? 'active' : ''}" onclick="viewCreditNote(${cn.id})">
+                        <div class="cn-left-item-top">
+                            <span class="cn-left-item-name">${cn.customer_name || 'N/A'}</span>
+                            <span class="cn-left-item-amount">${formatCurrency(total)}</span>
+                        </div>
+                        <div class="cn-left-item-bottom">
+                            <span>${cn.credit_note_number || ''}</span>
+                            <span>·</span>
+                            <span>${formatDate(cn.credit_note_date)}</span>
+                            <span>·</span>
+                            <span class="cn-left-item-status" style="color:${statusColor(status)}">${status}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function renderDetail(cn) {
+            const panel = document.getElementById('cnRightPanel');
+            const status = (cn.status || 'DRAFT').toUpperCase();
+            const isDraft = status === 'DRAFT';
+            const isOpen = status === 'OPEN';
+            const items = cn.items || [];
+            const total = parseFloat(cn.total || 0);
+
+            // Calculate credits remaining by fetching applied credits
+            let creditsUsed = 0;
+            try {
+                const customerName = (cn.customer_name || '').toLowerCase().trim();
+                const custRes = await fetch('/api/customers');
+                if (custRes.ok) {
+                    const customers = await custRes.json();
+                    const match = customers.find(c => {
+                        const dn = (c.display_name || '').toLowerCase().trim();
+                        const fn = ((c.salutation || '') + ' ' + (c.first_name || '') + ' ' + (c.last_name || '')).toLowerCase().trim();
+                        return dn === customerName || fn === customerName;
+                    });
+                    if (match) {
+                        const credRes = await fetch('/api/customer-credits/' + match.id);
+                        if (credRes.ok) {
+                            const credData = await credRes.json();
+                            creditsUsed = (credData.entries || []).filter(e => e.type === 'CREDIT_APPLIED').reduce((s, e) => s + parseFloat(e.amount || 0), 0);
+                        }
+                    }
+                }
+            } catch (e) { console.error(e); }
+            const creditsRemaining = Math.max(0, total - creditsUsed);
+
+            // Items rows
+            const itemRows = items.map((item, idx) => {
+                const qty = parseFloat(item.quantity || 0);
+                const rate = parseFloat(item.rate || 0);
+                const amount = parseFloat(item.amount || (qty * rate));
+                return `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td>${item.item_name || ''}</td>
+                        <td style="text-align:center;">${qty.toFixed(2)}<br><span style="font-size:10px;color:#999;">pcs</span></td>
+                        <td style="text-align:right;">${rate.toFixed(2)}</td>
+                        <td style="text-align:right;">${amount.toFixed(2)}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            panel.innerHTML = `
+                <div class="cn-detail-top">
+                    <div class="cn-detail-header">
+                        <div class="cn-detail-header-left">
+                            <span class="cn-detail-loc">Location: Head Office</span>
+                            <span class="cn-detail-number">${cn.credit_note_number || ''}</span>
+                        </div>
+                        <div class="cn-detail-header-actions">
+                            <button title="Comments">💬</button>
+                            <button title="Close" style="font-size:20px;color:#e53935;" onclick="backToList()">✕</button>
+                        </div>
+                    </div>
+
+                    <div class="cn-action-bar">
+                        <button class="cn-action-btn" onclick="editCreditNote()">✏️ Edit</button>
+                        <button class="cn-action-btn">✉️ Email</button>
+                        <button class="cn-action-btn">📄 PDF/Print ▾</button>
+                        ${isOpen ? '<button class="cn-action-btn" onclick="applyToInvoices()">📋 Apply to Invoices</button>' : ''}
+                        ${isOpen ? '<button class="cn-action-btn" onclick="refundCreditNote()">💰 Refund</button>' : ''}
+                        <div class="cn-action-sep"></div>
+                        <button class="cn-action-btn">⋯</button>
+                    </div>
+
+                    ${isDraft ? `
+                    <div class="cn-whats-next">
+                        <span class="cn-whats-next-label">✨ <strong>WHAT'S NEXT?</strong> Go ahead and email this credit note to your customer or simply convert it to open.</span>
+                        <button class="btn-send">Send Credit Note</button>
+                        <button class="btn-convert" onclick="convertToOpen(${cn.id})">Convert to Open</button>
+                    </div>
+                    ` : ''}
+                </div>
+
+                <div class="cn-doc-card">
+                    <div class="cn-doc-ribbon ${status.toLowerCase()}">${status}</div>
+                    <div class="cn-doc-inner">
+                        <div class="cn-doc-top">
+                            <div>
+                                <div class="cn-doc-company">SOLO</div>
+                                <div class="cn-doc-company-sub">Philippines<br>projectfinal357@gmail.com</div>
+                            </div>
+                            <div class="cn-doc-title-block">
+                                <div class="cn-doc-title">CREDIT NOTE</div>
+                                <div class="cn-doc-cn-number"># ${cn.credit_note_number || ''}</div>
+                                <div class="cn-doc-credits-label">Credits Remaining</div>
+                                <div class="cn-doc-credits-value">${formatCurrency(creditsRemaining)}</div>
+                            </div>
+                        </div>
+
+                        ${cn.customer_name ? `
+                        <div class="cn-doc-billto">
+                            <div class="cn-doc-billto-label">Bill To</div>
+                            <div class="cn-doc-billto-name">${cn.customer_name}</div>
+                        </div>
+                        ` : ''}
+
+                        <div class="cn-doc-date-row">
+                            <span class="cn-doc-date-label">Credit Date :</span>
+                            <span class="cn-doc-date-value">${formatDate(cn.credit_note_date)}</span>
+                        </div>
+
+                        <table class="cn-items-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Item & Description</th>
+                                    <th style="text-align:center;">Qty</th>
+                                    <th style="text-align:right;">Rate</th>
+                                    <th style="text-align:right;">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${itemRows || '<tr><td colspan="5" style="text-align:center;color:#999;">No items</td></tr>'}
+                            </tbody>
+                        </table>
+
+                        <div class="cn-doc-totals">
+                            <div class="cn-doc-totals-table">
+                                <div class="cn-doc-totals-row"><span>Sub Total</span><span>${parseFloat(cn.sub_total || total).toFixed(2)}</span></div>
+                                <div class="cn-doc-totals-row total"><span>Total</span><span>${formatCurrency(total)}</span></div>
+                                <div class="cn-doc-credits-bar"><span>Credits Remaining</span><span>${formatCurrency(creditsRemaining)}</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cn-more-info">
+                    <h3>More Information</h3>
+                    ${cn.salesperson ? `<div class="cn-more-info-row"><span class="cn-more-info-label">Salesperson</span><span class="cn-more-info-value">: ${cn.salesperson}</span></div>` : ''}
+                    ${cn.reference ? `<div class="cn-more-info-row"><span class="cn-more-info-label">Reference#</span><span class="cn-more-info-value">: ${cn.reference}</span></div>` : ''}
+                </div>
+            `;
+        }
+
+        function backToList() {
+            document.getElementById('listView').style.display = '';
+            document.getElementById('detailView').classList.remove('active');
+            selectedCnId = null;
+            currentCn = null;
+            loadCreditNotes(); // Refresh list
+        }
+
+        async function convertToOpen(cnId) {
+            if (!confirm('Convert this credit note to Open? This will create accounting entries and add unused credits to the customer.')) return;
+            try {
+                const res = await fetch('/api/credit-notes/' + cnId, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'OPEN' })
+                });
+                if (res.ok) {
+                    alert('Credit Note converted to Open successfully!');
+                    // Reload
+                    await loadCreditNotes();
+                    viewCreditNote(cnId);
+                } else {
+                    const err = await res.json();
+                    alert('Error: ' + (err.error || 'Unknown error'));
+                }
+            } catch (e) {
+                console.error('Error converting to open:', e);
+                alert('Error converting credit note.');
+            }
+        }
+
+        function editCreditNote() {
+            if (!currentCn) return;
+            if ((currentCn.status || '').toUpperCase() === 'OPEN') {
+                alert('This credit note is OPEN and cannot be edited to preserve accounting integrity.');
+                return;
+            }
+            // TODO: navigate to edit page
+            alert('Edit functionality - coming soon');
+        }
+
+        async function applyToInvoices() {
+            if (!currentCn) return;
+            const cn = currentCn;
+            const cnTotal = parseFloat(cn.total || 0);
+            const customerName = cn.customer_name || '';
+
+            // Find customer_id by matching name
+            let customerId = null;
+            try {
+                const custRes = await fetch('/api/customers');
+                if (custRes.ok) {
+                    const customers = await custRes.json();
+                    const match = customers.find(c => {
+                        const dn = (c.display_name || '').toLowerCase().trim();
+                        const fn = ((c.salutation || '') + ' ' + (c.first_name || '') + ' ' + (c.last_name || '')).toLowerCase().trim();
+                        return dn === customerName.toLowerCase().trim() || fn === customerName.toLowerCase().trim();
+                    });
+                    if (match) customerId = match.id;
+                }
+            } catch (e) { console.error(e); }
+
+            // Fetch unpaid invoices for this customer
+            let unpaidInvoices = [];
+            try {
+                const invRes = await fetch('/api/invoices');
+                if (invRes.ok) {
+                    const allInv = await invRes.json();
+                    unpaidInvoices = allInv.filter(i => {
+                        const st = (i.status || '').toUpperCase();
+                        return i.customer_id == customerId && st !== 'DRAFT' && st !== 'VOID' && st !== 'PAID';
+                    });
+                }
+            } catch (e) { console.error(e); }
+
+            // Get available credits balance
+            let availableCredits = cnTotal;
+            try {
+                const credRes = await fetch('/api/customer-credits/' + customerId);
+                if (credRes.ok) {
+                    const credData = await credRes.json();
+                    availableCredits = parseFloat(credData.balance || 0);
+                }
+            } catch (e) { }
+
+            const overlay = document.getElementById('acOverlay');
+            const modal = document.getElementById('acModal');
+
+            if (unpaidInvoices.length === 0) {
+                // No open invoices — show simple message
+                modal.innerHTML = `
+                    <div class="ac-header">
+                        <h2>Apply Credits to Invoices</h2>
+                        <button class="ac-close" onclick="closeApplyCredits()">&times;</button>
+                    </div>
+                    <div class="ac-empty">
+                        <p>There are no invoices in the open status for this customer. Hence, credits cannot be applied.</p>
+                    </div>
+                    <div class="ac-footer">
+                        <button class="ac-btn-save" onclick="closeApplyCredits()">OK</button>
+                    </div>
+                `;
+                overlay.classList.add('open');
+                return;
+            }
+
+            // Build invoices table
+            const today = new Date();
+            const todayStr = today.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+            const fmtDate = d => { const dt = new Date(d); return dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); };
+
+            const invoiceRows = unpaidInvoices.map((inv, idx) => {
+                const total = parseFloat(inv.total || 0);
+                const balanceDue = parseFloat(inv.balance_due || inv.total || 0);
+                return `<tr>
+                    <td>${inv.invoice_number || ''}</td>
+                    <td>${inv.invoice_date ? fmtDate(inv.invoice_date) : ''}</td>
+                    <td>Head Office</td>
+                    <td>PHP${total.toFixed(2)}</td>
+                    <td>PHP${balanceDue.toFixed(2)}</td>
+                    <td id="acAppliedOn_${idx}">${todayStr}</td>
+                    <td>
+                        <input type="number" class="ac-apply-input" id="acAmount_${idx}"
+                            value="0" min="0" max="${balanceDue.toFixed(2)}" step="0.01"
+                            data-balance="${balanceDue}" data-inv-id="${inv.id}"
+                            data-inv-num="${inv.invoice_number || ''}"
+                            oninput="recalcApplyCredits()">
+                        <span class="ac-pay-full" onclick="payInFull(${idx})">Pay in Full</span>
+                    </td>
+                </tr>`;
+            }).join('');
+
+            modal.innerHTML = `
+                <div class="ac-header">
+                    <h2>Apply Credits to Invoices</h2>
+                    <button class="ac-close" onclick="closeApplyCredits()">&times;</button>
+                </div>
+                <div class="ac-info-bar">
+                    <div class="ac-info-item">
+                        <div class="ac-info-icon blue">📄</div>
+                        <div>
+                            <div class="ac-info-label">Credit Note#</div>
+                            <div class="ac-info-value">${cn.credit_note_number}</div>
+                        </div>
+                    </div>
+                    <div class="ac-info-item">
+                        <div class="ac-info-icon green">💰</div>
+                        <div>
+                            <div class="ac-info-label">Available Credits</div>
+                            <div class="ac-info-value">PHP${availableCredits.toFixed(2)} <span class="ac-info-link">Apply Credits to Invoices</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ac-body">
+                    <div class="ac-section-header">
+                        <span class="ac-section-title">Unpaid Invoices</span>
+                        <div class="ac-toggle-wrap">
+                            Set Applied on Date ⓘ
+                            <div class="ac-toggle on" id="acToggle" onclick="this.classList.toggle('on')"></div>
+                        </div>
+                    </div>
+                    <div class="ac-clear-link" onclick="clearAppliedAmounts()">Clear Applied Amount</div>
+                    <table class="ac-table">
+                        <thead>
+                            <tr>
+                                <th>INVOICE NUMBER</th>
+                                <th>INVOICE DATE</th>
+                                <th>LOCATION</th>
+                                <th>INVOICE AMOUNT</th>
+                                <th>INVOICE BALANCE</th>
+                                <th>CREDITS APPLIED ON</th>
+                                <th>CREDITS TO APPLY</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${invoiceRows}
+                        </tbody>
+                    </table>
+                    <div class="ac-totals">
+                        <div class="ac-totals-box">
+                            <div class="ac-totals-row">
+                                <span class="ac-totals-label">Credits Applied:</span>
+                                <span class="ac-totals-value" id="acCreditsApplied">0.00</span>
+                            </div>
+                            <div class="ac-totals-row">
+                                <span class="ac-totals-label">Remaining Credits:</span>
+                                <span class="ac-totals-value" id="acRemainingCredits">${availableCredits.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ac-footer">
+                    <button class="ac-btn-save" id="acSaveBtn" onclick="saveApplyCredits(${customerId}, '${customerName.replace(/'/g, "\\'")}')">Save</button>
+                    <button class="ac-btn-cancel" onclick="closeApplyCredits()">Cancel</button>
+                </div>
+            `;
+
+            // Store available credits for recalc
+            overlay.dataset.available = availableCredits;
+            overlay.classList.add('open');
+        }
+
+        function closeApplyCredits() {
+            document.getElementById('acOverlay').classList.remove('open');
+        }
+
+        function recalcApplyCredits() {
+            const inputs = document.querySelectorAll('.ac-apply-input');
+            let total = 0;
+            inputs.forEach(inp => {
+                const val = parseFloat(inp.value) || 0;
+                const maxBal = parseFloat(inp.dataset.balance) || 0;
+                if (val > maxBal) { inp.value = maxBal; }
+                total += Math.min(val, maxBal);
+            });
+            const available = parseFloat(document.getElementById('acOverlay').dataset.available) || 0;
+            // Don't allow total to exceed available credits
+            if (total > available) {
+                // Reduce the last changed input
+                total = 0;
+                inputs.forEach(inp => { total += parseFloat(inp.value) || 0; });
+            }
+            document.getElementById('acCreditsApplied').textContent = total.toFixed(2);
+            document.getElementById('acRemainingCredits').textContent = Math.max(0, available - total).toFixed(2);
+        }
+
+        function payInFull(idx) {
+            const inp = document.getElementById('acAmount_' + idx);
+            if (inp) {
+                const available = parseFloat(document.getElementById('acOverlay').dataset.available) || 0;
+                // Calculate already applied on other inputs
+                let otherTotal = 0;
+                document.querySelectorAll('.ac-apply-input').forEach(i => {
+                    if (i.id !== 'acAmount_' + idx) otherTotal += parseFloat(i.value) || 0;
+                });
+                const maxCanApply = Math.min(parseFloat(inp.dataset.balance), available - otherTotal);
+                inp.value = Math.max(0, maxCanApply).toFixed(2);
+                recalcApplyCredits();
+            }
+        }
+
+        function clearAppliedAmounts() {
+            document.querySelectorAll('.ac-apply-input').forEach(inp => { inp.value = '0'; });
+            recalcApplyCredits();
+        }
+
+        async function saveApplyCredits(customerId, customerName) {
+            const inputs = document.querySelectorAll('.ac-apply-input');
+            const applications = [];
+            inputs.forEach(inp => {
+                const amount = parseFloat(inp.value) || 0;
+                if (amount > 0) {
+                    applications.push({
+                        invoice_id: parseInt(inp.dataset.invId),
+                        invoice_number: inp.dataset.invNum,
+                        amount: amount
+                    });
+                }
+            });
+
+            if (applications.length === 0) {
+                alert('Please enter credit amounts to apply.');
+                return;
+            }
+
+            const saveBtn = document.getElementById('acSaveBtn');
+            if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving...'; }
+
+            try {
+                for (const app of applications) {
+                    const res = await fetch('/api/customer-credits/apply', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            customer_id: customerId,
+                            customer_name: customerName,
+                            invoice_id: app.invoice_id,
+                            invoice_number: app.invoice_number,
+                            amount: app.amount
+                        })
+                    });
+                    if (!res.ok) {
+                        const err = await res.json();
+                        alert('Error applying credit to ' + app.invoice_number + ': ' + (err.error || 'Unknown error'));
+                        if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save'; }
+                        return;
+                    }
+                }
+                showToast('Credits applied successfully!');
+                closeApplyCredits();
+                await loadCreditNotes();
+                if (currentCn) viewCreditNote(currentCn.id);
+            } catch (e) {
+                console.error('Error applying credits:', e);
+                alert('Failed to apply credits. Please try again.');
+                if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save'; }
+            }
+        }
+
+        function refundCreditNote() {
+            if (!currentCn) return;
+            const cn = currentCn;
+            const total = parseFloat(cn.total || 0);
+            const today = new Date();
+            const todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+            const todayDisplay = formatDate(today);
+
+            const panel = document.getElementById('cnRightPanel');
+            panel.innerHTML = `
+                <div class="refund-page-title">Refund (${cn.credit_note_number})</div>
+                <div class="refund-info-bar">
+                    <div class="refund-info-item">
+                        <div class="refund-info-icon">👤</div>
+                        <div>
+                            <div class="refund-info-text">Customer Name</div>
+                            <div class="refund-info-value">${cn.customer_name || 'N/A'}</div>
+                        </div>
+                    </div>
+                    <div class="refund-info-item">
+                        <div class="refund-info-icon">📄</div>
+                        <div>
+                            <div class="refund-info-text">Credit Note Number</div>
+                            <div class="refund-info-value">${cn.credit_note_number}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="refund-amount-bar">
+                    <div class="refund-amount-group">
+                        <span class="refund-amount-label">Amount*</span>
+                        <span class="refund-amount-prefix">PHP</span>
+                        <input type="number" class="refund-amount-input" id="refundAmount" value="${total.toFixed(0)}" step="0.01" min="0" max="${total}">
+                    </div>
+                    <div class="refund-balance">Balance : ${formatCurrency(total)}</div>
+                </div>
+                <div class="refund-form-body">
+                    <div class="refund-form-grid">
+                        <div class="refund-field">
+                            <label>Refunded On*</label>
+                            <input type="date" id="refundDate" value="${todayStr}">
+                        </div>
+                        <div class="refund-field">
+                            <label class="optional">Payment Mode</label>
+                            <select id="refundPaymentMode">
+                                <option value="Cash">Cash</option>
+                                <option value="Bank Transfer">Bank Transfer</option>
+                                <option value="Credit Card">Credit Card</option>
+                                <option value="Check">Check</option>
+                            </select>
+                        </div>
+                        <div class="refund-field">
+                            <label class="optional">Reference#</label>
+                            <input type="text" id="refundReference" placeholder="">
+                        </div>
+                        <div class="refund-field">
+                            <label>From Account*</label>
+                            <select id="refundFromAccount">
+                                <option value="Petty Cash">Petty Cash</option>
+                                <option value="Bank Account">Bank Account</option>
+                            </select>
+                        </div>
+                        <div class="refund-field refund-field-full">
+                            <label class="optional">Description</label>
+                            <textarea id="refundDescription" placeholder=""></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="refund-actions">
+                    <button class="refund-btn-save" onclick="saveRefund()">Save</button>
+                    <button class="refund-btn-cancel" onclick="renderDetail(currentCn)">Cancel</button>
+                </div>
+            `;
+        }
+
+        async function saveRefund() {
+            const amount = parseFloat(document.getElementById('refundAmount').value);
+            const refundDate = document.getElementById('refundDate').value;
+            const paymentMode = document.getElementById('refundPaymentMode').value;
+            const reference = document.getElementById('refundReference').value;
+            const fromAccount = document.getElementById('refundFromAccount').value;
+            const description = document.getElementById('refundDescription').value;
+
+            if (!amount || amount <= 0) { alert('Please enter a valid amount.'); return; }
+            if (!refundDate) { alert('Please select a refund date.'); return; }
+
+            const cn = currentCn;
+            const total = parseFloat(cn.total || 0);
+            if (amount > total) { alert('Refund amount cannot exceed the credit note balance of ' + formatCurrency(total) + '.'); return; }
+
+            // Disable save button to prevent double-submit
+            const saveBtn = document.querySelector('.refund-btn-save');
+            if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Processing...'; }
+
+            try {
+                const res = await fetch('/api/credit-notes/' + cn.id + '/refund', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        amount: amount,
+                        refund_date: refundDate,
+                        payment_mode: paymentMode,
+                        from_account: fromAccount,
+                        reference: reference,
+                        description: description
+                    })
+                });
+
+                if (res.ok) {
+                    const refund = await res.json();
+                    // Show success toast
+                    showToast('Refund ' + (refund.refund_number || '') + ' processed successfully! Amount: ' + formatCurrency(amount));
+                    // Re-fetch all data and go back to detail view
+                    await loadCreditNotes();
+                    viewCreditNote(cn.id);
+                } else {
+                    const err = await res.json();
+                    alert('Failed to process refund: ' + (err.error || 'Unknown error'));
+                    if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save'; }
+                }
+            } catch (e) {
+                console.error('Refund error:', e);
+                alert('Error processing refund. Please try again.');
+                if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save'; }
+            }
+        }
+
+        // Toast notification helper
+        function showToast(message) {
+            const existing = document.querySelector('.refund-toast');
+            if (existing) existing.remove();
+            const toast = document.createElement('div');
+            toast.className = 'refund-toast';
+            toast.style.cssText = 'position:fixed;top:20px;right:20px;background:#2e7d32;color:white;padding:14px 24px;border-radius:8px;font-size:13px;font-weight:500;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.2);animation:slideIn 0.3s ease;max-width:400px;';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, 4000);
+        }
+
+        // Init
+        document.addEventListener('DOMContentLoaded', loadCreditNotes);
     </script>
+
+    <!-- Apply Credits Modal -->
+    <div class="ac-overlay" id="acOverlay" onclick="if(event.target===this)closeApplyCredits()">
+        <div class="ac-modal" id="acModal" onclick="event.stopPropagation()"></div>
+    </div>
 </body>
 
 </html>

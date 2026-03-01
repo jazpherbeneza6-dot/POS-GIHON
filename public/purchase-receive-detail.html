@@ -439,6 +439,16 @@
             text-transform: uppercase;
         }
 
+        .badge-in-transit {
+            background: #3b82f6;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
         .badge-billed {
             color: #4285f4;
             font-size: 12px;
@@ -711,8 +721,8 @@
                     loadDetail(r.id);
                 };
 
-                const statusClass = r.status === 'received' ? 'received' : 'draft';
-                const statusLabel = r.status === 'received' ? 'RECEIVED' : 'DRAFT';
+                const statusClass = r.status === 'received' ? 'received' : (r.status === 'in_transit' ? 'draft' : 'draft');
+                const statusLabel = r.status === 'received' ? 'RECEIVED' : (r.status === 'in_transit' ? 'IN TRANSIT' : 'DRAFT');
                 const totalQty = r.total_qty || 0;
 
                 div.innerHTML = `
@@ -744,6 +754,8 @@
                 const receiveStatusEl = document.getElementById('docReceiveStatus');
                 if (pr.status === 'received') {
                     receiveStatusEl.innerHTML = '<span class="badge-received">Received</span>';
+                } else if (pr.status === 'in_transit') {
+                    receiveStatusEl.innerHTML = '<span class="badge-in-transit">In Transit</span>';
                 } else {
                     receiveStatusEl.innerHTML = '<span class="badge-draft">Draft</span>';
                 }
@@ -807,13 +819,17 @@
                     tbody.appendChild(tr);
                 });
 
-                // Mark as In Transit button visibility
+                // Button visibility based on status
                 const transitBtn = document.getElementById('markTransitBtn');
                 const receivedBtn = document.getElementById('markReceivedBtn');
                 if (pr.status === 'received') {
                     transitBtn.style.display = 'none';
                     receivedBtn.style.display = 'none';
+                } else if (pr.status === 'in_transit') {
+                    transitBtn.style.display = 'none';
+                    receivedBtn.style.display = 'flex';
                 } else {
+                    // draft
                     transitBtn.style.display = 'flex';
                     receivedBtn.style.display = 'flex';
                 }
@@ -835,8 +851,30 @@
             alert('Edit feature coming soon!');
         }
 
-        function markAsTransit() {
-            alert('Mark as In Transit feature coming soon!');
+        async function markAsTransit() {
+            const currentId = new URLSearchParams(window.location.search).get('id');
+            if (!currentId) return;
+            if (!confirm('Mark this purchase receive as IN TRANSIT? Stock will NOT be updated yet.')) return;
+
+            try {
+                const res = await fetch('/api/purchase-receives/' + currentId + '/mark-transit', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    alert('Error: ' + (err.error || 'Failed to update'));
+                    return;
+                }
+
+                showToast('Purchase Receive marked as In Transit!');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1200);
+            } catch (e) {
+                console.error('Error marking as in transit:', e);
+                alert('Failed to mark as in transit');
+            }
         }
 
         async function markAsReceived() {
@@ -856,6 +894,8 @@
                 }
 
                 showToast('Purchase Receive marked as Received!');
+                // Signal sales orders page to auto-refresh
+                localStorage.setItem('so_refresh_needed', Date.now().toString());
                 // Reload page to refresh sidebar and detail
                 setTimeout(() => {
                     window.location.reload();

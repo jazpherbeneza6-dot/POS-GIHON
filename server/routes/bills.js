@@ -97,116 +97,6 @@ router.get('/reports/bill-details', async (req, res) => {
     }
 });
 
-// GET Payable Summary Report
-router.get('/reports/payable-summary', async (req, res) => {
-    try {
-        const db = database.getDb();
-        const { from, to } = req.query;
-
-        let billDateFilter = '';
-        let creditDateFilter = '';
-        let params = [];
-
-        if (from && to) {
-            billDateFilter = 'AND b.bill_date >= $1 AND b.bill_date <= $2';
-            creditDateFilter = 'AND vc.credit_date >= $1 AND vc.credit_date <= $2';
-            params = [from, to + 'T23:59:59.999'];
-        }
-
-        const result = await db.query(`
-            SELECT * FROM (
-                SELECT b.id, b.status, b.bill_date AS transaction_date, b.due_date,
-                       b.bill_number AS transaction_number,
-                       b.supplier_name AS vendor_name,
-                       'Bill' AS transaction_type,
-                       '' AS customer_name,
-                       b.total_amount AS total,
-                       (b.total_amount - COALESCE(pm_sum.paid, 0)) AS balance
-                FROM bills b
-                LEFT JOIN (
-                    SELECT bill_id, SUM(amount_paid) AS paid
-                    FROM payments_made
-                    GROUP BY bill_id
-                ) pm_sum ON pm_sum.bill_id = b.id
-                WHERE 1=1 ${billDateFilter}
-
-                UNION ALL
-
-                SELECT vc.id, vc.status, vc.credit_date AS transaction_date, NULL AS due_date,
-                       vc.credit_number AS transaction_number,
-                       vc.supplier_name AS vendor_name,
-                       'Vendor Credit' AS transaction_type,
-                       '' AS customer_name,
-                       -vc.total_amount AS total,
-                       CASE WHEN LOWER(vc.status) = 'closed' OR LOWER(vc.status) = 'applied'
-                            THEN 0 ELSE -vc.total_amount END AS balance
-                FROM vendor_credits vc
-                WHERE 1=1 ${creditDateFilter}
-            ) combined
-            ORDER BY transaction_date ASC
-        `, params);
-
-        res.json(result.rows);
-    } catch (err) {
-        console.error('Error fetching payable summary report:', err);
-        res.status(500).json({ error: 'Failed to fetch payable summary report' });
-    }
-});
-
-// GET Payable Details Report (item-level)
-router.get('/reports/payable-details', async (req, res) => {
-    try {
-        const db = database.getDb();
-        const { from, to } = req.query;
-
-        let billDateFilter = '';
-        let creditDateFilter = '';
-        let params = [];
-
-        if (from && to) {
-            billDateFilter = 'AND b.bill_date >= $1 AND b.bill_date <= $2';
-            creditDateFilter = 'AND vc.credit_date >= $1 AND vc.credit_date <= $2';
-            params = [from, to + 'T23:59:59.999'];
-        }
-
-        const result = await db.query(`
-            SELECT * FROM (
-                SELECT b.status, b.bill_date AS transaction_date, b.due_date,
-                       b.bill_number AS transaction_number,
-                       b.supplier_name AS vendor_name,
-                       'Bill' AS transaction_type,
-                       bi.item_name,
-                       bi.quantity AS quantity_ordered,
-                       bi.rate AS item_price,
-                       bi.amount AS item_amount
-                FROM bills b
-                JOIN bill_items bi ON bi.bill_id = b.id
-                WHERE 1=1 ${billDateFilter}
-
-                UNION ALL
-
-                SELECT vc.status, vc.credit_date AS transaction_date, NULL AS due_date,
-                       vc.credit_number AS transaction_number,
-                       vc.supplier_name AS vendor_name,
-                       'Vendor Credit' AS transaction_type,
-                       vci.item_name,
-                       vci.quantity AS quantity_ordered,
-                       vci.rate AS item_price,
-                       vci.amount AS item_amount
-                FROM vendor_credits vc
-                JOIN vendor_credit_items vci ON vci.vendor_credit_id = vc.id
-                WHERE 1=1 ${creditDateFilter}
-            ) combined
-            ORDER BY item_name ASC
-        `, params);
-
-        res.json(result.rows);
-    } catch (err) {
-        console.error('Error fetching payable details report:', err);
-        res.status(500).json({ error: 'Failed to fetch payable details report' });
-    }
-});
-
 // Get next bill number
 router.get('/next-number', async (req, res) => {
     try {
@@ -336,7 +226,10 @@ router.get('/', async (req, res) => {
     try {
         const db = database.getDb();
         const result = await db.query(`
-      SELECT b.*, COUNT(bi.id) as item_count
+      SELECT b.*, COUNT(bi.id) as item_count,
+             b.total_amount - COALESCE(
+               (SELECT SUM(pm.amount_paid) FROM payments_made pm WHERE pm.bill_id = b.id AND UPPER(pm.status) = 'PAID'), 0
+             ) AS balance_due
       FROM bills b
       LEFT JOIN bill_items bi ON b.id = bi.bill_id
       GROUP BY b.id

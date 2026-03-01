@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const database = require('../database');
 
-// Helper: Recalculate and update sales order status based on its packages/shipments
+// Helper: Check if SO should be closed (requires both invoiced AND fully shipped)
 async function updateSalesOrderFulfillmentStatus(pool, salesOrderId) {
     if (!salesOrderId) return;
     try {
@@ -14,38 +14,33 @@ async function updateSalesOrderFulfillmentStatus(pool, salesOrderId) {
         const packages = pkgResult.rows;
         if (packages.length === 0) return;
 
-        const allDelivered = packages.every(p => p.status === 'DELIVERED');
-        const allShipped = packages.every(p => p.status === 'SHIPPED' || p.status === 'DELIVERED');
-        const someShipped = packages.some(p => p.status === 'SHIPPED' || p.status === 'DELIVERED');
+        const allShipped = packages.every(p => {
+            const s = (p.status || '').toUpperCase();
+            return s === 'SHIPPED' || s === 'DELIVERED';
+        });
 
-        // Get current sales order status
-        const soResult = await pool.query('SELECT status FROM sales_orders WHERE id = $1', [salesOrderId]);
+        // Get current sales order
+        const soResult = await pool.query('SELECT * FROM sales_orders WHERE id = $1', [salesOrderId]);
         if (soResult.rows.length === 0) return;
-        const currentStatus = soResult.rows[0].status;
+        const so = soResult.rows[0];
+        const currentStatus = (so.status || '').toUpperCase();
 
-        // Don't downgrade from CLOSED or CANCELLED
+        // Don't touch CLOSED or CANCELLED
         if (currentStatus === 'CLOSED' || currentStatus === 'CANCELLED') return;
 
-        let newStatus = currentStatus;
-        if (allDelivered) {
-            newStatus = 'DELIVERED';
-        } else if (allShipped) {
-            newStatus = 'SHIPPED';
-        } else if (someShipped) {
-            newStatus = 'PARTIALLY SHIPPED';
-        } else {
-            // No packages shipped — keep CONFIRMED or revert
-            if (currentStatus === 'SHIPPED' || currentStatus === 'DELIVERED' || currentStatus === 'PARTIALLY SHIPPED') {
-                newStatus = 'CONFIRMED';
-            }
-        }
-
-        if (newStatus !== currentStatus) {
-            await pool.query(
-                'UPDATE sales_orders SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
-                [newStatus, salesOrderId]
+        // Dual-requirement: close SO only if both invoiced AND fully shipped
+        if (allShipped) {
+            const invoiceResult = await pool.query(
+                "SELECT id FROM invoices WHERE order_number = $1 LIMIT 1",
+                [so.order_number]
             );
-            console.log(`Sales order ${salesOrderId} status updated: ${currentStatus} → ${newStatus}`);
+            if (invoiceResult.rows.length > 0) {
+                await pool.query(
+                    'UPDATE sales_orders SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
+                    ['CLOSED', salesOrderId]
+                );
+                console.log(`Sales order ${salesOrderId} CLOSED (both invoiced and shipped)`);
+            }
         }
     } catch (err) {
         console.error('Error updating sales order fulfillment status:', err);
@@ -130,6 +125,46 @@ router.post('/', async (req, res) => {
             already_delivered
         } = req.body;
 
+        // DRAFT guard — cannot create shipment for a draft order
+        let soIdForDraftCheck = sales_order_id;
+        if (!soIdForDraftCheck && package_id) {
+            const pkgLookup = await pool.query('SELECT sales_order_id FROM packages WHERE id = $1', [package_id]);
+            if (pkgLookup.rows.length > 0) soIdForDraftCheck = pkgLookup.rows[0].sales_order_id;
+        }
+        if (soIdForDraftCheck) {
+            const soCheck = await pool.query('SELECT status FROM sales_orders WHERE id = $1', [soIdForDraftCheck]);
+            if (soCheck.rows.length > 0 && (soCheck.rows[0].status || '').toUpperCase() === 'DRAFT') {
+                return res.status(403).json({ error: 'Cannot process a Draft order. Please confirm the order first.' });
+            }
+        }
+
+        // Stock validation — find SO and check all items have sufficient stock
+        let soIdForCheck = sales_order_id;
+        if (!soIdForCheck && package_id) {
+            const pkgRes = await pool.query('SELECT sales_order_id FROM packages WHERE id = $1', [package_id]);
+            if (pkgRes.rows.length > 0) soIdForCheck = pkgRes.rows[0].sales_order_id;
+        }
+        if (soIdForCheck) {
+            const soItems = await pool.query('SELECT * FROM sales_order_items WHERE sales_order_id = $1', [soIdForCheck]);
+            for (const item of soItems.rows) {
+                if (item.item_id) {
+                    const stockRes = await pool.query('SELECT stock_quantity FROM items WHERE id = $1', [item.item_id]);
+                    if (stockRes.rows.length > 0) {
+                        const stock = parseFloat(stockRes.rows[0].stock_quantity) || 0;
+                        const ordered = parseFloat(item.quantity) || 0;
+                        if (stock < ordered) {
+                            return res.status(400).json({
+                                error: 'Action Denied: Insufficient stock to fulfill or invoice this order.',
+                                item_name: item.item_name,
+                                stock_available: stock,
+                                quantity_required: ordered
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
         const status = already_delivered ? 'DELIVERED' : 'SHIPPED';
 
         const result = await pool.query(`
@@ -160,6 +195,58 @@ router.post('/', async (req, res) => {
     } catch (err) {
         console.error('Error creating shipment:', err);
         res.status(500).json({ error: 'Failed to create shipment' });
+    }
+});
+
+// PUT update shipment
+router.put('/:id', async (req, res) => {
+    try {
+        const pool = database.getDb();
+        const {
+            package_id,
+            sales_order_id,
+            shipment_order_number,
+            ship_date,
+            carrier,
+            tracking_number,
+            tracking_url,
+            shipping_charges,
+            notes,
+            already_delivered
+        } = req.body;
+
+        const result = await pool.query(`
+            UPDATE shipments SET
+                shipment_order_number = $1,
+                ship_date = $2,
+                carrier = $3,
+                tracking_number = $4,
+                tracking_url = $5,
+                shipping_charges = $6,
+                notes = $7,
+                already_delivered = $8,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = $9
+            RETURNING *
+        `, [
+            shipment_order_number, ship_date, carrier,
+            tracking_number || '', tracking_url || '',
+            shipping_charges || 0, notes || '', already_delivered || false,
+            req.params.id
+        ]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Shipment not found' });
+        }
+
+        // Update sales order status
+        const soId = sales_order_id || (await pool.query('SELECT sales_order_id FROM packages WHERE id = $1', [package_id])).rows[0]?.sales_order_id;
+        await updateSalesOrderFulfillmentStatus(pool, soId);
+
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error('Error updating shipment:', err);
+        res.status(500).json({ error: 'Failed to update shipment' });
     }
 });
 
@@ -208,6 +295,36 @@ router.patch('/mark-delivered/:packageId', async (req, res) => {
     } catch (err) {
         console.error('Error marking as delivered:', err);
         res.status(500).json({ error: 'Failed to mark as delivered' });
+    }
+});
+
+// PATCH mark shipment as undelivered (revert to shipped)
+router.patch('/mark-undelivered/:packageId', async (req, res) => {
+    try {
+        const pool = database.getDb();
+        const packageId = req.params.packageId;
+
+        // Update shipment status back to SHIPPED
+        await pool.query(
+            "UPDATE shipments SET status = 'SHIPPED', already_delivered = false, updated_at = CURRENT_TIMESTAMP WHERE package_id = $1",
+            [packageId]
+        );
+
+        // Update package status back to SHIPPED
+        await pool.query(
+            "UPDATE packages SET status = 'SHIPPED', updated_at = CURRENT_TIMESTAMP WHERE id = $1",
+            [packageId]
+        );
+
+        // Auto-update sales order status
+        const pkgResult = await pool.query('SELECT sales_order_id FROM packages WHERE id = $1', [packageId]);
+        const soId = pkgResult.rows[0]?.sales_order_id;
+        await updateSalesOrderFulfillmentStatus(pool, soId);
+
+        res.json({ message: 'Marked as undelivered (reverted to shipped)' });
+    } catch (err) {
+        console.error('Error marking as undelivered:', err);
+        res.status(500).json({ error: 'Failed to mark as undelivered' });
     }
 });
 

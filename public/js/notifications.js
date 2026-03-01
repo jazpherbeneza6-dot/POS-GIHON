@@ -64,7 +64,7 @@ function addNotification(title, message, type = 'info', link = null) {
             'warning': '/sales.html',
             'info': '/'
         };
-        
+
         // Map common notification titles to links
         if (title.includes('Low Stock') || title.includes('low stock')) {
             notificationLink = '/items.html?filter=low-stock';
@@ -179,7 +179,7 @@ function updateNotificationUI() {
     list.innerHTML = clearButton + notificationsState.items.map(n => {
         const timeAgo = getTimeAgo(new Date(n.time));
         const readClass = n.read ? 'read' : 'unread';
-        const icon = n.type === 'success' ? '✅' : n.type === 'error' ? '❌' : n.type === 'warning' ? '⚠️' : 'ℹ️';
+        const icon = n.type === 'success' ? '✅' : n.type === 'error' ? '❌' : n.type === 'warning' ? '⚠️' : n.type === 'low_stock' ? '📦' : 'ℹ️';
         return `
             <div class="notification-item ${n.type} ${readClass}" onclick="handleNotificationClick(${n.id})">
                 <div class="notification-item-icon">${icon}</div>
@@ -230,7 +230,7 @@ function handleNotificationClick(id) {
             'warning': '/sales.html',
             'info': '/'
         };
-        
+
         if (defaultLinks[notification.type]) {
             window.location.href = defaultLinks[notification.type];
         }
@@ -282,3 +282,64 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
 // Also listen for layoutReady
 document.addEventListener('layoutReady', initNotificationsHelper);
 
+// ========== LOW STOCK / REORDER POINT NOTIFICATIONS ==========
+async function checkLowStockNotifications() {
+    try {
+        const res = await fetch('/api/items');
+        if (!res.ok) return;
+        const items = await res.json();
+
+        // Track which items we've already notified about (within 24h)
+        const notifiedKey = 'lowStockNotified';
+        let notified = {};
+        try {
+            notified = JSON.parse(localStorage.getItem(notifiedKey) || '{}');
+        } catch (e) { notified = {}; }
+
+        const now = Date.now();
+        const ONE_DAY = 24 * 60 * 60 * 1000;
+
+        // Clean up old entries
+        for (const id in notified) {
+            if (now - notified[id] > ONE_DAY) delete notified[id];
+        }
+
+        let lowStockCount = 0;
+        items.forEach(item => {
+            const stock = parseFloat(item.stock_quantity) || 0;
+            const reorderPoint = parseFloat(item.reorder_point);
+
+            // Only check items that have a reorder point set and > 0
+            if (isNaN(reorderPoint) || reorderPoint <= 0) return;
+
+            if (stock <= reorderPoint) {
+                lowStockCount++;
+                // Only notify once per item per 24 hours
+                if (!notified[item.id]) {
+                    const stockLabel = stock <= 0 ? 'Out of Stock' : `${stock} remaining`;
+                    addNotification(
+                        `⚠️ Low Stock: ${item.name}`,
+                        `Stock (${stockLabel}) has reached the reorder point (${reorderPoint}). Consider restocking.`,
+                        'low_stock',
+                        '/items.html?filter=lowstock'
+                    );
+                    notified[item.id] = now;
+                }
+            }
+        });
+
+        localStorage.setItem(notifiedKey, JSON.stringify(notified));
+
+    } catch (error) {
+        console.error('Error checking low stock:', error);
+    }
+}
+
+// Make globally available
+window.checkLowStockNotifications = checkLowStockNotifications;
+
+// Check on page load (after a short delay to let page render)
+setTimeout(checkLowStockNotifications, 2000);
+
+// Re-check every 5 minutes
+setInterval(checkLowStockNotifications, 5 * 60 * 1000);

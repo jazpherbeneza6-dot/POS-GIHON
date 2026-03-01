@@ -570,7 +570,6 @@
                     <div class="detail-row">
                         <label>Purchase Receive#*</label>
                         <span class="value" id="receiveNumber" style="color:#999;">Loading...</span>
-                        <span class="info-icon" title="Auto-generated receive number">ℹ️</span>
                     </div>
                     <div class="detail-row">
                         <label>Received Date*</label>
@@ -641,7 +640,7 @@
         let inTransitByItem = {};
 
         document.addEventListener('DOMContentLoaded', async function () {
-            document.getElementById('receiveDate').value = new Date().toISOString().split('T')[0];
+            const _d = new Date(); document.getElementById('receiveDate').value = _d.getFullYear() + '-' + String(_d.getMonth() + 1).padStart(2, '0') + '-' + String(_d.getDate()).padStart(2, '0');
 
             // Get next receive number
             try {
@@ -948,6 +947,8 @@
                 }
 
                 showToast('Purchase Receive has been created');
+                // Signal sales orders page to auto-refresh
+                localStorage.setItem('so_refresh_needed', Date.now().toString());
                 setTimeout(() => {
                     window.location.href = '/purchase-receives.html';
                 }, 1200);
