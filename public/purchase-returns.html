@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase Returns - Inventory Management</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/global-search.css">
+    <link rel="stylesheet" href="/css/pagination.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', 'Source Sans Pro', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f5f6fa;
+            font-size: 13px;
+        }
+
+        .main-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 0;
+            background: white;
+        }
+
+        /* ===== LIST VIEW ===== */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .page-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .returns-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .returns-table th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e9ecef;
+            background: #f9fafb;
+            white-space: nowrap;
+        }
+
+        .returns-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .returns-table tr:hover td {
+            background: #f8f9ff;
+        }
+
+        .prn-link {
+            color: #4285f4;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .prn-link:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== STATUS BADGES ===== */
+        .status-badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-badge.draft {
+            color: #555;
+        }
+
+        .status-badge.approved {
+            color: #1a73e8;
+        }
+
+        .status-badge.shipped {
+            color: #7c3aed;
+        }
+
+        .status-badge.cancelled {
+            color: #dc2626;
+        }
+
+        .status-badge.pending {
+            color: #d97706;
+        }
+
+        .status-badge.credited {
+            color: #16a34a;
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 150px 24px;
+            text-align: center;
+            min-height: calc(100vh - 100px);
+        }
+
+        .empty-state-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 16px 0;
+        }
+
+        .empty-state-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin: 0 0 32px 0;
+            max-width: 500px;
+            line-height: 1.6;
+        }
+
+        .btn-new-return {
+            padding: 12px 28px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-new-return:hover {
+            background: #3367d6;
+        }
+
+        /* ===== DETAIL VIEW (SPLIT LAYOUT) ===== */
+        .detail-view {
+            display: none;
+            height: 100vh;
+        }
+
+        .detail-view.active {
+            display: flex;
+        }
+
+        /* Left sidebar */
+        .sr-left-panel {
+            width: 260px;
+            border-right: 1px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            background: white;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sr-left-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .sr-left-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .sr-left-title:hover {
+            color: #4285f4;
+        }
+
+        .sr-left-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sr-left-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sr-left-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .sr-left-btn.primary {
+            background: #4285f4;
+            color: white;
+        }
+
+        .sr-left-btn.primary:hover {
+            background: #3367d6;
+        }
+
+        .sr-left-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .sr-left-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .sr-left-item:hover {
+            background: #f8f9ff;
+        }
+
+        .sr-left-item.active {
+            background: #e8f0fe;
+            border-left: 3px solid #4285f4;
+        }
+
+        .sr-left-item-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .sr-left-item-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .sr-left-item-amount {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .sr-left-item-bottom {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: #888;
+        }
+
+        .sr-left-item-status {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .sr-left-item-status.approved {
+            color: #16a34a;
+        }
+
+        .sr-left-item-status.draft {
+            color: #888;
+        }
+
+        .sr-left-item-status.shipped {
+            color: #7c3aed;
+        }
+
+        .sr-left-item-status.cancelled {
+            color: #dc2626;
+        }
+
+        /* Right panel */
+        .sr-right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: #f9fafb;
+        }
+
+        .sr-right-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 24px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            flex-shrink: 0;
+        }
+
+        .sr-right-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sr-right-prn {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .sr-right-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sr-right-header-actions button {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sr-right-header-actions button:hover {
+            background: #f0f0f0;
+        }
+
+        /* Action bar */
+        .sr-action-bar {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 24px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            flex-shrink: 0;
+        }
+
+        .sr-action-btn {
+            padding: 6px 12px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 12px;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        .sr-action-btn:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .sr-action-separator {
+            width: 1px;
+            height: 20px;
+            background: #e0e0e0;
+            margin: 0 4px;
+        }
+
+        /* Tabs */
+        .sr-tabs {
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            flex-shrink: 0;
+        }
+
+        .sr-tab {
+            padding: 10px 16px;
+            font-size: 13px;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .sr-tab:hover {
+            color: #333;
+        }
+
+        .sr-tab.active {
+            color: #4285f4;
+            border-bottom-color: #4285f4;
+            font-weight: 500;
+        }
+
+        /* Detail scroll area */
+        .sr-detail-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        /* Document card */
+        .sr-document-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 40px 48px;
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+
+        .sr-doc-top {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .sr-doc-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #333;
+            margin: 0 0 4px 0;
+        }
+
+        .sr-doc-subtitle {
+            font-size: 13px;
+            color: #666;
+            margin: 0;
+        }
+
+        .sr-doc-subtitle strong {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .sr-bill-to-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .sr-bill-to-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #4285f4;
+        }
+
+        /* Status section */
+        .sr-status-section {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 24px;
+            padding: 16px 0;
+            border-left: 3px solid #ffc107;
+            padding-left: 16px;
+        }
+
+        .sr-status-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .sr-status-label {
+            font-size: 13px;
+            color: #666;
+            min-width: 100px;
+        }
+
+        .sr-status-value {
+            font-size: 13px;
+        }
+
+        /* Date section */
+        .sr-date-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 30px;
+            padding-top: 16px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .sr-date-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            min-width: 80px;
+        }
+
+        .sr-date-value {
+            font-size: 13px;
+            color: #333;
+        }
+
+        /* Items table in detail */
+        .sr-doc-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .sr-doc-table th {
+            text-align: left;
+            font-size: 11px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 10px 12px;
+            border-bottom: 2px solid #e9ecef;
+            background: #f9fafb;
+        }
+
+        .sr-doc-table td {
+            padding: 14px 12px;
+            font-size: 13px;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: top;
+        }
+
+        .sr-doc-table th:first-child {
+            width: 40px;
+            text-align: center;
+        }
+
+        .sr-doc-table td:first-child {
+            text-align: center;
+            color: #888;
+        }
+
+        .sr-doc-table th:nth-child(4),
+        .sr-doc-table td:nth-child(4),
+        .sr-doc-table th:nth-child(5),
+        .sr-doc-table td:nth-child(5) {
+            text-align: right;
+            width: 100px;
+        }
+
+        .sr-qty-returned {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .sr-qty-received {
+            color: #888;
+            font-size: 12px;
+            margin-top: 2px;
+        }
+
+        .sr-item-img {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #ccc;
+            font-size: 16px;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        /* Footer */
+        .sr-left-footer {
+            padding: 10px 16px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #888;
+            flex-shrink: 0;
+        }
+
+        /* Filter Dropdown */
+        .sr-filter-wrap {
+            position: relative;
+            display: inline-block;
+        }
+
+        .sr-filter-btn {
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0;
+            font-family: inherit;
+        }
+
+        .sr-filter-btn:hover {
+            color: #4285f4;
+        }
+
+        .sr-filter-arrow {
+            font-size: 12px;
+            color: #4285f4;
+            transition: transform 0.2s;
+        }
+
+        .sr-filter-arrow.open {
+            transform: rotate(180deg);
+        }
+
+        .sr-filter-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 6px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+            min-width: 240px;
+            z-index: 100;
+            padding: 8px 0;
+        }
+
+        .sr-filter-dropdown.open {
+            display: block;
+        }
+
+        .sr-filter-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+            transition: background 0.15s;
+        }
+
+        .sr-filter-option:hover {
+            background: #f5f8ff;
+        }
+
+        .sr-filter-option.active {
+            color: #4285f4;
+            font-weight: 600;
+        }
+
+        /* PDF/Print Dropdown */
+        .pdf-print-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .pdf-print-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 4px);
+            right: 0;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+            z-index: 500;
+            min-width: 160px;
+            overflow: hidden;
+        }
+
+        .pdf-print-menu.show {
+            display: block;
+        }
+
+        .pdf-print-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .pdf-print-menu-item:hover {
+            background: #f0f5ff;
+        }
+
+        .pdf-print-menu-item:first-child {
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        /* History tab */
+        .history-timeline {
+            padding: 0;
+        }
+
+        .history-item {
+            display: flex;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .history-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4285f4;
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+
+        .history-content {
+            flex: 1;
+        }
+
+        .history-text {
+            font-size: 13px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .history-time {
+            font-size: 11px;
+            color: #999;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="sidebarContainer"></div>
+
+    <div class="main-layout">
+        <div class="content" id="content">
+
+            <!-- ===== LIST VIEW ===== -->
+            <div id="listView">
+                <div class="page-header">
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <span class="page-title">All Purchase Returns</span>
+                    </div>
+                    <button class="btn-new-return" onclick="window.location.href='/new-purchase-return.html'">+ New
+                        Purchase Return</button>
+                </div>
+
+                <!-- Filter -->
+                <div
+                    style="padding: 10px 24px; border-bottom: 1px solid #e9ecef; display:flex; align-items:center; gap: 12px;">
+                    <div class="sr-filter-wrap">
+                        <button class="sr-filter-btn" onclick="toggleFilter()">
+                            <span id="filterTitle">All Purchase Returns</span>
+                            <span class="sr-filter-arrow" id="filterArrow">▾</span>
+                        </button>
+                        <div class="sr-filter-dropdown" id="filterDropdown">
+                            <div class="sr-filter-option active" onclick="setFilter('all')">All Purchase Returns</div>
+                            <div class="sr-filter-option" onclick="setFilter('draft')">Draft</div>
+                            <div class="sr-filter-option" onclick="setFilter('approved')">Approved</div>
+                            <div class="sr-filter-option" onclick="setFilter('shipped')">Shipped</div>
+                            <div class="sr-filter-option" onclick="setFilter('cancelled')">Cancelled</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tableContainer">
+                    <table class="returns-table">
+                        <thead>
+                            <tr>
+                                <th>DATE</th>
+                                <th>PRN#</th>
+                                <th>PURCHASE ORDER#</th>
+                                <th>VENDOR NAME</th>
+                                <th>STATUS</th>
+                                <th>RETURN STATUS</th>
+                                <th>CREDIT STATUS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="returnsTableBody">
+                            <tr>
+                                <td colspan="7" style="text-align:center;padding:40px;color:#999;">Loading...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="emptyState" class="empty-state" style="display:none;">
+                    <h2 class="empty-state-title">No Purchase Returns Yet</h2>
+                    <p class="empty-state-subtitle">Create a purchase return to send items back to your vendor and track
+                        the return process.</p>
+                    <button class="btn-new-return" onclick="window.location.href='/new-purchase-return.html'">+ New
+                        Purchase Return</button>
+                </div>
+            </div>
+
+            <!-- ===== DETAIL VIEW (SPLIT LAYOUT) ===== -->
+            <div id="detailView" class="detail-view">
+                <!-- Left Panel -->
+                <div class="sr-left-panel">
+                    <div class="sr-left-header">
+                        <span class="sr-left-title" onclick="backToList()">← All Purchase Returns</span>
+                        <div class="sr-left-actions">
+                            <button class="sr-left-btn primary"
+                                onclick="window.location.href='/new-purchase-return.html'" title="New">+</button>
+                        </div>
+                    </div>
+                    <div class="sr-left-list" id="detailSidebarList"></div>
+                    <div class="sr-left-footer">
+                        <span id="sidebarCount">0 items</span>
+                    </div>
+                </div>
+
+                <!-- Right Panel -->
+                <div class="sr-right-panel">
+                    <!-- Header -->
+                    <div class="sr-right-header">
+                        <div class="sr-right-header-left">
+                            <span class="sr-right-prn" id="detailPRN">PRN-00001</span>
+                        </div>
+                        <div class="sr-right-header-actions">
+                            <button onclick="closeDetail()" title="Close">✕</button>
+                        </div>
+                    </div>
+
+                    <!-- Action Bar (SO-style) -->
+                    <div class="sr-action-bar">
+                        <button class="sr-action-btn" id="editBtn" onclick="editReturn()">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                            </svg> Edit
+                        </button>
+                        <div class="pdf-print-wrapper">
+                            <button class="sr-action-btn" onclick="togglePdfPrintMenu(event)">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                    <polyline points="14 2 14 8 20 8" />
+                                    <line x1="16" y1="13" x2="8" y2="13" />
+                                    <line x1="16" y1="17" x2="8" y2="17" />
+                                </svg> PDF/Print ▾
+                            </button>
+                            <div class="pdf-print-menu" id="pdfPrintMenu">
+                                <button class="pdf-print-menu-item" onclick="downloadPDF()"><span>📄</span> PDF</button>
+                                <button class="pdf-print-menu-item" onclick="printPRN()"><span>🖨</span> Print</button>
+                            </div>
+                        </div>
+                        <div class="sr-action-separator"></div>
+                        <button class="sr-action-btn" id="approveBtn" style="display:none;" onclick="approveReturn()">✓
+                            Approve</button>
+                        <button class="sr-action-btn" id="markShippedBtn" style="display:none;"
+                            onclick="markShipped()">📦 Mark as Shipped</button>
+                        <button class="sr-action-btn" id="revertToDraftBtn" style="display:none;"
+                            onclick="revertToDraft()">↩ Revert to Draft</button>
+                        <button class="sr-action-btn" id="cancelBtn" style="display:none;" onclick="cancelReturn()"
+                            style="color:#dc2626;">✕ Cancel</button>
+                        <button class="sr-action-btn" id="convertCreditBtn" style="display:none;"
+                            onclick="convertToVendorCredit()" style="background:#16a34a;color:white;">💳 Convert to
+                            Vendor Credit</button>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="sr-tabs">
+                        <div class="sr-tab active" onclick="switchTab('details', this)">Details</div>
+                        <div class="sr-tab" onclick="switchTab('history', this)">History</div>
+                        <div class="sr-tab" id="vendorCreditsTab" style="display:none;"
+                            onclick="switchTab('vendorCredits', this)">Vendor Credits <span id="vendorCreditsCount"
+                                style="background:#e0e0e0;padding:1px 7px;border-radius:10px;font-size:11px;margin-left:4px;">0</span>
+                        </div>
+                    </div>
+
+                    <!-- Detail Scroll Area -->
+                    <div class="sr-detail-scroll">
+                        <!-- Details Tab -->
+                        <div id="tabDetails">
+                            <div class="sr-document-card" id="documentCard"></div>
+                        </div>
+                        <!-- History Tab -->
+                        <div id="tabHistory" style="display:none;">
+                            <div class="sr-document-card">
+                                <h3 style="margin:0 0 16px;font-size:16px;font-weight:600;">History</h3>
+                                <div class="history-timeline" id="historyTimeline">
+                                    <div style="text-align:center;color:#999;padding:40px;">No history available.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Vendor Credits Tab -->
+                        <div id="tabVendorCredits" style="display:none;">
+                            <div class="sr-document-card">
+                                <h3 style="margin:0 0 16px;font-size:16px;font-weight:600;">Linked Vendor Credits</h3>
+                                <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                                    <thead>
+                                        <tr style="background:#f9fafb;">
+                                            <th
+                                                style="text-align:left;padding:10px 12px;font-size:11px;color:#888;text-transform:uppercase;border-bottom:2px solid #e0e0e0;">
+                                                CREDIT#</th>
+                                            <th
+                                                style="text-align:left;padding:10px 12px;font-size:11px;color:#888;text-transform:uppercase;border-bottom:2px solid #e0e0e0;">
+                                                DATE</th>
+                                            <th
+                                                style="text-align:left;padding:10px 12px;font-size:11px;color:#888;text-transform:uppercase;border-bottom:2px solid #e0e0e0;">
+                                                STATUS</th>
+                                            <th
+                                                style="text-align:right;padding:10px 12px;font-size:11px;color:#888;text-transform:uppercase;border-bottom:2px solid #e0e0e0;">
+                                                AMOUNT</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="vendorCreditsBody">
+                                        <tr>
+                                            <td colspan="4" style="text-align:center;padding:30px;color:#999;">No vendor
+                                                credits linked.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="/js/layout.js"></script>
+    <script>
+        let allReturns = [];
+        let currentFilter = 'all';
+        let currentReturnId = null;
+        let currentReturn = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadReturns();
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            if (id) {
+                showDetail(parseInt(id));
+            }
+        });
+
+        // ===== DATA LOADING =====
+        async function loadReturns() {
+            try {
+                const res = await fetch('/api/purchase-returns');
+                allReturns = await res.json();
+                renderList();
+            } catch (e) { console.error(e); }
+        }
+
+        function renderList() {
+            let filtered = allReturns;
+            if (currentFilter !== 'all') {
+                filtered = allReturns.filter(r => (r.status || '').toUpperCase() === currentFilter.toUpperCase());
+            }
+
+            const tbody = document.getElementById('returnsTableBody');
+            const emptyState = document.getElementById('emptyState');
+            const tableContainer = document.getElementById('tableContainer');
+
+            if (filtered.length === 0) {
+                tableContainer.style.display = 'none';
+                emptyState.style.display = 'flex';
+                return;
+            }
+
+            tableContainer.style.display = '';
+            emptyState.style.display = 'none';
+
+            const fmtDate = d => d ? new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+            let html = '';
+            filtered.forEach(r => {
+                const statusClass = (r.status || 'draft').toLowerCase();
+                const returnStatusClass = (r.return_status || 'pending').toLowerCase();
+                const creditStatusClass = (r.credit_status || 'pending').toLowerCase();
+                html += `<tr onclick="showDetail(${r.id})">
+                    <td>${fmtDate(r.return_date)}</td>
+                    <td><a class="prn-link" href="#" onclick="event.preventDefault();showDetail(${r.id})">${r.prn_number || '-'}</a></td>
+                    <td>${r.purchase_order_number || '-'}</td>
+                    <td>${r.vendor_name || '-'}</td>
+                    <td><span class="status-badge ${statusClass}">${(r.status || 'DRAFT').toUpperCase()}</span></td>
+                    <td><span class="status-badge ${returnStatusClass}">${r.return_status || 'Pending'}</span></td>
+                    <td><span class="status-badge ${creditStatusClass}">${r.credit_status || 'Pending'}</span></td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
+        }
+
+        // ===== FILTER =====
+        function toggleFilter() {
+            document.getElementById('filterDropdown').classList.toggle('open');
+            document.getElementById('filterArrow').classList.toggle('open');
+        }
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.sr-filter-option').forEach(o => o.classList.remove('active'));
+            event.target.classList.add('active');
+            const labels = { 'all': 'All Purchase Returns', 'draft': 'Draft', 'approved': 'Approved', 'shipped': 'Shipped', 'cancelled': 'Cancelled' };
+            document.getElementById('filterTitle').textContent = labels[filter] || filter;
+            document.getElementById('filterDropdown').classList.remove('open');
+            document.getElementById('filterArrow').classList.remove('open');
+            renderList();
+        }
+
+        document.addEventListener('click', e => {
+            if (!e.target.closest('.sr-filter-wrap')) {
+                document.getElementById('filterDropdown').classList.remove('open');
+                document.getElementById('filterArrow').classList.remove('open');
+            }
+            if (!e.target.closest('.pdf-print-wrapper')) {
+                const menu = document.getElementById('pdfPrintMenu');
+                if (menu) menu.classList.remove('show');
+            }
+        });
+
+        // ===== DETAIL VIEW =====
+        async function showDetail(id) {
+            currentReturnId = id;
+
+            document.getElementById('listView').style.display = 'none';
+            document.getElementById('detailView').classList.add('active');
+
+            // Load sidebar
+            renderSidebar(id);
+
+            // Load detail
+            try {
+                const res = await fetch('/api/purchase-returns/' + id);
+                if (!res.ok) { alert('Purchase return not found'); return; }
+                currentReturn = await res.json();
+                renderDetail(currentReturn);
+            } catch (e) { console.error(e); }
+
+            history.replaceState(null, '', '/purchase-returns.html?id=' + id);
+        }
+
+        function renderSidebar(activeId) {
+            const container = document.getElementById('detailSidebarList');
+            const fmtDate = d => d ? new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+            let html = '';
+            allReturns.forEach(r => {
+                const isActive = r.id == activeId;
+                const statusClass = (r.status || 'draft').toLowerCase();
+                html += `<div class="sr-left-item ${isActive ? 'active' : ''}" onclick="showDetail(${r.id})">
+                    <div class="sr-left-item-top">
+                        <span class="sr-left-item-name">${r.vendor_name || 'Unknown'}</span>
+                    </div>
+                    <div class="sr-left-item-bottom">
+                        <span>${r.prn_number || '-'}</span>
+                        <span>•</span>
+                        <span>${fmtDate(r.return_date)}</span>
+                    </div>
+                    <div class="sr-left-item-status ${statusClass}" style="margin-top:4px;">${(r.status || 'DRAFT').toUpperCase()}</div>
+                </div>`;
+            });
+            container.innerHTML = html;
+            document.getElementById('sidebarCount').textContent = allReturns.length + ' items';
+        }
+
+        function renderDetail(r) {
+            document.getElementById('detailPRN').textContent = r.prn_number || 'PRN-' + r.id;
+
+            const status = (r.status || 'DRAFT').toUpperCase();
+            const returnStatus = r.return_status || 'Pending';
+            const creditStatus = r.credit_status || 'Pending';
+
+            // Action buttons visibility
+            document.getElementById('approveBtn').style.display = status === 'DRAFT' ? '' : 'none';
+            document.getElementById('markShippedBtn').style.display = (status === 'APPROVED' && returnStatus === 'Pending') ? '' : 'none';
+            document.getElementById('revertToDraftBtn').style.display = (status === 'SHIPPED' || status === 'APPROVED') ? '' : 'none';
+            document.getElementById('cancelBtn').style.display = (status !== 'CANCELLED' && status !== 'SHIPPED') ? '' : 'none';
+            // Convert to Vendor Credit: only when shipped and credit status is pending
+            document.getElementById('convertCreditBtn').style.display = (status === 'SHIPPED' && creditStatus === 'Pending') ? '' : 'none';
+
+            const fmtDate = d => d ? new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+
+            // Status badge colors
+            const statusColors = { 'DRAFT': '#555', 'APPROVED': '#1a73e8', 'SHIPPED': '#7c3aed', 'CANCELLED': '#dc2626' };
+            const returnStatusColor = returnStatus === 'Shipped' ? '#16a34a' : '#d97706';
+            const creditStatusColor = creditStatus === 'Credited' ? '#16a34a' : '#d97706';
+
+            // Items table
+            let itemsHtml = '';
+            if (r.items && r.items.length > 0) {
+                r.items.forEach((item, i) => {
+                    const reasonBadge = item.return_reason ? (() => {
+                        const colors = { 'Over-shipment': 'background:#fff3e0;color:#e65100;', 'Damaged': 'background:#fef2f2;color:#dc2626;', 'Defective': 'background:#fef2f2;color:#dc2626;', 'Incorrect Item': 'background:#e8f0fe;color:#1a73e8;' };
+                        return `<span style="${colors[item.return_reason] || 'background:#f0f0f0;color:#666;'}padding:2px 8px;border-radius:10px;font-size:11px;font-weight:500;">${item.return_reason}</span>`;
+                    })() : '<span style="color:#999;font-size:11px;">—</span>';
+
+                    itemsHtml += `<tr>
+                        <td>${i + 1}</td>
+                        <td><span class="sr-item-img">📦</span> <strong>${item.item_name || '-'}</strong></td>
+                        <td>
+                            <div class="sr-qty-returned">${item.return_quantity || 0}</div>
+                            <div class="sr-qty-received">Received: ${item.received_quantity || 0}</div>
+                        </td>
+                        <td>${reasonBadge}</td>
+                        <td style="text-align:right;">${parseFloat(item.rate || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+                        <td style="text-align:right;">${parseFloat(item.amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+                    </tr>`;
+                });
+            }
+
+            document.getElementById('documentCard').innerHTML = `
+                <div class="sr-doc-top">
+                    <div>
+                        <h2 class="sr-doc-title">PURCHASE RETURN</h2>
+                        <p class="sr-doc-subtitle">Purchase Return# <strong>${r.prn_number || ''}</strong></p>
+                    </div>
+                    <div style="text-align:right;">
+                        <div class="sr-bill-to-label">VENDOR</div>
+                        <div class="sr-bill-to-name">${r.vendor_name || '-'}</div>
+                    </div>
+                </div>
+
+                <div class="sr-status-section">
+                    <div>
+                        <div class="sr-status-row" style="margin-bottom:8px;">
+                            <span class="sr-status-label">Status</span>
+                            <span class="sr-status-value" style="color:${statusColors[status] || '#555'};font-weight:600;">${status}</span>
+                        </div>
+                        <div class="sr-status-row" style="margin-bottom:8px;">
+                            <span class="sr-status-label">Return Status</span>
+                            <span class="sr-status-value" style="color:${returnStatusColor};font-weight:500;">${returnStatus}</span>
+                        </div>
+                        <div class="sr-status-row">
+                            <span class="sr-status-label">Credit Status</span>
+                            <span class="sr-status-value" style="color:${creditStatusColor};font-weight:500;">${creditStatus}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sr-date-row">
+                    <span class="sr-date-label">RETURN DATE</span>
+                    <span class="sr-date-value">${fmtDate(r.return_date)}</span>
+                </div>
+                ${r.purchase_order_number ? `<div class="sr-date-row" style="border-top:none;padding-top:0;margin-bottom:16px;">
+                    <span class="sr-date-label">PO#</span>
+                    <span class="sr-date-value" style="color:#4285f4;font-weight:500;">${r.purchase_order_number}</span>
+                </div>` : ''}
+                <div class="sr-date-row" style="border-top:none;padding-top:0;">
+                    <span class="sr-date-label">WAREHOUSE</span>
+                    <span class="sr-date-value">${r.warehouse_location || 'Head Office'}</span>
+                </div>
+
+                <table class="sr-doc-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>ITEMS & DESCRIPTION</th>
+                            <th>RETURN QTY</th>
+                            <th>REASON</th>
+                            <th>RATE</th>
+                            <th>AMOUNT</th>
+                        </tr>
+                    </thead>
+                    <tbody>${itemsHtml || '<tr><td colspan="6" style="text-align:center;padding:30px;color:#999;">No items</td></tr>'}</tbody>
+                </table>
+
+                ${r.reason ? `<div style="margin-top:24px;padding-top:16px;border-top:1px solid #f0f0f0;">
+                    <div style="font-size:12px;font-weight:600;color:#888;text-transform:uppercase;margin-bottom:6px;">REASON</div>
+                    <div style="font-size:13px;color:#333;line-height:1.6;">${r.reason}</div>
+                </div>` : ''}
+            `;
+
+            // History tab
+            renderHistory(r);
+
+            // Load vendor credits tab
+            loadAssocVendorCredits(r);
+
+            // Reset to details tab
+            switchTab('details', document.querySelector('.sr-tab'));
+        }
+
+        function renderHistory(r) {
+            const fmtDateTime = d => d ? new Date(d).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
+            let html = '';
+            html += `<div class="history-item">
+                <div class="history-dot"></div>
+                <div class="history-content">
+                    <div class="history-text">Purchase return <strong>${r.prn_number}</strong> was created with status <strong>${r.status || 'DRAFT'}</strong></div>
+                    <div class="history-time">${fmtDateTime(r.created_at)}</div>
+                </div>
+            </div>`;
+            if (r.updated_at && r.updated_at !== r.created_at) {
+                html += `<div class="history-item">
+                    <div class="history-dot" style="background:#f59e0b;"></div>
+                    <div class="history-content">
+                        <div class="history-text">Purchase return was last updated</div>
+                        <div class="history-time">${fmtDateTime(r.updated_at)}</div>
+                    </div>
+                </div>`;
+            }
+            document.getElementById('historyTimeline').innerHTML = html;
+        }
+
+        // ===== TABS =====
+        function switchTab(tab, el) {
+            document.querySelectorAll('.sr-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('tabDetails').style.display = tab === 'details' ? '' : 'none';
+            document.getElementById('tabHistory').style.display = tab === 'history' ? '' : 'none';
+            document.getElementById('tabVendorCredits').style.display = tab === 'vendorCredits' ? '' : 'none';
+        }
+
+        // ===== ACTIONS =====
+        function backToList() {
+            document.getElementById('listView').style.display = '';
+            document.getElementById('detailView').classList.remove('active');
+            history.replaceState(null, '', '/purchase-returns.html');
+            loadReturns();
+        }
+
+        function closeDetail() { backToList(); }
+
+        function editReturn() {
+            if (currentReturnId) window.location.href = '/new-purchase-return.html?id=' + currentReturnId;
+        }
+
+        function convertToVendorCredit() {
+            if (currentReturnId) window.location.href = '/new-vendor-credit.html?from_prn=' + currentReturnId;
+        }
+
+        async function loadAssocVendorCredits(r) {
+            const tab = document.getElementById('vendorCreditsTab');
+            const tbody = document.getElementById('vendorCreditsBody');
+            const countEl = document.getElementById('vendorCreditsCount');
+
+            try {
+                const res = await fetch('/api/vendor-credits');
+                if (!res.ok) return;
+                const allCredits = await res.json();
+                const prnNumber = r.prn_number || '';
+                // Find credits linked to this PRN (by reason containing the PRN number)
+                const linked = allCredits.filter(c => {
+                    const reason = (c.reason || '').toLowerCase();
+                    return reason.includes(prnNumber.toLowerCase()) || reason.includes('prn-' + r.id);
+                });
+
+                countEl.textContent = linked.length;
+                if (linked.length > 0) {
+                    tab.style.display = '';
+                    const fmtDate = d => d ? new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+                    let html = '';
+                    linked.forEach(c => {
+                        const st = (c.status || 'draft').toUpperCase();
+                        const stColor = st === 'OPEN' ? '#16a34a' : st === 'DRAFT' ? '#888' : '#1a73e8';
+                        html += `<tr onclick="window.location.href='/vendor-credit-detail.html?id=${c.id}'" style="cursor:pointer;">
+                            <td style="padding:10px 12px;border-bottom:1px solid #f0f0f0;"><a href="/vendor-credit-detail.html?id=${c.id}" style="color:#1a73e8;font-weight:500;text-decoration:none;">${c.credit_number || 'VC-' + c.id}</a></td>
+                            <td style="padding:10px 12px;border-bottom:1px solid #f0f0f0;">${fmtDate(c.credit_date)}</td>
+                            <td style="padding:10px 12px;border-bottom:1px solid #f0f0f0;"><span style="color:${stColor};font-weight:500;">${st}</span></td>
+                            <td style="padding:10px 12px;border-bottom:1px solid #f0f0f0;text-align:right;font-weight:500;">PHP ${parseFloat(c.total_amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+                        </tr>`;
+                    });
+                    tbody.innerHTML = html;
+                } else {
+                    tab.style.display = 'none';
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:30px;color:#999;">No vendor credits linked.</td></tr>';
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        async function approveReturn() {
+            if (!currentReturnId) return;
+            try {
+                await fetch('/api/purchase-returns/' + currentReturnId, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'APPROVED' })
+                });
+                await loadReturns();
+                showDetail(currentReturnId);
+            } catch (e) { console.error(e); }
+        }
+
+        async function markShipped() {
+            if (!currentReturnId) return;
+            try {
+                const res = await fetch('/api/purchase-returns/' + currentReturnId, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ return_status: 'Shipped', status: 'SHIPPED' })
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    alert(err.error || 'Failed to mark as shipped.');
+                    return;
+                }
+                await loadReturns();
+                showDetail(currentReturnId);
+            } catch (e) { console.error(e); }
+        }
+
+        async function revertToDraft() {
+            if (!currentReturnId) return;
+            if (!confirm('Revert this purchase return to Draft? Stock adjustments will be reversed if it was shipped.')) return;
+            try {
+                const res = await fetch('/api/purchase-returns/' + currentReturnId, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ return_status: 'Pending', status: 'DRAFT' })
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    alert(err.error || 'Failed to revert.');
+                    return;
+                }
+                await loadReturns();
+                showDetail(currentReturnId);
+            } catch (e) { console.error(e); }
+        }
+
+        async function cancelReturn() {
+            if (!currentReturnId) return;
+            if (!confirm('Cancel this purchase return? Stock adjustments will be reversed if it was shipped.')) return;
+            try {
+                const res = await fetch('/api/purchase-returns/' + currentReturnId, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ return_status: 'Pending', status: 'CANCELLED' })
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    alert(err.error || 'Failed to cancel.');
+                    return;
+                }
+                await loadReturns();
+                showDetail(currentReturnId);
+            } catch (e) { console.error(e); }
+        }
+
+        // ===== PDF/Print =====
+        function togglePdfPrintMenu(e) {
+            e.stopPropagation();
+            document.getElementById('pdfPrintMenu').classList.toggle('show');
+        }
+
+        function generatePRNDocument() {
+            if (!currentReturn) return '';
+            const r = currentReturn;
+            const fmtDate = d => d ? new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+            let itemsRows = '';
+            if (r.items && r.items.length > 0) {
+                r.items.forEach((item, i) => {
+                    itemsRows += `<tr>
+                        <td style="padding:10px;text-align:center;border-bottom:1px solid #eee;">${i + 1}</td>
+                        <td style="padding:10px;border-bottom:1px solid #eee;"><strong>${item.item_name || '-'}</strong></td>
+                        <td style="padding:10px;text-align:right;border-bottom:1px solid #eee;">${item.return_quantity || 0}</td>
+                        <td style="padding:10px;text-align:right;border-bottom:1px solid #eee;">${parseFloat(item.rate || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+                        <td style="padding:10px;text-align:right;border-bottom:1px solid #eee;">${parseFloat(item.amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+                    </tr>`;
+                });
+            }
+            return `<div style="font-family:'Inter',Arial,sans-serif;max-width:750px;margin:0 auto;padding:40px;color:#333;">
+                <div style="display:flex;justify-content:space-between;margin-bottom:30px;">
+                    <div><div style="font-size:20px;font-weight:800;">GIHON</div><div style="font-size:12px;color:#888;">Philippines</div></div>
+                    <div style="text-align:right;"><div style="font-size:24px;font-weight:800;">PURCHASE RETURN</div><div style="font-size:13px;color:#555;"># ${r.prn_number}</div></div>
+                </div>
+                <div style="margin-bottom:20px;"><strong>Vendor:</strong> ${r.vendor_name || '-'}</div>
+                <div style="margin-bottom:20px;display:flex;gap:40px;">
+                    <div><strong>Date:</strong> ${fmtDate(r.return_date)}</div>
+                    <div><strong>PO#:</strong> ${r.purchase_order_number || '-'}</div>
+                    <div><strong>Warehouse:</strong> ${r.warehouse_location || '-'}</div>
+                </div>
+                <table style="width:100%;border-collapse:collapse;">
+                    <thead><tr style="background:#f8f0e8;">
+                        <th style="padding:10px;text-align:center;font-size:12px;font-weight:600;color:#8b5e34;">#</th>
+                        <th style="padding:10px;text-align:left;font-size:12px;font-weight:600;color:#8b5e34;">Item</th>
+                        <th style="padding:10px;text-align:right;font-size:12px;font-weight:600;color:#8b5e34;">Return Qty</th>
+                        <th style="padding:10px;text-align:right;font-size:12px;font-weight:600;color:#8b5e34;">Rate</th>
+                        <th style="padding:10px;text-align:right;font-size:12px;font-weight:600;color:#8b5e34;">Amount</th>
+                    </tr></thead>
+                    <tbody>${itemsRows}</tbody>
+                </table>
+                ${r.reason ? '<div style="margin-top:20px;"><strong>Reason:</strong> ' + r.reason + '</div>' : ''}
+            </div>`;
+        }
+
+        async function downloadPDF() {
+            document.getElementById('pdfPrintMenu').classList.remove('show');
+            if (!currentReturn) return;
+            if (!window.html2pdf) {
+                const s = document.createElement('script');
+                s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+                document.head.appendChild(s);
+                await new Promise(r => { s.onload = r; });
+            }
+            const tmp = document.createElement('div');
+            tmp.innerHTML = generatePRNDocument();
+            document.body.appendChild(tmp);
+            try {
+                await html2pdf().set({ margin: [10, 10, 10, 10], filename: (currentReturn.prn_number || 'PRN') + '.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }).from(tmp.firstElementChild).save();
+            } finally { document.body.removeChild(tmp); }
+        }
+
+        function printPRN() {
+            document.getElementById('pdfPrintMenu').classList.remove('show');
+            if (!currentReturn) return;
+            const w = window.open('', '_blank', 'width=800,height=900');
+            w.document.write(`<!DOCTYPE html><html><head><title>Purchase Return - ${currentReturn.prn_number}</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"><style>@media print{body{margin:0;padding:0;}@page{margin:15mm;}}body{font-family:'Inter',Arial,sans-serif;}</style></head><body>${generatePRNDocument()}<script>setTimeout(function(){window.print();},500);<\/script></body></html>`);
+            w.document.close();
+        }
+    </script>
+</body>
+
+</html>

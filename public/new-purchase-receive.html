@@ -358,6 +358,11 @@
             font-weight: 600;
         }
 
+        .received-badge.over-received {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
         .intransit-badge {
             background: #fce8e6;
             color: #c5221f;
@@ -517,7 +522,11 @@
             <!-- Page Header -->
             <div class="page-header">
                 <div class="page-title-wrapper">
-                    <span class="page-icon">📋</span>
+                    <span class="page-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                        </svg></span>
                     <h1 class="page-title">New Purchase Receive</h1>
                 </div>
                 <div class="header-actions">
@@ -773,10 +782,10 @@
             const q = (query || '').toLowerCase();
             const vendorPOs = allPurchases.filter(p => {
                 const nameMatch = p.supplier_name === selectedVendor.name;
-                const recvStatus = (p.receive_status || 'NOT RECEIVED').toUpperCase();
-                const notFullyReceived = recvStatus !== 'RECEIVED';
                 const searchMatch = !q || (p.po_number || '').toLowerCase().includes(q);
-                return nameMatch && notFullyReceived && searchMatch;
+                const mainStatus = (p.status || '').toUpperCase();
+                const notCancelled = mainStatus !== 'CANCELLED';
+                return nameMatch && notCancelled && searchMatch;
             });
 
             if (vendorPOs.length === 0) {
@@ -846,7 +855,7 @@
                 html += `<tr data-item-id="${item.item_id || ''}" data-index="${index}">
                     <td>
                         <div class="item-cell">
-                            <div class="item-thumb">🖼️</div>
+                            <div class="item-thumb"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
                             <span class="item-name">${item.item_name || '—'}</span>
                         </div>
                     </td>
@@ -855,15 +864,34 @@
                     <td class="center"><span class="intransit-badge">${inTransit}</span></td>
                     <td class="center">
                         <input type="number" class="qty-input"
-                               value="${quantityToReceive}" min="0" max="${ordered}"
+                               value="${quantityToReceive}" min="0"
                                data-ordered="${ordered}"
                                data-received="${received}"
-                               data-intransit="${inTransit}">
+                               data-intransit="${inTransit}"
+                               oninput="checkOverReceive(this)">
+                        <div class="over-receive-warn" style="display:none;font-size:10px;color:#e65100;margin-top:2px;">⚠ Over-receiving</div>
                     </td>
                 </tr>`;
             });
 
             tbody.innerHTML = html;
+        }
+
+        function checkOverReceive(input) {
+            const ordered = parseFloat(input.getAttribute('data-ordered')) || 0;
+            const received = parseFloat(input.getAttribute('data-received')) || 0;
+            const qty = parseFloat(input.value) || 0;
+            const totalWillBe = received + qty;
+            const warn = input.parentElement.querySelector('.over-receive-warn');
+            if (totalWillBe > ordered) {
+                input.style.borderColor = '#e65100';
+                input.style.background = '#fff8f0';
+                if (warn) warn.style.display = '';
+            } else {
+                input.style.borderColor = '';
+                input.style.background = '';
+                if (warn) warn.style.display = 'none';
+            }
         }
 
         // ===== SAVE =====

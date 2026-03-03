@@ -574,7 +574,11 @@
                     <span class="detail-pr-number" id="headerPRNumber">—</span>
                     <div class="detail-header-actions">
                         <button class="detail-header-icon" title="Attachment">📎</button>
-                        <button class="detail-header-icon" title="Comment">💬</button>
+                        <button class="detail-header-icon" title="Comment"><svg width="14" height="14"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                            </svg></button>
                         <button class="detail-header-icon close"
                             onclick="window.location.href='/purchase-receives.html'" title="Close">×</button>
                     </div>
@@ -582,15 +586,36 @@
 
                 <!-- Toolbar -->
                 <div class="detail-toolbar">
-                    <button class="toolbar-btn" onclick="editReceive()">✏️ Edit</button>
-                    <button class="toolbar-btn">📄 PDF/Print ▾</button>
+                    <button class="toolbar-btn" onclick="editReceive()"><svg width="14" height="14" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" style="vertical-align:middle;margin-right:3px;">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                        </svg> Edit</button>
+                    <button class="toolbar-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            style="vertical-align:middle;margin-right:3px;">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14 2 14 8 20 8" />
+                            <line x1="16" y1="13" x2="8" y2="13" />
+                            <line x1="16" y1="17" x2="8" y2="17" />
+                        </svg> PDF/Print ▾</button>
                     <button class="toolbar-btn mark-received" id="markReceivedBtn" style="display:none;"
-                        onclick="markAsReceived()">✅ Mark as Received</button>
+                        onclick="markAsReceived()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            style="vertical-align:middle;margin-right:3px;">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg> Mark as Received</button>
                     <button class="toolbar-btn" id="markTransitBtn" onclick="markAsTransit()">⏱ Mark as In
                         Transit</button>
-                    <button class="toolbar-btn" id="convertBillBtn" onclick="convertToBill()">🔄 Convert to
-                        Bill</button>
                     <button class="toolbar-btn">⋯</button>
+                </div>
+
+                <!-- View-only redirect to linked PO -->
+                <div id="poRedirectBanner"
+                    style="display:none;padding:12px 18px;background:#e8f4fd;border:1px solid #b3d7f2;border-radius:6px;margin:8px 16px;font-size:12px;color:#1a5276;line-height:1.5;">
+                    ℹ️ To bill or return these items, please go to the linked Purchase Order: <a id="poRedirectLink"
+                        href="#" style="color:#1a73e8;font-weight:600;text-decoration:none;"></a>
                 </div>
 
                 <!-- Tabs -->
@@ -632,6 +657,10 @@
                                 <span class="doc-status-key">Bill</span>
                                 <span class="doc-status-value" id="docBillStatus">—</span>
                             </div>
+                            <div class="doc-status-row" id="poReceiveStatusRow" style="display:none;">
+                                <span class="doc-status-key">PO Status</span>
+                                <span class="doc-status-value" id="docPOReceiveStatus">—</span>
+                            </div>
                         </div>
                     </div>
 
@@ -653,7 +682,9 @@
                             <tr>
                                 <th style="width:40px;">#</th>
                                 <th>ITEMS & DESCRIPTION</th>
+                                <th style="width:80px;">ORDERED</th>
                                 <th style="width:100px;">QUANTITY</th>
+                                <th style="width:100px;">REMAINING</th>
                                 <th style="width:100px;">BILL STATUS</th>
                             </tr>
                         </thead>
@@ -661,6 +692,12 @@
                             <!-- Items populated by JS -->
                         </tbody>
                     </table>
+
+                    <!-- Remaining info banner -->
+                    <div id="remainingBanner"
+                        style="display:none;margin-top:16px;padding:12px 16px;background:#fff7ed;border:1px solid #fed7aa;border-radius:6px;font-size:13px;color:#9a3412;">
+                        <strong>⚠ Partially Received:</strong> <span id="remainingText"></span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -794,30 +831,87 @@
                 const date = pr.receive_date ? new Date(pr.receive_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
                 document.getElementById('docDate').textContent = date;
 
+                // Fetch PO details and received data for remaining calculation
+                let poItems = [];
+                let receivedByItem = {};
+                let poReceiveStatus = '';
+                if (pr.purchase_id) {
+                    try {
+                        const poRes = await fetch('/api/purchases/' + pr.purchase_id);
+                        if (poRes.ok) {
+                            const poData = await poRes.json();
+                            poItems = poData.items || [];
+                            poReceiveStatus = (poData.receive_status || 'NOT RECEIVED').toUpperCase();
+                        }
+                        const recRes = await fetch('/api/purchase-receives/by-po/' + pr.purchase_id);
+                        if (recRes.ok) {
+                            const recData = await recRes.json();
+                            recData.forEach(r => {
+                                const key = r.item_id || ('name:' + (r.item_name || ''));
+                                receivedByItem[key] = (receivedByItem[key] || 0) + (parseFloat(r.total_received) || 0);
+                            });
+                        }
+                    } catch (e) { console.error(e); }
+                }
+
+                // Show PO Receive Status
+                const poStatusRow = document.getElementById('poReceiveStatusRow');
+                const poStatusEl = document.getElementById('docPOReceiveStatus');
+                if (poReceiveStatus && poReceiveStatus !== 'NOT RECEIVED') {
+                    poStatusRow.style.display = 'flex';
+                    if (poReceiveStatus === 'RECEIVED') {
+                        poStatusEl.innerHTML = '<span class="badge-received">Fully Received</span>';
+                    } else if (poReceiveStatus === 'PARTIALLY RECEIVED') {
+                        poStatusEl.innerHTML = '<span style="background:#f59e0b;color:white;padding:2px 10px;border-radius:3px;font-size:11px;font-weight:600;">Partially Received</span>';
+                    }
+                } else {
+                    poStatusRow.style.display = 'none';
+                }
+
                 // Items table
                 const tbody = document.getElementById('docItemsBody');
                 tbody.innerHTML = '';
                 const items = pr.items || [];
+                let totalRemaining = 0;
 
                 items.forEach((item, idx) => {
                     const qty = parseFloat(item.quantity_to_receive) || 0;
                     const unit = item.unit || 'pcs';
                     const billStatusText = isBilled ? `${qty} Billed` : `${qty} Unbilled`;
 
+                    // Find ordered qty from PO items
+                    const itemKey = item.item_id || ('name:' + (item.item_name || ''));
+                    const poItem = poItems.find(p => (p.item_id || ('name:' + (p.item_name || ''))) === itemKey);
+                    const ordered = poItem ? (parseFloat(poItem.quantity) || 0) : (parseFloat(item.quantity_ordered) || 0);
+                    const totalReceived = receivedByItem[itemKey] || 0;
+                    const remaining = Math.max(0, ordered - totalReceived);
+                    totalRemaining += remaining;
+
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td>${idx + 1}</td>
                         <td>
                             <div class="item-cell">
-                                <div class="item-image">🖼</div>
+                                <div class="item-image"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
                                 <a class="item-name-link" href="#">${item.item_name || '—'}</a>
                             </div>
                         </td>
+                        <td>${ordered} ${unit}</td>
                         <td>${qty} ${unit}</td>
+                        <td style="color:${remaining > 0 ? '#dc2626' : '#16a34a'};font-weight:600;">${remaining} ${unit}</td>
                         <td>${billStatusText}</td>
                     `;
                     tbody.appendChild(tr);
                 });
+
+                // Show remaining banner
+                const remainingBanner = document.getElementById('remainingBanner');
+                if (totalRemaining > 0 && poReceiveStatus === 'PARTIALLY RECEIVED') {
+                    remainingBanner.style.display = 'block';
+                    document.getElementById('remainingText').textContent = `There are still ${totalRemaining} item(s) remaining to be received for this Purchase Order.`;
+                } else {
+                    remainingBanner.style.display = 'none';
+                }
 
                 // Button visibility based on status
                 const transitBtn = document.getElementById('markTransitBtn');
@@ -834,13 +928,13 @@
                     receivedBtn.style.display = 'flex';
                 }
 
-                // Convert to Bill button - hide if already billed
-                const convertBillBtn = document.getElementById('convertBillBtn');
-                if (isBilled) {
-                    convertBillBtn.style.display = 'none';
-                } else {
-                    convertBillBtn.style.display = 'flex';
-                    convertBillBtn.setAttribute('data-po-id', pr.purchase_id || '');
+                // Show linked PO redirect banner (actions centralized on PO)
+                if (pr.purchase_id && linkedPO) {
+                    const banner = document.getElementById('poRedirectBanner');
+                    const link = document.getElementById('poRedirectLink');
+                    banner.style.display = '';
+                    link.textContent = linkedPO.po_number || 'PO-' + pr.purchase_id;
+                    link.href = '/purchase-order-detail.html?id=' + pr.purchase_id;
                 }
             } catch (e) {
                 console.error('Error loading detail:', e);
@@ -850,6 +944,10 @@
         function editReceive() {
             alert('Edit feature coming soon!');
         }
+
+        // Billing and returns are now centralized on the PO detail view
+        function returnFromReceive() { /* deprecated - redirect to PO */ }
+        function convertToBill() { /* deprecated - redirect to PO */ }
 
         async function markAsTransit() {
             const currentId = new URLSearchParams(window.location.search).get('id');
@@ -914,14 +1012,7 @@
             setTimeout(() => t.remove(), 3000);
         }
 
-        function convertToBill() {
-            const poId = document.getElementById('convertBillBtn').getAttribute('data-po-id');
-            if (poId) {
-                window.location.href = '/new-bill.html?poId=' + poId;
-            } else {
-                window.location.href = '/new-bill.html';
-            }
-        }
+        // convertToBill removed - centralized on PO detail
     </script>
 </body>
 

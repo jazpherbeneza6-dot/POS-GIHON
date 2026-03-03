@@ -182,9 +182,9 @@ router.post('/', async (req, res) => {
         if (items && items.length > 0) {
             for (const item of items) {
                 await pool.query(
-                    `INSERT INTO sales_order_items (sales_order_id, item_id, item_name, quantity, rate, tax, amount, discounts)
-                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-                    [order.id, item.item_id || null, item.item_name, item.quantity || 1, item.rate || 0, item.tax, item.amount || 0, JSON.stringify(item.discounts || [])]
+                    `INSERT INTO sales_order_items (sales_order_id, item_id, item_name, description, quantity, rate, tax, amount, discounts)
+                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+                    [order.id, item.item_id || null, item.item_name, item.description || null, item.quantity || 1, item.rate || 0, item.tax, item.amount || 0, JSON.stringify(item.discounts || [])]
                 );
             }
         }
@@ -337,9 +337,9 @@ router.put('/:id', async (req, res) => {
         if (items && items.length > 0) {
             for (const item of items) {
                 await pool.query(
-                    `INSERT INTO sales_order_items (sales_order_id, item_id, item_name, quantity, rate, tax, amount, discounts)
-                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-                    [order.id, item.item_id || null, item.item_name, item.quantity || 1, item.rate || 0, item.tax, item.amount || 0, JSON.stringify(item.discounts || [])]
+                    `INSERT INTO sales_order_items (sales_order_id, item_id, item_name, description, quantity, rate, tax, amount, discounts)
+                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+                    [order.id, item.item_id || null, item.item_name, item.description || null, item.quantity || 1, item.rate || 0, item.tax, item.amount || 0, JSON.stringify(item.discounts || [])]
                 );
             }
         }

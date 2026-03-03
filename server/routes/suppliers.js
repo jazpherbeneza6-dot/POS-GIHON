@@ -79,7 +79,8 @@ router.get('/:id', async (req, res) => {
     const result = await db.query(`
       SELECT s.*,
              COALESCE(q.total_quantity, 0) AS total_quantity,
-             COALESCE(ps.total_spent, 0)::numeric(12,2) AS total_spent
+             COALESCE(ps.total_spent, 0)::numeric(12,2) AS total_spent,
+             COALESCE(vc.unused_credits, 0)::numeric(12,2) AS unused_credits
       FROM suppliers s
       LEFT JOIN (
         SELECT p.supplier_id, SUM(pi.quantity)::int AS total_quantity
@@ -93,6 +94,12 @@ router.get('/:id', async (req, res) => {
         WHERE LOWER(COALESCE(status, 'ordered')) = 'received'
         GROUP BY supplier_id
       ) ps ON s.id = ps.supplier_id
+      LEFT JOIN (
+        SELECT supplier_id, SUM(total_amount)::numeric(12,2) AS unused_credits
+        FROM vendor_credits
+        WHERE LOWER(status) = 'open'
+        GROUP BY supplier_id
+      ) vc ON s.id = vc.supplier_id
       WHERE s.id = $1
     `, [req.params.id]);
 
@@ -108,6 +115,16 @@ router.get('/:id', async (req, res) => {
       [req.params.id]
     );
     vendor.contact_persons = contactsResult.rows;
+
+    // Get vendor credits for this vendor (open status for statement)
+    const creditsResult = await db.query(
+      `SELECT id, credit_number, credit_date, total_amount, status
+       FROM vendor_credits
+       WHERE supplier_id = $1 AND LOWER(status) = 'open'
+       ORDER BY credit_date DESC`,
+      [req.params.id]
+    );
+    vendor.vendor_credits = creditsResult.rows;
 
     res.json(vendor);
   } catch (error) {

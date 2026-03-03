@@ -721,6 +721,9 @@ async function init() {
       `);
       console.log('Vendor Credits tables created');
 
+      // Add description column to sales_order_items
+      await pool.query(`ALTER TABLE sales_order_items ADD COLUMN IF NOT EXISTS description TEXT;`);
+
       // ========== PO 3-column status tracking migration ==========
       await pool.query(`ALTER TABLE purchases ADD COLUMN IF NOT EXISTS receive_status VARCHAR(50) DEFAULT 'NOT RECEIVED';`);
       await pool.query(`ALTER TABLE purchases ADD COLUMN IF NOT EXISTS bill_status VARCHAR(50) DEFAULT 'UNBILLED';`);
@@ -754,6 +757,13 @@ async function init() {
     } catch (migrationError) {
       // Column might already exist, ignore error
       console.log('Migration note:', migrationError.message);
+    }
+
+    // Ensure sales_order_items.description column exists (independent try-catch)
+    try {
+      await pool.query(`ALTER TABLE sales_order_items ADD COLUMN IF NOT EXISTS description TEXT;`);
+    } catch (descErr) {
+      console.log('sales_order_items description migration note:', descErr.message);
     }
 
     // Activity Log table

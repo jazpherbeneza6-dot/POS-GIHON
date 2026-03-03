@@ -1411,7 +1411,12 @@
                     <div class="vendor-info-card">
                         <div class="vendor-info-label" id="vendorInfoLabel"></div>
                         <div class="vendor-contact-row">
-                            <div class="vendor-avatar" id="vendorAvatar">👤</div>
+                            <div class="vendor-avatar" id="vendorAvatar"><svg width="20" height="20" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                    <circle cx="12" cy="7" r="4" />
+                                </svg></div>
                             <div class="vendor-contact-details" id="vendorContactDetails">
                                 <!-- Filled dynamically -->
                             </div>
@@ -1720,10 +1725,23 @@
                         <div class="mails-card">
                             <div class="mails-header">
                                 <span class="mails-title">System Mails</span>
-                                <button class="link-email-btn">✉ Link Email account ▾</button>
+                                <button class="link-email-btn"><svg width="14" height="14" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;">
+                                        <path
+                                            d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                        <polyline points="22,6 12,13 2,6" />
+                                    </svg> Link Email account ▾</button>
                             </div>
                             <div class="mails-empty">
-                                <span class="warn-icon">⚠</span> No emails sent.
+                                <span class="warn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                        stroke="#f59e0b" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path
+                                            d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                                        <line x1="12" y1="9" x2="12" y2="13" />
+                                        <line x1="12" y1="17" x2="12.01" y2="17" />
+                                    </svg></span> No emails sent.
                             </div>
                         </div>
                     </div>
@@ -1936,13 +1954,13 @@
                 contactHtml += `<div class="vendor-contact-name">${fullName}</div>`;
             }
             if (workPhone) {
-                contactHtml += `<div class="vendor-contact-item"><span class="icon">📞</span> ${workPhone}</div>`;
+                contactHtml += `<div class="vendor-contact-item"><span class="icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span> ${workPhone}</div>`;
             }
             if (mobile) {
-                contactHtml += `<div class="vendor-contact-item"><span class="icon">📱</span> ${mobile}</div>`;
+                contactHtml += `<div class="vendor-contact-item"><span class="icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></span> ${mobile}</div>`;
             }
             if (v.email) {
-                contactHtml += `<div class="vendor-contact-item"><span class="icon">✉</span> ${v.email}</div>`;
+                contactHtml += `<div class="vendor-contact-item"><span class="icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span> ${v.email}</div>`;
             }
             document.getElementById('vendorContactDetails').innerHTML = contactHtml || '<div class="vendor-contact-name">No contact information</div>';
 
@@ -1977,7 +1995,7 @@
             const currencyPrefix = v.currency === 'usd' || v.currency === 'USD' ? 'USD' : 'PHP';
             document.getElementById('payableCurrency').textContent = currencyLabel;
             document.getElementById('payableOutstanding').textContent = currencyPrefix + parseFloat(v.total_spent || 0).toFixed(2);
-            document.getElementById('payableCredits').textContent = currencyPrefix + '0.00';
+            document.getElementById('payableCredits').textContent = currencyPrefix + parseFloat(v.unused_credits || 0).toFixed(2);
 
             // Items
             document.getElementById('itemsToReceive').textContent = v.total_quantity || 0;
@@ -2286,6 +2304,7 @@
             if (!vendorData) return;
             const v = vendorData;
             const vendorName = v.display_name || v.name || 'Vendor';
+            const currencyPrefix = v.currency === 'usd' || v.currency === 'USD' ? 'USD' : 'PHP';
 
             // Date range: first of current month to last of current month
             const now = new Date();
@@ -2299,6 +2318,47 @@
             document.getElementById('stmtToName').textContent = vendorName;
             document.getElementById('stmtAccountDateRange').textContent = `${fmtDate(firstDay)} To ${fmtDate(lastDay)}`;
             document.getElementById('stmtOpeningDate').textContent = fmtDate(firstDay);
+
+            // Build statement rows from vendor credits
+            const credits = v.vendor_credits || [];
+            const tbody = document.getElementById('stmtTransactionsBody');
+            let runningBalance = 0;
+            let totalCredits = 0;
+
+            // Keep the opening balance row, then add credit rows
+            let rowsHtml = `<tr>
+                <td>${fmtDate(firstDay)}</td>
+                <td class="bold">***Opening Balance***</td>
+                <td></td>
+                <td>0.00</td>
+                <td></td>
+                <td>0.00</td>
+            </tr>`;
+
+            credits.forEach(cr => {
+                const creditDate = cr.credit_date ? new Date(cr.credit_date) : new Date();
+                const amount = parseFloat(cr.total_amount || 0);
+                totalCredits += amount;
+                runningBalance -= amount;
+
+                rowsHtml += `<tr>
+                    <td>${fmtDate(creditDate)}</td>
+                    <td>Vendor Credit</td>
+                    <td>${cr.credit_number || ''}</td>
+                    <td></td>
+                    <td style="color:#2e7d32;">${amount.toFixed(2)}</td>
+                    <td>${runningBalance.toFixed(2)}</td>
+                </tr>`;
+            });
+
+            tbody.innerHTML = rowsHtml;
+
+            // Update account summary
+            document.getElementById('stmtOpeningBalance').textContent = `${currencyPrefix} 0.00`;
+            document.getElementById('stmtBilledAmount').textContent = `${currencyPrefix} 0.00`;
+            document.getElementById('stmtAmountPaid').textContent = `${currencyPrefix} ${totalCredits.toFixed(2)}`;
+            document.getElementById('stmtBalanceDue').textContent = `${currencyPrefix} ${runningBalance.toFixed(2)}`;
+            document.getElementById('stmtFinalBalance').textContent = `${currencyPrefix} ${runningBalance.toFixed(2)}`;
         }
     </script>
 </body>

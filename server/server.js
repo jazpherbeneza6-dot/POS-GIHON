@@ -41,7 +41,8 @@ const entityMap = {
   '/api/shipments': 'shipment',
   '/api/vendor-credits': 'vendor_credit',
   '/api/payments-made': 'payment_made',
-  '/api/payments-received': 'payment_received'
+  '/api/payments-received': 'payment_received',
+  '/api/purchase-returns': 'purchase_return'
 };
 
 app.use((req, res, next) => {
@@ -128,6 +129,7 @@ app.use('/api/shipments', require('./routes/shipments'));
 app.use('/api/sales-returns', require('./routes/sales-returns'));
 app.use('/api/credit-notes', require('./routes/credit-notes'));
 app.use('/api/bills', require('./routes/bills'));
+app.use('/api/purchase-returns', require('./routes/purchase-returns'));
 app.use('/api/uploads', require('./routes/uploads'));
 
 // Taxes API (inline — simple CRUD)

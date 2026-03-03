@@ -163,6 +163,103 @@
             padding: 6px 0;
         }
 
+        /* Searchable Dropdown */
+        .dropdown-wrap {
+            position: relative;
+        }
+
+        .dropdown-input {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 7px 10px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            background: white;
+            min-height: 18px;
+        }
+
+        .dropdown-input:hover {
+            border-color: #4285f4;
+        }
+
+        .dropdown-input .selected-text {
+            flex: 1;
+            color: #333;
+        }
+
+        .dropdown-input .placeholder {
+            color: #999;
+        }
+
+        .dropdown-input .clear-btn {
+            background: none;
+            border: none;
+            color: #999;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 0 2px;
+            line-height: 1;
+        }
+
+        .dropdown-input .clear-btn:hover {
+            color: #dc2626;
+        }
+
+        .dropdown-arrow {
+            color: #999;
+            font-size: 10px;
+            margin-left: 6px;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #d0d0d0;
+            border-radius: 0 0 4px 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+            z-index: 200;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-search {
+            width: 100%;
+            padding: 8px 10px;
+            border: none;
+            border-bottom: 1px solid #eee;
+            font-size: 12px;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .dropdown-option {
+            padding: 8px 12px;
+            font-size: 13px;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .dropdown-option:hover {
+            background: #f0f5ff;
+        }
+
+        .dropdown-empty {
+            padding: 10px 12px;
+            font-size: 11px;
+            color: #999;
+        }
+
         /* Item Table */
         .item-table-section {
             padding: 0;
@@ -425,7 +522,11 @@
             <!-- Page Header -->
             <div class="page-header">
                 <div class="page-title-wrapper">
-                    <span class="page-icon">📝</span>
+                    <span class="page-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                        </svg></span>
                     <h1 class="page-title">New Vendor Credit</h1>
                 </div>
                 <button class="close-btn" onclick="goBack()">×</button>
@@ -433,7 +534,14 @@
 
             <!-- Source Bill Info Bar -->
             <div class="source-info" id="sourceInfo" style="display:none;">
-                📦 Creating Vendor Credit from Bill <a href="#" id="sourceBillLink"></a>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;">
+                    <path
+                        d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                    <line x1="12" y1="22.08" x2="12" y2="12" />
+                </svg> Creating Vendor Credit from <span id="sourceTypeLabel">Bill</span> <a href="#"
+                    id="sourceBillLink"></a>
             </div>
 
             <!-- Form Main -->
@@ -441,9 +549,21 @@
                 <!-- Left Column -->
                 <div class="left-column">
                     <div class="form-row">
-                        <div class="form-label">Vendor Name</div>
+                        <div class="form-label required">Vendor Name</div>
                         <div class="form-value">
-                            <div class="vendor-display" id="vendorName">—</div>
+                            <div class="dropdown-wrap" id="vendorDropdownWrap">
+                                <div class="dropdown-input" id="vendorInput" onclick="toggleVendorDropdown()">
+                                    <span id="vendorDisplay" class="placeholder">Select or type a vendor</span>
+                                    <button class="clear-btn" id="vendorClear" style="display:none;"
+                                        onclick="event.stopPropagation();clearVendor()">×</button>
+                                    <span class="dropdown-arrow">▼</span>
+                                </div>
+                                <div class="dropdown-menu" id="vendorMenu">
+                                    <input type="text" class="dropdown-search" id="vendorSearch"
+                                        placeholder="Search vendors..." oninput="filterVendors()">
+                                    <div id="vendorOptions"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="form-row">
@@ -461,7 +581,19 @@
                     <div class="form-row">
                         <div class="form-label">Reference</div>
                         <div class="form-value">
-                            <input type="text" id="reference" readonly placeholder="Bill#">
+                            <div class="dropdown-wrap" id="billDropdownWrap">
+                                <div class="dropdown-input" id="billInput" onclick="toggleBillDropdown()">
+                                    <span id="billDisplay" class="placeholder">Select a Bill</span>
+                                    <button class="clear-btn" id="billClear" style="display:none;"
+                                        onclick="event.stopPropagation();clearBillSelection()">×</button>
+                                    <span class="dropdown-arrow">▼</span>
+                                </div>
+                                <div class="dropdown-menu" id="billMenu">
+                                    <input type="text" class="dropdown-search" id="billSearch"
+                                        placeholder="Search bills..." oninput="filterBills()">
+                                    <div id="billOptions"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="form-row">
@@ -545,7 +677,13 @@
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const sourceBillId = urlParams.get('billId');
+        const sourcePrnId = urlParams.get('from_prn');
         let billData = null;
+        let prnData = null;
+        let allVendors = [];
+        let allBills = [];
+        let selectedVendor = null;
+        let selectedBill = null;
 
         document.addEventListener('DOMContentLoaded', async function () {
             // Set today's date
@@ -560,12 +698,213 @@
                 }
             } catch (e) { }
 
+            // Load vendors
+            try {
+                const vRes = await fetch('/api/suppliers');
+                if (vRes.ok) allVendors = await vRes.json();
+            } catch (e) { }
+            renderVendorOptions();
+
+            // Load all bills
+            try {
+                const bRes = await fetch('/api/bills');
+                if (bRes.ok) allBills = await bRes.json();
+            } catch (e) { }
+
             // If creating from a bill, load bill data
             if (sourceBillId) {
                 await loadBillData(sourceBillId);
             }
+
+            // If creating from a purchase return, load PRN data
+            if (sourcePrnId) {
+                await loadPRNData(sourcePrnId);
+            }
+
+            // Close dropdowns on outside click
+            document.addEventListener('click', function (e) {
+                if (!document.getElementById('vendorDropdownWrap').contains(e.target)) {
+                    document.getElementById('vendorMenu').classList.remove('show');
+                }
+                if (!document.getElementById('billDropdownWrap').contains(e.target)) {
+                    document.getElementById('billMenu').classList.remove('show');
+                }
+            });
         });
 
+        // ===== VENDOR DROPDOWN =====
+        function toggleVendorDropdown() {
+            document.getElementById('vendorMenu').classList.toggle('show');
+            document.getElementById('vendorSearch').value = '';
+            filterVendors();
+            setTimeout(() => document.getElementById('vendorSearch').focus(), 50);
+        }
+
+        function renderVendorOptions(query) {
+            const container = document.getElementById('vendorOptions');
+            const q = (query || '').toLowerCase();
+            const filtered = q ? allVendors.filter(v => (v.display_name || v.name || '').toLowerCase().includes(q)) : allVendors;
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="dropdown-empty">No vendors found</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            filtered.forEach(v => {
+                const div = document.createElement('div');
+                div.className = 'dropdown-option';
+                div.textContent = v.display_name || v.name || 'Unnamed';
+                div.onclick = () => selectVendor(v);
+                container.appendChild(div);
+            });
+        }
+
+        function filterVendors() {
+            renderVendorOptions(document.getElementById('vendorSearch').value);
+        }
+
+        function selectVendor(vendor) {
+            selectedVendor = vendor;
+            const name = vendor.display_name || vendor.name || 'Unnamed';
+            document.getElementById('vendorDisplay').textContent = name;
+            document.getElementById('vendorDisplay').className = 'selected-text';
+            document.getElementById('vendorClear').style.display = 'block';
+            document.getElementById('vendorMenu').classList.remove('show');
+
+            // Reset bill selection
+            clearBillSelection();
+            renderBillOptions();
+        }
+
+        function clearVendor() {
+            selectedVendor = null;
+            document.getElementById('vendorDisplay').textContent = 'Select or type a vendor';
+            document.getElementById('vendorDisplay').className = 'placeholder';
+            document.getElementById('vendorClear').style.display = 'none';
+            clearBillSelection();
+            document.getElementById('itemTableBody').innerHTML = '';
+            recalculateTotals();
+        }
+
+        // ===== BILL DROPDOWN =====
+        function toggleBillDropdown() {
+            if (!selectedVendor) {
+                alert('Please select a vendor first');
+                return;
+            }
+            document.getElementById('billMenu').classList.toggle('show');
+            document.getElementById('billSearch').value = '';
+            renderBillOptions();
+            setTimeout(() => document.getElementById('billSearch').focus(), 50);
+        }
+
+        function renderBillOptions(query) {
+            const container = document.getElementById('billOptions');
+            if (!selectedVendor) {
+                container.innerHTML = '<div class="dropdown-empty">Select a vendor first</div>';
+                return;
+            }
+
+            const q = (query || '').toLowerCase();
+            const vendorName = (selectedVendor.display_name || selectedVendor.name || '').toLowerCase();
+            const vendorBills = allBills.filter(b => {
+                const nameMatch = (b.supplier_name || '').toLowerCase() === vendorName || b.supplier_id == selectedVendor.id;
+                const searchMatch = !q || (b.bill_number || '').toLowerCase().includes(q);
+                return nameMatch && searchMatch;
+            });
+
+            if (vendorBills.length === 0) {
+                container.innerHTML = '<div class="dropdown-empty">No bills found for this vendor</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            vendorBills.forEach(bill => {
+                const div = document.createElement('div');
+                div.className = 'dropdown-option';
+                const date = bill.bill_date ? new Date(bill.bill_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+                div.textContent = (bill.bill_number || 'BILL-' + bill.id) + (date ? ' — ' + date : '');
+                div.onclick = () => selectBill(bill);
+                container.appendChild(div);
+            });
+        }
+
+        function filterBills() {
+            renderBillOptions(document.getElementById('billSearch').value);
+        }
+
+        async function selectBill(bill) {
+            selectedBill = bill;
+            billData = bill;
+            document.getElementById('billDisplay').textContent = bill.bill_number || 'BILL-' + bill.id;
+            document.getElementById('billDisplay').className = 'selected-text';
+            document.getElementById('billClear').style.display = 'block';
+            document.getElementById('billMenu').classList.remove('show');
+
+            // Fetch bill details with items
+            try {
+                const res = await fetch('/api/bills/' + bill.id);
+                if (!res.ok) return;
+                const fullBill = await res.json();
+                billData = fullBill;
+
+                // Fill item table from bill items
+                populateItemsFromBill(fullBill);
+            } catch (e) {
+                console.error('Error loading bill data:', e);
+            }
+        }
+
+        function clearBillSelection() {
+            selectedBill = null;
+            if (!sourceBillId) billData = null;
+            document.getElementById('billDisplay').textContent = 'Select a Bill';
+            document.getElementById('billDisplay').className = 'placeholder';
+            document.getElementById('billClear').style.display = 'none';
+        }
+
+        // ===== POPULATE ITEMS FROM BILL =====
+        function populateItemsFromBill(bill) {
+            const tbody = document.getElementById('itemTableBody');
+            tbody.innerHTML = '';
+
+            const items = bill.items || [];
+            items.forEach(item => {
+                const qty = parseFloat(item.quantity) || 1;
+                const rate = parseFloat(item.rate) || parseFloat(item.unit_price) || 0;
+                const amount = (qty * rate).toFixed(2);
+                const acct = item.account || 'inventory';
+                const acctType = item.account_type || 'inventory';
+                const isExpense = acctType !== 'inventory';
+                const acctLabel = getAccountLabel(acct);
+
+                const tr = document.createElement('tr');
+                tr.setAttribute('data-item-id', item.item_id || '');
+                tr.setAttribute('data-account', acct);
+                tr.setAttribute('data-account-type', acctType);
+                tr.setAttribute('data-rate', rate);
+                tr.innerHTML = `
+                    <td><div class="item-image">${isExpense ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>' : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>'}</div></td>
+                    <td>
+                        <div class="item-name">${item.item_name || '—'}</div>
+                        <div class="item-account">${acctLabel}</div>
+                    </td>
+                    <td style="font-size:12px;color:#666;">${acctLabel}</td>
+                    <td class="center">
+                        <input type="number" value="${qty}" min="0" step="1" class="qty-input" onchange="updateRowAmount(this)">
+                    </td>
+                    <td class="center" style="font-weight:500;">₱${rate.toFixed(2)}</td>
+                    <td class="center row-amount" style="font-weight:500;">${amount}</td>
+                    <td class="center"><button class="delete-row-btn" onclick="deleteRow(this)">×</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            recalculateTotals();
+        }
+
+        // ===== BILL DATA (when coming from ?billId=...) =====
         async function loadBillData(billId) {
             try {
                 const res = await fetch('/api/bills/' + billId);
@@ -579,50 +918,107 @@
                 link.textContent = billData.bill_number || 'BILL-' + billData.id;
                 link.href = '/bill-detail.html?id=' + billData.id;
 
-                // Fill left panel
-                document.getElementById('vendorName').textContent = billData.supplier_name || '—';
-                document.getElementById('reference').value = billData.bill_number || '';
+                // Auto-select the vendor
+                const vendorMatch = allVendors.find(v => v.id == billData.supplier_id || (v.display_name || v.name || '').toLowerCase() === (billData.supplier_name || '').toLowerCase());
+                if (vendorMatch) {
+                    selectVendor(vendorMatch);
+                } else if (billData.supplier_name) {
+                    selectedVendor = { id: billData.supplier_id, display_name: billData.supplier_name };
+                    document.getElementById('vendorDisplay').textContent = billData.supplier_name;
+                    document.getElementById('vendorDisplay').className = 'selected-text';
+                    document.getElementById('vendorClear').style.display = 'block';
+                }
+
+                // Auto-select this bill in the reference dropdown
+                selectedBill = billData;
+                document.getElementById('billDisplay').textContent = billData.bill_number || 'BILL-' + billData.id;
+                document.getElementById('billDisplay').className = 'selected-text';
+                document.getElementById('billClear').style.display = 'block';
 
                 // Fill item table from bill items
+                populateItemsFromBill(billData);
+            } catch (e) {
+                console.error('Error loading bill data:', e);
+            }
+        }
+
+        // ===== LOAD PRN DATA (when coming from ?from_prn=...) =====
+        async function loadPRNData(prnId) {
+            try {
+                const res = await fetch('/api/purchase-returns/' + prnId);
+                if (!res.ok) { alert('Purchase Return not found.'); return; }
+                prnData = await res.json();
+
+                // Show source info
+                const sourceInfo = document.getElementById('sourceInfo');
+                sourceInfo.style.display = 'flex';
+                document.getElementById('sourceTypeLabel').textContent = 'Purchase Return';
+                const link = document.getElementById('sourceBillLink');
+                link.textContent = prnData.prn_number || 'PRN-' + prnData.id;
+                link.href = '/purchase-returns.html?id=' + prnData.id;
+
+                // Auto-select vendor
+                const vendorMatch = allVendors.find(v => {
+                    const vName = (v.display_name || v.name || '').toLowerCase();
+                    return vName === (prnData.vendor_name || '').toLowerCase();
+                });
+                if (vendorMatch) {
+                    selectVendor(vendorMatch);
+                } else if (prnData.vendor_name) {
+                    selectedVendor = { id: null, display_name: prnData.vendor_name, name: prnData.vendor_name };
+                    document.getElementById('vendorDisplay').textContent = prnData.vendor_name;
+                    document.getElementById('vendorDisplay').className = 'selected-text';
+                    document.getElementById('vendorClear').style.display = 'block';
+                }
+
+                // Set reason
+                document.getElementById('reason').value = 'Credit for ' + (prnData.prn_number || 'PRN-' + prnData.id);
+
+                // Populate items from PRN — with financial guardrail
                 const tbody = document.getElementById('itemTableBody');
                 tbody.innerHTML = '';
-
-                const items = billData.items || [];
+                const items = prnData.items || [];
+                let hasOverShipment = false;
                 items.forEach(item => {
-                    const qty = parseFloat(item.quantity) || 1;
-                    const rate = parseFloat(item.rate) || 0;
-                    const amount = (qty * rate).toFixed(2);
-                    const acct = item.account || 'inventory';
-                    const acctType = item.account_type || 'inventory';
-                    const isExpense = acctType !== 'inventory';
+                    const qty = parseFloat(item.return_quantity) || 0;
+                    const originalRate = parseFloat(item.rate) || 0;
+                    const isOverShipment = (item.return_reason || '').toLowerCase() === 'over-shipment';
 
-                    const acctLabel = getAccountLabel(acct);
+                    // Over-shipment items get ₱0 credit — they were never billed
+                    const creditRate = isOverShipment ? 0 : originalRate;
+                    const amount = (qty * creditRate).toFixed(2);
+                    if (isOverShipment) hasOverShipment = true;
 
                     const tr = document.createElement('tr');
                     tr.setAttribute('data-item-id', item.item_id || '');
-                    tr.setAttribute('data-account', acct);
-                    tr.setAttribute('data-account-type', acctType);
+                    tr.setAttribute('data-account', 'inventory');
+                    tr.setAttribute('data-account-type', 'inventory');
+                    tr.setAttribute('data-rate', creditRate);
                     tr.innerHTML = `
-                        <td><div class="item-image">${isExpense ? '💡' : '🖼️'}</div></td>
+                        <td><div class="item-image"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div></td>
                         <td>
                             <div class="item-name">${item.item_name || '—'}</div>
-                            <div class="item-account">${acctLabel}</div>
+                            <div class="item-account">${isOverShipment ? '<span style="color:#e65100;font-size:11px;">⚠ Over-shipment — ₱0 credit</span>' : 'Inventory Asset'}</div>
                         </td>
-                        <td style="font-size:12px;color:#666;">${acctLabel}</td>
+                        <td style="font-size:12px;color:#666;">${isOverShipment ? '<span style="color:#e65100;">Over-shipment</span>' : 'Inventory Asset'}</td>
                         <td class="center">
-                            <input type="number" value="${qty}" min="0" step="1" class="qty-input" onchange="updateRowAmount(this)">
+                            <input type="number" value="${qty}" min="0" step="1" class="qty-input" onchange="updateRowAmount(this)"${isOverShipment ? ' readonly style="background:#fafafa;color:#999;"' : ''}>
                         </td>
-                        <td class="center" style="font-weight:500;">₱${rate.toFixed(2)}</td>
-                        <td class="center row-amount" style="font-weight:500;">${amount}</td>
+                        <td class="center" style="font-weight:500;${isOverShipment ? 'color:#999;text-decoration:line-through;' : ''}">₱${isOverShipment ? '0.00' : creditRate.toFixed(2)}</td>
+                        <td class="center row-amount" style="font-weight:500;${isOverShipment ? 'color:#999;' : ''}">${amount}</td>
                         <td class="center"><button class="delete-row-btn" onclick="deleteRow(this)">×</button></td>
                     `;
-                    tr.setAttribute('data-rate', rate);
                     tbody.appendChild(tr);
                 });
 
+                // Show info about over-shipment guardrail
+                if (hasOverShipment) {
+                    document.getElementById('reason').value += '\nNote: Over-shipment items have ₱0 credit value as they were not part of the original billed amount.';
+                }
+
                 recalculateTotals();
             } catch (e) {
-                console.error('Error loading bill data:', e);
+                console.error('Error loading PRN data:', e);
             }
         }
 
@@ -680,6 +1076,7 @@
 
         // Save vendor credit
         async function saveCredit(status) {
+            if (!selectedVendor) { alert('Please select a vendor'); return; }
             const creditNumber = document.getElementById('creditNumber').value.trim();
             if (!creditNumber) { alert('Please enter a vendor credit number'); return; }
 
@@ -711,10 +1108,10 @@
                 credit_number: creditNumber,
                 bill_id: sourceBillId ? parseInt(sourceBillId) : null,
                 bill_number: billData?.bill_number || null,
-                supplier_id: billData?.supplier_id || null,
-                supplier_name: billData?.supplier_name || null,
+                supplier_id: selectedVendor.id || null,
+                supplier_name: selectedVendor.display_name || selectedVendor.name || null,
                 credit_date: document.getElementById('creditDate').value || null,
-                reference: document.getElementById('reference').value.trim() || null,
+                reference: selectedBill ? (selectedBill.bill_number || '') : null,
                 reason: document.getElementById('reason').value.trim() || null,
                 discount_percent: parseFloat(document.getElementById('discountValue').value) || 0,
                 adjustment: parseFloat(document.getElementById('adjustmentValue').value) || 0,
@@ -732,8 +1129,24 @@
                 if (!res.ok) { alert('Error: ' + (result.error || 'Failed to save')); return; }
 
                 showToast('Vendor Credit has been created');
+
+                // If from PRN, update the PRN's credit_status to 'Credited'
+                if (sourcePrnId) {
+                    try {
+                        await fetch('/api/purchase-returns/' + sourcePrnId, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ credit_status: 'Credited' })
+                        });
+                    } catch (e) { console.error('Error updating PRN credit status:', e); }
+                }
+
                 setTimeout(() => {
-                    window.location.href = '/vendor-credits.html';
+                    if (sourcePrnId) {
+                        window.location.href = '/purchase-returns.html?id=' + sourcePrnId;
+                    } else {
+                        window.location.href = '/vendor-credits.html';
+                    }
                 }, 1200);
             } catch (e) {
                 console.error(e);
@@ -750,10 +1163,12 @@
         }
 
         function goBack() {
-            if (sourceBillId) {
+            if (sourcePrnId) {
+                window.location.href = '/purchase-returns.html?id=' + sourcePrnId;
+            } else if (sourceBillId) {
                 window.location.href = '/bill-detail.html?id=' + sourceBillId;
             } else {
-                window.location.href = '/bills.html';
+                window.location.href = '/vendor-credits.html';
             }
         }
     </script>

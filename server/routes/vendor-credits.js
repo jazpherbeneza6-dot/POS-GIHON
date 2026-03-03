@@ -133,10 +133,30 @@ router.post('/', async (req, res) => {
     }
 });
 
+// PUT update vendor credit (status, etc.)
+router.put('/:id', async (req, res) => {
+    try {
+        const db = database.getDb();
+        const { status } = req.body;
+        if (!status) {
+            return res.status(400).json({ error: 'Status is required' });
+        }
+        const result = await db.query('UPDATE vendor_credits SET status = $1 WHERE id = $2 RETURNING *', [status, req.params.id]);
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Vendor credit not found' });
+        }
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Error updating vendor credit:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // DELETE vendor credit
 router.delete('/:id', async (req, res) => {
     try {
         const db = database.getDb();
+        await db.query('DELETE FROM vendor_credit_items WHERE vendor_credit_id = $1', [req.params.id]);
         const result = await db.query('DELETE FROM vendor_credits WHERE id = $1 RETURNING *', [req.params.id]);
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Vendor credit not found' });

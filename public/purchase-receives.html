@@ -329,13 +329,13 @@
                 <div class="page-title-wrapper">
                     <div class="filter-dropdown">
                         <h1 class="page-title" onclick="toggleFilterMenu()">
-                            <span id="filterTitle">In Transit</span>
+                            <span id="filterTitle">All</span>
                             <span class="dropdown-arrow" id="filterArrow">▲</span>
                         </h1>
                         <div class="filter-menu" id="filterMenu">
-                            <a href="#" class="filter-menu-item" onclick="setFilter('all', event)">All <span
+                            <a href="#" class="filter-menu-item active" onclick="setFilter('all', event)">All <span
                                     class="star-icon">☆</span></a>
-                            <a href="#" class="filter-menu-item active" onclick="setFilter('in-transit', event)">In
+                            <a href="#" class="filter-menu-item" onclick="setFilter('in-transit', event)">In
                                 Transit <span class="star-icon">☆</span></a>
                             <a href="#" class="filter-menu-item" onclick="setFilter('received', event)">Received <span
                                     class="star-icon">☆</span></a>
@@ -378,7 +378,14 @@
                             <th>STATUS</th>
                             <th>BILLED</th>
                             <th>QUANTITY</th>
-                            <th><span class="refresh-icon" onclick="refreshData()">🔄</span></th>
+                            <th><span class="refresh-icon" onclick="refreshData()"><svg width="14" height="14"
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="23 4 23 10 17 10" />
+                                        <polyline points="1 20 1 14 7 14" />
+                                        <path
+                                            d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+                                    </svg></span></th>
                         </tr>
                     </thead>
                     <tbody id="receivesBody">
@@ -397,7 +404,7 @@
     <!-- Layout Script -->
     <script src="/js/layout.js"></script>
     <script>
-        let currentFilter = 'in-transit';
+        let currentFilter = 'all';
         let allReceives = [];
 
         function toggleFilterMenu() {

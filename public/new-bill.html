@@ -1158,7 +1158,11 @@
             <!-- Page Header -->
             <div class="page-header">
                 <div class="page-title-wrapper">
-                    <span class="page-icon">📋</span>
+                    <span class="page-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                        </svg></span>
                     <h1 class="page-title" id="pageTitle">New Bill</h1>
                 </div>
                 <button class="close-btn" onclick="goBack()">×</button>
@@ -1240,7 +1244,13 @@
                             Invoice</div>
                         <div style="display:flex;align-items:center;gap:4px;font-size:12px;color:#555;cursor:pointer;"
                             onclick="attachFiles()">
-                            🖼️ Upload File ▾
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                style="vertical-align:middle;margin-right:4px;">
+                                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                                <polyline points="16 6 12 2 8 6" />
+                                <line x1="12" y1="2" x2="12" y2="15" />
+                            </svg> Upload File ▾
                         </div>
                         <div style="font-size:10px;color:#bbb;margin-top:4px;">Max 10 files, 10MB each</div>
                     </div>
@@ -1252,7 +1262,14 @@
                     <div class="item-table-section">
                         <div class="item-table-header">
                             <span class="item-table-title">Item Table</span>
-                            <a href="#" style="color:#4285f4;font-size:12px;text-decoration:none;">🔄 Bulk Actions</a>
+                            <a href="#" style="color:#4285f4;font-size:12px;text-decoration:none;"><svg width="12"
+                                    height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round"
+                                    style="vertical-align:middle;margin-right:3px;">
+                                    <polyline points="23 4 23 10 17 10" />
+                                    <polyline points="1 20 1 14 7 14" />
+                                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+                                </svg> Bulk Actions</a>
                         </div>
                         <table class="item-table">
                             <thead>
@@ -1337,6 +1354,8 @@
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const sourcePOId = urlParams.get('poId');
+        const isSupplemental = urlParams.get('supplemental') === '1';
+        const billMode = urlParams.get('billMode') || ''; // 'original' = bill ordered qty only
         let allItems = [];
         let poData = null;
         let allVendors = [];
@@ -1449,11 +1468,64 @@
 
         async function loadPOData(poId) {
             try {
-                const res = await fetch('/api/purchases/' + poId);
-                if (!res.ok) { alert('Failed to load Purchase Order'); return; }
-                poData = await res.json();
+                // Fetch PO, receives, returns, and existing bills in parallel
+                const [poRes, recvRes, retRes, billsRes] = await Promise.all([
+                    fetch('/api/purchases/' + poId),
+                    fetch('/api/purchase-receives/by-po/' + poId),
+                    fetch('/api/purchase-returns/by-po/' + poId),
+                    fetch('/api/bills')
+                ]);
+                if (!poRes.ok) { alert('Failed to load Purchase Order'); return; }
+                poData = await poRes.json();
 
-                document.getElementById('pageTitle').textContent = 'New Bill (from PO)';
+                // Build per-item received totals
+                const receivedByItem = {};
+                if (recvRes.ok) {
+                    const recvData = await recvRes.json();
+                    recvData.forEach(r => {
+                        const key = r.item_id || ('name:' + (r.item_name || ''));
+                        receivedByItem[key] = (receivedByItem[key] || 0) + (parseFloat(r.total_received) || 0);
+                    });
+                }
+
+                // Build per-item returned totals
+                const returnedByItem = {};
+                if (retRes.ok) {
+                    const retList = await retRes.json();
+                    for (const ret of retList) {
+                        try {
+                            const detRes = await fetch('/api/purchase-returns/' + ret.id);
+                            if (detRes.ok) {
+                                const det = await detRes.json();
+                                (det.items || []).forEach(item => {
+                                    const key = item.item_id || ('name:' + (item.item_name || ''));
+                                    returnedByItem[key] = (returnedByItem[key] || 0) + (parseFloat(item.return_quantity) || 0);
+                                });
+                            }
+                        } catch (e) { }
+                    }
+                }
+
+                // Build per-item already-billed totals
+                const billedByItem = {};
+                if (billsRes.ok) {
+                    const allBills = await billsRes.json();
+                    const poBills = allBills.filter(b => b.purchase_order_id == poId);
+                    for (const bill of poBills) {
+                        try {
+                            const bRes = await fetch('/api/bills/' + bill.id);
+                            if (bRes.ok) {
+                                const bDet = await bRes.json();
+                                (bDet.items || []).forEach(item => {
+                                    const key = item.item_id || ('name:' + (item.item_name || ''));
+                                    billedByItem[key] = (billedByItem[key] || 0) + (parseFloat(item.quantity) || 0);
+                                });
+                            }
+                        } catch (e) { }
+                    }
+                }
+
+                document.getElementById('pageTitle').textContent = isSupplemental ? 'Supplemental Bill (from PO)' : 'New Bill (from PO)';
                 // Set vendor from PO
                 document.getElementById('vendorSearchInput').value = poData.supplier_name || '';
                 selectedVendor = { id: poData.supplier_id, name: poData.supplier_name };
@@ -1464,22 +1536,64 @@
                     document.getElementById('paymentTerms').value = poData.payment_terms;
                 }
 
-                // Populate items
+                // Populate items with three-way match qty
                 const tbody = document.getElementById('itemTableBody');
                 tbody.innerHTML = '';
 
+                let hasItems = false;
+                let totalBillQty = 0;
+                let totalReceivedQty = 0;
                 if (poData.items && poData.items.length > 0) {
                     poData.items.forEach(item => {
-                        const qty = parseFloat(item.quantity) || 1;
+                        const itemKey = item.item_id || ('name:' + (item.item_name || ''));
+                        const ordered = parseFloat(item.quantity) || 0;
+                        const received = receivedByItem[itemKey] || 0;
+                        const returned = returnedByItem[itemKey] || 0;
+                        const billed = billedByItem[itemKey] || 0;
                         const rate = parseFloat(item.unit_price) || 0;
-                        const amt = (qty * rate).toFixed(2);
 
+                        let billQty;
+                        if (isSupplemental) {
+                            // Supplemental: only unbilled surplus
+                            billQty = Math.max(0, (received - returned) - billed);
+                            if (billQty <= 0) return; // skip fully billed items
+                        } else if (billMode === 'original') {
+                            // Original mode: bill only the ordered qty
+                            billQty = Math.max(0, ordered - billed);
+                            if (billQty <= 0) return;
+                        } else {
+                            // Normal: Bill qty = received - returned (fallback to ordered if no receives)
+                            billQty = received > 0 ? Math.max(0, received - returned) : ordered;
+                        }
+
+                        totalBillQty += billQty;
+                        totalReceivedQty += (received - returned);
+
+                        const amt = (billQty * rate).toFixed(2);
                         const tr = document.createElement('tr');
                         if (item.item_id) tr.setAttribute('data-item-id', item.item_id);
-                        tr.innerHTML = buildRowHTML(item.item_name || '', qty, rate, amt);
+                        tr.innerHTML = buildRowHTML(item.item_name || '', billQty, rate, amt);
                         tbody.appendChild(tr);
+                        hasItems = true;
                     });
-                    recalculateTotals();
+                    if (hasItems) {
+                        recalculateTotals();
+                        // Show info note when billing less than received (original mode)
+                        if (billMode === 'original' && totalReceivedQty > totalBillQty) {
+                            const surplus = Math.round(totalReceivedQty - totalBillQty);
+                            let noteDiv = document.getElementById('billModeNote');
+                            if (!noteDiv) {
+                                noteDiv = document.createElement('div');
+                                noteDiv.id = 'billModeNote';
+                                noteDiv.style.cssText = 'padding:12px 18px;background:#e8f4fd;border:1px solid #b3d7f2;border-radius:6px;margin:12px 0;font-size:12px;color:#1a5276;line-height:1.5;';
+                                const totalsSection = document.querySelector('.bill-totals') || tbody.closest('table');
+                                if (totalsSection) totalsSection.parentNode.insertBefore(noteDiv, totalsSection);
+                            }
+                            noteDiv.innerHTML = `<strong>ℹ️ Note:</strong> You are only billing for the original order. The <strong>${surplus} extra unit${surplus !== 1 ? 's' : ''}</strong> will remain in stock as unbilled surplus.`;
+                        }
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:24px;color:#999;">No unbilled items found for this PO.</td></tr>';
+                    }
                 } else {
                     addNewRow();
                 }
@@ -1500,7 +1614,7 @@
 
         // ===== ITEM TABLE =====
         function buildRowHTML(name, qty, rate, amt) {
-            return `<td><div class="item-image">🖼️</div></td>
+            return `<td><div class="item-image"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div></td>
                 <td><div class="item-autocomplete-wrap">
                     <input type="text" value="${name}" placeholder="Type or click to select an item." class="item-name-input" onfocus="openItemDropdown(this)" oninput="filterItemDropdown(this)">
                     <div class="item-autocomplete-dropdown"></div>
