@@ -2858,6 +2858,7 @@
                     items.push({
                         item_id: idInput ? parseInt(idInput.value) || null : null,
                         item_name: itemName,
+                        description: row.dataset.itemDescription || '',
                         quantity: qtyInput ? parseFloat(qtyInput.value) || 1 : 1,
                         rate: rateInput ? parseFloat(rateInput.value) || 0 : 0,
                         amount: amountCell ? parseFloat(amountCell.textContent) || 0 : 0,
@@ -3125,7 +3126,8 @@
                     : '<div class="item-picker-placeholder-img">📦</div>';
                 const price = formatNum(item.selling_price || 0);
                 const stock = item.stock_quantity || 0;
-                return `<div class="item-picker-option" onclick="selectItem(this, ${item.id}, '${item.name.replace(/'/g, "\\'")}', ${item.selling_price || 0}, '${(item.image_url || '').replace(/'/g, "\\'")}', '${(item.sku || '').replace(/'/g, "\\'")}')">
+                const descSafe = (item.description || '').replace(/'/g, "\\'").replace(/[\r\n]/g, ' ');
+                return `<div class="item-picker-option" onclick="selectItem(this, ${item.id}, '${item.name.replace(/'/g, "\\'")}', ${item.selling_price || 0}, '${(item.image_url || '').replace(/'/g, "\\'")}', '${(item.sku || '').replace(/'/g, "\\'")}', '${descSafe}')">
                     ${imgHtml}
                     <div class="item-picker-info">
                         <div class="item-picker-name">${item.name}</div>
@@ -3136,7 +3138,7 @@
             }).join('');
         }
 
-        function selectItem(optionEl, id, name, price, imageUrl, sku) {
+        function selectItem(optionEl, id, name, price, imageUrl, sku, description) {
             const cell = optionEl.closest('.item-picker-cell');
             const input = cell.querySelector('.item-picker-input');
             const hiddenInput = cell.querySelector('.item-id-hidden');
@@ -3146,8 +3148,11 @@
             hiddenInput.value = id;
             dropdown.classList.remove('open');
 
-            // Set rate
+            // Store description on the row
             const row = cell.closest('tr');
+            row.dataset.itemDescription = description || '';
+
+            // Set rate
             const rateInput = row.querySelector('.rate-input');
             rateInput.value = formatNum(price);
 

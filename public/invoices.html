@@ -1466,7 +1466,11 @@
                         </div>
                     </div>
                     <div class="global-search-container">
-                        <span class="global-search-icon">🔍</span>
+                        <span class="global-search-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8" />
+                                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                            </svg></span>
                         <input type="text" class="global-search-input" id="invSearchInput"
                             placeholder="Search invoices..." oninput="searchInvoices()">
                     </div>
@@ -1548,7 +1552,14 @@
                                     style="display:flex;align-items:center;gap:10px;width:100%;padding:12px 18px;border:none;background:none;font-size:14px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
                                     onmouseover="this.style.background='#f3f4f6'"
                                     onmouseout="this.style.background='none'">
-                                    <span style="font-size:15px;">🔄</span> Refresh List
+                                    <span style="font-size:15px;"><svg width="15" height="15" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <polyline points="23 4 23 10 17 10" />
+                                            <polyline points="1 20 1 14 7 14" />
+                                            <path
+                                                d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+                                        </svg></span> Refresh List
                                 </button>
                                 <button class="inv-more-item" onclick="resetInvColWidth()"
                                     style="display:flex;align-items:center;gap:10px;width:100%;padding:12px 18px;border:none;background:none;font-size:14px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
@@ -1665,7 +1676,14 @@
                                         style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 16px;border:none;background:none;font-size:13px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
                                         onmouseover="this.style.background='#f3f4f6'"
                                         onmouseout="this.style.background='none'">
-                                        <span style="font-size:15px;">🔄</span> Refresh List
+                                        <span style="font-size:15px;"><svg width="15" height="15" viewBox="0 0 24 24"
+                                                fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="23 4 23 10 17 10" />
+                                                <polyline points="1 20 1 14 7 14" />
+                                                <path
+                                                    d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+                                            </svg></span> Refresh List
                                     </button>
                                     <button onclick="resetInvColWidth();toggleInvLeftMore(event)"
                                         style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 16px;border:none;background:none;font-size:13px;color:#333;cursor:pointer;font-family:inherit;text-align:left;"
@@ -2074,18 +2092,18 @@
                 </div>
 
                 <div class="inv-action-bar">
-                    ${statusLabel !== 'VOID' ? `<button class="inv-action-btn" onclick="window.location.href='/new-invoice.html?editId=' + selectedInvoiceId">✏️ Edit</button>` : ''}
-                    <button class="inv-action-btn" onclick="window.print()">📄 PDF/Print</button>
+                    ${statusLabel !== 'VOID' ? `<button class="inv-action-btn" onclick="window.location.href='/new-invoice.html?editId=' + selectedInvoiceId"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit</button>` : ''}
+                    <button class="inv-action-btn" onclick="window.print()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>PDF/Print</button>
                     <div class="inv-action-separator"></div>
-                    ${statusLabel === 'DRAFT' ? '<button class="inv-action-btn" style="background:#16a34a;color:#fff;border-color:#16a34a;font-weight:600;padding:6px 18px;border-radius:4px;" onclick="markAsIssued()">✅ Mark as Issued</button><div class="inv-action-separator"></div>' : ''}
-                    ${showRecordPayment ? '<button class="inv-action-btn" onclick="recordPayment()">💳 Record Payment</button><div class="inv-action-separator"></div>' : ''}
+                    ${statusLabel === 'DRAFT' ? '<button class="inv-action-btn" style="background:#16a34a;color:#fff;border-color:#16a34a;font-weight:600;padding:6px 18px;border-radius:4px;" onclick="markAsIssued()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;"><polyline points="20 6 9 17 4 12"/></svg>Mark as Issued</button><div class="inv-action-separator"></div>' : ''}
+                    ${showRecordPayment ? '<button class="inv-action-btn" onclick="recordPayment()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Record Payment</button><div class="inv-action-separator"></div>' : ''}
                     <div class="so-kebab-wrap" style="position:relative;">
                         <button class="inv-action-btn" onclick="toggleInvKebab(event)">⋯</button>
                         <div class="inv-kebab-menu" id="invKebabMenu" style="display:none;position:absolute;top:100%;right:0;background:#fff;border:1px solid #e5e7eb;border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,0.12);min-width:180px;z-index:1000;padding:4px 0;margin-top:4px;">
                             ${(statusLabel !== 'DRAFT' && !isPaid && invSmart.category !== 'void') ? `
-                                <button class="so-kebab-item" onclick="voidInvoice()" style="display:flex;align-items:center;gap:8px;width:100%;padding:8px 16px;border:none;background:none;color:#dc2626;font-size:13px;cursor:pointer;font-family:inherit;text-align:left;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'"><span>🚫</span> Void Invoice</button>
+                                <button class="so-kebab-item" onclick="voidInvoice()" style="display:flex;align-items:center;gap:8px;width:100%;padding:8px 16px;border:none;background:none;color:#dc2626;font-size:13px;cursor:pointer;font-family:inherit;text-align:left;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg> Void Invoice</button>
                             ` : ''}
-                            <button class="so-kebab-item" onclick="deleteInvoice()" style="display:flex;align-items:center;gap:8px;width:100%;padding:8px 16px;border:none;background:none;color:#dc2626;font-size:13px;cursor:pointer;font-family:inherit;text-align:left;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'"><span>🗑️</span> Delete Invoice</button>
+                            <button class="so-kebab-item" onclick="deleteInvoice()" style="display:flex;align-items:center;gap:8px;width:100%;padding:8px 16px;border:none;background:none;color:#dc2626;font-size:13px;cursor:pointer;font-family:inherit;text-align:left;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Delete Invoice</button>
                         </div>
                     </div>
                 </div>
@@ -2194,7 +2212,7 @@
                                 <tr>
                                     <td style="padding:12px;font-size:13px;color:#333;border-bottom:1px solid #f0f0f0;">
                                         <div style="display:flex;align-items:center;gap:6px;">
-                                            <span style="width:32px;height:32px;border-radius:4px;background:#e9ecef;display:inline-flex;align-items:center;justify-content:center;font-size:14px;color:#999;">📦</span>
+                                            <span style="width:32px;height:32px;border-radius:4px;background:#e9ecef;display:inline-flex;align-items:center;justify-content:center;font-size:14px;color:#999;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
                                             <span style="color:#4285f4;font-weight:500;">${item.item_name || ''}</span>
                                         </div>
                                     </td>
@@ -2507,7 +2525,7 @@
             if (!container) return;
             var toast = document.createElement('div');
             toast.className = 'toast ' + type;
-            toast.innerHTML = '<span class="toast-icon">' + (type === 'success' ? '✅' : 'ℹ️') + '</span><span class="toast-message">' + message + '</span><button class="toast-close" onclick="this.parentElement.remove()">✕</button>';
+            toast.innerHTML = '<span class="toast-icon">' + (type === 'success' ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>') + '</span><span class="toast-message">' + message + '</span><button class="toast-close" onclick="this.parentElement.remove()">✕</button>';
             container.appendChild(toast);
             setTimeout(function () { toast.style.opacity = '0'; setTimeout(function () { toast.remove(); }, 300); }, 3000);
         }

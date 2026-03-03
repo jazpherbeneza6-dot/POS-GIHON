@@ -264,6 +264,7 @@ CREATE TABLE IF NOT EXISTS sales_order_items (
     sales_order_id INTEGER NOT NULL,
     item_id INTEGER,
     item_name VARCHAR(255),
+    description TEXT,
     quantity DECIMAL(12,2) DEFAULT 1,
     rate DECIMAL(12,2) DEFAULT 0,
     tax VARCHAR(50),
@@ -387,7 +388,6 @@ CREATE TABLE IF NOT EXISTS accounting_entries (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX IF NOT EXISTS idx_accounting_entries_ref ON accounting_entries(reference_number);
 CREATE INDEX IF NOT EXISTS idx_accounting_entries_type ON accounting_entries(entry_type);
 
 -- Purchase receives table (tracks individual receive transactions against a PO)

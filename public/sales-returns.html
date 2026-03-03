@@ -1054,7 +1054,11 @@
                         </div>
                     </div>
                     <div class="global-search-container">
-                        <span class="global-search-icon">🔍</span>
+                        <span class="global-search-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8" />
+                                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                            </svg></span>
                         <input type="text" class="global-search-input" id="retSearchInput"
                             placeholder="Search returns..." oninput="searchReturns()">
                     </div>
@@ -1396,7 +1400,7 @@
                     <tr>
                         <td>${idx + 1}</td>
                         <td>
-                            <span class="sr-item-img">🖼</span>
+                            <span class="sr-item-img"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span>
                             ${item.item_name}
                         </td>
                         <td>
@@ -1423,23 +1427,23 @@
                         </div>
                     </div>
                     <div class="sr-right-header-actions">
-                        <button title="Comments">💬</button>
+                        <button title="Comments"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
                         <button title="Close" style="font-size:20px;color:#e53935;" onclick="backToList()">✕</button>
                     </div>
                 </div>
 
                 <div class="sr-action-bar">
-                    <button class="sr-action-btn" onclick="editSalesReturn()">✏️ Edit</button>
+                    <button class="sr-action-btn" onclick="editSalesReturn()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit</button>
                     ${status === 'DRAFT' ? '<button class="sr-action-btn" onclick="markAsApproved()" style="font-weight:600;">Mark as Approved</button>' : ''}
-                    ${status === 'APPROVED' && !hasReceiveStatus ? '<button class="sr-action-btn" onclick="receiveSalesReturn()" style="font-weight:600;">📦 Receive</button>' : ''}
-                    ${((status === 'APPROVED' && hasReceiveStatus) || status === 'CLOSED') && !hasCreditNote ? '<button class="sr-action-btn" onclick="createCreditNote()">📋 Create Credit Note</button>' : ''}
-                    <button class="sr-action-btn">📄 PDF/Print ▾</button>
+                    ${status === 'APPROVED' && !hasReceiveStatus ? '<button class="sr-action-btn" onclick="receiveSalesReturn()" style="font-weight:600;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>Receive</button>' : ''}
+                    ${((status === 'APPROVED' && hasReceiveStatus) || status === 'CLOSED') && !hasCreditNote ? '<button class="sr-action-btn" onclick="createCreditNote()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>Create Credit Note</button>' : ''}
+                    <button class="sr-action-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>PDF/Print ▾</button>
                     <div class="sr-action-separator"></div>
                     <div style="position:relative;">
                         <button class="sr-action-btn" onclick="toggleSrKebab(event)">⋯</button>
                         <div id="srKebabMenu" style="display:none;position:absolute;top:100%;right:0;background:#fff;border:1px solid #e5e7eb;border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,0.12);min-width:160px;z-index:1000;padding:4px 0;margin-top:4px;">
                             ${status === 'APPROVED' ? '<button onclick="markAsDecline()" style="display:flex;align-items:center;gap:8px;width:100%;padding:8px 16px;border:none;background:none;color:#e37400;font-size:13px;cursor:pointer;font-family:inherit;text-align:left;" onmouseover="this.style.background=\'#fef9e7\'" onmouseout="this.style.background=\'none\'">⛔ Mark as Decline</button>' : ''}
-                            <button onclick="deleteSalesReturn()" style="display:flex;align-items:center;gap:8px;width:100%;padding:8px 16px;border:none;background:none;color:#dc2626;font-size:13px;cursor:pointer;font-family:inherit;text-align:left;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'">🗑️ Delete</button>
+                            <button onclick="deleteSalesReturn()" style="display:flex;align-items:center;gap:8px;width:100%;padding:8px 16px;border:none;background:none;color:#dc2626;font-size:13px;cursor:pointer;font-family:inherit;text-align:left;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Delete</button>
                         </div>
                     </div>
                 </div>
@@ -1467,7 +1471,7 @@
                             <tr>
                                 <td style="padding:12px;font-size:13px;"><a href="javascript:void(0)" style="color:#4285f4;text-decoration:none;font-weight:500;">RR-${String(ret.id).padStart(5, '0')}</a></td>
                                 <td style="padding:12px;font-size:13px;color:#333;">${formatDate(new Date())}</td>
-                                <td style="padding:12px;text-align:center;"><button onclick="deleteReceive()" style="background:none;border:none;cursor:pointer;font-size:16px;color:#999;" title="Delete">🗑</button></td>
+                                <td style="padding:12px;text-align:center;"><button onclick="deleteReceive()" style="background:none;border:none;cursor:pointer;font-size:16px;color:#999;" title="Delete"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></td>
                             </tr>
                         </tbody>
                     </table>

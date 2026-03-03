@@ -207,6 +207,27 @@
                 }
             }
 
+            // Special handling for purchase-returns-related pages
+            if (pageName === 'purchase-returns' || pageName === 'new-purchase-return') {
+                const purchasesMenuToggle = document.getElementById('purchasesMenuToggle');
+                const purchasesSubmenu = document.getElementById('purchasesSubmenu');
+                const purchasesArrow = document.getElementById('purchasesArrow');
+
+                if (purchasesMenuToggle && purchasesSubmenu) {
+                    purchasesMenuToggle.classList.add('expanded');
+                    purchasesSubmenu.style.maxHeight = '500px';
+                    purchasesSubmenu.style.opacity = '1';
+                    if (purchasesArrow) purchasesArrow.textContent = '⌄';
+                }
+
+                // Highlight Purchase Returns submenu item
+                const purchaseReturnsItem = document.querySelector('.nav-submenu-item[data-page="purchase-returns"]');
+                if (purchaseReturnsItem) {
+                    purchaseReturnsItem.classList.add('active');
+                    localStorage.setItem('activeSubmenuItem', 'purchase-returns');
+                }
+            }
+
             // Special handling for FIFO Report - show under Inventory > Inventory Adjustments
             if (pageName === 'fifo-report') {
                 const inventoryMenuToggle = document.getElementById('inventoryMenuToggle');

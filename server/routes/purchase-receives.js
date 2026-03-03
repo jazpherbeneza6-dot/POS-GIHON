@@ -169,7 +169,8 @@ router.get('/', async (req, res) => {
     try {
         const db = database.getDb();
         const result = await db.query(`
-      SELECT pr.*, p.po_number
+      SELECT pr.*, p.po_number,
+             (SELECT COUNT(*) FROM purchase_receive_items pri WHERE pri.receive_id = pr.id) as total_items
       FROM purchase_receives pr
       LEFT JOIN purchases p ON pr.purchase_id = p.id
       ORDER BY pr.created_at DESC

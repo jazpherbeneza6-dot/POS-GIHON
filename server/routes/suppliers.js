@@ -79,7 +79,9 @@ router.get('/:id', async (req, res) => {
     const result = await db.query(`
       SELECT s.*,
              COALESCE(q.total_quantity, 0) AS total_quantity,
-             COALESCE(ps.total_spent, 0)::numeric(12,2) AS total_spent
+             COALESCE(ps.total_spent, 0)::numeric(12,2) AS total_spent,
+             COALESCE(vc.unused_credits, 0)::numeric(12,2) AS unused_credits,
+             COALESCE(ob.outstanding, 0)::numeric(12,2) AS outstanding_payables
       FROM suppliers s
       LEFT JOIN (
         SELECT p.supplier_id, SUM(pi.quantity)::int AS total_quantity
@@ -93,6 +95,20 @@ router.get('/:id', async (req, res) => {
         WHERE LOWER(COALESCE(status, 'ordered')) = 'received'
         GROUP BY supplier_id
       ) ps ON s.id = ps.supplier_id
+      LEFT JOIN (
+        SELECT supplier_id, SUM(total_amount)::numeric(12,2) AS unused_credits
+        FROM vendor_credits
+        WHERE LOWER(status) = 'open'
+        GROUP BY supplier_id
+      ) vc ON s.id = vc.supplier_id
+      LEFT JOIN (
+        SELECT supplier_id, SUM(
+          total_amount - COALESCE((SELECT SUM(pm.amount_paid) FROM payments_made pm WHERE pm.bill_id = b.id AND UPPER(pm.status) = 'PAID'), 0)
+        )::numeric(12,2) AS outstanding
+        FROM bills b
+        WHERE UPPER(COALESCE(status,'')) NOT IN ('DRAFT', 'PAID')
+        GROUP BY supplier_id
+      ) ob ON s.id = ob.supplier_id
       WHERE s.id = $1
     `, [req.params.id]);
 
@@ -108,6 +124,49 @@ router.get('/:id', async (req, res) => {
       [req.params.id]
     );
     vendor.contact_persons = contactsResult.rows;
+
+    // Get vendor credits for this vendor (open status for statement)
+    const creditsResult = await db.query(
+      `SELECT id, credit_number, credit_date, total_amount, status
+       FROM vendor_credits
+       WHERE supplier_id = $1 AND LOWER(status) = 'open'
+       ORDER BY credit_date DESC`,
+      [req.params.id]
+    );
+    vendor.vendor_credits = creditsResult.rows;
+
+    // Get non-draft bills for this vendor (for statement) — HARD RULE: only Open, Overdue, Partially Paid
+    const billsResult = await db.query(
+      `SELECT id, bill_number, bill_date, total_amount, status,
+              total_amount - COALESCE(
+                (SELECT SUM(pm.amount_paid) FROM payments_made pm WHERE pm.bill_id = b.id AND UPPER(pm.status) = 'PAID'), 0
+              ) AS balance_due
+       FROM bills b
+       WHERE supplier_id = $1 AND UPPER(COALESCE(status,'')) IN ('OPEN', 'OVERDUE', 'PARTIALLY PAID')
+       ORDER BY bill_date ASC`,
+      [req.params.id]
+    );
+    vendor.bills = billsResult.rows;
+
+    // Get ALL bills (including drafts) for timeline display
+    const allBillsResult = await db.query(
+      `SELECT id, bill_number, bill_date, total_amount, status
+       FROM bills
+       WHERE supplier_id = $1
+       ORDER BY bill_date ASC`,
+      [req.params.id]
+    );
+    vendor.all_bills = allBillsResult.rows;
+
+    // Get payments made for this vendor (for statement)
+    const paymentsResult = await db.query(
+      `SELECT id, payment_number, payment_date, amount_paid, reference_number, status
+       FROM payments_made
+       WHERE supplier_id = $1 AND UPPER(COALESCE(status,'')) = 'PAID'
+       ORDER BY payment_date ASC`,
+      [req.params.id]
+    );
+    vendor.payments_made = paymentsResult.rows;
 
     res.json(vendor);
   } catch (error) {

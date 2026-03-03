@@ -1502,7 +1502,14 @@
             <!-- Page Header -->
             <div class="page-header">
                 <div class="page-title-wrapper">
-                    <span class="page-icon">🧾</span>
+                    <span class="page-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14 2 14 8 20 8" />
+                            <line x1="16" y1="13" x2="8" y2="13" />
+                            <line x1="16" y1="17" x2="8" y2="17" />
+                            <polyline points="10 9 9 9 8 9" />
+                        </svg></span>
                     <h1 class="page-title">New Sales Receipt</h1>
                 </div>
                 <div class="header-actions">
@@ -1529,7 +1536,12 @@
                                     <div class="custom-dd-panel" id="custDdPanel">
                                         <div class="custom-dd-search">
                                             <div class="custom-dd-search-inner">
-                                                <span style="color: #999;">🔍</span>
+                                                <span style="color: #999;"><svg width="14" height="14"
+                                                        viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <circle cx="11" cy="11" r="8" />
+                                                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                                                    </svg></span>
                                                 <input type="text" id="custDdSearch" placeholder="Search"
                                                     oninput="filterCustDd()">
                                             </div>
@@ -1607,7 +1619,12 @@
                                 <div class="custom-dd-panel" id="spDdPanel">
                                     <div class="custom-dd-search">
                                         <div class="custom-dd-search-inner">
-                                            <span style="color: #999;">🔍</span>
+                                            <span style="color: #999;"><svg width="14" height="14" viewBox="0 0 24 24"
+                                                    fill="none" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round">
+                                                    <circle cx="11" cy="11" r="8" />
+                                                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                                                </svg></span>
                                             <input type="text" id="spDdSearch" placeholder="Search"
                                                 oninput="filterSpDd()">
                                         </div>
@@ -1769,10 +1786,21 @@
                         <button class="btn-save-dropdown" onclick="toggleSaveDropdown(event)">▲</button>
                         <div class="save-dropdown-menu" id="saveDropdownMenu">
                             <div class="save-dropdown-item" onclick="saveAndPrint()">
-                                <span class="sdi-icon">🖨️</span> Save and Print
+                                <span class="sdi-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <polyline points="6 9 6 2 18 2 18 9" />
+                                        <path
+                                            d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                                        <rect x="6" y="14" width="12" height="8" />
+                                    </svg></span> Save and Print
                             </div>
                             <div class="save-dropdown-item" onclick="saveAsPaid()">
-                                <span class="sdi-icon">✅</span> Save as Paid
+                                <span class="sdi-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg></span> Save as Paid
                             </div>
                         </div>
                     </div>
@@ -1795,7 +1823,11 @@
             </div>
             <div class="sp-modal-toolbar">
                 <div class="sp-search-box">
-                    <span style="color: #999;">🔍</span>
+                    <span style="color: #999;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8" />
+                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                        </svg></span>
                     <input type="text" id="spModalSearch" placeholder="Search Salesperson" oninput="filterSpTable()">
                 </div>
                 <button class="sp-btn-new" onclick="addNewSalesperson()">+ New Salesperson</button>
@@ -1842,7 +1874,7 @@
                 // Update dropdown item text too
                 document.querySelectorAll('.save-dropdown-item').forEach(item => {
                     if (item.textContent.includes('Save as Paid')) {
-                        item.innerHTML = '<span class="sdi-icon">✅</span> Save';
+                        item.innerHTML = '<span class="sdi-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> Save';
                     }
                 });
             } else {
@@ -1973,8 +2005,8 @@
                                 const matchedItem = allItems.find(i => i.id == item.item_id);
                                 const imgUrl = matchedItem ? matchedItem.image_url : '';
                                 const imgHtml = imgUrl
-                                    ? `<img src="${imgUrl}" onerror="this.outerHTML='<div class=\\'item-selected-placeholder\\'>📦</div>'">`
-                                    : '<div class="item-selected-placeholder">📦</div>';
+                                    ? `<img src="${imgUrl}" onerror="this.outerHTML='<div class=\\'item-selected-placeholder\\'><svg width=\\'16\\' height=\\'16\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'#999\\' stroke-width=\\'2\\' stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\'><path d=\\'M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z\\'/><polyline points=\\'3.27 6.96 12 12.01 20.73 6.96\\'/><line x1=\\'12\\' y1=\\'22.08\\' x2=\\'12\\' y2=\\'12\\'/></svg></div>'">`
+                                    : '<div class="item-selected-placeholder"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div>';
                                 const display = document.createElement('div');
                                 display.className = 'item-selected-display';
                                 display.innerHTML = `${imgHtml}<span class="item-selected-name">${item.item_name || ''}</span>`;
@@ -2188,7 +2220,7 @@
                             ${pwSection}
                         </td>
                         <td><input type="text" value="${s.email || ''}" onchange="updateSpEmail(${realIndex}, this.value)" placeholder="Email address"></td>
-                        <td><button class="sp-delete-btn" onclick="deleteSalesperson(${realIndex})" title="Delete">🗑</button></td>
+                        <td><button class="sp-delete-btn" onclick="deleteSalesperson(${realIndex})" title="Delete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></td>
                     </tr>`;
                 } else {
                     return `<tr>
@@ -2197,7 +2229,7 @@
                             ${pwSection}
                         </td>
                         <td>${s.email || '—'}</td>
-                        <td><button class="sp-delete-btn" onclick="deleteSalesperson(${realIndex})" title="Delete">🗑</button></td>
+                        <td><button class="sp-delete-btn" onclick="deleteSalesperson(${realIndex})" title="Delete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></td>
                     </tr>`;
                 }
             }).join('');
@@ -2570,8 +2602,8 @@
 
             dropdown.innerHTML = filtered.map(item => {
                 const imgHtml = item.image_url
-                    ? `<img src="${item.image_url}" class="item-picker-img" onerror="this.outerHTML='<div class=\\'item-picker-placeholder-img\\'>📦</div>'">`
-                    : '<div class="item-picker-placeholder-img">📦</div>';
+                    ? `<img src="${item.image_url}" class="item-picker-img" onerror="this.outerHTML='<div class=\\'item-picker-placeholder-img\\'><svg width=\\'16\\' height=\\'16\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'#999\\' stroke-width=\\'2\\' stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\'><path d=\\'M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z\\'/><polyline points=\\'3.27 6.96 12 12.01 20.73 6.96\\'/><line x1=\\'12\\' y1=\\'22.08\\' x2=\\'12\\' y2=\\'12\\'/></svg></div>'">`
+                    : '<div class="item-picker-placeholder-img"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div>';
                 const price = formatNum(item.selling_price || 0);
                 const stock = item.stock_quantity || 0;
                 return `<div class="item-picker-option" onclick="selectItem(this, ${item.id}, '${item.name.replace(/'/g, "\\'")}', ${item.selling_price || 0}, '${(item.image_url || '').replace(/'/g, "\\'")}', '${(item.sku || '').replace(/'/g, "\\'")}')">\n                    ${imgHtml}\n                    <div class="item-picker-info">\n                        <div class="item-picker-name">${item.name}</div>\n                        <div class="item-picker-meta">SKU: ${item.sku || 'N/A'} · Stock: ${stock}</div>\n                    </div>\n                    <div class="item-picker-price">₱${price}</div>\n                </div>`;
@@ -2595,8 +2627,8 @@
 
             // Set image display
             const imgHtml = imageUrl
-                ? `<img src="${imageUrl}" onerror="this.outerHTML='<div class=\\'item-selected-placeholder\\'>📦</div>'">`
-                : '<div class="item-selected-placeholder">📦</div>';
+                ? `<img src="${imageUrl}" onerror="this.outerHTML='<div class=\\'item-selected-placeholder\\'><svg width=\\'16\\' height=\\'16\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'#999\\' stroke-width=\\'2\\' stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\'><path d=\\'M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z\\'/><polyline points=\\'3.27 6.96 12 12.01 20.73 6.96\\'/><line x1=\\'12\\' y1=\\'22.08\\' x2=\\'12\\' y2=\\'12\\'/></svg></div>'">`
+                : '<div class="item-selected-placeholder"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div>';
 
             input.style.display = 'none';
             const existing = cell.querySelector('.item-selected-display');
@@ -2960,8 +2992,8 @@
 
                 // Create display
                 const imgHtml = item.image_url
-                    ? `<img src="${item.image_url}" onerror="this.outerHTML='<div class=\\'item-selected-placeholder\\'>📦</div>'">`
-                    : '<div class="item-selected-placeholder">📦</div>';
+                    ? `<img src="${item.image_url}" onerror="this.outerHTML='<div class=\\'item-selected-placeholder\\'><svg width=\\'16\\' height=\\'16\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'#999\\' stroke-width=\\'2\\' stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\'><path d=\\'M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z\\'/><polyline points=\\'3.27 6.96 12 12.01 20.73 6.96\\'/><line x1=\\'12\\' y1=\\'22.08\\' x2=\\'12\\' y2=\\'12\\'/></svg></div>'">`
+                    : '<div class="item-selected-placeholder"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div>';
                 const display = document.createElement('div');
                 display.className = 'item-selected-display';
                 display.innerHTML = `${imgHtml}<span class="item-selected-name">${item.name}</span>`;
