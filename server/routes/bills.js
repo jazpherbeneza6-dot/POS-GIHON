@@ -35,7 +35,7 @@ router.get('/reports/vendor-balance-summary', async (req, res) => {
             ) vendor
             LEFT JOIN (
                 SELECT supplier_name, SUM(COALESCE(total_amount, 0)) AS total
-                FROM bills WHERE supplier_name IS NOT NULL ${billRangeFilter}
+                FROM bills WHERE supplier_name IS NOT NULL AND UPPER(COALESCE(status,'')) != 'DRAFT' ${billRangeFilter}
                 GROUP BY supplier_name
             ) bill_range ON bill_range.supplier_name = vendor.supplier_name
             LEFT JOIN (
@@ -45,7 +45,7 @@ router.get('/reports/vendor-balance-summary', async (req, res) => {
             ) pay_range ON pay_range.supplier_name = vendor.supplier_name
             LEFT JOIN (
                 SELECT supplier_name, SUM(COALESCE(total_amount, 0)) AS total
-                FROM bills WHERE supplier_name IS NOT NULL ${billAllFilter}
+                FROM bills WHERE supplier_name IS NOT NULL AND UPPER(COALESCE(status,'')) != 'DRAFT' ${billAllFilter}
                 GROUP BY supplier_name
             ) bill_all ON bill_all.supplier_name = vendor.supplier_name
             LEFT JOIN (
@@ -123,6 +123,23 @@ router.post('/', async (req, res) => {
             return res.status(400).json({ error: 'At least one item is required' });
         }
 
+        // ===== TRANSACTION GUARD: Prevent duplicate draft bills for the same PO =====
+        if (purchase_order_id) {
+            const db2 = database.getDb();
+            const existingDraft = await db2.query(
+                `SELECT id, bill_number FROM bills WHERE purchase_order_id = $1 AND UPPER(COALESCE(status,'')) = 'DRAFT'`,
+                [purchase_order_id]
+            );
+            if (existingDraft.rows.length > 0) {
+                const draft = existingDraft.rows[0];
+                return res.status(400).json({
+                    error: `Cannot create a new bill while a draft bill (${draft.bill_number}) already exists for this PO.`,
+                    existing_draft_id: draft.id,
+                    existing_draft_number: draft.bill_number
+                });
+            }
+        }
+
         const db = database.getDb();
 
         // Auto-generate bill number if not provided
@@ -195,14 +212,15 @@ router.post('/', async (req, res) => {
                 ]);
             }
 
-            // Update PO bill_status when a bill is created
-            if (purchase_order_id) {
+            // Update PO bill_status when a bill is created (skip for drafts)
+            const finalStatus = status || 'draft';
+            if (purchase_order_id && finalStatus.toLowerCase() !== 'draft') {
                 await client.query(
                     `UPDATE purchases SET bill_status = 'BILLED' WHERE id = $1`,
                     [purchase_order_id]
                 );
 
-                // Auto-close: PO becomes CLOSED when billed
+                // Auto-close: PO becomes CLOSED when billed (only for non-draft bills)
                 const poResult = await client.query('SELECT * FROM purchases WHERE id = $1', [purchase_order_id]);
                 if (poResult.rows.length > 0) {
                     const po = poResult.rows[0];
@@ -276,6 +294,18 @@ router.put('/:id', async (req, res) => {
 
         if (status) {
             await db.query('UPDATE bills SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2', [status, req.params.id]);
+
+            // When moving from Draft to Open, update linked PO status
+            const oldStatus = (existing.rows[0].status || '').toLowerCase();
+            const newStatus = (status || '').toLowerCase();
+            if (oldStatus === 'draft' && newStatus !== 'draft' && existing.rows[0].purchase_order_id) {
+                const poId = existing.rows[0].purchase_order_id;
+                await db.query(`UPDATE purchases SET bill_status = 'BILLED' WHERE id = $1`, [poId]);
+                const poResult = await db.query('SELECT status FROM purchases WHERE id = $1', [poId]);
+                if (poResult.rows.length > 0 && poResult.rows[0].status !== 'CLOSED' && poResult.rows[0].status !== 'CANCELLED') {
+                    await db.query(`UPDATE purchases SET status = 'CLOSED' WHERE id = $1`, [poId]);
+                }
+            }
         }
 
         const result = await db.query('SELECT * FROM bills WHERE id = $1', [req.params.id]);

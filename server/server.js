@@ -132,6 +132,26 @@ app.use('/api/bills', require('./routes/bills'));
 app.use('/api/purchase-returns', require('./routes/purchase-returns'));
 app.use('/api/uploads', require('./routes/uploads'));
 
+// ====== URL-based Detail View Routes ======
+// These catch-all routes serve the HTML pages for clean URLs
+// so that a hard refresh on e.g. /purchases/po/PO-00050 doesn't 404
+
+// Vendor detail: /vendors/:id
+app.get('/vendors/:id', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/vendor-detail.html'));
+});
+
+// Bill detail: /bills/:id
+app.get('/bills/:id', (req, res) => {
+  // Avoid conflicting with /api/bills routes (already handled above)
+  res.sendFile(path.join(__dirname, '../public/bill-detail.html'));
+});
+
+// Purchase order detail: /purchases/po/:poNumber
+app.get('/purchases/po/:poNumber', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/purchase-orders-by-vendor.html'));
+});
+
 // Taxes API (inline — simple CRUD)
 app.get('/api/taxes', async (req, res) => {
   try {

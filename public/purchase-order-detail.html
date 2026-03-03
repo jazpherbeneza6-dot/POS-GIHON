@@ -903,6 +903,10 @@
                 document.getElementById('assocHistoryArea').style.display = 'none';
                 document.getElementById('whatsNextBanner').style.display = 'none';
 
+                // Transaction Guard: track draft bills/returns
+                let draftBill = null;
+                let draftReturn = null;
+
                 // Header
                 document.getElementById('poTitleBar').textContent = po.po_number || 'PO-' + po.id;
 
@@ -1003,6 +1007,13 @@
                     const retRes = await fetch('/api/purchase-returns/by-po/' + poId);
                     if (retRes.ok) {
                         const retList = await retRes.json();
+
+                        // Transaction Guard: detect draft returns
+                        const draftReturns = retList.filter(r => (r.status || '').toUpperCase() === 'DRAFT');
+                        if (draftReturns.length > 0) {
+                            draftReturn = draftReturns[0];
+                        }
+
                         for (const ret of retList) {
                             historyEvents.push({ date: ret.return_date || ret.created_at, type: 'return', text: `Return <strong>${ret.prn_number || 'PRN-' + ret.id}</strong> — ${(ret.status || 'draft').toUpperCase()}`, icon: '↩️' });
                             try {
@@ -1025,6 +1036,13 @@
                     if (billRes.ok) {
                         const allBills = await billRes.json();
                         const poBills = allBills.filter(b => b.purchase_order_id == poId);
+
+                        // Transaction Guard: detect draft bills
+                        const draftBills = poBills.filter(b => (b.status || '').toUpperCase() === 'DRAFT');
+                        if (draftBills.length > 0) {
+                            draftBill = draftBills[0];
+                        }
+
                         for (const bill of poBills) {
                             historyEvents.push({ date: bill.bill_date || bill.created_at, type: 'bill', text: `Bill <strong>${bill.bill_number || 'BILL-' + bill.id}</strong> — ${(bill.status || 'draft').toUpperCase()}`, icon: '📝' });
                             try {
@@ -1146,6 +1164,46 @@
                         <button onclick="convertToBill()" style="padding:7px 16px;background:white;color:#1a73e8;border:1px solid #1a73e8;border-radius:6px;font-size:12px;cursor:pointer;font-weight:500;">📝 Bill What's Received</button>`;
                 } else {
                     whatsNextBanner.style.display = 'none';
+                }
+
+                // ===== TRANSACTION GUARD: Override buttons when drafts exist =====
+                if (draftBill) {
+                    // Hide all bill-related buttons in the toolbar
+                    document.getElementById('convertBillBtn').style.display = 'none';
+
+                    // Add draft bill message to the banner
+                    const draftBillMsg = document.createElement('div');
+                    draftBillMsg.style.cssText = 'padding:10px 16px;background:#fff8e1;border:1px solid #ffe082;border-radius:8px;margin:8px 16px;font-size:13px;color:#5d4037;';
+                    draftBillMsg.innerHTML = `📝 A draft bill <strong>${draftBill.bill_number || 'BILL-' + draftBill.id}</strong> already exists for this order. <a href="/bill-detail.html?id=${draftBill.id}" style="color:#1a73e8;font-weight:600;text-decoration:underline;">View/Edit Draft →</a>`;
+                    whatsNextBanner.parentNode.insertBefore(draftBillMsg, whatsNextBanner.nextSibling);
+
+                    // Remove bill buttons from the What's Next banner if it's visible
+                    const billBtns = whatsNextButtons.querySelectorAll('button');
+                    billBtns.forEach(btn => {
+                        if (btn.textContent.includes('Bill') || btn.textContent.includes('Pay for Extras')) {
+                            btn.style.display = 'none';
+                        }
+                    });
+                }
+
+                if (draftReturn) {
+                    // Hide return button in the toolbar
+                    document.getElementById('returnBtn').style.display = 'none';
+
+                    // Add draft return message
+                    const draftReturnMsg = document.createElement('div');
+                    draftReturnMsg.style.cssText = 'padding:10px 16px;background:#fce4ec;border:1px solid #f48fb1;border-radius:8px;margin:8px 16px;font-size:13px;color:#880e4f;';
+                    draftReturnMsg.innerHTML = `↩ A draft return <strong>${draftReturn.prn_number || 'PRN-' + draftReturn.id}</strong> already exists for this order. <a href="/purchase-returns.html?id=${draftReturn.id}" style="color:#1a73e8;font-weight:600;text-decoration:underline;">View/Edit Draft →</a>`;
+                    const insertAfter = whatsNextBanner.parentNode.querySelector('[style*="background:#fff8e1"]') || whatsNextBanner;
+                    insertAfter.parentNode.insertBefore(draftReturnMsg, insertAfter.nextSibling);
+
+                    // Remove return buttons from the What's Next banner
+                    const retBtns = whatsNextButtons.querySelectorAll('button');
+                    retBtns.forEach(btn => {
+                        if (btn.textContent.includes('Return')) {
+                            btn.style.display = 'none';
+                        }
+                    });
                 }
 
                 // Totals

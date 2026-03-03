@@ -875,8 +875,13 @@
 
     <script src="/js/layout.js"></script>
     <script>
+        // Support both clean URL (/bills/:id) and query parameter (?id=...)
         const urlParams = new URLSearchParams(window.location.search);
-        const billId = urlParams.get('id');
+        const billId = (function () {
+            const pathMatch = window.location.pathname.match(/\/bills\/(\d+)/);
+            if (pathMatch) return pathMatch[1];
+            return urlParams.get('id');
+        })();
         let allBills = [];
         let currentBill = null;
 

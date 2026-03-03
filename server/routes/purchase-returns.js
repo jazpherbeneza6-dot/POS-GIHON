@@ -95,6 +95,22 @@ router.post('/', async (req, res) => {
             items
         } = req.body;
 
+        // ===== TRANSACTION GUARD: Prevent duplicate draft returns for the same PO =====
+        if (purchase_order_id) {
+            const existingDraft = await pool.query(
+                `SELECT id, prn_number FROM purchase_returns WHERE purchase_order_id = $1 AND UPPER(COALESCE(status,'')) = 'DRAFT'`,
+                [purchase_order_id]
+            );
+            if (existingDraft.rows.length > 0) {
+                const draft = existingDraft.rows[0];
+                return res.status(400).json({
+                    error: `Cannot create a new return while a draft return (${draft.prn_number}) already exists for this PO.`,
+                    existing_draft_id: draft.id,
+                    existing_draft_number: draft.prn_number
+                });
+            }
+        }
+
         const result = await pool.query(
             `INSERT INTO purchase_returns (prn_number, return_date, warehouse_location, reason, purchase_order_id, purchase_order_number, vendor_name, status, return_status, credit_status)
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
