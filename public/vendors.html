@@ -1601,6 +1601,7 @@
         .detail-wrapper {
             display: none;
             height: calc(100vh - 0px);
+            overflow: hidden;
         }
 
         .detail-wrapper.show {
@@ -1732,6 +1733,8 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            min-height: 0;
+            height: 100%;
         }
 
         .detail-header {
@@ -1741,6 +1744,7 @@
             align-items: center;
             justify-content: space-between;
             background: white;
+            flex-shrink: 0;
         }
 
         .detail-header-name {
@@ -1913,6 +1917,7 @@
             border-bottom: 2px solid #e9ecef;
             padding: 0 24px;
             background: white;
+            flex-shrink: 0;
         }
 
         .detail-tab {
@@ -1948,18 +1953,19 @@
             padding: 20px;
             border-right: 1px solid #f0f0f0;
             overflow-y: auto;
+            flex-shrink: 0;
         }
 
         .overview-right {
             flex: 1;
             padding: 20px 24px;
             overflow-y: auto;
+            flex-shrink: 0;
         }
 
         /* Vendor info card */
         .vendor-info-card {
             padding-bottom: 16px;
-            border-bottom: 1px solid #f0f0f0;
             margin-bottom: 16px;
         }
 
@@ -2009,6 +2015,49 @@
 
         .vendor-settings-icon:hover {
             color: #4285f4;
+        }
+
+        /* Gear dropdown */
+        .vendor-gear-wrap {
+            position: relative;
+            display: inline-block;
+        }
+
+        .vendor-gear-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 4px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            min-width: 140px;
+            z-index: 200;
+            overflow: hidden;
+        }
+
+        .vendor-gear-dropdown.open {
+            display: block;
+        }
+
+        .vendor-gear-option {
+            display: block;
+            width: 100%;
+            padding: 10px 16px;
+            border: none;
+            background: none;
+            text-align: left;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .vendor-gear-option:hover {
+            background: #4285f4;
+            color: #fff;
         }
 
         /* Section headers */
@@ -2136,6 +2185,260 @@
         .contact-person-detail {
             font-size: 11px;
             color: #888;
+        }
+
+        /* Contact person gear icon */
+        .cp-gear-wrap {
+            position: relative;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        .cp-gear-btn {
+            background: none;
+            border: none;
+            font-size: 14px;
+            color: #bbb;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .cp-gear-btn:hover {
+            color: #4285f4;
+        }
+
+        .cp-gear-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 2px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            min-width: 120px;
+            z-index: 200;
+            overflow: hidden;
+        }
+
+        .cp-gear-dropdown.open {
+            display: block;
+        }
+
+        .cp-gear-option {
+            display: block;
+            width: 100%;
+            padding: 9px 14px;
+            border: none;
+            background: none;
+            text-align: left;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .cp-gear-option:hover {
+            background: #4285f4;
+            color: #fff;
+        }
+
+        /* Currency pencil edit */
+        .currency-pencil-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 2px;
+            display: inline-flex;
+            align-items: center;
+            opacity: 0.6;
+            transition: opacity 0.15s;
+        }
+
+        .currency-pencil-btn:hover {
+            opacity: 1;
+        }
+
+        .cur-edit-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 1.5px solid #c4d7f5;
+            border-radius: 20px;
+            padding: 5px 10px 5px 14px;
+            background: #fff;
+        }
+
+        .cur-edit-header span {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            margin-right: 2px;
+        }
+
+        .cur-edit-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 2px;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .cur-edit-confirm {
+            background: #0d8a5f;
+            border: none;
+            border-radius: 4px;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cur-edit-confirm:hover {
+            background: #0b7a52;
+        }
+
+        .cur-edit-cancel {
+            background: #fce4e4;
+            border: none;
+            border-radius: 4px;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cur-edit-cancel:hover {
+            background: #f8c8c8;
+        }
+
+        .cur-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 4px;
+            background: #fff;
+            border: 1px solid #d0d5dd;
+            border-radius: 8px;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.13);
+            width: 230px;
+            z-index: 300;
+            max-height: 300px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cur-search-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cur-search-input {
+            border: none;
+            outline: none;
+            font-size: 13px;
+            flex: 1;
+            font-family: inherit;
+        }
+
+        .cur-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            overflow-y: auto;
+            max-height: 240px;
+        }
+
+        .cur-list li {
+            padding: 10px 14px;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .cur-list li:hover {
+            background: #f0f4ff;
+        }
+
+        .cur-list li.selected {
+            background: #4285f4;
+            color: #fff;
+        }
+
+        .cur-list li.current {
+            background: #e8eaed;
+        }
+
+        .cur-list li .cur-check {
+            font-size: 14px;
+            color: #4285f4;
+        }
+
+        .cur-list li.selected .cur-check {
+            color: #fff;
+        }
+
+        /* Address pencil & form */
+        .addr-pencil-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 2px;
+            display: inline-flex;
+            align-items: center;
+            opacity: 0.6;
+            transition: opacity 0.15s;
+        }
+
+        .addr-pencil-btn:hover {
+            opacity: 1;
+        }
+
+        .addr-field {
+            margin-bottom: 14px;
+        }
+
+        .addr-field label {
+            display: block;
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 4px;
+        }
+
+        .addr-input {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid #d0d5dd;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .addr-input:focus {
+            border-color: #4285f4;
+        }
+
+        .addr-row {
+            display: flex;
+            gap: 14px;
+        }
+
+        .addr-row .addr-field {
+            flex: 1;
         }
 
         /* Payment info & Payables */
@@ -2284,11 +2587,12 @@
         /* Tab content areas */
         .tab-content-area {
             display: none;
+            flex: 1;
+            overflow-y: auto;
         }
 
         .tab-content-area.active {
             display: flex;
-            flex: 1;
         }
 
         /* Comments tab */
@@ -2343,6 +2647,7 @@
             border-radius: 6px;
             margin-bottom: 16px;
             overflow: hidden;
+            flex-shrink: 0;
         }
 
         .txn-section-header {
@@ -2486,6 +2791,7 @@
             color: #333;
             margin-bottom: 16px;
             cursor: pointer;
+            flex-shrink: 0;
         }
 
         .txn-goto:hover {
@@ -3039,7 +3345,7 @@
 
             <!-- Bulk Actions Bar -->
             <div class="bulk-actions-bar" id="bulkActionsBar">
-                <button class="bulk-btn" onclick="bulkUpdate()">Bulk Update</button>
+
                 <button class="bulk-btn bulk-btn-print" onclick="printSelected()" title="Print"><svg width="14"
                         height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
@@ -3198,27 +3504,33 @@
                                             <circle cx="12" cy="7" r="4" />
                                         </svg></div>
                                     <div class="vendor-contact-details" id="dVendorContact"></div>
-                                    <span class="vendor-settings-icon">⚙</span>
                                 </div>
                             </div>
 
                             <!-- ADDRESS -->
                             <div class="section-header" onclick="toggleDetailSection('address')">
                                 <span class="section-title">ADDRESS</span>
-                                <span class="section-toggle" id="dAddressToggle">▲</span>
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <button class="addr-pencil-btn"
+                                        onclick="event.stopPropagation();openAddressEditModal()" title="Edit Address">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7baaf7"
+                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+                                        </svg>
+                                    </button>
+                                    <span class="section-toggle" id="dAddressToggle">▲</span>
+                                </div>
                             </div>
                             <div class="section-content" id="dAddressContent">
                                 <div class="detail-row">
-                                    <div class="detail-label">Billing Address</div>
+                                    <div class="detail-label" style="font-weight:600;">Billing Address</div>
                                     <div style="font-size:13px;color:#333;"><span id="dBillingAddress">No Billing
-                                            Address</span> - <span class="detail-value link"
-                                            onclick="openAddressModal('billing')">New Address</span></div>
+                                            Address</span></div>
                                 </div>
                                 <div class="detail-row" style="margin-top:14px;">
-                                    <div class="detail-label">Shipping Address</div>
+                                    <div class="detail-label" style="font-weight:600;">Shipping Address</div>
                                     <div style="font-size:13px;color:#333;"><span id="dShippingAddress">No Shipping
-                                            Address</span> - <span class="detail-value link"
-                                            onclick="openAddressModal('shipping')">New Address</span></div>
+                                            Address</span></div>
                                 </div>
                             </div>
 
@@ -3238,12 +3550,13 @@
                             <div class="contacts-header" onclick="toggleDetailSection('contacts')">
                                 <span class="section-title">CONTACT PERSONS (<span id="dContactCount">0</span>)</span>
                                 <div class="contacts-actions">
-                                    <button class="add-contact-icon" onclick="event.stopPropagation();"
+                                    <button class="add-contact-icon"
+                                        onclick="event.stopPropagation();openAddContactModal()"
                                         title="Add Contact">+</button>
                                     <span class="section-toggle" id="dContactsToggle">▲</span>
                                 </div>
                             </div>
-                            <div id="dContactsContent">
+                            <div class="section-content" id="dContactsContent">
                                 <div id="dContactPersonsList"></div>
                             </div>
 
@@ -3621,6 +3934,8 @@
                                     <div class="stmt-summary-row"><span>Credits Applied</span><span
                                             id="vendorStmtCredits">PHP
                                             0.00</span></div>
+                                    <div class="stmt-summary-row" style="color:#2563eb;"><span>Unused
+                                            Credits</span><span id="vendorStmtUnusedCredits">PHP 0.00</span></div>
                                     <div class="stmt-summary-row stmt-summary-total"><span>Balance Due</span><span
                                             id="vendorStmtBalanceDue">PHP 0.00</span></div>
                                 </div>
@@ -3647,10 +3962,15 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                                <!-- Balance Due footer -->
+                                <!-- Footer: Total Owed & Available Credits -->
                                 <div class="stmt-balance-footer">
-                                    <span>Balance Due</span>
+                                    <span>Total Amount Owed</span>
                                     <span id="vendorStmtFooterBalance">PHP 0.00</span>
+                                </div>
+                                <div class="stmt-balance-footer"
+                                    style="background:#e8f5e9;border-top:none;margin-top:0;">
+                                    <span style="color:#2e7d32;">Available Credit Balance</span>
+                                    <span id="vendorStmtFooterCredits" style="color:#2e7d32;">PHP 0.00</span>
                                 </div>
                             </div>
                         </div>
@@ -3659,31 +3979,60 @@
             </div>
 
             <!-- Address Modal -->
-            <div class="modal-overlay" id="addressModal">
-                <div class="modal-box">
-                    <div class="modal-header">
-                        <div class="modal-title" id="addressModalTitle">Billing Address</div>
-                        <button class="modal-close" onclick="closeAddressModal()">×</button>
+            <!-- Address Edit Modal -->
+            <div class="acp-overlay" id="addrEditOverlay" onclick="if(event.target===this)closeAddressEditModal()">
+                <div class="acp-modal" style="width:700px;" onclick="event.stopPropagation()">
+                    <div class="acp-header">
+                        <h2>Address</h2>
+                        <button class="acp-close" onclick="closeAddressEditModal()">&times;</button>
                     </div>
-                    <div class="modal-body">
-                        <div class="modal-field"><label>Attention</label><input type="text" id="addrAttention"></div>
-                        <div class="modal-field"><label>Country/Region</label><select id="addrCountry">
-                                <option value="Philippines">Philippines</option>
-                            </select></div>
-                        <div class="modal-field"><label>Address</label><textarea id="addrStreet" rows="2"></textarea>
+                    <div style="padding:24px 28px;overflow-y:auto;max-height:70vh;">
+                        <div style="font-size:15px;font-weight:600;color:#333;margin-bottom:14px;">Billing Address</div>
+                        <div class="addr-field">
+                            <label>Street</label>
+                            <textarea id="addrBillingStreet" rows="2" class="addr-input"></textarea>
                         </div>
-                        <div class="modal-field-row">
-                            <div class="modal-field"><label>City</label><input type="text" id="addrCity"></div>
-                            <div class="modal-field"><label>State</label><input type="text" id="addrState"></div>
+                        <div class="addr-row">
+                            <div class="addr-field"><label>City</label><input type="text" id="addrBillingCity"
+                                    class="addr-input"></div>
+                            <div class="addr-field"><label>State</label><input type="text" id="addrBillingState"
+                                    class="addr-input"></div>
                         </div>
-                        <div class="modal-field-row">
-                            <div class="modal-field"><label>ZIP Code</label><input type="text" id="addrZip"></div>
-                            <div class="modal-field"><label>Phone</label><input type="text" id="addrPhone"></div>
+                        <div class="addr-row">
+                            <div class="addr-field"><label>ZIP Code</label><input type="text" id="addrBillingZip"
+                                    class="addr-input"></div>
+                            <div class="addr-field"><label>Country</label><input type="text" id="addrBillingCountry"
+                                    class="addr-input"></div>
+                        </div>
+                        <div style="margin:18px 0;border-top:1px solid #eee;padding-top:14px;">
+                            <label
+                                style="display:flex;align-items:center;gap:8px;font-size:13px;color:#555;cursor:pointer;">
+                                <input type="checkbox" id="addrCopyBilling" onchange="copyBillingToShipping()">
+                                Copy Billing Address to Shipping Address
+                            </label>
+                        </div>
+                        <div style="font-size:15px;font-weight:600;color:#333;margin-bottom:14px;">Shipping Address
+                        </div>
+                        <div class="addr-field">
+                            <label>Street</label>
+                            <textarea id="addrShippingStreet" rows="2" class="addr-input"></textarea>
+                        </div>
+                        <div class="addr-row">
+                            <div class="addr-field"><label>City</label><input type="text" id="addrShippingCity"
+                                    class="addr-input"></div>
+                            <div class="addr-field"><label>State</label><input type="text" id="addrShippingState"
+                                    class="addr-input"></div>
+                        </div>
+                        <div class="addr-row">
+                            <div class="addr-field"><label>ZIP Code</label><input type="text" id="addrShippingZip"
+                                    class="addr-input"></div>
+                            <div class="addr-field"><label>Country</label><input type="text" id="addrShippingCountry"
+                                    class="addr-input"></div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button class="modal-btn modal-btn-cancel" onclick="closeAddressModal()">Cancel</button>
-                        <button class="modal-btn modal-btn-save" onclick="saveAddress()">Save</button>
+                    <div class="acp-footer">
+                        <button class="acp-btn-save" onclick="saveAddressEdit()">Save</button>
+                        <button class="acp-btn-cancel" onclick="closeAddressEditModal()">Cancel</button>
                     </div>
                 </div>
             </div>
@@ -4372,17 +4721,22 @@
                 }
 
                 function searchVendors() {
-                    const query = (document.getElementById('vendorSearchInput').value || '').toLowerCase();
+                    const query = (document.getElementById('vendorSearchInput').value || '').trim().toLowerCase();
                     if (!query) {
                         renderVendors();
                         return;
                     }
                     const filtered = allVendors.filter(v => {
-                        const name = (v.vendor_name || v.first_name || '').toLowerCase();
-                        const email = (v.email || '').toLowerCase();
-                        const phone = (v.phone || '').toLowerCase();
-                        const company = (v.company_name || '').toLowerCase();
-                        return name.includes(query) || email.includes(query) || phone.includes(query) || company.includes(query);
+                        // Search across ALL vendor fields
+                        const fields = [
+                            v.name, v.display_name, v.first_name, v.last_name,
+                            v.contact_person, v.company_name,
+                            v.email, v.phone, v.work_phone, v.mobile,
+                            v.address, v.notes, v.currency, v.payment_terms, v.status,
+                            v.total_spent != null ? String(v.total_spent) : '',
+                            v.total_quantity != null ? String(v.total_quantity) : ''
+                        ];
+                        return fields.some(f => (f || '').toLowerCase().includes(query));
                     });
                     renderFilteredVendors(filtered);
                 }
@@ -4694,6 +5048,7 @@
                     document.getElementById('emptyState').style.display = 'none';
                     document.getElementById('vendorsContainer').style.display = 'none';
                     document.getElementById('detailView').classList.add('show');
+                    history.replaceState(null, '', '#vendor=' + vendorId);
 
                     // Populate left sidebar list
                     const leftList = document.getElementById('detailLeftList');
@@ -4731,6 +5086,7 @@
                     }
                     currentVendorData = null;
                     currentVendorId = null;
+                    history.replaceState(null, '', window.location.pathname);
                 }
 
                 function renderDetailPanel() {
@@ -4776,7 +5132,7 @@
                             const bRes = await fetch('/api/bills');
                             if (bRes.ok) {
                                 const allBills = await bRes.json();
-                                allBills.filter(b => b.supplier_id == v.id || (b.supplier_name || '').trim().toLowerCase() === vName)
+                                allBills.filter(b => (b.supplier_id == v.id || (b.supplier_name || '').trim().toLowerCase() === vName) && (b.status || '').toUpperCase() !== 'DRAFT')
                                     .forEach(b => totalBilled += parseFloat(b.total_amount || 0));
                             }
                             const pRes = await fetch('/api/payments-made');
@@ -4785,7 +5141,13 @@
                                 allPay.filter(p => (p.supplier_id == v.id || (p.supplier_name || '').trim().toLowerCase() === vName) && (p.status || '').toUpperCase() === 'PAID')
                                     .forEach(p => totalPaid += parseFloat(p.amount_paid || 0));
                             }
-                            document.getElementById('dPayOutstanding').textContent = cp + (totalBilled - totalPaid).toFixed(2);
+                            const rawOutstanding = totalBilled - totalPaid;
+                            const outstanding = Math.max(0, rawOutstanding);
+                            const overpayment = rawOutstanding < 0 ? Math.abs(rawOutstanding) : 0;
+                            document.getElementById('dPayOutstanding').textContent = cp + outstanding.toFixed(2);
+                            // Add overpayment to unused credits
+                            const existingCredits = parseFloat(v.unused_credits || 0);
+                            document.getElementById('dPayCredits').textContent = cp + (existingCredits + overpayment).toFixed(2);
                         } catch (e) {
                             document.getElementById('dPayOutstanding').textContent = cp + parseFloat(v.total_spent || 0).toFixed(2);
                         }
@@ -4811,6 +5173,13 @@
                         <div class="contact-person-info">
                             <div class="contact-person-name">${n}</div>
                             ${d ? `<div class="contact-person-detail">${d}</div>` : ''}
+                        </div>
+                        <div class="cp-gear-wrap">
+                            <button class="cp-gear-btn" onclick="event.stopPropagation();cpToggleGear(${cp.id})" title="Options">⚙</button>
+                            <div class="cp-gear-dropdown" id="cpGear-${cp.id}">
+                                <button class="cp-gear-option" onclick="cpEditContact(${cp.id})">Edit</button>
+                                <button class="cp-gear-option" onclick="cpDeleteContact(${cp.id})">Delete</button>
+                            </div>
                         </div>
                     </div>`;
                         }).join('');
@@ -4930,6 +5299,7 @@
                     if (tabName === 'transactions' && currentVendorId) loadVendorTransactions();
                     if (tabName === 'statement' && currentVendorId) loadVendorStatement();
                 }
+
 
                 function toggleTxnSection(sectionId) {
                     const section = document.getElementById(sectionId);
@@ -5130,14 +5500,14 @@
                     document.getElementById('vendorStmtSoaRange').textContent = rangeStr;
 
                     // Fetch bills, payments, and vendor credits
-                    let bills = [], payments = [], vendorCredits = [];
+                    let bills = [], payments = [], vendorCreditTotal = 0;
                     const filter = document.getElementById('vendorStmtFilter').value;
                     try {
                         if (filter !== 'payments') {
                             const bRes = await fetch('/api/bills');
                             if (bRes.ok) {
                                 const all = await bRes.json();
-                                bills = all.filter(b => (b.supplier_id == currentVendorId || (b.supplier_name || '').trim().toLowerCase() === vendorName.toLowerCase()));
+                                bills = all.filter(b => (b.supplier_id == currentVendorId || (b.supplier_name || '').trim().toLowerCase() === vendorName.toLowerCase()) && (b.status || '').toUpperCase() !== 'DRAFT');
                             }
                         }
                         if (filter !== 'bills') {
@@ -5147,11 +5517,15 @@
                                 payments = all.filter(p => (p.supplier_id == currentVendorId || (p.supplier_name || '').trim().toLowerCase() === vendorName.toLowerCase()) && (p.status || '').toUpperCase() === 'PAID');
                             }
                         }
-                        // Fetch open vendor credits
+                        // Fetch open vendor credits for this vendor
                         const vcRes = await fetch('/api/vendor-credits');
                         if (vcRes.ok) {
-                            const allVc = await vcRes.json();
-                            vendorCredits = allVc.filter(vc => (vc.supplier_id == currentVendorId || (vc.supplier_name || '').trim().toLowerCase() === vendorName.toLowerCase()) && (vc.status || '').toLowerCase() === 'open');
+                            const allVC = await vcRes.json();
+                            allVC.filter(vc => {
+                                const matches = (vc.supplier_id == currentVendorId) || (vc.supplier_name || '').trim().toLowerCase() === vendorName.toLowerCase();
+                                const st = (vc.status || '').toLowerCase();
+                                return matches && (st === 'open' || st === 'active');
+                            }).forEach(vc => { vendorCreditTotal += parseFloat(vc.total_amount || 0); });
                         }
                     } catch (e) { console.error(e); }
 
@@ -5159,33 +5533,34 @@
                     const inRange = d => { const dt = new Date(d); return dt >= startDate && dt <= endDate; };
                     const beforeRange = d => { const dt = new Date(d); return dt < startDate; };
 
-                    // Opening balance = bills before range - payments before range - credits before range
+                    // Opening balance = bills before range - payments before range
                     const openingBilled = bills.filter(b => beforeRange(b.bill_date)).reduce((s, b) => s + parseFloat(b.total_amount || 0), 0);
                     const openingPaid = payments.filter(p => beforeRange(p.payment_date || p.payment_made_on)).reduce((s, p) => s + parseFloat(p.amount_paid || 0), 0);
-                    const openingCredits = vendorCredits.filter(vc => beforeRange(vc.credit_date)).reduce((s, vc) => s + parseFloat(vc.total_amount || 0), 0);
-                    const openingBalance = openingBilled - openingPaid - openingCredits;
+                    const openingBalance = openingBilled - openingPaid;
 
                     const rangeBills = bills.filter(b => inRange(b.bill_date));
                     const rangePayments = payments.filter(p => inRange(p.payment_date || p.payment_made_on));
-                    const rangeCredits = vendorCredits.filter(vc => inRange(vc.credit_date));
 
                     const billedAmount = rangeBills.reduce((s, b) => s + parseFloat(b.total_amount || 0), 0);
                     const paidAmount = rangePayments.reduce((s, p) => s + parseFloat(p.amount_paid || 0), 0);
-                    const creditAmount = rangeCredits.reduce((s, vc) => s + parseFloat(vc.total_amount || 0), 0);
-                    const balanceDue = openingBalance + billedAmount - paidAmount - creditAmount;
+                    const rawBalance = openingBalance + billedAmount - paidAmount;
+                    const balanceDue = Math.max(0, rawBalance);
+                    const overpayment = rawBalance < 0 ? Math.abs(rawBalance) : 0;
+                    const unusedCredits = overpayment + vendorCreditTotal;
 
                     document.getElementById('vendorStmtOpening').textContent = fmtCur(openingBalance);
                     document.getElementById('vendorStmtBilled').textContent = fmtCur(billedAmount);
                     document.getElementById('vendorStmtPaid').textContent = fmtCur(paidAmount);
-                    document.getElementById('vendorStmtCredits').textContent = fmtCur(creditAmount);
+                    document.getElementById('vendorStmtCredits').textContent = fmtCur(0);
+                    document.getElementById('vendorStmtUnusedCredits').textContent = fmtCur(unusedCredits);
                     document.getElementById('vendorStmtBalanceDue').textContent = fmtCur(balanceDue);
                     document.getElementById('vendorStmtFooterBalance').textContent = fmtCur(balanceDue);
+                    document.getElementById('vendorStmtFooterCredits').textContent = fmtCur(unusedCredits);
 
                     // Build chronological transaction rows
                     const txns = [];
                     rangeBills.forEach(b => txns.push({ date: b.bill_date, type: 'Bill', ref: b.bill_number || '', amount: parseFloat(b.total_amount || 0), payment: 0 }));
-                    rangePayments.forEach(p => txns.push({ date: p.payment_date || p.payment_made_on, type: 'Payment', ref: p.payment_number || '', amount: 0, payment: parseFloat(p.amount_paid || 0) }));
-                    rangeCredits.forEach(vc => txns.push({ date: vc.credit_date, type: 'Vendor Credit', ref: vc.credit_number || '', amount: 0, payment: parseFloat(vc.total_amount || 0) }));
+                    rangePayments.forEach(p => txns.push({ date: p.payment_date || p.payment_made_on, type: p.bill_number ? 'Payment for ' + p.bill_number : 'Payment', ref: p.payment_number || '', amount: 0, payment: parseFloat(p.amount_paid || 0) }));
                     txns.sort((a, b) => new Date(a.date) - new Date(b.date));
 
                     let running = openingBalance;
@@ -5249,6 +5624,71 @@
                 }
                 function closeAddressModal() { document.getElementById('addressModal').classList.remove('active'); }
                 function saveAddress() { alert('Address saved!'); closeAddressModal(); }
+
+                function openAddressEditModal() {
+                    const v = currentVendorData;
+                    if (!v) return;
+                    document.getElementById('addrBillingStreet').value = v.billing_address || '';
+                    document.getElementById('addrBillingCity').value = v.billing_city || '';
+                    document.getElementById('addrBillingState').value = v.billing_state || '';
+                    document.getElementById('addrBillingZip').value = v.billing_zip || '';
+                    document.getElementById('addrBillingCountry').value = v.billing_country || '';
+                    document.getElementById('addrShippingStreet').value = v.shipping_address || '';
+                    document.getElementById('addrShippingCity').value = v.shipping_city || '';
+                    document.getElementById('addrShippingState').value = v.shipping_state || '';
+                    document.getElementById('addrShippingZip').value = v.shipping_zip || '';
+                    document.getElementById('addrShippingCountry').value = v.shipping_country || '';
+                    document.getElementById('addrCopyBilling').checked = false;
+                    document.getElementById('addrEditOverlay').classList.add('open');
+                }
+
+                function closeAddressEditModal() {
+                    document.getElementById('addrEditOverlay').classList.remove('open');
+                }
+
+                function copyBillingToShipping() {
+                    if (document.getElementById('addrCopyBilling').checked) {
+                        document.getElementById('addrShippingStreet').value = document.getElementById('addrBillingStreet').value;
+                        document.getElementById('addrShippingCity').value = document.getElementById('addrBillingCity').value;
+                        document.getElementById('addrShippingState').value = document.getElementById('addrBillingState').value;
+                        document.getElementById('addrShippingZip').value = document.getElementById('addrBillingZip').value;
+                        document.getElementById('addrShippingCountry').value = document.getElementById('addrBillingCountry').value;
+                    }
+                }
+
+                async function saveAddressEdit() {
+                    if (!currentVendorId) return;
+                    const data = {
+                        ...currentVendorData,
+                        billing_address: document.getElementById('addrBillingStreet').value.trim(),
+                        billing_city: document.getElementById('addrBillingCity').value.trim(),
+                        billing_state: document.getElementById('addrBillingState').value.trim(),
+                        billing_zip: document.getElementById('addrBillingZip').value.trim(),
+                        billing_country: document.getElementById('addrBillingCountry').value.trim(),
+                        shipping_address: document.getElementById('addrShippingStreet').value.trim(),
+                        shipping_city: document.getElementById('addrShippingCity').value.trim(),
+                        shipping_state: document.getElementById('addrShippingState').value.trim(),
+                        shipping_zip: document.getElementById('addrShippingZip').value.trim(),
+                        shipping_country: document.getElementById('addrShippingCountry').value.trim(),
+                    };
+                    try {
+                        const res = await fetch('/api/suppliers/' + currentVendorId, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(data)
+                        });
+                        if (res.ok) {
+                            closeAddressEditModal();
+                            showVendorToast('Address updated successfully', 'success');
+                            await openDetailView(currentVendorId);
+                        } else {
+                            alert('Failed to update address');
+                        }
+                    } catch (e) {
+                        console.error(e);
+                        alert('Error updating address');
+                    }
+                }
 
                 function formatDetailDateTime(ds) { const d = new Date(ds); return d.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); }
                 function formatDetailDate(d) { return d.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }); }
@@ -5556,8 +5996,674 @@
                 });
 
                 // Load vendors on page load
-                document.addEventListener('DOMContentLoaded', loadVendors);
+                // ===== GEAR DROPDOWN (Edit / Delete) =====
+                function toggleVendorGear() {
+                    const dd = document.getElementById('vendorGearDropdown');
+                    dd.classList.toggle('open');
+                }
+
+                document.addEventListener('click', function (e) {
+                    const dd = document.getElementById('vendorGearDropdown');
+                    if (dd && !dd.closest('.vendor-gear-wrap').contains(e.target)) {
+                        dd.classList.remove('open');
+                    }
+                });
+
+                function editCurrentVendor() {
+                    document.getElementById('vendorGearDropdown').classList.remove('open');
+                    if (!currentVendorId) return;
+                    window.location.href = '/new-vendor.html?id=' + currentVendorId;
+                }
+
+                async function deleteCurrentVendor() {
+                    document.getElementById('vendorGearDropdown').classList.remove('open');
+                    if (!currentVendorId) return;
+                    const name = currentVendorData ? (currentVendorData.name || 'this vendor') : 'this vendor';
+                    if (!confirm('Delete "' + name + '"? This cannot be undone.')) return;
+                    try {
+                        const res = await fetch('/api/suppliers/' + currentVendorId, { method: 'DELETE' });
+                        if (res.ok) {
+                            showVendorToast('Vendor deleted successfully', 'success');
+                            closeDetailView();
+                            await loadVendors();
+                        } else {
+                            const err = await res.json();
+                            alert('Error: ' + (err.error || 'Could not delete vendor'));
+                        }
+                    } catch (e) {
+                        console.error(e);
+                        alert('Error deleting vendor');
+                    }
+                }
+
+                // ===== ADD/EDIT CONTACT PERSON MODAL =====
+                let acpEditingContactId = null;
+
+                function openAddContactModal() {
+                    acpEditingContactId = null;
+                    document.getElementById('acpModalTitle').textContent = 'Add Contact Person';
+                    document.getElementById('acpSalutation').value = '';
+                    document.getElementById('acpFirstName').value = '';
+                    document.getElementById('acpLastName').value = '';
+                    document.getElementById('acpEmail').value = '';
+                    document.getElementById('acpWorkPhone').value = '';
+                    document.getElementById('acpMobile').value = '';
+                    document.getElementById('acpDesignation').value = '';
+                    document.getElementById('acpDepartment').value = '';
+                    acpUploadedImageUrl = null;
+                    document.getElementById('acpFileInput').value = '';
+                    document.getElementById('acpPreview').style.display = 'none';
+                    document.getElementById('acpPreviewImg').src = '';
+                    document.getElementById('acpUploadDefault').style.display = '';
+                    document.getElementById('acpOverlay').classList.add('open');
+                }
+
+                function closeAddContactModal() {
+                    document.getElementById('acpOverlay').classList.remove('open');
+                }
+
+                async function saveContactPerson() {
+                    if (!currentVendorId) return;
+                    const salutation = document.getElementById('acpSalutation').value;
+                    const first_name = document.getElementById('acpFirstName').value.trim();
+                    const last_name = document.getElementById('acpLastName').value.trim();
+                    const email = document.getElementById('acpEmail').value.trim();
+                    const workPhone = document.getElementById('acpWorkPhone').value.trim();
+                    const mobile = document.getElementById('acpMobile').value.trim();
+
+                    if (!first_name && !last_name) {
+                        alert('Please enter at least a first or last name.');
+                        return;
+                    }
+
+                    const phone = [workPhone, mobile].filter(Boolean).join(' / ');
+
+                    try {
+                        let url, method;
+                        if (acpEditingContactId) {
+                            url = '/api/suppliers/' + currentVendorId + '/contacts/' + acpEditingContactId;
+                            method = 'PUT';
+                        } else {
+                            url = '/api/suppliers/' + currentVendorId + '/contacts';
+                            method = 'POST';
+                        }
+                        const res = await fetch(url, {
+                            method,
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ salutation, first_name, last_name, email, phone, profile_image: acpUploadedImageUrl || null })
+                        });
+                        if (res.ok) {
+                            closeAddContactModal();
+                            showVendorToast(acpEditingContactId ? 'Contact person updated' : 'Contact person added successfully', 'success');
+                            await openDetailView(currentVendorId);
+                        } else {
+                            const err = await res.json();
+                            alert('Error: ' + (err.error || 'Could not save contact'));
+                        }
+                    } catch (e) {
+                        console.error(e);
+                        alert('Error saving contact person');
+                    }
+                }
+
+                // ===== UPLOAD FILE LOGIC =====
+                let acpUploadedImageUrl = null;
+
+                function acpTriggerFileInput(e) {
+                    e.preventDefault();
+                    document.getElementById('acpFileInput').click();
+                }
+
+                async function acpHandleFile(file) {
+                    if (!file) return;
+                    const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/bmp'];
+                    if (!allowed.includes(file.type)) {
+                        alert('Unsupported file type. Please upload jpg, jpeg, png, gif, or bmp.');
+                        return;
+                    }
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('File size exceeds 5MB limit.');
+                        return;
+                    }
+                    // Show local preview
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        document.getElementById('acpPreviewImg').src = e.target.result;
+                        document.getElementById('acpPreview').style.display = 'flex';
+                        document.getElementById('acpUploadDefault').style.display = 'none';
+                    };
+                    reader.readAsDataURL(file);
+
+                    // Upload to server
+                    if (!currentVendorId) return;
+                    const formData = new FormData();
+                    formData.append('profile_image', file);
+                    try {
+                        const res = await fetch('/api/suppliers/' + currentVendorId + '/contacts/upload-image', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        if (res.ok) {
+                            const data = await res.json();
+                            acpUploadedImageUrl = data.imageUrl;
+                        } else {
+                            alert('Failed to upload image');
+                        }
+                    } catch (e) {
+                        console.error(e);
+                        alert('Error uploading image');
+                    }
+                }
+
+                function acpOnFileSelected(input) {
+                    if (input.files && input.files[0]) acpHandleFile(input.files[0]);
+                }
+
+                function acpRemoveImage(e) {
+                    e.stopPropagation();
+                    acpUploadedImageUrl = null;
+                    document.getElementById('acpFileInput').value = '';
+                    document.getElementById('acpPreview').style.display = 'none';
+                    document.getElementById('acpPreviewImg').src = '';
+                    document.getElementById('acpUploadDefault').style.display = '';
+                }
+
+                // Drag & Drop
+                document.addEventListener('DOMContentLoaded', function () {
+                    const area = document.getElementById('acpUploadArea');
+                    if (!area) return;
+                    ['dragenter', 'dragover'].forEach(ev => area.addEventListener(ev, function (e) {
+                        e.preventDefault(); e.stopPropagation();
+                        area.style.borderColor = '#4285f4'; area.style.background = '#f0f4ff';
+                    }));
+                    ['dragleave', 'drop'].forEach(ev => area.addEventListener(ev, function (e) {
+                        e.preventDefault(); e.stopPropagation();
+                        area.style.borderColor = '#d0d5dd'; area.style.background = '';
+                    }));
+                    area.addEventListener('drop', function (e) {
+                        if (e.dataTransfer.files && e.dataTransfer.files[0]) acpHandleFile(e.dataTransfer.files[0]);
+                    });
+                });
+
+                // ===== CURRENCY INLINE EDIT =====
+                const CURRENCY_LIST = ['AED', 'AUD', 'BRL', 'CAD', 'CHF', 'CNY', 'EUR', 'GBP', 'HKD', 'IDR', 'INR', 'JPY', 'KRW', 'MXN', 'MYR', 'NGN', 'NZD', 'PHP', 'PKR', 'RUB', 'SAR', 'SEK', 'SGD', 'THB', 'TRY', 'TWD', 'UAH', 'USD', 'VND', 'ZAR'];
+                let curSelectedCurrency = 'PHP';
+                let curOriginalCurrency = 'PHP';
+
+                function openCurrencyEdit() {
+                    curOriginalCurrency = document.getElementById('dCurrency').textContent.trim();
+                    curSelectedCurrency = curOriginalCurrency;
+                    document.getElementById('curEditValue').textContent = curSelectedCurrency;
+                    document.getElementById('currencyDisplay').style.display = 'none';
+                    document.getElementById('currencyEditMode').style.display = '';
+                    document.getElementById('curDropdown').style.display = 'none';
+                    renderCurrencyList();
+                }
+
+                function toggleCurrencyDropdown() {
+                    const dd = document.getElementById('curDropdown');
+                    if (dd.style.display === 'none') {
+                        dd.style.display = 'flex';
+                        document.getElementById('curSearchInput').value = '';
+                        renderCurrencyList();
+                        document.getElementById('curSearchInput').focus();
+                    } else {
+                        dd.style.display = 'none';
+                    }
+                }
+
+                function renderCurrencyList(filter) {
+                    const ul = document.getElementById('curList');
+                    const search = (filter || '').toLowerCase();
+                    const filtered = CURRENCY_LIST.filter(c => c.toLowerCase().includes(search));
+                    ul.innerHTML = filtered.map(c => {
+                        const isSelected = c === curSelectedCurrency;
+                        const isCurrent = c === curOriginalCurrency;
+                        let cls = '';
+                        if (isSelected) cls = 'selected';
+                        else if (isCurrent) cls = 'current';
+                        return `<li class="${cls}" onclick="selectCurrency('${c}')">
+                            ${c}
+                            ${isCurrent ? '<span class="cur-check">✓</span>' : ''}
+                        </li>`;
+                    }).join('');
+                }
+
+                function filterCurrencyList() {
+                    renderCurrencyList(document.getElementById('curSearchInput').value);
+                }
+
+                function selectCurrency(code) {
+                    curSelectedCurrency = code;
+                    document.getElementById('curEditValue').textContent = code;
+                    renderCurrencyList(document.getElementById('curSearchInput').value);
+                }
+
+                async function saveCurrencyEdit() {
+                    if (!currentVendorId) return;
+                    try {
+                        const res = await fetch('/api/suppliers/' + currentVendorId, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ ...currentVendorData, currency: curSelectedCurrency })
+                        });
+                        if (res.ok) {
+                            document.getElementById('dCurrency').textContent = curSelectedCurrency;
+                            currentVendorData.currency = curSelectedCurrency;
+                            cancelCurrencyEdit();
+                            showVendorToast('Currency updated to ' + curSelectedCurrency, 'success');
+                        } else {
+                            alert('Failed to update currency');
+                        }
+                    } catch (e) {
+                        console.error(e);
+                        alert('Error updating currency');
+                    }
+                }
+
+                function cancelCurrencyEdit() {
+                    document.getElementById('currencyDisplay').style.display = 'flex';
+                    document.getElementById('currencyEditMode').style.display = 'none';
+                    document.getElementById('curDropdown').style.display = 'none';
+                }
+
+                // ===== CONTACT PERSON GEAR ICON =====
+                function cpToggleGear(cpId) {
+                    // Close all other open gear dropdowns
+                    document.querySelectorAll('.cp-gear-dropdown.open').forEach(dd => {
+                        if (dd.id !== 'cpGear-' + cpId) dd.classList.remove('open');
+                    });
+                    const dd = document.getElementById('cpGear-' + cpId);
+                    if (dd) dd.classList.toggle('open');
+                }
+
+                document.addEventListener('click', function (e) {
+                    if (!e.target.closest('.cp-gear-wrap')) {
+                        document.querySelectorAll('.cp-gear-dropdown.open').forEach(dd => dd.classList.remove('open'));
+                    }
+                });
+
+                function cpEditContact(cpId) {
+                    document.querySelectorAll('.cp-gear-dropdown.open').forEach(dd => dd.classList.remove('open'));
+                    if (!currentVendorData || !currentVendorData.contact_persons) return;
+                    const cp = currentVendorData.contact_persons.find(c => c.id === cpId);
+                    if (!cp) return;
+
+                    acpEditingContactId = cpId;
+                    document.getElementById('acpModalTitle').textContent = 'Edit Contact Person';
+                    document.getElementById('acpSalutation').value = cp.salutation || '';
+                    document.getElementById('acpFirstName').value = cp.first_name || '';
+                    document.getElementById('acpLastName').value = cp.last_name || '';
+                    document.getElementById('acpEmail').value = cp.email || '';
+
+                    // Split phone back into work/mobile
+                    const phones = (cp.phone || '').split(' / ');
+                    document.getElementById('acpWorkPhone').value = phones[0] || '';
+                    document.getElementById('acpMobile').value = phones[1] || '';
+
+                    document.getElementById('acpDesignation').value = '';
+                    document.getElementById('acpDepartment').value = '';
+
+                    // Handle profile image
+                    if (cp.profile_image) {
+                        acpUploadedImageUrl = cp.profile_image;
+                        document.getElementById('acpPreviewImg').src = cp.profile_image;
+                        document.getElementById('acpPreview').style.display = 'flex';
+                        document.getElementById('acpUploadDefault').style.display = 'none';
+                    } else {
+                        acpUploadedImageUrl = null;
+                        document.getElementById('acpPreview').style.display = 'none';
+                        document.getElementById('acpPreviewImg').src = '';
+                        document.getElementById('acpUploadDefault').style.display = '';
+                    }
+                    document.getElementById('acpFileInput').value = '';
+
+                    document.getElementById('acpOverlay').classList.add('open');
+                }
+
+                async function cpDeleteContact(cpId) {
+                    document.querySelectorAll('.cp-gear-dropdown.open').forEach(dd => dd.classList.remove('open'));
+                    if (!currentVendorId) return;
+                    if (!confirm('Delete this contact person? This cannot be undone.')) return;
+                    try {
+                        const res = await fetch('/api/suppliers/' + currentVendorId + '/contacts/' + cpId, { method: 'DELETE' });
+                        if (res.ok) {
+                            showVendorToast('Contact person deleted', 'success');
+                            await openDetailView(currentVendorId);
+                        } else {
+                            alert('Error deleting contact');
+                        }
+                    } catch (e) {
+                        console.error(e);
+                        alert('Error deleting contact person');
+                    }
+                }
+
+                document.addEventListener('DOMContentLoaded', async function () {
+                    await loadVendors();
+                    const hash = window.location.hash;
+                    const match = hash.match(/^#vendor=(\d+)$/);
+                    if (match) {
+                        const vendorId = parseInt(match[1]);
+                        if (vendorId) await openDetailView(vendorId);
+                    }
+                });
             </script>
+            <!-- Add Contact Person Modal -->
+            <div class="acp-overlay" id="acpOverlay" onclick="if(event.target===this)closeAddContactModal()">
+                <div class="acp-modal" onclick="event.stopPropagation()">
+                    <div class="acp-header">
+                        <h2 id="acpModalTitle">Add Contact Person</h2>
+                        <button class="acp-close" onclick="closeAddContactModal()">&times;</button>
+                    </div>
+                    <div class="acp-body">
+                        <div class="acp-form-left">
+                            <div class="acp-row">
+                                <label class="acp-label">Name</label>
+                                <div class="acp-fields">
+                                    <select id="acpSalutation" class="acp-select">
+                                        <option value="">Salutation</option>
+                                        <option value="Mr">Mr.</option>
+                                        <option value="Mrs">Mrs.</option>
+                                        <option value="Ms">Ms.</option>
+                                        <option value="Dr">Dr.</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="acp-row">
+                                <label class="acp-label"></label>
+                                <div class="acp-fields acp-fields-2">
+                                    <input type="text" id="acpFirstName" class="acp-input" placeholder="First Name">
+                                    <input type="text" id="acpLastName" class="acp-input" placeholder="Last Name">
+                                </div>
+                            </div>
+                            <div class="acp-row">
+                                <label class="acp-label">Email Address</label>
+                                <div class="acp-fields">
+                                    <input type="email" id="acpEmail" class="acp-input acp-input-full" placeholder="">
+                                </div>
+                            </div>
+                            <div class="acp-row">
+                                <label class="acp-label">Phone</label>
+                                <div class="acp-fields acp-fields-phone">
+                                    <select class="acp-phone-prefix">
+                                        <option>+63</option>
+                                    </select>
+                                    <input type="text" id="acpWorkPhone" class="acp-input" placeholder="Work Phone">
+                                </div>
+                            </div>
+                            <div class="acp-row">
+                                <label class="acp-label"></label>
+                                <div class="acp-fields acp-fields-phone">
+                                    <select class="acp-phone-prefix">
+                                        <option>+63</option>
+                                    </select>
+                                    <input type="text" id="acpMobile" class="acp-input" placeholder="Mobile">
+                                </div>
+                            </div>
+                            <div class="acp-row">
+                                <label class="acp-label">Other Details</label>
+                                <div class="acp-fields acp-fields-2">
+                                    <input type="text" id="acpDesignation" class="acp-input" placeholder="Designation">
+                                    <input type="text" id="acpDepartment" class="acp-input" placeholder="Department">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="acp-form-right">
+                            <div class="acp-upload-area" id="acpUploadArea">
+                                <input type="file" id="acpFileInput" accept=".jpg,.jpeg,.png,.gif,.bmp"
+                                    style="display:none" onchange="acpOnFileSelected(this)">
+                                <div id="acpUploadDefault">
+                                    <div class="acp-upload-icon">
+                                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4285f4"
+                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                            <polyline points="17 8 12 3 7 8" />
+                                            <line x1="12" y1="3" x2="12" y2="15" />
+                                        </svg>
+                                    </div>
+                                    <div class="acp-upload-title">Drag & Drop Profile Image</div>
+                                    <div class="acp-upload-hint">Supported Files: jpg, jpeg, png, gif, bmp</div>
+                                    <div class="acp-upload-hint">Maximum File Size: 5MB</div>
+                                    <a class="acp-upload-link" href="#" onclick="acpTriggerFileInput(event)">Upload
+                                        File</a>
+                                </div>
+                                <div id="acpPreview"
+                                    style="display:none;flex-direction:column;align-items:center;gap:8px;">
+                                    <img id="acpPreviewImg" src=""
+                                        style="max-width:150px;max-height:150px;border-radius:8px;object-fit:cover;">
+                                    <button onclick="acpRemoveImage(event)"
+                                        style="font-size:11px;color:#e53935;background:none;border:none;cursor:pointer;text-decoration:underline;">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="acp-footer">
+                        <button class="acp-btn-save" onclick="saveContactPerson()">Save</button>
+                        <button class="acp-btn-cancel" onclick="closeAddContactModal()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+
+            <style>
+                .acp-overlay {
+                    display: none;
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(0, 0, 0, 0.35);
+                    z-index: 5000;
+                    justify-content: center;
+                    align-items: center;
+                }
+
+                .acp-overlay.open {
+                    display: flex;
+                }
+
+                .acp-modal {
+                    background: #fff;
+                    border-radius: 8px;
+                    width: 780px;
+                    max-width: 95vw;
+                    max-height: 90vh;
+                    display: flex;
+                    flex-direction: column;
+                    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.22);
+                    animation: acpSlideIn 0.2s ease;
+                }
+
+                @keyframes acpSlideIn {
+                    from {
+                        opacity: 0;
+                        transform: translateY(-16px);
+                    }
+
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                .acp-header {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 20px 28px;
+                    border-bottom: 1px solid #eee;
+                }
+
+                .acp-header h2 {
+                    margin: 0;
+                    font-size: 18px;
+                    font-weight: 600;
+                    color: #333;
+                }
+
+                .acp-close {
+                    background: none;
+                    border: none;
+                    font-size: 24px;
+                    color: #e53935;
+                    cursor: pointer;
+                    line-height: 1;
+                }
+
+                .acp-body {
+                    display: flex;
+                    gap: 28px;
+                    padding: 24px 28px;
+                    overflow-y: auto;
+                }
+
+                .acp-form-left {
+                    flex: 1;
+                }
+
+                .acp-form-right {
+                    width: 200px;
+                    flex-shrink: 0;
+                }
+
+                .acp-row {
+                    display: flex;
+                    align-items: flex-start;
+                    margin-bottom: 16px;
+                }
+
+                .acp-label {
+                    width: 110px;
+                    flex-shrink: 0;
+                    font-size: 13px;
+                    color: #555;
+                    padding-top: 8px;
+                }
+
+                .acp-fields {
+                    flex: 1;
+                }
+
+                .acp-fields-2 {
+                    display: flex;
+                    gap: 10px;
+                }
+
+                .acp-fields-phone {
+                    display: flex;
+                    gap: 8px;
+                }
+
+                .acp-select,
+                .acp-input,
+                .acp-phone-prefix {
+                    padding: 8px 10px;
+                    border: 1px solid #d0d5dd;
+                    border-radius: 4px;
+                    font-size: 13px;
+                    font-family: inherit;
+                    outline: none;
+                    box-sizing: border-box;
+                }
+
+                .acp-select {
+                    min-width: 160px;
+                }
+
+                .acp-input {
+                    flex: 1;
+                    min-width: 0;
+                }
+
+                .acp-input-full {
+                    width: 100%;
+                }
+
+                .acp-phone-prefix {
+                    width: 80px;
+                    flex-shrink: 0;
+                    color: #333;
+                }
+
+                .acp-select:focus,
+                .acp-input:focus {
+                    border-color: #4285f4;
+                }
+
+                /* Upload area */
+                .acp-upload-area {
+                    border: 2px dashed #d0d5dd;
+                    border-radius: 8px;
+                    padding: 24px 16px;
+                    text-align: center;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 6px;
+                }
+
+                .acp-upload-icon {
+                    margin-bottom: 4px;
+                }
+
+                .acp-upload-title {
+                    font-size: 13px;
+                    font-weight: 600;
+                    color: #333;
+                }
+
+                .acp-upload-hint {
+                    font-size: 11px;
+                    color: #999;
+                }
+
+                .acp-upload-link {
+                    font-size: 12px;
+                    color: #333;
+                    text-decoration: underline;
+                    cursor: pointer;
+                    margin-top: 4px;
+                }
+
+                /* Footer */
+                .acp-footer {
+                    display: flex;
+                    gap: 12px;
+                    padding: 16px 28px;
+                    border-top: 1px solid #eee;
+                }
+
+                .acp-btn-save {
+                    padding: 9px 28px;
+                    background: #4285f4;
+                    color: #fff;
+                    border: none;
+                    border-radius: 4px;
+                    font-size: 13px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    font-family: inherit;
+                }
+
+                .acp-btn-save:hover {
+                    background: #3367d6;
+                }
+
+                .acp-btn-cancel {
+                    padding: 9px 28px;
+                    background: none;
+                    color: #555;
+                    border: none;
+                    font-size: 13px;
+                    cursor: pointer;
+                    font-family: inherit;
+                }
+
+                .acp-btn-cancel:hover {
+                    color: #333;
+                }
+            </style>
 </body>
 
 </html>

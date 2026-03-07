@@ -109,6 +109,14 @@ router.post('/', async (req, res) => {
                     await client.query('UPDATE purchases SET receive_status = $1 WHERE id = $2', [newReceiveStatus, purchase_id]);
                 }
 
+                // Log the receive action for PO history
+                const totalQtyReceived = items.reduce((sum, item) => sum + (parseFloat(item.quantity_to_receive) || 0), 0);
+                await client.query(
+                    `INSERT INTO activity_log (entity_type, entity_id, entity_name, action, description)
+                     VALUES ('purchase_order', $1, $2, 'receive_recorded', $3)`,
+                    [purchase_id, receiveNumber, `Receive ${receiveNumber} recorded — ${totalQtyReceived} units added.`]
+                );
+
                 // Auto-update linked Sales Orders: if PO received, check if linked SOs can move from ON HOLD → CONFIRMED
                 if (newReceiveStatus === 'RECEIVED' || newReceiveStatus === 'PARTIALLY RECEIVED') {
                     const poResult = await client.query('SELECT po_number, reference_number FROM purchases WHERE id = $1', [purchase_id]);
@@ -170,7 +178,9 @@ router.get('/', async (req, res) => {
         const db = database.getDb();
         const result = await db.query(`
       SELECT pr.*, p.po_number,
-             (SELECT COUNT(*) FROM purchase_receive_items pri WHERE pri.receive_id = pr.id) as total_items
+             (SELECT COALESCE(SUM(pri.quantity_to_receive),0) FROM purchase_receive_items pri WHERE pri.receive_id = pr.id) as total_items,
+             (SELECT json_agg(json_build_object('item_name', pri.item_name, 'qty', pri.quantity_to_receive))
+              FROM purchase_receive_items pri WHERE pri.receive_id = pr.id) as receive_items_detail
       FROM purchase_receives pr
       LEFT JOIN purchases p ON pr.purchase_id = p.id
       ORDER BY pr.created_at DESC
@@ -363,6 +373,147 @@ router.patch('/:id/mark-transit', async (req, res) => {
     } catch (error) {
         console.error('Error marking as in transit:', error);
         res.status(500).json({ error: 'Failed to mark as in transit: ' + error.message });
+    }
+});
+
+// PUT update a draft/in-transit purchase receive
+router.put('/:id', async (req, res) => {
+    try {
+        const db = database.getDb();
+        const { id } = req.params;
+        const { receive_date, notes, status, items } = req.body;
+
+        // Get existing PR
+        const prResult = await db.query('SELECT * FROM purchase_receives WHERE id = $1', [id]);
+        if (prResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Purchase receive not found' });
+        }
+
+        const pr = prResult.rows[0];
+        if (pr.status === 'received') {
+            return res.status(400).json({ error: 'Cannot edit a received purchase receive' });
+        }
+
+        if (!items || !Array.isArray(items) || items.length === 0) {
+            return res.status(400).json({ error: 'At least one item is required' });
+        }
+
+        const finalStatus = status || pr.status;
+
+        await database.transaction(async (client) => {
+            // Update the PR header
+            await client.query(`
+                UPDATE purchase_receives
+                SET receive_date = $1, notes = $2, status = $3
+                WHERE id = $4
+            `, [
+                receive_date || pr.receive_date,
+                notes !== undefined ? notes : pr.notes,
+                finalStatus,
+                id
+            ]);
+
+            // Delete existing items and re-insert
+            await client.query('DELETE FROM purchase_receive_items WHERE receive_id = $1', [id]);
+
+            for (const item of items) {
+                const qtyToReceive = parseFloat(item.quantity_to_receive) || 0;
+                if (qtyToReceive <= 0) continue;
+
+                await client.query(`
+                    INSERT INTO purchase_receive_items (receive_id, item_id, item_name, quantity_ordered, quantity_received, quantity_to_receive)
+                    VALUES ($1, $2, $3, $4, $5, $6)
+                `, [
+                    id,
+                    item.item_id || null,
+                    item.item_name || null,
+                    parseFloat(item.ordered_qty) || 0,
+                    parseFloat(item.previously_received_qty) || 0,
+                    qtyToReceive
+                ]);
+
+                // If finalizing as received, update stock and log transaction
+                if (finalStatus === 'received' && item.item_id) {
+                    await client.query(`
+                        UPDATE items 
+                        SET stock_quantity = stock_quantity + $1, updated_at = CURRENT_TIMESTAMP
+                        WHERE id = $2
+                    `, [qtyToReceive, item.item_id]);
+
+                    await client.query(`
+                        INSERT INTO inventory_transactions (item_id, type, quantity, reference, notes)
+                        VALUES ($1, 'IN', $2, $3, $4)
+                    `, [item.item_id, qtyToReceive, pr.receive_number, `Purchase Receive: ${pr.receive_number}`]);
+                }
+            }
+
+            // If finalizing as received, update parent PO status
+            if (finalStatus === 'received' && pr.purchase_id) {
+                const orderedResult = await client.query(`
+                    SELECT COALESCE(SUM(quantity), 0) as total_ordered
+                    FROM purchase_items WHERE purchase_id = $1
+                `, [pr.purchase_id]);
+
+                const receivedResult = await client.query(`
+                    SELECT COALESCE(SUM(pri.quantity_to_receive), 0) as total_received
+                    FROM purchase_receive_items pri
+                    JOIN purchase_receives pr2 ON pri.receive_id = pr2.id
+                    WHERE pr2.purchase_id = $1 AND pr2.status = 'received'
+                `, [pr.purchase_id]);
+
+                const totalOrdered = parseFloat(orderedResult.rows[0].total_ordered) || 0;
+                const totalReceived = parseFloat(receivedResult.rows[0].total_received) || 0;
+
+                let newReceiveStatus;
+                if (totalReceived >= totalOrdered) {
+                    newReceiveStatus = 'RECEIVED';
+                } else if (totalReceived > 0) {
+                    newReceiveStatus = 'PARTIALLY RECEIVED';
+                }
+
+                if (newReceiveStatus) {
+                    await client.query('UPDATE purchases SET receive_status = $1 WHERE id = $2', [newReceiveStatus, pr.purchase_id]);
+                }
+
+                // Auto-update linked Sales Orders
+                if (newReceiveStatus === 'RECEIVED' || newReceiveStatus === 'PARTIALLY RECEIVED') {
+                    const poResult = await client.query('SELECT po_number, reference_number FROM purchases WHERE id = $1', [pr.purchase_id]);
+                    if (poResult.rows.length > 0) {
+                        const refNum = poResult.rows[0].reference_number;
+                        const soLookup = refNum
+                            ? await client.query("SELECT id FROM sales_orders WHERE order_number = $1 AND status = 'ON HOLD'", [refNum])
+                            : { rows: [] };
+                        for (const so of soLookup.rows) {
+                            const soItems = await client.query('SELECT item_id, quantity FROM sales_order_items WHERE sales_order_id = $1', [so.id]);
+                            let allSufficient = true;
+                            for (const si of soItems.rows) {
+                                if (si.item_id) {
+                                    const stockCheck = await client.query('SELECT stock_quantity FROM items WHERE id = $1', [si.item_id]);
+                                    if (stockCheck.rows.length > 0) {
+                                        const stock = parseFloat(stockCheck.rows[0].stock_quantity) || 0;
+                                        const needed = parseFloat(si.quantity) || 0;
+                                        if (stock < needed) { allSufficient = false; break; }
+                                    }
+                                }
+                            }
+                            if (allSufficient) {
+                                await client.query("UPDATE sales_orders SET status = 'CONFIRMED', updated_at = CURRENT_TIMESTAMP WHERE id = $1", [so.id]);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Return updated PR with items
+        const updatedPR = await db.query('SELECT * FROM purchase_receives WHERE id = $1', [id]);
+        const updatedItems = await db.query('SELECT * FROM purchase_receive_items WHERE receive_id = $1', [id]);
+        const result = updatedPR.rows[0];
+        result.items = updatedItems.rows;
+        res.json(result);
+    } catch (error) {
+        console.error('Error updating purchase receive:', error);
+        res.status(500).json({ error: 'Failed to update purchase receive: ' + error.message });
     }
 });
 

@@ -48,6 +48,8 @@ const entityMap = {
 app.use((req, res, next) => {
   if (req.method !== 'POST' && req.method !== 'PUT' && req.method !== 'DELETE') return next();
   if (req.path.includes('/dashboard/')) return next();
+  if (req.path.includes('/accept-quantities')) return next();
+  if (req.path.includes('/activity-log')) return next();
 
   const originalJson = res.json.bind(res);
   res.json = function (data) {

@@ -3935,7 +3935,9 @@
             const statusCls = getStatusClass(order.status);
             const statusLabel = (order.status || 'DRAFT').toUpperCase();
             const items = order.items || [];
-            const subTotal = items.reduce((sum, i) => sum + parseFloat(i.amount || 0), 0);
+            const subTotal = items.length > 0
+                ? items.reduce((sum, i) => sum + parseFloat(i.amount || 0), 0)
+                : parseFloat(order.sub_total || 0);
             const totalQty = items.reduce((sum, i) => sum + parseFloat(i.quantity || 0), 0);
             const total = parseFloat(order.total || subTotal);
             const discountAmount = parseFloat(order.discount || 0);
@@ -4168,7 +4170,9 @@
                                 <tr data-item-id="${item.item_id || ''}" data-ordered-qty="${parseFloat(item.quantity || 0)}">
                                     <td>
                                         <div style="display:flex;align-items:flex-start;gap:6px;">
-                                            <span class="so-item-placeholder"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+                                            ${item.image_url
+                    ? `<img src="${item.image_url}" alt="${item.item_name}" style="width:32px;height:32px;object-fit:cover;border-radius:4px;margin-right:8px;vertical-align:middle;">`
+                    : `<span class="so-item-placeholder"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>`}
                                             <div>
                                                 <span class="so-item-name-link">${item.item_name}</span>
                                                 ${item.description ? '<div style="font-size:11px;color:#888;margin-top:2px;">' + item.description + '</div>' : ''}
@@ -4241,199 +4245,226 @@
             const items = order.items || [];
             const soNum = order.order_number || 'SO-' + order.id;
             const orderDate = order.order_date ? new Date(order.order_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
-            const custName = (order.customer_name || '').toUpperCase();
+            const now = new Date();
+            const printTime = now.toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
+            const custName = order.customer_name || '';
+            const refNum = order.reference_number || '';
+            const deliveryMethod = order.delivery_method || '';
+            const salesperson = order.salesperson_name || '';
+
+            // Build address string
+            const addrParts = [order.billing_street, order.billing_city, order.billing_state, order.billing_zip, order.billing_country].filter(p => p && p.trim());
+            const custAddress = addrParts.join(', ');
 
             let subTotal = 0;
             const itemRows = items.map((item, i) => {
                 const qty = parseFloat(item.quantity) || 0;
                 const rate = parseFloat(item.rate) || 0;
-                const discPct = parseFloat(item.discount) || 0;
-                const amount = (rate * qty) * (1 - discPct / 100);
+                const amount = parseFloat(item.amount) || (rate * qty);
                 subTotal += amount;
                 const unit = item.unit || 'pcs';
                 const desc = item.description || '';
                 const brand = item.brand || order.brand || '';
 
+                // Parse discounts array
+                let parsedDiscs = item.discounts || [];
+                if (typeof parsedDiscs === 'string') {
+                    try { parsedDiscs = JSON.parse(parsedDiscs); } catch (e) { parsedDiscs = []; }
+                }
+                let discText = '—';
+                if (parsedDiscs.length > 0) {
+                    const parts = parsedDiscs.filter(d => d.value > 0).map(d => {
+                        return d.type === '%' ? d.value + '%' : '₱' + d.value;
+                    });
+                    if (parts.length > 0) discText = parts.join(', ');
+                }
+
                 return `<tr>
                     <td class="c num">${i + 1}</td>
-                    <td class="desc-cell">
+                    <td>
                         <span class="item-name">${item.item_name || ''}</span>
-                        ${desc ? '<br><span class="item-desc">' + desc + '</span>' : ''}
+                        ${desc ? '<span class="item-desc">' + desc + '</span>' : ''}
                     </td>
                     <td class="c">${brand}</td>
-                    <td class="c">${qty.toFixed(2)}<br><span class="unit">${unit}</span></td>
+                    <td class="c">${qty.toFixed(2)}<span class="unit-label">${unit}</span></td>
                     <td class="r">${rate.toFixed(2)}</td>
-                    <td class="r">${discPct > 0 ? discPct.toFixed(2) + '%' : '—'}</td>
+                    <td class="r">${discText}</td>
                     <td class="r bold">${amount.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                 </tr>`;
             }).join('');
 
+            if (items.length === 0) {
+                subTotal = parseFloat(order.sub_total) || 0;
+            }
+
             const fmtSubTotal = subTotal.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            const fmtTotal = fmtSubTotal;
+            const fmtTotal = parseFloat(order.total || subTotal).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
             const printWindow = window.open('', '_blank');
             printWindow.document.write(`<!DOCTYPE html>
 <html>
 <head>
-    <title>Sales Order - ${soNum}</title>
+    <title>${soNum} | ${printTime}</title>
     <style>
         @page {
             size: A4;
-            margin: 0.5in;
+            margin: 8mm 12mm 8mm 12mm;
+        }
+        @page:first {
+            margin: 0;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; }
         body {
-            font-family: 'Arial Narrow', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            font-weight: 400;
-            color: #222;
-            font-size: 9pt;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #000;
+            font-size: 9.5pt;
             line-height: 1.35;
         }
 
-        /* ── HEADER ── */
-        .hdr {
+        /* ── PAGE 1 HEADER (only on first page) ── */
+        .page1-header {
+            padding: 12mm 14mm 0 14mm;
+            position: relative;
+            z-index: 2;
+            background: #fff;
+            margin-bottom: -30px;
+        }
+        .so-num-top {
+            text-align: right;
+            font-size: 8.5pt;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 2px;
+        }
+        .company-name {
+            text-align: center;
+            font-size: 30pt;
+            font-weight: 900;
+            letter-spacing: 3px;
+            color: #000;
+            padding: 6px 0 12px 0;
+        }
+        .info-section {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            padding-bottom: 6px;
-            border-bottom: 2px solid #222;
-            margin-bottom: 8px;
+            padding: 0 0 14px 0;
+            border-bottom: 2px solid #333;
         }
-        .hdr-company {
-            font-size: 20pt;
+        .info-left, .info-right {
+            font-size: 9.5pt;
+        }
+        .info-left { max-width: 55%; }
+        .info-right { text-align: left; }
+        .info-field {
+            margin-bottom: 3px;
+        }
+        .info-label {
             font-weight: 700;
-            letter-spacing: 3px;
-            color: #111;
         }
-        .hdr-right { text-align: right; }
-        .hdr-title {
-            font-size: 13pt;
-            font-weight: 700;
-            letter-spacing: 1px;
-            color: #222;
+        .info-value {
+            font-weight: 400;
+            margin-left: 4px;
         }
-        .hdr-meta {
-            font-size: 8pt;
-            color: #666;
-            margin-top: 2px;
-        }
-
-        /* ── BILL TO / DATE ── */
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-bottom: 10px;
-        }
-        .bill-label {
-            font-size: 7pt;
-            color: #999;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-        }
-        .bill-name {
-            font-size: 10pt;
-            font-weight: 700;
-            color: #111;
-            margin-top: 1px;
-        }
-        .date-area { text-align: right; }
-        .date-row {
-            font-size: 8pt;
-            color: #555;
-        }
-        .date-row strong { color: #222; }
 
         /* ── ITEMS TABLE ── */
-        table.items {
+        .items-table {
             width: 100%;
             border-collapse: collapse;
+            margin: 0 auto;
         }
-        table.items thead th {
+        .items-table > thead {
+            display: table-header-group;
+        }
+        /* Repeat row: Date left, SO# right — shows on all pages */
+        .items-table thead .pg-hdr td {
+            padding: 8px 6px;
+            font-size: 8.5pt;
+            font-weight: 700;
+            color: #000;
+            background: #fff;
+            position: relative;
+            z-index: 1;
+        }
+        .items-table thead .pg-hdr .ph-right {
+            text-align: right;
+        }
+        .items-table thead th {
             font-size: 7pt;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            color: #555;
-            padding: 4px 5px;
-            border-bottom: 1.5px solid #888;
+            color: #333;
+            padding: 6px 6px;
+            border-bottom: 1.5px solid #333;
+            border-top: 1.5px solid #333;
             text-align: left;
         }
-        table.items thead th.c { text-align: center; }
-        table.items thead th.r { text-align: right; }
-
-        table.items tbody td {
-            padding: 4px 5px;
+        .items-table thead th.c { text-align: center; }
+        .items-table thead th.r { text-align: right; }
+        .items-table tbody td {
+            padding: 6px 6px;
             font-size: 9pt;
-            color: #333;
-            border-bottom: 1px solid #e5e5e5;
+            color: #000;
+            border-bottom: 1px solid #ddd;
             vertical-align: top;
         }
-        table.items tbody td.c { text-align: center; }
-        table.items tbody td.r { text-align: right; }
-        table.items tbody td.num { color: #888; font-size: 8pt; }
-        table.items tbody td.bold { font-weight: 600; }
+        .items-table tbody td.c { text-align: center; }
+        .items-table tbody td.r { text-align: right; }
+        .items-table tbody td.num { color: #555; font-size: 8pt; }
+        .items-table tbody td.bold { font-weight: 700; }
+        .item-name { font-weight: 700; font-size: 9pt; }
+        .item-desc { font-size: 7.5pt; color: #666; display: block; margin-top: 1px; }
+        .unit-label { font-size: 6.5pt; color: #888; display: block; }
 
-        .desc-cell { line-height: 1.3; }
-        .item-name { font-weight: 600; font-size: 9pt; }
-        .item-desc { font-size: 7.5pt; color: #777; font-weight: 400; }
-        .unit { font-size: 7pt; color: #999; }
-
-        /* ── FOOTER TOTALS ── */
-        .footer {
+        /* ── TOTALS ── */
+        .footer-section {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-top: 6px;
-            padding-top: 6px;
-            border-top: 1.5px solid #888;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1.5px solid #333;
         }
-        .total-item-count {
+        .total-count {
             font-size: 9pt;
             font-weight: 700;
-            color: #222;
         }
-        .totals-area { text-align: right; min-width: 200px; }
-        .totals-row {
+        .totals-box { text-align: right; min-width: 200px; }
+        .totals-line {
             display: flex;
             justify-content: space-between;
             padding: 2px 0;
             font-size: 9pt;
-            color: #555;
+            color: #333;
         }
-        .totals-row .t-label { text-align: left; }
-        .totals-row .t-value { text-align: right; font-weight: 600; color: #222; }
-        .totals-row.grand {
-            border-top: 1.5px solid #333;
-            margin-top: 4px;
+        .totals-line .lbl { text-align: left; }
+        .totals-line .val { text-align: right; font-weight: 600; color: #000; }
+        .totals-line.grand {
+            border-top: 1.5px solid #000;
+            margin-top: 3px;
             padding-top: 5px;
-            font-size: 10pt;
+            font-size: 11pt;
         }
-        .totals-row.grand .t-label,
-        .totals-row.grand .t-value {
-            font-weight: 700;
-            color: #111;
-            font-size: 10pt;
+        .totals-line.grand .lbl,
+        .totals-line.grand .val {
+            font-weight: 900;
+            color: #000;
         }
 
-        /* ── SIGNATURE ── */
-        .sig-area {
-            margin-top: 30px;
+        /* ── SIGNATURES ── */
+        .sig-section {
+            margin-top: 35px;
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            font-size: 8pt;
-            color: #555;
         }
         .sig-ref { font-size: 7pt; color: #aaa; }
-        .sig-group { display: flex; gap: 40px; }
-        .sig-block { display: flex; flex-direction: column; gap: 2px; }
-        .sig-line {
-            border-bottom: 1px solid #333;
-            width: 150px;
-            height: 20px;
-        }
-        .sig-label { font-size: 8pt; color: #555; }
+        .sig-boxes { display: flex; gap: 40px; }
+        .sig-box { display: flex; flex-direction: column; gap: 2px; }
+        .sig-underline { border-bottom: 1px solid #000; width: 140px; height: 22px; }
+        .sig-text { font-size: 7.5pt; color: #444; }
 
         @media print {
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -4441,80 +4472,85 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <div class="hdr">
-        <div class="hdr-company">GIHON</div>
-        <div class="hdr-right">
-            <div class="hdr-title">SALES ORDER</div>
-            <div class="hdr-meta">Sales Order# ${soNum}</div>
+
+<!-- === PAGE 1 FULL HEADER === -->
+<div class="page1-header">
+    <div class="company-name">GIHON</div>
+    <div class="info-section">
+        <div class="info-left">
+            <div class="info-field"><span class="info-label">Ordered By:</span><span class="info-value">${custName}</span></div>
+            <div class="info-field"><span class="info-label">Address:</span><span class="info-value">${custAddress}</span></div>
+            <div class="info-field"><span class="info-label">Delivery Method:</span><span class="info-value">${deliveryMethod}</span></div>
+        </div>
+        <div class="info-right">
+            <div class="info-field"><span class="info-label">SO#:</span><span class="info-value">${soNum}</span></div>
+            <div class="info-field"><span class="info-label">Date:</span><span class="info-value">${orderDate}</span></div>
+            <div class="info-field"><span class="info-label">P.O#:</span><span class="info-value">${refNum}</span></div>
+            <div class="info-field"><span class="info-label">Salesperson:</span><span class="info-value">${salesperson}</span></div>
         </div>
     </div>
+</div>
 
-    <!-- Bill To / Order Date -->
-    <div class="info-row">
-        <div>
-            <div class="bill-label">Bill To</div>
-            <div class="bill-name">${custName}</div>
+<!-- === ITEMS TABLE (thead repeats on every page) === -->
+<div style="padding: 0 14mm;">
+<table class="items-table">
+    <thead>
+        <tr class="pg-hdr">
+            <td colspan="4">${printTime}</td>
+            <td colspan="3" class="ph-right">${soNum}</td>
+        </tr>
+        <tr>
+            <th class="c" style="width:22px;">#</th>
+            <th>ITEM & DESCRIPTION</th>
+            <th class="c" style="width:60px;">BRAND</th>
+            <th class="c" style="width:50px;">QTY</th>
+            <th class="r" style="width:60px;">RATE</th>
+            <th class="r" style="width:65px;">DISCOUNT</th>
+            <th class="r" style="width:70px;">AMOUNT</th>
+        </tr>
+    </thead>
+    <tbody>
+        ${itemRows}
+    </tbody>
+</table>
+
+<!-- Totals -->
+<div class="footer-section">
+    <div class="total-count">TOTAL ITEMS: ${items.length}</div>
+    <div class="totals-box">
+        <div class="totals-line">
+            <span class="lbl">Sub Total</span>
+            <span class="val">${fmtSubTotal}</span>
         </div>
-        <div class="date-area">
-            <div class="date-row">Order Date: <strong>${orderDate}</strong></div>
-        </div>
-    </div>
-
-    <!-- Items Table -->
-    <table class="items">
-        <thead>
-            <tr>
-                <th class="c" style="width:22px;">#</th>
-                <th>Item & Description</th>
-                <th class="c" style="width:60px;">Brand</th>
-                <th class="c" style="width:50px;">Qty</th>
-                <th class="r" style="width:60px;">Rate</th>
-                <th class="r" style="width:60px;">Discount</th>
-                <th class="r" style="width:70px;">Amount</th>
-            </tr>
-        </thead>
-        <tbody>
-            ${itemRows}
-        </tbody>
-    </table>
-
-    <!-- Footer -->
-    <div class="footer">
-        <div class="total-item-count">TOTAL ITEM: ${items.length}</div>
-        <div class="totals-area">
-            <div class="totals-row">
-                <span class="t-label">Sub Total</span>
-                <span class="t-value">${fmtSubTotal}</span>
-            </div>
-            <div class="totals-row grand">
-                <span class="t-label">Total</span>
-                <span class="t-value">PHP${fmtTotal}</span>
-            </div>
+        <div class="totals-line grand">
+            <span class="lbl">Total</span>
+            <span class="val">PHP ${fmtTotal}</span>
         </div>
     </div>
+</div>
 
-    <!-- Signatures -->
-    <div class="sig-area">
-        <div class="sig-ref">${soNum}</div>
-        <div class="sig-group">
-            <div class="sig-block">
-                <div class="sig-line"></div>
-                <div class="sig-label">Received by:</div>
-            </div>
-            <div class="sig-block">
-                <div class="sig-line"></div>
-                <div class="sig-label">Date:</div>
-            </div>
+<!-- Signatures -->
+<div class="sig-section">
+    <div class="sig-ref">${soNum}</div>
+    <div class="sig-boxes">
+        <div class="sig-box">
+            <div class="sig-underline"></div>
+            <div class="sig-text">Received by:</div>
+        </div>
+        <div class="sig-box">
+            <div class="sig-underline"></div>
+            <div class="sig-text">Date:</div>
         </div>
     </div>
+</div>
+</div>
 
-    <script>
-        window.onload = function() {
-            window.print();
-            window.onafterprint = function() { window.close(); };
-        };
-    <\/script>
+<script>
+    window.onload = function() {
+        window.print();
+        window.onafterprint = function() { window.close(); };
+    };
+<\/script>
 </body>
 </html>`);
             printWindow.document.close();
@@ -5406,13 +5442,14 @@
                     if (dbItem) {
                         const stock = parseFloat(dbItem.stock_quantity) || 0;
                         const ordered = parseFloat(orderItem.quantity) || 0;
-                        if (stock < ordered) {
+                        // Stock is already deducted at order creation, so only flag if stock is negative
+                        if (stock < 0) {
                             boItems.push({
                                 item_id: orderItem.item_id,
                                 item_name: orderItem.item_name,
                                 ordered_qty: ordered,
                                 stock_on_hand: stock,
-                                missing_qty: ordered - stock,
+                                missing_qty: Math.abs(stock),
                                 rate: parseFloat(dbItem.purchase_cost) || parseFloat(orderItem.rate) || 0,
                                 checked: true
                             });
@@ -5559,7 +5596,8 @@
                     if (!dbItem) return;
 
                     const stock = parseFloat(dbItem.stock_quantity) || 0;
-                    if (stock < orderedQty) {
+                    // Stock is already deducted at order creation, so only warn if truly negative
+                    if (stock < 0) {
                         badge.style.cssText = 'display:inline-flex;align-items:center;gap:2px;cursor:help;font-size:14px;';
                         badge.title = `Current Inventory: ${stock} | Required for Order: ${orderedQty}`;
                         badge.innerHTML = '⚠️ <span style="font-size:10px;color:#dc2626;font-weight:600;">Low Stock</span>';

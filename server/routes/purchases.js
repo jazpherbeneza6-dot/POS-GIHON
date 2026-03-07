@@ -296,7 +296,7 @@ router.get('/:id', async (req, res) => {
 // Update purchase (full edit)
 router.put('/:id', async (req, res) => {
   try {
-    const { supplier_id, supplier_name, items, po_number, expected_date, payment_terms, notes, status, receive_status, bill_status, date, delivery_address, reference_number, discount_percent, adjustment, terms_conditions, shipment_preference, received_date, receiving_notes } = req.body;
+    const { supplier_id, supplier_name, items, po_number, expected_date, payment_terms, notes, status, receive_status, bill_status, date, delivery_address, reference_number, discount_percent, adjustment, terms_conditions, shipment_preference, received_date, receiving_notes, discrepancy_resolved } = req.body;
     const db = database.getDb();
 
     // Check if purchase exists
@@ -423,6 +423,7 @@ router.put('/:id', async (req, res) => {
     if (bill_status !== undefined) { updates.push(`bill_status = $${paramIndex++}`); values.push(bill_status); }
     if (received_date !== undefined) { updates.push(`received_date = $${paramIndex++}`); values.push(received_date); }
     if (receiving_notes !== undefined) { updates.push(`notes = $${paramIndex++}`); values.push(receiving_notes); }
+    if (discrepancy_resolved !== undefined) { updates.push(`discrepancy_resolved = $${paramIndex++}`); values.push(discrepancy_resolved); }
 
     if (updates.length === 0) {
       return res.status(400).json({ error: 'No fields to update' });
@@ -474,11 +475,19 @@ router.put('/:id', async (req, res) => {
       }
     }
 
-    // Auto-close: if both fully received and fully billed, close the PO
+    // Smart auto-close: only if billed qty AND received qty exactly match ordered qty
     const updatedPO = result.rows[0];
     if (updatedPO.bill_status === 'BILLED' && updatedPO.status !== 'CLOSED' && updatedPO.status !== 'CANCELLED') {
-      await db.query(`UPDATE purchases SET status = 'CLOSED' WHERE id = $1`, [req.params.id]);
-      updatedPO.status = 'CLOSED';
+      const orderedRes = await db.query('SELECT COALESCE(SUM(quantity),0) as total FROM purchase_items WHERE purchase_id = $1', [req.params.id]);
+      const billedRes = await db.query(`SELECT COALESCE(SUM(bi.quantity),0) as total FROM bill_items bi JOIN bills b ON bi.bill_id = b.id WHERE b.purchase_order_id = $1 AND UPPER(COALESCE(b.status,'')) != 'DRAFT'`, [req.params.id]);
+      const receivedRes = await db.query(`SELECT COALESCE(SUM(pri.quantity_to_receive),0) as total FROM purchase_receive_items pri JOIN purchase_receives pr ON pri.receive_id = pr.id WHERE pr.purchase_id = $1 AND pr.status = 'received'`, [req.params.id]);
+      const totalOrdered = parseFloat(orderedRes.rows[0].total) || 0;
+      const totalBilled = parseFloat(billedRes.rows[0].total) || 0;
+      const totalReceived = parseFloat(receivedRes.rows[0].total) || 0;
+      if (totalOrdered > 0 && totalBilled >= totalOrdered && totalReceived === totalOrdered) {
+        await db.query(`UPDATE purchases SET status = 'CLOSED' WHERE id = $1`, [req.params.id]);
+        updatedPO.status = 'CLOSED';
+      }
     }
 
     res.json(result.rows[0]);
@@ -534,6 +543,106 @@ router.get('/items-list/all', async (req, res) => {
   } catch (error) {
     console.error('Error fetching purchase items list:', error);
     res.status(500).json({ error: 'Failed to fetch purchase items list' });
+  }
+});
+
+// Get activity logs for a specific PO
+router.get('/:id/activity-log', async (req, res) => {
+  try {
+    const db = database.getDb();
+    const result = await db.query(
+      `SELECT * FROM activity_log WHERE entity_type = 'purchase_order' AND entity_id = $1 ORDER BY created_at DESC`,
+      [req.params.id]
+    );
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching activity log:', error);
+    res.status(500).json({ error: 'Failed to fetch activity log' });
+  }
+});
+
+// Accept current quantities — adjust ordered qty to match net received per item
+router.post('/:id/accept-quantities', async (req, res) => {
+  try {
+    const db = database.getDb();
+    const poId = req.params.id;
+
+    // Fetch PO and its items
+    const poResult = await db.query('SELECT * FROM purchases WHERE id = $1', [poId]);
+    if (poResult.rows.length === 0) return res.status(404).json({ error: 'Purchase not found' });
+
+    const itemsResult = await db.query('SELECT * FROM purchase_items WHERE purchase_id = $1', [poId]);
+
+    // Get received totals per item
+    const receivedRes = await db.query(`
+      SELECT pri.item_id, pri.item_name, SUM(pri.quantity_to_receive) as total_received
+      FROM purchase_receive_items pri
+      JOIN purchase_receives pr ON pri.receive_id = pr.id
+      WHERE pr.purchase_id = $1 AND pr.status = 'received'
+      GROUP BY pri.item_id, pri.item_name
+    `, [poId]);
+    const receivedByItem = {};
+    receivedRes.rows.forEach(r => {
+      const key = r.item_id || ('name:' + (r.item_name || ''));
+      receivedByItem[key] = parseFloat(r.total_received) || 0;
+    });
+
+    // Get returned totals per item
+    const returnedRes = await db.query(`
+      SELECT pri.item_id, pri.item_name, SUM(pri.return_quantity) as total_returned
+      FROM purchase_return_items pri
+      JOIN purchase_returns pr ON pri.purchase_return_id = pr.id
+      WHERE pr.purchase_order_id = $1
+      GROUP BY pri.item_id, pri.item_name
+    `, [poId]);
+    const returnedByItem = {};
+    returnedRes.rows.forEach(r => {
+      const key = r.item_id || ('name:' + (r.item_name || ''));
+      returnedByItem[key] = parseFloat(r.total_returned) || 0;
+    });
+
+    // Capture old ordered total for the log message
+    const oldOrderedTotal = itemsResult.rows.reduce((sum, item) => sum + (parseFloat(item.quantity) || 0), 0);
+
+    // Update each purchase_item quantity to net received
+    let newTotal = 0;
+    let totalNetQty = 0;
+    for (const item of itemsResult.rows) {
+      const key = item.item_id || ('name:' + (item.item_name || ''));
+      const received = receivedByItem[key] || 0;
+      const returned = returnedByItem[key] || 0;
+      const netReceived = Math.max(0, received - returned);
+      const rate = parseFloat(item.unit_price) || 0;
+      const newAmount = netReceived * rate;
+      newTotal += newAmount;
+      totalNetQty += netReceived;
+
+      await db.query(
+        'UPDATE purchase_items SET quantity = $1, total_price = $2 WHERE id = $3',
+        [netReceived, newAmount, item.id]
+      );
+    }
+
+    // Update PO total and set discrepancy_resolved (but keep status as-is)
+    await db.query(
+      'UPDATE purchases SET total_amount = $1, discrepancy_resolved = TRUE WHERE id = $2',
+      [newTotal, poId]
+    );
+
+    // Log the action with old→new quantities
+    const poRow = await db.query('SELECT po_number FROM purchases WHERE id = $1', [poId]);
+    const poNumber = poRow.rows[0]?.po_number || 'PO-' + poId;
+    await db.query(
+      `INSERT INTO activity_log (entity_type, entity_id, entity_name, action, description)
+       VALUES ('purchase_order', $1, $2, 'accept_quantities', $3)`,
+      [poId, poNumber, `Order quantities finalized. Ordered amount adjusted from ${oldOrderedTotal} to ${totalNetQty} to match stock on hand.`]
+    );
+
+    const updated = await db.query('SELECT * FROM purchases WHERE id = $1', [poId]);
+    res.json(updated.rows[0]);
+  } catch (error) {
+    console.error('Error accepting quantities:', error);
+    res.status(500).json({ error: 'Failed to accept current quantities' });
   }
 });
 

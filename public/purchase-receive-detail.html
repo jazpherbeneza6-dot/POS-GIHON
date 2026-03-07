@@ -586,9 +586,10 @@
 
                 <!-- Toolbar -->
                 <div class="detail-toolbar">
-                    <button class="toolbar-btn" onclick="editReceive()"><svg width="14" height="14" viewBox="0 0 24 24"
-                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round" style="vertical-align:middle;margin-right:3px;">
+                    <button class="toolbar-btn" id="editBtn" onclick="editReceive()"><svg width="14" height="14"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round"
+                            style="vertical-align:middle;margin-right:3px;">
                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                         </svg> Edit</button>
@@ -868,6 +869,30 @@
                     poStatusRow.style.display = 'none';
                 }
 
+                // Fetch billed quantities per item from the bills for this PO
+                let billedByItem = {};
+                if (pr.purchase_id) {
+                    try {
+                        const billsRes2 = await fetch('/api/bills');
+                        if (billsRes2.ok) {
+                            const allBills2 = await billsRes2.json();
+                            const poBills2 = allBills2.filter(b => b.purchase_order_id === pr.purchase_id);
+                            for (const bill of poBills2) {
+                                try {
+                                    const bRes = await fetch('/api/bills/' + bill.id);
+                                    if (bRes.ok) {
+                                        const bDet = await bRes.json();
+                                        (bDet.items || []).forEach(bi => {
+                                            const key = bi.item_id || ('name:' + (bi.item_name || ''));
+                                            billedByItem[key] = (billedByItem[key] || 0) + (parseFloat(bi.quantity) || 0);
+                                        });
+                                    }
+                                } catch (e) { }
+                            }
+                        }
+                    } catch (e) { }
+                }
+
                 // Items table
                 const tbody = document.getElementById('docItemsBody');
                 tbody.innerHTML = '';
@@ -877,10 +902,21 @@
                 items.forEach((item, idx) => {
                     const qty = parseFloat(item.quantity_to_receive) || 0;
                     const unit = item.unit || 'pcs';
-                    const billStatusText = isBilled ? `${qty} Billed` : `${qty} Unbilled`;
+
+                    // Get actual billed quantity from bills, NOT from received qty
+                    const itemKey = item.item_id || ('name:' + (item.item_name || ''));
+                    const billedQty = billedByItem[itemKey] || 0;
+                    let billStatusText;
+                    if (billedQty > 0) {
+                        billStatusText = `${billedQty} Billed`;
+                        if (qty > billedQty) {
+                            billStatusText += ` <span style="background:#fff3e0;color:#e65100;padding:1px 5px;border-radius:8px;font-size:10px;font-weight:600;">⚠ OVER-RECEIVED</span>`;
+                        }
+                    } else {
+                        billStatusText = `${billedQty} Unbilled`;
+                    }
 
                     // Find ordered qty from PO items
-                    const itemKey = item.item_id || ('name:' + (item.item_name || ''));
                     const poItem = poItems.find(p => (p.item_id || ('name:' + (p.item_name || ''))) === itemKey);
                     const ordered = poItem ? (parseFloat(poItem.quantity) || 0) : (parseFloat(item.quantity_ordered) || 0);
                     const totalReceived = receivedByItem[itemKey] || 0;
@@ -919,13 +955,16 @@
                 if (pr.status === 'received') {
                     transitBtn.style.display = 'none';
                     receivedBtn.style.display = 'none';
+                    document.getElementById('editBtn').style.display = 'none';
                 } else if (pr.status === 'in_transit') {
                     transitBtn.style.display = 'none';
                     receivedBtn.style.display = 'flex';
+                    document.getElementById('editBtn').style.display = 'flex';
                 } else {
                     // draft
                     transitBtn.style.display = 'flex';
                     receivedBtn.style.display = 'flex';
+                    document.getElementById('editBtn').style.display = 'flex';
                 }
 
                 // Show linked PO redirect banner (actions centralized on PO)
@@ -942,7 +981,10 @@
         }
 
         function editReceive() {
-            alert('Edit feature coming soon!');
+            const currentId = new URLSearchParams(window.location.search).get('id');
+            if (currentId) {
+                window.location.href = '/new-purchase-receive.html?editId=' + currentId;
+            }
         }
 
         // Billing and returns are now centralized on the PO detail view

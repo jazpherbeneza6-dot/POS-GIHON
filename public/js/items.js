@@ -2186,6 +2186,7 @@ function openItemDetailView(itemId) {
   document.getElementById('detailStockOnHand').textContent = ': ' + formatNumber(item.stock_quantity || 0);
   document.getElementById('detailPhysicalStock').textContent = ': ' + formatNumber(item.stock_quantity || 0);
   document.getElementById('detailReorderPoint').textContent = formatNumber(item.reorder_point || 0);
+  document.getElementById('detailItemQuantity').textContent = formatNumber(item.stock_quantity || 0);
 
   // Fetch committed stock and available for sale
   fetch(`/api/items/${item.id}/committed-stock`)
@@ -4713,6 +4714,7 @@ function openItemModal(itemId = null) {
       document.getElementById('itemSku').value = item.sku || '';
       document.getElementById('itemUnit').value = item.unit || 'pcs';
       document.getElementById('itemReorderPoint').value = item.reorder_point || '';
+      document.getElementById('itemQuantity').value = item.stock_quantity || '';
       document.getElementById('itemPrice').value = item.selling_price || '';
       // Convert stored PHP cost back to RMB for display
       const phpCost = parseFloat(item.purchase_cost) || 0;

@@ -469,6 +469,7 @@ async function init() {
         );
       `);
       await pool.query(`CREATE INDEX IF NOT EXISTS idx_vendor_contact_persons_vendor_id ON vendor_contact_persons(vendor_id);`);
+      await pool.query(`ALTER TABLE vendor_contact_persons ADD COLUMN IF NOT EXISTS profile_image TEXT;`);
 
       console.log('Vendor schema expansion completed');
 
@@ -754,6 +755,10 @@ async function init() {
       `);
 
       console.log('PO 3-column status migration completed');
+
+      // Add discrepancy_resolved flag for over-receipt banner dismissal
+      await pool.query(`ALTER TABLE purchases ADD COLUMN IF NOT EXISTS discrepancy_resolved BOOLEAN DEFAULT FALSE;`);
+      console.log('Discrepancy resolved flag migration completed');
     } catch (migrationError) {
       // Column might already exist, ignore error
       console.log('Migration note:', migrationError.message);

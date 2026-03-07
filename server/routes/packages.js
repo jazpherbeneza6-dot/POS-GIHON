@@ -94,27 +94,8 @@ router.post('/', async (req, res) => {
             }
         }
 
-        // Stock validation — check all SO items have sufficient stock
-        if (sales_order_id) {
-            const soItems = await pool.query('SELECT * FROM sales_order_items WHERE sales_order_id = $1', [sales_order_id]);
-            for (const item of soItems.rows) {
-                if (item.item_id) {
-                    const stockRes = await pool.query('SELECT stock_quantity FROM items WHERE id = $1', [item.item_id]);
-                    if (stockRes.rows.length > 0) {
-                        const stock = parseFloat(stockRes.rows[0].stock_quantity) || 0;
-                        const ordered = parseFloat(item.quantity) || 0;
-                        if (stock < ordered) {
-                            return res.status(400).json({
-                                error: 'Action Denied: Insufficient stock to fulfill or invoice this order.',
-                                item_name: item.item_name,
-                                stock_available: stock,
-                                quantity_required: ordered
-                            });
-                        }
-                    }
-                }
-            }
-        }
+        // Note: Stock was already deducted when the sales order was created,
+        // so no additional stock check is needed here.
 
         const result = await pool.query(
             `INSERT INTO packages (package_number, sales_order_id, sales_order_number, customer_name, package_date, internal_notes)
