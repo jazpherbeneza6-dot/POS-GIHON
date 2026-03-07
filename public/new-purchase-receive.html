@@ -527,7 +527,7 @@
                             <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
                             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
                         </svg></span>
-                    <h1 class="page-title">New Purchase Receive</h1>
+                    <h1 class="page-title" id="pageTitle">New Purchase Receive</h1>
                 </div>
                 <div class="header-actions">
                     <button class="header-icon-btn">⚙</button>
@@ -624,6 +624,9 @@
             <!-- Footer -->
             <div class="page-footer">
                 <button class="btn" onclick="saveAsDraft()">Save as Draft</button>
+                <button class="btn" onclick="saveAsInTransit()"
+                    style="background:#fff3e0;color:#e65100;border-color:#ffcc80;font-weight:600;">Save as In
+                    Transit</button>
                 <button class="btn btn-primary" onclick="saveAsReceived()">Save as Received <span
                         class="split">▾</span></button>
                 <button class="btn btn-cancel" onclick="goBack()">Cancel</button>
@@ -640,6 +643,9 @@
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const initialPoId = urlParams.get('poId');
+        const editId = urlParams.get('editId');
+        let isEditMode = !!editId;
+        let editPRData = null;
         let allVendors = [];
         let allPurchases = [];
         let selectedVendor = null;
@@ -650,18 +656,6 @@
 
         document.addEventListener('DOMContentLoaded', async function () {
             const _d = new Date(); document.getElementById('receiveDate').value = _d.getFullYear() + '-' + String(_d.getMonth() + 1).padStart(2, '0') + '-' + String(_d.getDate()).padStart(2, '0');
-
-            // Get next receive number
-            try {
-                const res = await fetch('/api/purchase-receives/next-number');
-                if (res.ok) {
-                    const d = await res.json();
-                    document.getElementById('receiveNumber').textContent = d.receive_number;
-                    document.getElementById('receiveNumber').style.color = '#333';
-                }
-            } catch (e) {
-                document.getElementById('receiveNumber').textContent = 'Auto-generated';
-            }
 
             // Load all vendors (from purchases)
             try {
@@ -681,12 +675,31 @@
 
             renderVendorOptions();
 
-            // If poId is passed, auto-select vendor and PO
-            if (initialPoId) {
-                const po = allPurchases.find(p => p.id === parseInt(initialPoId));
-                if (po) {
-                    selectVendor(po.supplier_name, po.supplier_id, true);
-                    selectPO(po);
+            // EDIT MODE: load existing PR data
+            if (isEditMode) {
+                document.getElementById('pageTitle').textContent = 'Edit Purchase Receive';
+                document.title = 'Edit Purchase Receive - GiHon';
+                await loadEditData();
+            } else {
+                // Get next receive number (only for new creates)
+                try {
+                    const res = await fetch('/api/purchase-receives/next-number');
+                    if (res.ok) {
+                        const d = await res.json();
+                        document.getElementById('receiveNumber').textContent = d.receive_number;
+                        document.getElementById('receiveNumber').style.color = '#333';
+                    }
+                } catch (e) {
+                    document.getElementById('receiveNumber').textContent = 'Auto-generated';
+                }
+
+                // If poId is passed, auto-select vendor and PO
+                if (initialPoId) {
+                    const po = allPurchases.find(p => p.id === parseInt(initialPoId));
+                    if (po) {
+                        selectVendor(po.supplier_name, po.supplier_id, true);
+                        selectPO(po);
+                    }
                 }
             }
 
@@ -700,6 +713,73 @@
                 }
             });
         });
+
+        // ===== EDIT MODE: Load existing PR data =====
+        async function loadEditData() {
+            try {
+                const prRes = await fetch('/api/purchase-receives/' + editId);
+                if (!prRes.ok) { alert('Purchase receive not found'); return; }
+                editPRData = await prRes.json();
+
+                // Set PR number (read-only)
+                document.getElementById('receiveNumber').textContent = editPRData.receive_number || 'PR-' + editPRData.id;
+                document.getElementById('receiveNumber').style.color = '#333';
+
+                // Set date
+                if (editPRData.receive_date) {
+                    const d = new Date(editPRData.receive_date);
+                    document.getElementById('receiveDate').value = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+                }
+
+                // Set notes
+                if (editPRData.notes) {
+                    document.getElementById('notes').value = editPRData.notes;
+                }
+
+                // Auto-select vendor
+                if (editPRData.supplier_name) {
+                    selectVendor(editPRData.supplier_name, editPRData.supplier_id, true);
+                }
+
+                // Auto-select PO and load items
+                if (editPRData.purchase_id) {
+                    const po = allPurchases.find(p => p.id === editPRData.purchase_id);
+                    if (po) {
+                        await selectPO(po);
+                    }
+                }
+
+                // Override quantity inputs with saved values from the draft
+                if (editPRData.items && editPRData.items.length > 0) {
+                    const rows = document.getElementById('itemsTableBody').querySelectorAll('tr[data-index]');
+                    rows.forEach((row, i) => {
+                        const qtyInput = row.querySelector('.qty-input');
+                        if (!qtyInput) return;
+                        const itemId = row.getAttribute('data-item-id');
+                        const itemName = poData && poData.items && poData.items[i] ? poData.items[i].item_name : '';
+                        // Find matching saved item
+                        const savedItem = editPRData.items.find(si => {
+                            if (si.item_id && itemId) return si.item_id == itemId;
+                            return si.item_name === itemName;
+                        });
+                        if (savedItem) {
+                            qtyInput.value = parseFloat(savedItem.quantity_to_receive) || 0;
+                        }
+                    });
+                }
+
+                // Lock vendor and PO dropdowns in edit mode
+                document.getElementById('vendorInput').style.pointerEvents = 'none';
+                document.getElementById('vendorInput').style.opacity = '0.7';
+                document.getElementById('vendorClear').style.display = 'none';
+                document.getElementById('poInput').style.pointerEvents = 'none';
+                document.getElementById('poInput').style.opacity = '0.7';
+
+            } catch (e) {
+                console.error('Error loading PR for edit:', e);
+                alert('Error loading purchase receive data');
+            }
+        }
 
         // ===== VENDOR DROPDOWN =====
         function toggleVendorDropdown() {
@@ -941,6 +1021,16 @@
             await submitReceive(data);
         }
 
+        async function saveAsInTransit() {
+            const data = collectFormData('in_transit');
+            if (!data) return;
+            if (data.items.length === 0) {
+                alert('Please enter quantity for at least one item');
+                return;
+            }
+            await submitReceive(data);
+        }
+
         async function saveAsReceived() {
             const data = collectFormData('received');
             if (!data) return;
@@ -960,8 +1050,17 @@
             loading.classList.add('active');
 
             try {
-                const res = await fetch('/api/purchase-receives', {
-                    method: 'POST',
+                let url, method;
+                if (isEditMode) {
+                    url = '/api/purchase-receives/' + editId;
+                    method = 'PUT';
+                } else {
+                    url = '/api/purchase-receives';
+                    method = 'POST';
+                }
+
+                const res = await fetch(url, {
+                    method: method,
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
@@ -974,11 +1073,17 @@
                     return;
                 }
 
-                showToast('Purchase Receive has been created');
+                showToast(isEditMode ? 'Purchase Receive has been updated' : 'Purchase Receive has been created');
                 // Signal sales orders page to auto-refresh
                 localStorage.setItem('so_refresh_needed', Date.now().toString());
                 setTimeout(() => {
-                    window.location.href = '/purchase-receives.html';
+                    // Navigate back to PO detail if we know the PO
+                    const poId = isEditMode && editPRData ? editPRData.purchase_id : (selectedPO ? selectedPO.id : null);
+                    if (poId) {
+                        window.location.href = '/purchase-order-detail.html?id=' + poId;
+                    } else {
+                        window.location.href = '/purchase-receives.html';
+                    }
                 }, 1200);
             } catch (e) {
                 console.error('Save error:', e);
@@ -999,7 +1104,9 @@
         }
 
         function goBack() {
-            if (initialPoId) {
+            if (isEditMode && editPRData && editPRData.purchase_id) {
+                window.location.href = '/purchase-order-detail.html?id=' + editPRData.purchase_id;
+            } else if (initialPoId) {
                 window.location.href = '/purchase-order-detail.html?id=' + initialPoId;
             } else {
                 window.location.href = '/purchase-receives.html';

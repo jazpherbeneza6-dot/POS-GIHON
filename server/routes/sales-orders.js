@@ -125,7 +125,11 @@ router.get('/:id', async (req, res) => {
         }
         const order = orderResult.rows[0];
 
-        const itemsResult = await pool.query('SELECT * FROM sales_order_items WHERE sales_order_id = $1', [order.id]);
+        const itemsResult = await pool.query(
+            `SELECT soi.*, i.image_url 
+             FROM sales_order_items soi 
+             LEFT JOIN items i ON soi.item_id = i.id 
+             WHERE soi.sales_order_id = $1`, [order.id]);
         order.items = itemsResult.rows;
 
         res.json(order);
@@ -160,6 +164,24 @@ router.post('/', async (req, res) => {
             items
         } = req.body;
 
+        // Validate stock BEFORE creating the order to prevent orphaned records
+        if (items && items.length > 0) {
+            for (const item of items) {
+                const qty = parseFloat(item.quantity) || 0;
+                if (qty > 0 && item.item_id) {
+                    const stockRes = await pool.query('SELECT stock_quantity, name FROM items WHERE id = $1', [item.item_id]);
+                    if (stockRes.rows.length > 0) {
+                        const stock = parseFloat(stockRes.rows[0].stock_quantity) || 0;
+                        if (stock < qty) {
+                            return res.status(400).json({
+                                error: `Insufficient stock for "${item.item_name}". Available: ${stock}, Required: ${qty}`
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
         // Generate order number: SO-XXXXX (use MAX to avoid collision after deletions)
         const maxResult = await pool.query(`SELECT order_number FROM sales_orders ORDER BY id DESC LIMIT 1`);
         let nextNum = 1;
@@ -178,7 +200,7 @@ router.post('/', async (req, res) => {
 
         const order = result.rows[0];
 
-        // Insert order items if provided
+        // Insert order items (stock already validated above)
         if (items && items.length > 0) {
             for (const item of items) {
                 await pool.query(
@@ -186,6 +208,24 @@ router.post('/', async (req, res) => {
                      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
                     [order.id, item.item_id || null, item.item_name, item.description || null, item.quantity || 1, item.rate || 0, item.tax, item.amount || 0, JSON.stringify(item.discounts || [])]
                 );
+
+                // Deduct stock_quantity from the item's on-hand inventory
+                const qty = parseFloat(item.quantity) || 0;
+                if (qty > 0) {
+                    if (item.item_id) {
+                        console.log(`Deducting ${qty} from item ID ${item.item_id}`);
+                        await pool.query(
+                            `UPDATE items SET stock_quantity = stock_quantity - $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2`,
+                            [qty, item.item_id]
+                        );
+                    } else if (item.item_name) {
+                        console.log(`Deducting ${qty} from item name "${item.item_name}" (no item_id)`);
+                        await pool.query(
+                            `UPDATE items SET stock_quantity = stock_quantity - $1, updated_at = CURRENT_TIMESTAMP WHERE LOWER(name) = LOWER($2)`,
+                            [qty, item.item_name.trim()]
+                        );
+                    }
+                }
             }
         }
 
@@ -238,24 +278,8 @@ router.post('/:id/convert-to-invoice', async (req, res) => {
         const itemsResult = await pool.query('SELECT * FROM sales_order_items WHERE sales_order_id = $1', [order.id]);
         const items = itemsResult.rows;
 
-        // 2b. Stock validation — check all items have sufficient stock
-        for (const item of items) {
-            if (item.item_id) {
-                const stockRes = await pool.query('SELECT stock_quantity FROM items WHERE id = $1', [item.item_id]);
-                if (stockRes.rows.length > 0) {
-                    const stock = parseFloat(stockRes.rows[0].stock_quantity) || 0;
-                    const ordered = parseFloat(item.quantity) || 0;
-                    if (stock < ordered) {
-                        return res.status(400).json({
-                            error: 'Action Denied: Insufficient stock to fulfill or invoice this order.',
-                            item_name: item.item_name,
-                            stock_available: stock,
-                            quantity_required: ordered
-                        });
-                    }
-                }
-            }
-        }
+        // Note: Stock was already deducted when the sales order was created,
+        // so no additional stock check is needed here.
 
         // 3. Generate next invoice number
         const countResult = await pool.query('SELECT COUNT(*) FROM invoices');
@@ -356,13 +380,92 @@ router.put('/:id/status', async (req, res) => {
     try {
         const pool = database.getDb();
         const { status } = req.body;
+        const newStatus = status.toUpperCase();
+
+        // Get current order status before updating
+        const currentOrder = await pool.query('SELECT status FROM sales_orders WHERE id = $1', [req.params.id]);
+        if (currentOrder.rows.length === 0) {
+            return res.status(404).json({ error: 'Sales order not found' });
+        }
+        const oldStatus = (currentOrder.rows[0].status || '').toUpperCase();
+
+        // If reopening from CANCELLED, validate stock first
+        if (oldStatus === 'CANCELLED' && newStatus !== 'CANCELLED') {
+            const itemsResult = await pool.query(
+                'SELECT * FROM sales_order_items WHERE sales_order_id = $1',
+                [req.params.id]
+            );
+            for (const item of itemsResult.rows) {
+                const qty = parseFloat(item.quantity) || 0;
+                if (qty > 0 && item.item_id) {
+                    const stockRes = await pool.query('SELECT stock_quantity, name FROM items WHERE id = $1', [item.item_id]);
+                    if (stockRes.rows.length > 0) {
+                        const stock = parseFloat(stockRes.rows[0].stock_quantity) || 0;
+                        if (stock < qty) {
+                            return res.status(400).json({
+                                error: `Cannot reopen order: Insufficient stock for "${item.item_name}". Available: ${stock}, Required: ${qty}`
+                            });
+                        }
+                    }
+                }
+            }
+
+            // Stock is sufficient — deduct stock again
+            for (const item of itemsResult.rows) {
+                const qty = parseFloat(item.quantity) || 0;
+                if (qty > 0) {
+                    if (item.item_id) {
+                        console.log(`Re-deducting ${qty} from item ID ${item.item_id} (order reopened)`);
+                        await pool.query(
+                            `UPDATE items SET stock_quantity = stock_quantity - $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2`,
+                            [qty, item.item_id]
+                        );
+                    } else if (item.item_name) {
+                        await pool.query(
+                            `UPDATE items SET stock_quantity = stock_quantity - $1, updated_at = CURRENT_TIMESTAMP WHERE LOWER(name) = LOWER($2)`,
+                            [qty, item.item_name.trim()]
+                        );
+                    }
+                }
+            }
+        }
+
+        // Update the status
         const result = await pool.query(
             'UPDATE sales_orders SET status = $1 WHERE id = $2 RETURNING *',
             [status, req.params.id]
         );
-        if (result.rows.length === 0) {
-            return res.status(404).json({ error: 'Sales order not found' });
+
+        // If cancelled, restore stock for all items in this sales order
+        if (newStatus === 'CANCELLED' && oldStatus !== 'CANCELLED') {
+            try {
+                const itemsResult = await pool.query(
+                    'SELECT * FROM sales_order_items WHERE sales_order_id = $1',
+                    [req.params.id]
+                );
+                for (const item of itemsResult.rows) {
+                    const qty = parseFloat(item.quantity) || 0;
+                    if (qty > 0) {
+                        if (item.item_id) {
+                            console.log(`Restoring ${qty} stock to item ID ${item.item_id} (order cancelled)`);
+                            await pool.query(
+                                `UPDATE items SET stock_quantity = stock_quantity + $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2`,
+                                [qty, item.item_id]
+                            );
+                        } else if (item.item_name) {
+                            console.log(`Restoring ${qty} stock to item "${item.item_name}" (order cancelled)`);
+                            await pool.query(
+                                `UPDATE items SET stock_quantity = stock_quantity + $1, updated_at = CURRENT_TIMESTAMP WHERE LOWER(name) = LOWER($2)`,
+                                [qty, item.item_name.trim()]
+                            );
+                        }
+                    }
+                }
+            } catch (stockErr) {
+                console.error('Error restoring stock on cancel:', stockErr);
+            }
         }
+
         res.json(result.rows[0]);
     } catch (err) {
         console.error('Error updating sales order status:', err);

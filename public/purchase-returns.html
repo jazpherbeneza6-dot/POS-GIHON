@@ -908,6 +908,9 @@
                         <button class="sr-action-btn" id="convertCreditBtn" style="display:none;"
                             onclick="convertToVendorCredit()" style="background:#16a34a;color:white;">💳 Convert to
                             Vendor Credit</button>
+                        <span id="noBillMsg"
+                            style="display:none;font-size:11px;color:#999;font-style:italic;padding:4px 8px;">Items
+                            returned were not billed; no credit applicable.</span>
                     </div>
 
                     <!-- Tabs -->
@@ -1107,7 +1110,7 @@
             document.getElementById('sidebarCount').textContent = allReturns.length + ' items';
         }
 
-        function renderDetail(r) {
+        async function renderDetail(r) {
             document.getElementById('detailPRN').textContent = r.prn_number || 'PRN-' + r.id;
 
             const status = (r.status || 'DRAFT').toUpperCase();
@@ -1119,8 +1122,61 @@
             document.getElementById('markShippedBtn').style.display = (status === 'APPROVED' && returnStatus === 'Pending') ? '' : 'none';
             document.getElementById('revertToDraftBtn').style.display = (status === 'SHIPPED' || status === 'APPROVED') ? '' : 'none';
             document.getElementById('cancelBtn').style.display = (status !== 'CANCELLED' && status !== 'SHIPPED') ? '' : 'none';
-            // Convert to Vendor Credit: only when shipped and credit status is pending
-            document.getElementById('convertCreditBtn').style.display = (status === 'SHIPPED' && creditStatus === 'Pending') ? '' : 'none';
+            // Convert to Vendor Credit: only when shipped, credit pending, AND returned items were actually billed
+            const convertCreditBtn = document.getElementById('convertCreditBtn');
+            const noBillMsg = document.getElementById('noBillMsg');
+            convertCreditBtn.style.display = 'none';
+            noBillMsg.style.display = 'none';
+            if (status === 'SHIPPED' && creditStatus === 'Pending') {
+                // Build per-item billed qty from bill_items for this PO
+                let billedByItem = {};
+                if (r.purchase_order_id) {
+                    try {
+                        const billsRes = await fetch('/api/bills');
+                        if (billsRes.ok) {
+                            const allBills = await billsRes.json();
+                            const poBills = allBills.filter(b => b.purchase_order_id == r.purchase_order_id && (b.status || '').toUpperCase() !== 'DRAFT');
+                            for (const bill of poBills) {
+                                try {
+                                    const bRes = await fetch('/api/bills/' + bill.id);
+                                    if (bRes.ok) {
+                                        const bDet = await bRes.json();
+                                        (bDet.items || []).forEach(bi => {
+                                            const key = bi.item_id || ('name:' + (bi.item_name || ''));
+                                            billedByItem[key] = (billedByItem[key] || 0) + (parseFloat(bi.quantity) || 0);
+                                        });
+                                    }
+                                } catch (e) { }
+                            }
+                        }
+                    } catch (e) { console.error(e); }
+                }
+
+                // Check each return item: is the returned qty actually from billed stock?
+                let hasCreditableItems = false;
+                if (r.items) {
+                    r.items.forEach(item => {
+                        const reason = (item.return_reason || '').toLowerCase();
+                        // Over-shipment items are surplus — never billed
+                        if (reason.includes('over-shipment') || reason.includes('over shipment') || reason.includes('surplus')) {
+                            return; // skip — not creditable
+                        }
+                        const itemKey = item.item_id || ('name:' + (item.item_name || ''));
+                        const billedQty = billedByItem[itemKey] || 0;
+                        if (billedQty > 0 && (parseFloat(item.return_quantity) || 0) > 0) {
+                            hasCreditableItems = true;
+                        }
+                    });
+                }
+
+                if (hasCreditableItems) {
+                    convertCreditBtn.style.display = '';
+                    noBillMsg.style.display = 'none';
+                } else {
+                    convertCreditBtn.style.display = 'none';
+                    noBillMsg.style.display = '';
+                }
+            }
 
             const fmtDate = d => d ? new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
 

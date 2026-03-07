@@ -17,407 +17,703 @@
             -moz-osx-font-smoothing: grayscale;
         }
 
-        body {
-            margin: 0;
-            padding: 0;
-            background: #f5f6fa;
-            font-size: 13px;
-        }
-
         .main-layout {
             display: flex;
             height: 100vh;
             overflow: hidden;
         }
 
-        .page-wrapper {
+        .content {
             flex: 1;
             margin-left: 260px;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* ===== LEFT SIDEBAR - Bills List ===== */
-        .pr-sidebar {
-            width: 220px;
-            min-width: 220px;
             background: white;
-            border-right: 1px solid #e9ecef;
             display: flex;
             flex-direction: column;
             height: 100vh;
-        }
-
-        .pr-sidebar-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 14px;
-            border-bottom: 1px solid #e9ecef;
-            gap: 8px;
-        }
-
-        .pr-sidebar-title {
-            font-size: 12px;
-            font-weight: 600;
-            color: #333;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-
-        .pr-sidebar-title:hover {
-            color: #4285f4;
-        }
-
-        .pr-sidebar-actions {
-            display: flex;
-            gap: 6px;
-        }
-
-        .pr-sidebar-btn {
-            width: 28px;
-            height: 28px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-        }
-
-        .pr-sidebar-btn.green {
-            background: #16a34a;
-            color: white;
-        }
-
-        .pr-sidebar-btn.gray {
-            background: #f0f0f0;
-            color: #666;
-        }
-
-        .sidebar-search {
-            padding: 8px 14px;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .sidebar-search input {
-            width: 100%;
-            padding: 7px 10px 7px 28px;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            font-size: 12px;
-            outline: none;
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 8px center;
-        }
-
-        .sidebar-search input:focus {
-            border-color: #4285f4;
-        }
-
-        .pr-list {
-            flex: 1;
             overflow-y: auto;
         }
 
-        .pr-item {
+        /* ===== Page Header ===== */
+        .page-header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            padding: 12px 14px;
-            border-bottom: 1px solid #f0f0f0;
-            cursor: pointer;
-            transition: background 0.15s;
-        }
-
-        .pr-item:hover {
-            background: #f8f9ff;
-        }
-
-        .pr-item.active {
-            background: #eef3ff;
-            border-left: 3px solid #4285f4;
-        }
-
-        .pr-item-left {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .pr-item-vendor {
-            font-size: 12px;
-            font-weight: 500;
-            color: #333;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .pr-item-numbers {
-            font-size: 10px;
-            color: #888;
-            margin-top: 2px;
-        }
-
-        .pr-item-status {
-            font-size: 10px;
-            font-weight: 600;
-            text-transform: uppercase;
-            margin-top: 3px;
-        }
-
-        .pr-item-status.open {
-            color: #16a34a;
-        }
-
-        .pr-item-status.paid {
-            color: #2563eb;
-        }
-
-        .pr-item-status.draft {
-            color: #f59e0b;
-        }
-
-        .pr-item-amount {
-            font-size: 12px;
-            font-weight: 500;
-            color: #333;
-            white-space: nowrap;
-        }
-
-        /* ===== RIGHT PANEL - Payment Form ===== */
-        .form-panel {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: #fff;
-            overflow: hidden;
-        }
-
-        .form-header {
-            padding: 20px 32px 16px;
+            align-items: center;
+            padding: 14px 24px;
             border-bottom: 1px solid #e9ecef;
-            flex-shrink: 0;
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 50;
         }
 
-        .form-title {
-            font-size: 18px;
+        .page-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .page-icon {
+            font-size: 20px;
+        }
+
+        .page-title {
+            font-size: 16px;
             font-weight: 600;
             color: #333;
             margin: 0;
         }
 
-        .form-body {
-            padding: 24px 32px;
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .form-main {
+            display: flex;
             flex: 1;
             overflow-y: auto;
+            padding-bottom: 70px;
         }
 
-        .form-group {
-            margin-bottom: 20px;
+        .left-column {
+            width: 36%;
+            min-width: 320px;
+            max-width: 400px;
+            border-right: 2px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
         }
 
-        .form-group label {
-            display: block;
+        .right-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        /* ===== Left Column Form Sections ===== */
+        .form-section {
+            padding: 12px 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .form-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-row.top-align {
+            align-items: flex-start;
+        }
+
+        .form-label {
             font-size: 12px;
-            font-weight: 500;
-            color: #e53935;
-            margin-bottom: 6px;
+            color: #333;
         }
 
-        .form-group label.gray {
-            color: #666;
+        .form-label.required {
+            color: #dc2626;
         }
 
-        .form-group input[type="text"],
-        .form-group input[type="number"],
-        .form-group input[type="date"],
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #d9d9d9;
+        .form-input {
+            padding: 7px 10px;
+            border: 1px solid #e0e0e0;
             border-radius: 4px;
             font-size: 13px;
-            font-family: inherit;
-            outline: none;
-            color: #333;
-            background: #fff;
-            box-sizing: border-box;
+            width: 100%;
+            max-width: 220px;
         }
 
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
+        .form-input:focus {
+            outline: none;
             border-color: #4285f4;
         }
 
-        .form-group textarea {
-            min-height: 80px;
-            resize: vertical;
+        .form-select {
+            padding: 7px 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            background: white;
+            cursor: pointer;
+            max-width: 220px;
+            width: 100%;
         }
 
-        .form-2col {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
+        .form-select:focus {
+            outline: none;
+            border-color: #4285f4;
         }
 
-        .form-2col .form-group {
-            margin-bottom: 16px;
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
 
-        .amount-highlight {
-            border-color: #4285f4 !important;
-            background: #fff !important;
-            font-size: 16px !important;
-            font-weight: 600 !important;
-            padding: 10px 12px !important;
+        input[type="number"] {
+            -moz-appearance: textfield;
         }
 
-        .form-checkbox {
+        .input-with-icon {
+            position: relative;
+            max-width: 220px;
+            width: 100%;
+        }
+
+        .input-with-icon input {
+            width: 100%;
+            padding-right: 28px;
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        /* Amount with PHP prefix */
+        .amount-input-wrap {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 12px;
-            color: #555;
-            margin-bottom: 16px;
+            max-width: 220px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
         }
 
-        .form-checkbox input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
+        .amount-prefix {
+            padding: 7px 10px;
+            background: #f5f5f5;
+            border-right: 1px solid #e0e0e0;
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            white-space: nowrap;
+        }
+
+        .amount-input-wrap input {
+            border: none;
+            padding: 7px 10px;
+            font-size: 13px;
+            flex: 1;
+            width: 100%;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .paid-full-check {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 4px;
+            font-size: 11px;
+            color: #555;
+        }
+
+        .paid-full-check input[type="checkbox"] {
+            accent-color: #4285f4;
+        }
+
+        .radio-group {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: #333;
             cursor: pointer;
         }
 
-        .info-icon {
-            color: #999;
-            cursor: help;
-            font-size: 13px;
-            margin-left: 4px;
+        .radio-option input[type="radio"] {
+            accent-color: #4285f4;
         }
 
-        .payment-num-wrap {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .payment-num-wrap input {
+        /* Notes Section */
+        .notes-section {
+            padding: 12px 20px;
             flex: 1;
         }
 
-        .refresh-btn {
-            width: 32px;
-            height: 32px;
-            border: 1px solid #d9d9d9;
-            border-radius: 4px;
-            background: #f9f9f9;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            color: #4285f4;
-            flex-shrink: 0;
+        .notes-row {
+            margin-bottom: 12px;
         }
 
-        .refresh-btn:hover {
-            background: #e8f0fe;
-        }
-
-        .attach-section {
-            margin-top: 8px;
-        }
-
-        .attach-title {
-            font-size: 12px;
+        .notes-label {
+            font-size: 11px;
             font-weight: 600;
             color: #333;
+            margin-bottom: 4px;
+        }
+
+        .notes-sublabel {
+            font-size: 10px;
+            color: #999;
             margin-bottom: 6px;
         }
 
-        .attach-btn {
-            display: inline-flex;
+        .form-textarea {
+            padding: 7px 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            width: 100%;
+            min-height: 50px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+
+        /* ===== Right Column: Unpaid Bills ===== */
+        .bills-table-section {
+            padding: 16px;
+            flex: 1;
+        }
+
+        .bills-table-header {
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .bills-table-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .clear-link {
+            color: #4285f4;
             font-size: 12px;
-            color: #555;
+            text-decoration: none;
             cursor: pointer;
-            padding: 4px 0;
-            border: none;
-            background: none;
         }
 
-        .attach-hint {
+        .clear-link:hover {
+            text-decoration: underline;
+        }
+
+        .bills-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .bills-table th {
+            text-align: left;
+            padding: 8px 6px;
+            font-size: 10px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            background: #f9fafb;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .bills-table td {
+            padding: 8px 6px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+            font-size: 12px;
+        }
+
+        .pay-full-link {
+            color: #4285f4;
             font-size: 11px;
-            color: #bbb;
-            margin-top: 4px;
+            text-decoration: none;
+            cursor: pointer;
         }
 
+        .pay-full-link:hover {
+            text-decoration: underline;
+        }
+
+        .bills-footnote {
+            padding: 6px 6px;
+            font-size: 10px;
+            color: #999;
+            font-style: italic;
+        }
+
+        .payment-cell-input {
+            width: 65px;
+            padding: 5px 6px;
+            border: 1px solid #e0e0e0;
+            border-radius: 3px;
+            font-size: 12px;
+            text-align: right;
+        }
+
+        .date-cell-input {
+            width: 100px;
+            padding: 5px 6px;
+            border: 1px solid #e0e0e0;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        /* Totals Section */
+        .totals-section {
+            padding: 16px 24px;
+            background: #f9fafb;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .totals-box {
+            max-width: 350px;
+            margin-left: auto;
+        }
+
+        .totals-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+            font-size: 12px;
+        }
+
+        .totals-label {
+            color: #666;
+        }
+
+        .totals-value {
+            font-weight: 500;
+            color: #333;
+            min-width: 80px;
+            text-align: right;
+        }
+
+        .totals-row.total {
+            border-top: 1px solid #d1d5db;
+            padding-top: 8px;
+            margin-top: 4px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        /* ===== Footer ===== */
         .form-footer {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 10px;
-            padding: 16px 32px;
+            padding: 10px 20px;
+            background: white;
             border-top: 1px solid #e9ecef;
-            background: #fff;
-            flex-shrink: 0;
+            position: fixed;
+            bottom: 0;
+            left: 260px;
+            right: 0;
+            z-index: 100;
         }
 
-        .btn {
-            padding: 8px 20px;
+        .footer-left {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-draft {
+            padding: 8px 18px;
+            background: white;
+            color: #333;
+            border: 1px solid #e0e0e0;
             border-radius: 4px;
             font-size: 13px;
             font-weight: 500;
             cursor: pointer;
-            border: 1px solid #d9d9d9;
-            background: #fff;
-            color: #333;
         }
 
-        .btn:hover {
+        .btn-draft:hover {
             background: #f5f5f5;
         }
 
-        .btn-primary {
-            background: #16a34a;
-            color: #fff;
-            border-color: #16a34a;
+        .btn-save {
+            padding: 8px 18px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
         }
 
-        .btn-primary:hover {
-            background: #15803d;
+        .btn-save:hover {
+            background: #3367d6;
         }
 
         .btn-cancel {
-            color: #666;
+            padding: 8px 18px;
+            background: #555;
+            color: white;
             border: none;
-            background: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
         }
 
         .btn-cancel:hover {
+            background: #333;
+        }
+
+        .footer-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+            color: #666;
+            font-size: 13px;
+        }
+
+        .footer-right .amount {
+            font-weight: 600;
+        }
+
+        /* ===== Vendor Searchable Dropdown ===== */
+        .vend-dd-wrap {
+            position: relative;
+            max-width: 220px;
+            width: 100%;
+        }
+
+        .vend-dd-trigger {
+            padding: 7px 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            user-select: none;
+            color: #999;
+            transition: border-color 0.15s;
+        }
+
+        .vend-dd-trigger.selected {
             color: #333;
         }
 
-        .loading-overlay {
+        .vend-dd-trigger:hover,
+        .vend-dd-trigger.open {
+            border-color: #4285f4;
+        }
+
+        .vend-dd-trigger .vend-dd-arrow {
+            color: #4285f4;
+            font-size: 10px;
+            flex-shrink: 0;
+            transition: transform 0.2s;
+        }
+
+        .vend-dd-trigger.open .vend-dd-arrow {
+            transform: rotate(180deg);
+        }
+
+        .vend-dd-panel {
+            display: none;
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            min-width: 260px;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            z-index: 999;
+            overflow: hidden;
+        }
+
+        .vend-dd-panel.open {
+            display: block;
+        }
+
+        .vend-dd-search {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .vend-dd-search-inner {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 2px solid #4285f4;
+            border-radius: 6px;
+            padding: 7px 10px;
+        }
+
+        .vend-dd-search-inner .search-icon {
+            color: #999;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .vend-dd-search-inner input {
+            border: none;
+            outline: none;
+            font-size: 13px;
+            flex: 1;
+            font-family: inherit;
+            color: #333;
+        }
+
+        .vend-dd-options {
+            max-height: 240px;
+            overflow-y: auto;
+        }
+
+        .vend-dd-option {
+            padding: 12px 14px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            border-bottom: 1px solid #f5f5f5;
+            transition: background 0.1s;
+        }
+
+        .vend-dd-option:last-child {
+            border-bottom: none;
+        }
+
+        .vend-dd-option:hover {
+            background: #4285f4;
+            color: white;
+        }
+
+        .vend-dd-option.selected {
+            background: #f0f5ff;
+        }
+
+        .vend-dd-option.selected:hover {
+            background: #4285f4;
+            color: white;
+        }
+
+        .vend-dd-empty {
+            padding: 16px;
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+        }
+
+        /* ===== Modals ===== */
+        .modal-overlay {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(255, 255, 255, 0.8);
-            z-index: 2000;
-            display: none;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 5000;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
-            color: #666;
         }
 
-        .loading-overlay.active {
+        .modal-overlay.show {
             display: flex;
+        }
+
+        .modal-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+            max-width: 440px;
+            width: 90%;
+            padding: 28px 32px 24px;
+        }
+
+        .modal-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 12px;
+        }
+
+        .modal-card p {
+            font-size: 13px;
+            color: #555;
+            margin: 0 0 20px;
+            line-height: 1.55;
+        }
+
+        .modal-card .excess-amount {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2563eb;
+            margin-bottom: 16px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 8px 22px;
+            border-radius: 5px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid #d1d5db;
+            background: #fff;
+            color: #333;
+            font-family: inherit;
+        }
+
+        .modal-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .modal-btn.primary {
+            background: #2563eb;
+            color: #fff;
+            border-color: #2563eb;
+        }
+
+        .modal-btn.primary:hover {
+            background: #1d4ed8;
+        }
+
+        .modal-btn.danger {
+            background: #16a34a;
+            color: #fff;
+            border-color: #16a34a;
+        }
+
+        .modal-btn.danger:hover {
+            background: #15803d;
         }
     </style>
 </head>
@@ -426,310 +722,700 @@
     <div id="sidebarContainer"></div>
 
     <div class="main-layout">
-        <div class="page-wrapper">
-            <!-- Left Sidebar - Bills List -->
-            <div class="pr-sidebar">
-                <div class="pr-sidebar-header">
-                    <span class="pr-sidebar-title" onclick="window.location.href='/bills.html'">All Bills ▾</span>
-                    <div class="pr-sidebar-actions">
-                        <button class="pr-sidebar-btn green" onclick="window.location.href='/new-bill.html'">+</button>
-                        <button class="pr-sidebar-btn gray">⋯</button>
-                    </div>
+        <div class="content" id="content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="page-title-wrapper">
+                    <span class="page-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+                            <line x1="1" y1="10" x2="23" y2="10" />
+                        </svg></span>
+                    <h1 class="page-title" id="pageTitle">Record Payment</h1>
                 </div>
-                <div class="sidebar-search">
-                    <input type="text" placeholder="Search in Bills ( / )" oninput="filterSidebar(this.value)">
-                </div>
-                <div class="pr-list" id="prList"></div>
+                <button class="close-btn" onclick="goBack()">×</button>
             </div>
 
-            <!-- Right Panel - Payment Form -->
-            <div class="form-panel">
-                <div class="form-header">
-                    <h1 class="form-title" id="formTitle">Payment for —</h1>
-                </div>
-
-                <div class="form-body">
-                    <!-- Location -->
-                    <div class="form-group" style="max-width: 480px;">
-                        <label class="gray">Location</label>
-                        <select id="locationField">
-                            <option value="Head Office">Head Office</option>
-                        </select>
-                    </div>
-
-                    <!-- Payment Made (Amount) -->
-                    <div class="form-group" style="max-width: 380px;">
-                        <label>Payment Made*(PHP)</label>
-                        <input type="number" id="amountField" class="amount-highlight" value="0" step="0.01" min="0">
-                    </div>
-
-                    <!-- Deduct TDS Tax -->
-                    <div class="form-checkbox">
-                        <input type="checkbox" id="deductTds">
-                        <span>Deduct TDS Tax</span>
-                    </div>
-
-                    <!-- Two Column Section -->
-                    <div class="form-2col">
-                        <div>
-                            <div class="form-group">
-                                <label class="gray">Bank Charges (if any)</label>
-                                <input type="number" id="bankCharges" value="0" step="0.01" min="0">
-                            </div>
-                            <div class="form-group">
-                                <label>Payment Date*</label>
-                                <input type="date" id="paymentDate">
-                            </div>
-                            <div class="form-group">
-                                <label class="gray">Payment Made on</label>
-                                <input type="date" id="paymentMadeOn">
-                            </div>
-                        </div>
-                        <div>
-                            <div class="form-group">
-                                <label class="gray">Payment Mode</label>
-                                <select id="paymentMode">
-                                    <option value="Cash">Cash</option>
-                                    <option value="Bank Transfer">Bank Transfer</option>
-                                    <option value="Check">Check</option>
-                                    <option value="Credit Card">Credit Card</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Payment #*</label>
-                                <div class="payment-num-wrap">
-                                    <input type="text" id="paymentNumber" value="">
-                                    <button class="refresh-btn" onclick="refreshPaymentNumber()" title="Refresh"><svg
-                                            width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="23 4 23 10 17 10" />
-                                            <polyline points="1 20 1 14 7 14" />
-                                            <path
-                                                d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
-                                        </svg></button>
+            <!-- Two Column Layout -->
+            <div class="form-main">
+                <!-- ========== LEFT COLUMN: Form Fields ========== -->
+                <div class="left-column">
+                    <!-- Vendor Section -->
+                    <div class="form-section">
+                        <div class="form-row">
+                            <label class="form-label required">Vendor Name*</label>
+                            <div class="vend-dd-wrap" id="vendDdWrap">
+                                <input type="hidden" id="vendorId" value="">
+                                <input type="hidden" id="vendorName" value="">
+                                <div class="vend-dd-trigger" id="vendDdTrigger" onclick="toggleVendDd()">
+                                    <span id="vendDdLabel">Select Vendor</span>
+                                    <span class="vend-dd-arrow">▼</span>
+                                </div>
+                                <div class="vend-dd-panel" id="vendDdPanel">
+                                    <div class="vend-dd-search">
+                                        <div class="vend-dd-search-inner">
+                                            <span class="search-icon"><svg width="14" height="14" viewBox="0 0 24 24"
+                                                    fill="none" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round">
+                                                    <circle cx="11" cy="11" r="8" />
+                                                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                                                </svg></span>
+                                            <input type="text" id="vendDdSearch" placeholder="Search"
+                                                oninput="filterVendDd()">
+                                        </div>
+                                    </div>
+                                    <div class="vend-dd-options" id="vendDdOptions"></div>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label>Paid Through*</label>
-                                <select id="paidThrough">
-                                    <option value="Petty Cash">Petty Cash</option>
-                                    <option value="Cash on Hand">Cash on Hand</option>
-                                    <option value="Bank Account">Bank Account</option>
-                                </select>
+                        </div>
+                    </div>
+
+                    <!-- Payment Details Section -->
+                    <div class="form-section">
+                        <div class="form-row top-align">
+                            <label class="form-label required" style="padding-top:8px;">Amount Paid*</label>
+                            <div>
+                                <div class="amount-input-wrap">
+                                    <span class="amount-prefix">PHP</span>
+                                    <input type="number" id="amountPaid" step="0.01" placeholder="Enter amount"
+                                        onblur="onAmountPaidBlur()">
+                                </div>
+                                <label class="paid-full-check">
+                                    <input type="checkbox" id="paidFullCheck" onchange="applyFullAmount()">
+                                    <span id="paidFullLabel">Pay full amount</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label">Bank Charges (if any)</label>
+                            <input type="number" class="form-input" id="bankCharges" step="0.01">
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label required">Payment Date*</label>
+                            <input type="text" class="form-input" id="paymentDate">
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label required">Payment #*</label>
+                            <div class="input-with-icon">
+                                <input type="text" class="form-input" id="paymentNumber">
+                                <span class="input-icon">⚙</span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label">Payment Mode</label>
+                            <select class="form-select" id="paymentMode">
+                                <option value="Cash">Cash</option>
+                                <option value="Bank Transfer">Bank Transfer</option>
+                                <option value="Check">Check</option>
+                                <option value="Credit Card">Credit Card</option>
+                                <option value="GCash">GCash</option>
+                                <option value="Maya">Maya</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label required">Paid Through*</label>
+                            <select class="form-select" id="paidThrough">
+                                <option value="Petty Cash">Petty Cash</option>
+                                <option value="Cash on Hand">Cash on Hand</option>
+                                <option value="Bank Account">Bank Account</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label">Reference#</label>
+                            <input type="text" class="form-input" id="referenceNumber">
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label">Tax deducted?</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="taxDeducted" value="no" checked> No Tax deducted
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="taxDeducted" value="yes"> Yes, TDS
+                                </label>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Reference # -->
-                    <div class="form-2col">
-                        <div></div>
-                        <div class="form-group">
-                            <label class="gray">Reference#</label>
-                            <input type="text" id="referenceNumber">
+                    <!-- Notes Section -->
+                    <div class="notes-section">
+                        <div class="notes-row">
+                            <div class="notes-label">Notes</div>
+                            <div class="notes-sublabel">Internal use. Not visible to vendor</div>
+                            <textarea class="form-textarea" id="notes" rows="3"></textarea>
                         </div>
-                    </div>
-
-                    <!-- Notes -->
-                    <div class="form-group">
-                        <label class="gray">Notes</label>
-                        <textarea id="notes"></textarea>
                     </div>
 
                     <!-- Attachments -->
-                    <div class="attach-section">
-                        <div class="attach-title">Attachments</div>
-                        <button class="attach-btn" onclick="uploadFile()">📎 Upload File ▾</button>
-                        <div class="attach-hint">You can upload a maximum of 5 files, 10MB each</div>
-                    </div>
-
-                    <!-- Send Email -->
-                    <div class="form-checkbox" style="margin-top: 20px;">
-                        <input type="checkbox" id="sendEmail">
-                        <span>Send a Payment Made email notification.</span>
+                    <div class="form-section" style="border-bottom:none;">
+                        <div style="font-size:11px;font-weight:600;color:#555;margin-bottom:6px;">Attachments</div>
+                        <div style="display:flex;align-items:center;gap:4px;font-size:12px;color:#555;cursor:pointer;"
+                            onclick="attachFiles()">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                style="vertical-align:-2px;margin-right:3px;">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="17 8 12 3 7 8" />
+                                <line x1="12" y1="3" x2="12" y2="15" />
+                            </svg> Upload File ▾
+                        </div>
+                        <div style="font-size:10px;color:#bbb;margin-top:4px;">Max 5 files, 5MB each</div>
+                        <div id="attachmentList" style="margin-top:8px;"></div>
                     </div>
                 </div>
 
-                <!-- Footer -->
-                <div class="form-footer">
-                    <button class="btn" onclick="saveAsDraft()">Save as Draft</button>
-                    <button class="btn btn-primary" onclick="saveAsPaid()">Save as Paid</button>
-                    <button class="btn btn-cancel" onclick="goBack()">Cancel</button>
+                <!-- ========== RIGHT COLUMN: Unpaid Bills Table ========== -->
+                <div class="right-column">
+                    <div class="bills-table-section">
+                        <div class="bills-table-header">
+                            <span class="bills-table-title">Unpaid Bills</span>
+                            <a class="clear-link" onclick="clearPayments()"><svg width="14" height="14"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round"
+                                    style="vertical-align:-2px;margin-right:3px;">
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                                    <polyline points="15 3 21 3 21 9" />
+                                    <line x1="10" y1="14" x2="21" y2="3" />
+                                </svg> Clear Applied Amount</a>
+                        </div>
+
+                        <table class="bills-table">
+                            <thead>
+                                <tr>
+                                    <th>DATE</th>
+                                    <th>BILL NUMBER</th>
+                                    <th>BILL AMOUNT</th>
+                                    <th>AMOUNT DUE</th>
+                                    <th>PAYMENT MADE ON</th>
+                                    <th>PAYMENT</th>
+                                </tr>
+                            </thead>
+                            <tbody id="unpaidBillsBody">
+                                <tr>
+                                    <td colspan="6" style="text-align:center;padding:40px;color:#bbb;font-size:12px;">
+                                        Select a vendor to view unpaid bills
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="bills-footnote">**List contains only OPEN bills</div>
+                    </div>
+
+                    <!-- Totals Section -->
+                    <div class="totals-section">
+                        <div class="totals-box">
+                            <div class="totals-row total">
+                                <span>Total</span>
+                                <span class="totals-value" id="billsTotal">0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="form-footer" id="mainFooter">
+                <div class="footer-left">
+                    <button type="button" class="btn-draft" onclick="savePayment('DRAFT')">Save as Draft</button>
+                    <button type="button" class="btn-save" onclick="savePayment('PAID')">Save as Paid</button>
+                    <button type="button" class="btn-cancel" onclick="goBack()">Cancel</button>
+                </div>
+                <div class="footer-right">
+                    <span>Total Amount: <span class="amount">PHP <span id="footerTotal">0.00</span></span></span>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="loading-overlay" id="loadingOverlay">
-        <div>⏳ Saving...</div>
+    <!-- Confirmation Modal: distribute amount to bills? -->
+    <div class="modal-overlay" id="confirmDistributeModal">
+        <div class="modal-card">
+            <h3>Distribute Payment</h3>
+            <p>Would you like this amount to be reflected in the payment field?</p>
+            <div class="modal-actions">
+                <button class="modal-btn" onclick="confirmDistribute(false)">No</button>
+                <button class="modal-btn primary" onclick="confirmDistribute(true)">Yes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Excess Payment Modal -->
+    <div class="modal-overlay" id="excessPaymentModal">
+        <div class="modal-card">
+            <h3>Excess Payment</h3>
+            <p>Would you like to store the excess amount as an overpayment from this vendor?</p>
+            <div class="excess-amount" id="excessAmountDisplay">PHP 0.00</div>
+            <div class="modal-actions">
+                <button class="modal-btn" onclick="closeExcessModal()">Cancel</button>
+                <button class="modal-btn danger" onclick="confirmExcessAndSave()">Continue to Save</button>
+            </div>
+        </div>
     </div>
 
     <script src="/js/layout.js"></script>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
-        const billId = urlParams.get('billId');
-        let allBills = [];
-        let currentBill = null;
+        const preselectedBillId = urlParams.get('billId');
+        const preselectedVendorId = urlParams.get('vendor_id');
+        let billData = null;
+        let vendorsList = [];
+        let unpaidBills = [];
 
         document.addEventListener('DOMContentLoaded', async function () {
-            const _d = new Date(); document.getElementById('paymentDate').value = _d.getFullYear() + '-' + String(_d.getMonth() + 1).padStart(2, '0') + '-' + String(_d.getDate()).padStart(2, '0');
-            await loadSidebar();
-            await refreshPaymentNumber();
-            if (billId) {
-                await loadBillInfo(billId);
-                highlightSidebar(parseInt(billId));
+            const today = new Date();
+            const dd = String(today.getDate()).padStart(2, '0');
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            document.getElementById('paymentDate').value = `${mm}/${dd}/${today.getFullYear()}`;
+
+            // Load vendors
+            try {
+                const vendRes = await fetch('/api/suppliers');
+                if (vendRes.ok) { vendorsList = await vendRes.json(); }
+            } catch (e) { console.error(e); }
+
+            // Load next payment number
+            try {
+                const numRes = await fetch('/api/payments-made/next-number');
+                if (numRes.ok) {
+                    const numData = await numRes.json();
+                    document.getElementById('paymentNumber').value = numData.next_number;
+                }
+            } catch (e) { console.error(e); }
+
+            // If coming from a specific bill
+            if (preselectedBillId) {
+                try {
+                    const res = await fetch('/api/bills/' + preselectedBillId);
+                    if (res.ok) {
+                        billData = await res.json();
+                        document.getElementById('pageTitle').textContent = `Payment for ${billData.bill_number}`;
+                        // Find vendor by supplier_id or name
+                        const vendorId = billData.supplier_id || '';
+                        const vendorName = billData.supplier_name || '';
+                        selectVendor(vendorId, vendorName);
+                    }
+                } catch (e) { console.error(e); }
+            } else if (preselectedVendorId) {
+                const v = vendorsList.find(x => String(x.id) === preselectedVendorId);
+                if (v) {
+                    const name = v.name || v.display_name || v.supplier_name || 'Unnamed';
+                    selectVendor(v.id, name);
+                }
             }
+
+            // Render initial vendor dropdown
+            renderVendOptions();
+
+            document.addEventListener('click', function (e) {
+                if (!e.target.closest('#vendDdWrap')) {
+                    document.getElementById('vendDdPanel').classList.remove('open');
+                    document.getElementById('vendDdTrigger').classList.remove('open');
+                }
+            });
         });
 
-        async function loadSidebar() {
+        // ===== Vendor Searchable Dropdown =====
+        function toggleVendDd() {
+            const panel = document.getElementById('vendDdPanel');
+            const trigger = document.getElementById('vendDdTrigger');
+            const isOpen = panel.classList.contains('open');
+            if (isOpen) {
+                panel.classList.remove('open');
+                trigger.classList.remove('open');
+            } else {
+                panel.classList.add('open');
+                trigger.classList.add('open');
+                document.getElementById('vendDdSearch').value = '';
+                document.getElementById('vendDdSearch').focus();
+                renderVendOptions();
+            }
+        }
+
+        function renderVendOptions(filter) {
+            const container = document.getElementById('vendDdOptions');
+            const selectedId = document.getElementById('vendorId').value;
+            let list = vendorsList;
+
+            if (filter) {
+                const q = filter.toLowerCase();
+                list = list.filter(v => {
+                    const name = v.name || v.display_name || v.supplier_name || '';
+                    return name.toLowerCase().includes(q);
+                });
+            }
+
+            if (list.length === 0) {
+                container.innerHTML = '<div class="vend-dd-empty">No vendors found.</div>';
+                return;
+            }
+
+            container.innerHTML = list.map(v => {
+                const name = v.name || v.display_name || v.supplier_name || 'Unnamed';
+                const sel = String(v.id) === String(selectedId) ? ' selected' : '';
+                return `<div class="vend-dd-option${sel}" onclick="selectVendor(${v.id}, '${name.replace(/'/g, "\\'")}')">${name}</div>`;
+            }).join('');
+        }
+
+        function filterVendDd() {
+            renderVendOptions(document.getElementById('vendDdSearch').value);
+        }
+
+        function selectVendor(id, name) {
+            document.getElementById('vendorId').value = id;
+            document.getElementById('vendorName').value = name;
+            document.getElementById('vendDdLabel').textContent = name;
+            document.getElementById('vendDdTrigger').classList.add('selected');
+            document.getElementById('vendDdPanel').classList.remove('open');
+            document.getElementById('vendDdTrigger').classList.remove('open');
+            loadUnpaidBills(id, name);
+        }
+
+        async function loadUnpaidBills(vendorId, vendorName) {
+            const tbody = document.getElementById('unpaidBillsBody');
+            tbody.innerHTML = '';
+            unpaidBills = [];
+            document.getElementById('billsTotal').textContent = '0.00';
+            document.getElementById('footerTotal').textContent = '0.00';
+            if (!vendorId && !vendorName) return;
+
             try {
                 const res = await fetch('/api/bills');
                 if (!res.ok) return;
-                allBills = await res.json();
-                renderSidebar(allBills);
-            } catch (e) { console.error('Error loading bills:', e); }
-        }
+                const allBills = await res.json();
+                const vName = (vendorName || '').trim().toLowerCase();
 
-        function renderSidebar(bills) {
-            const list = document.getElementById('prList');
-            list.innerHTML = '';
-            bills.forEach(bill => {
-                const div = document.createElement('div');
-                div.className = 'pr-item';
-                div.dataset.id = bill.id;
-                div.onclick = () => { window.location.href = '/record-payment.html?billId=' + bill.id; };
-                const amount = parseFloat(bill.total_amount || 0);
-                const billNum = (bill.bill_number || 'BILL-' + bill.id).replace('BILL-', '');
-                const billDate = bill.bill_date ? new Date(bill.bill_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
-                const status = (bill.status || 'draft').toLowerCase();
-                div.innerHTML = `
-                    <div class="pr-item-left">
-                        <div class="pr-item-vendor">${bill.supplier_name || '—'}</div>
-                        <div class="pr-item-numbers">${billNum} · ${billDate}</div>
-                        <div class="pr-item-status ${status}">${status.toUpperCase()}</div>
-                    </div>
-                    <div class="pr-item-amount">PHP${amount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</div>
-                `;
-                list.appendChild(div);
-            });
-        }
+                unpaidBills = allBills.filter(b => {
+                    const s = (b.status || '').toUpperCase();
+                    const matches = String(b.supplier_id) === String(vendorId) || (b.supplier_name || '').trim().toLowerCase() === vName;
+                    return matches && s !== 'PAID' && s !== 'DRAFT';
+                });
 
-        function highlightSidebar(id) {
-            document.querySelectorAll('.pr-item').forEach(el => {
-                el.classList.toggle('active', parseInt(el.dataset.id) === parseInt(id));
-            });
-        }
+                // Sort oldest first
+                unpaidBills.sort((a, b) => new Date(a.bill_date || 0) - new Date(b.bill_date || 0));
 
-        function filterSidebar(query) {
-            const q = query.toLowerCase();
-            const filtered = allBills.filter(b => (b.bill_number || '').toLowerCase().includes(q) || (b.supplier_name || '').toLowerCase().includes(q));
-            renderSidebar(filtered);
-            if (billId) highlightSidebar(parseInt(billId));
-        }
-
-        async function loadBillInfo(id) {
-            try {
-                const res = await fetch('/api/bills/' + id);
-                if (!res.ok) return;
-                currentBill = await res.json();
-                const billNum = (currentBill.bill_number || 'BILL-' + currentBill.id).replace('BILL-', '');
-                document.getElementById('formTitle').textContent = 'Payment for ' + billNum;
-                document.getElementById('amountField').value = parseFloat(currentBill.total_amount || 0);
-            } catch (e) { console.error('Error loading bill:', e); }
-        }
-
-        async function refreshPaymentNumber() {
-            try {
-                const res = await fetch('/api/payments-made/next-number');
-                if (res.ok) {
-                    const data = await res.json();
-                    document.getElementById('paymentNumber').value = data.next_number;
+                if (unpaidBills.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:30px;color:#bbb;font-size:12px;">No unpaid bills found.</td></tr>';
+                    document.getElementById('paidFullLabel').textContent = 'Pay full amount';
+                    return;
                 }
-            } catch (e) { document.getElementById('paymentNumber').value = '1'; }
+
+                const today = new Date();
+                const todayStr = `${String(today.getMonth() + 1).padStart(2, '0')}/${String(today.getDate()).padStart(2, '0')}/${today.getFullYear()}`;
+
+                unpaidBills.forEach((bill, i) => {
+                    const billDate = bill.bill_date ? new Date(bill.bill_date) : null;
+                    const dateStr = billDate ? billDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+                    const dueDate = bill.due_date ? new Date(bill.due_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+                    const amount = parseFloat(bill.total_amount || 0);
+                    const amountDue = parseFloat(bill.balance_due != null ? bill.balance_due : bill.total_amount || 0);
+
+                    const tr = document.createElement('tr');
+                    // Highlight the contextual bill row
+                    if (billData && bill.id === billData.id) {
+                        tr.style.background = '#eff6ff';
+                        tr.style.borderLeft = '3px solid #2563eb';
+                    }
+                    tr.setAttribute('data-bill-id', bill.id);
+                    tr.innerHTML = `
+                        <td>${dateStr}${dueDate ? '<div style="font-size:10px;color:#4285f4;margin-top:2px;">Due: ' + dueDate + '</div>' : ''}</td>
+                        <td style="color:#4285f4;font-weight:500;">${bill.bill_number || ''}</td>
+                        <td style="text-align:right;">${amount.toFixed(2)}</td>
+                        <td style="text-align:right;">${amountDue.toFixed(2)}</td>
+                        <td><input type="text" class="date-cell-input" value="${todayStr}"></td>
+                        <td style="text-align:right;">
+                            <input type="number" class="payment-cell-input" value="0" step="0.01"
+                                data-idx="${i}" data-max="${amountDue}" onchange="updatePaymentTotal()">
+                            <div><a class="pay-full-link" onclick="payInFull(${i})">Pay in Full</a></div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                const totalDue = unpaidBills.reduce((s, b) => s + parseFloat(b.balance_due != null ? b.balance_due : b.total_amount || 0), 0);
+                document.getElementById('paidFullLabel').textContent = `Pay full amount (PHP${totalDue.toFixed(2)})`;
+
+            } catch (e) { console.error(e); }
         }
 
-        function collectFormData(status) {
-            if (!currentBill) { alert('No bill selected'); return null; }
-            return {
-                payment_number: document.getElementById('paymentNumber').value,
-                bill_id: currentBill.id,
-                bill_number: currentBill.bill_number || null,
-                supplier_id: currentBill.supplier_id || null,
-                supplier_name: currentBill.supplier_name || '',
-                amount_paid: parseFloat(document.getElementById('amountField').value) || 0,
+        function payInFull(idx) {
+            const input = document.querySelector(`input[data-idx="${idx}"]`);
+            if (input) { input.value = parseFloat(input.dataset.max || 0).toFixed(2); updatePaymentTotal(); }
+        }
+
+        function updatePaymentTotal() {
+            let total = 0;
+            document.querySelectorAll('.payment-cell-input').forEach(inp => { total += parseFloat(inp.value) || 0; });
+            document.getElementById('billsTotal').textContent = total.toFixed(2);
+            document.getElementById('footerTotal').textContent = total.toFixed(2);
+        }
+
+        function clearPayments() {
+            document.querySelectorAll('.payment-cell-input').forEach(inp => { inp.value = '0'; });
+            updatePaymentTotal();
+        }
+
+        // ===== Distribute Payment Logic =====
+        function distributeAmountToBills() {
+            let remaining = parseFloat(document.getElementById('amountPaid').value) || 0;
+            const inputs = document.querySelectorAll('.payment-cell-input');
+
+            // Reset all to 0 first
+            inputs.forEach(inp => { inp.value = '0'; });
+
+            // If opened from a specific bill, fill that one first
+            if (billData && billData.id) {
+                const ctxIdx = unpaidBills.findIndex(b => b.id === billData.id);
+                if (ctxIdx >= 0 && inputs[ctxIdx]) {
+                    const maxDue = parseFloat(inputs[ctxIdx].dataset.max) || 0;
+                    const fill = Math.min(remaining, maxDue);
+                    inputs[ctxIdx].value = fill.toFixed(2);
+                    remaining -= fill;
+                }
+            }
+
+            // Distribute remainder to other bills (oldest to newest)
+            inputs.forEach((inp, i) => {
+                if (billData && billData.id && unpaidBills[i] && unpaidBills[i].id === billData.id) return;
+                const maxDue = parseFloat(inp.dataset.max) || 0;
+                if (remaining <= 0) {
+                    // already 0
+                } else if (remaining >= maxDue) {
+                    inp.value = maxDue.toFixed(2);
+                    remaining -= maxDue;
+                } else {
+                    inp.value = remaining.toFixed(2);
+                    remaining = 0;
+                }
+            });
+            updatePaymentTotal();
+        }
+
+        let amountAlreadyConfirmed = false;
+
+        function onAmountPaidBlur() {
+            const val = parseFloat(document.getElementById('amountPaid').value) || 0;
+            if (val > 0 && !amountAlreadyConfirmed && unpaidBills.length > 0) {
+                document.getElementById('confirmDistributeModal').classList.add('show');
+            }
+        }
+
+        function confirmDistribute(doDistribute) {
+            document.getElementById('confirmDistributeModal').classList.remove('show');
+            amountAlreadyConfirmed = true;
+            if (doDistribute) {
+                distributeAmountToBills();
+            }
+        }
+
+        function applyFullAmount() {
+            if (document.getElementById('paidFullCheck').checked) {
+                const totalDue = unpaidBills.reduce((s, b) => s + parseFloat(b.balance_due != null ? b.balance_due : b.total_amount || 0), 0);
+                document.getElementById('amountPaid').value = totalDue.toFixed(2);
+                amountAlreadyConfirmed = true;
+                distributeAmountToBills();
+            }
+        }
+
+        // ===== Save Logic with Excess Payment =====
+        let pendingSaveStatus = null;
+
+        async function savePayment(status) {
+            const vendorNameVal = document.getElementById('vendorName').value;
+            const paymentNumber = document.getElementById('paymentNumber').value;
+            const amountPaid = document.getElementById('amountPaid').value;
+
+            if (!vendorNameVal || vendorNameVal === 'Select Vendor') { alert('Please select a vendor.'); return; }
+            if (!paymentNumber) { alert('Payment number is required.'); return; }
+            if (!amountPaid || parseFloat(amountPaid) <= 0) { alert('Amount paid must be greater than 0.'); return; }
+
+            // Calculate total applied
+            let totalApplied = 0;
+            document.querySelectorAll('.payment-cell-input').forEach(inp => { totalApplied += parseFloat(inp.value) || 0; });
+            const excess = parseFloat(amountPaid) - totalApplied;
+
+            // If excess exists, show the excess payment modal
+            if (excess > 0.01) {
+                pendingSaveStatus = status;
+                document.getElementById('excessAmountDisplay').textContent = 'PHP ' + excess.toFixed(2);
+                document.getElementById('excessPaymentModal').classList.add('show');
+                return;
+            }
+
+            await doSavePayment(status, 0);
+        }
+
+        function closeExcessModal() {
+            document.getElementById('excessPaymentModal').classList.remove('show');
+            pendingSaveStatus = null;
+        }
+
+        async function confirmExcessAndSave() {
+            document.getElementById('excessPaymentModal').classList.remove('show');
+            let totalApplied = 0;
+            document.querySelectorAll('.payment-cell-input').forEach(inp => { totalApplied += parseFloat(inp.value) || 0; });
+            const excess = parseFloat(document.getElementById('amountPaid').value) - totalApplied;
+            await doSavePayment(pendingSaveStatus || 'PAID', excess);
+        }
+
+        async function doSavePayment(status, excessAmount) {
+            const vendorNameVal = document.getElementById('vendorName').value;
+            const paymentNumber = document.getElementById('paymentNumber').value;
+            const amountPaid = parseFloat(document.getElementById('amountPaid').value);
+            const vendorId = document.getElementById('vendorId').value;
+
+            const taxDeducted = document.querySelector('input[name="taxDeducted"]:checked').value === 'yes';
+
+            // Determine primary bill (highest applied)
+            let primaryBillId = null;
+            let primaryBillNumber = null;
+            let maxPayment = 0;
+            const billPayments = [];
+
+            document.querySelectorAll('.payment-cell-input').forEach((inp, i) => {
+                const amt = parseFloat(inp.value) || 0;
+                if (amt > 0 && unpaidBills[i]) {
+                    billPayments.push({ bill_id: unpaidBills[i].id, bill_number: unpaidBills[i].bill_number, amount: amt });
+                    if (amt > maxPayment) {
+                        maxPayment = amt;
+                        primaryBillId = unpaidBills[i].id;
+                        primaryBillNumber = unpaidBills[i].bill_number;
+                    }
+                }
+            });
+
+            // Parse payment date
+            const paymentDateRaw = document.getElementById('paymentDate').value || '';
+            let paymentDate;
+            const parts = paymentDateRaw.split('/');
+            if (parts.length === 3) {
+                paymentDate = parts[2] + '-' + parts[0] + '-' + parts[1];
+            } else {
+                const _d = new Date();
+                paymentDate = _d.getFullYear() + '-' + String(_d.getMonth() + 1).padStart(2, '0') + '-' + String(_d.getDate()).padStart(2, '0');
+            }
+
+            const paymentData = {
+                payment_number: paymentNumber,
+                bill_id: primaryBillId,
+                bill_number: primaryBillNumber,
+                supplier_id: parseInt(vendorId) || null,
+                supplier_name: vendorNameVal,
+                amount_paid: amountPaid,
                 bank_charges: parseFloat(document.getElementById('bankCharges').value) || 0,
-                tax_deducted: document.getElementById('deductTds').checked,
-                payment_date: document.getElementById('paymentDate').value || null,
-                payment_made_on: document.getElementById('paymentMadeOn').value || null,
+                tax_deducted: taxDeducted,
+                payment_date: paymentDate,
                 payment_mode: document.getElementById('paymentMode').value,
                 paid_through: document.getElementById('paidThrough').value,
-                location: document.getElementById('locationField').value,
+                location: 'Head Office',
                 reference_number: document.getElementById('referenceNumber').value,
-                notes: document.getElementById('notes').value.trim(),
+                notes: document.getElementById('notes').value,
                 status: status
             };
-        }
 
-        async function saveAsDraft() {
-            const data = collectFormData('DRAFT');
-            if (!data) return;
-            await submitPayment(data);
-        }
-
-        async function saveAsPaid() {
-            const data = collectFormData('PAID');
-            if (!data) return;
-            if (!confirm('This will mark the bill as paid. Continue?')) return;
-            await submitPayment(data);
-        }
-
-        async function submitPayment(data) {
-            const loading = document.getElementById('loadingOverlay');
-            loading.classList.add('active');
             try {
                 const res = await fetch('/api/payments-made', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify(paymentData)
                 });
-                const result = await res.json();
-                if (!res.ok) {
-                    alert('Error: ' + (result.error || 'Failed to save'));
-                    loading.classList.remove('active');
-                    return;
-                }
-                showToast('Payment has been recorded');
-                setTimeout(() => {
-                    window.location.href = '/bill-detail.html?id=' + (currentBill ? currentBill.id : '');
-                }, 1200);
-            } catch (e) {
-                console.error('Save error:', e);
-                alert('Failed to save payment');
-                loading.classList.remove('active');
-            }
-        }
+                if (!res.ok) { const err = await res.json(); alert('Error: ' + (err.error || 'Failed')); return; }
+                const data = await res.json();
 
-        function showToast(msg) {
-            const t = document.createElement('div');
-            t.textContent = msg;
-            t.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#16a34a;color:white;padding:12px 28px;border-radius:8px;font-size:14px;font-weight:500;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.15);animation:toastIn 0.3s ease;';
-            document.body.appendChild(t);
-            const style = document.createElement('style');
-            style.textContent = '@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(-20px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}';
-            document.head.appendChild(style);
-            setTimeout(() => t.remove(), 3000);
+                // Store excess as vendor credit
+                if (excessAmount > 0 && vendorId && status === 'PAID') {
+                    try {
+                        await fetch('/api/vendor-credits', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                supplier_id: parseInt(vendorId),
+                                supplier_name: vendorNameVal,
+                                credit_date: paymentDate,
+                                reason: `Overpayment from Payment #${paymentNumber}`,
+                                status: 'open',
+                                items: [{
+                                    item_name: 'Overpayment',
+                                    account: 'Vendor Overpayment',
+                                    account_type: 'overpayment',
+                                    quantity: 1,
+                                    rate: excessAmount
+                                }]
+                            })
+                        });
+                    } catch (e) { console.error('Error storing vendor credit:', e); }
+                }
+
+                alert(`Payment #${data.payment_number || paymentNumber} saved as ${status} successfully!${excessAmount > 0 && status === 'PAID' ? '\nExcess PHP ' + excessAmount.toFixed(2) + ' stored as vendor credit.' : ''}`);
+                window.location.href = '/payments-made.html';
+            } catch (err) { console.error(err); alert('Failed to save payment.'); }
         }
 
         function goBack() {
-            if (billId) window.location.href = '/bill-detail.html?id=' + billId;
-            else window.location.href = '/bills.html';
+            if (preselectedBillId) window.location.href = '/bill-detail.html?id=' + preselectedBillId;
+            else window.location.href = '/payments-made.html';
         }
 
-        function uploadFile() {
+        // ===== Attachments =====
+        let uploadedFiles = [];
+
+        function attachFiles() {
+            if (uploadedFiles.length >= 5) { alert('Maximum 5 files allowed.'); return; }
             const input = document.createElement('input');
             input.type = 'file';
-            input.accept = '.pdf,.doc,.docx,.jpg,.png,.xlsx';
+            input.accept = '.pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.xls,.xlsx,.csv';
             input.multiple = true;
+            input.onchange = async (e) => {
+                const files = Array.from(e.target.files);
+                if (files.length === 0) return;
+                if (uploadedFiles.length + files.length > 5) {
+                    alert(`You can only upload ${5 - uploadedFiles.length} more file(s).`);
+                    return;
+                }
+                for (const f of files) {
+                    if (f.size > 5 * 1024 * 1024) {
+                        alert(`"${f.name}" exceeds 5MB limit.`);
+                        return;
+                    }
+                }
+                try {
+                    const formData = new FormData();
+                    files.forEach(f => formData.append('files', f));
+                    const res = await fetch('/api/uploads', { method: 'POST', body: formData });
+                    if (!res.ok) {
+                        const err = await res.json();
+                        alert('Upload failed: ' + (err.error || 'Unknown error'));
+                        return;
+                    }
+                    const data = await res.json();
+                    uploadedFiles.push(...data.files);
+                    renderAttachments();
+                } catch (err) {
+                    console.error('Upload error:', err);
+                    alert('Upload failed.');
+                }
+            };
             input.click();
+        }
+
+        function renderAttachments() {
+            const container = document.getElementById('attachmentList');
+            if (uploadedFiles.length === 0) { container.innerHTML = ''; return; }
+            container.innerHTML = uploadedFiles.map((f, i) => {
+                const sizeKB = (f.size / 1024).toFixed(1);
+                return `<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#f8f9fa;border:1px solid #e9ecef;border-radius:4px;margin-bottom:4px;font-size:12px;">
+                    <a href="${f.url}" target="_blank" style="color:#4285f4;text-decoration:none;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${f.originalName}</a>
+                    <span style="color:#999;font-size:10px;white-space:nowrap;">${sizeKB} KB</span>
+                    <span style="color:#e57373;cursor:pointer;font-size:14px;" onclick="removeAttachment(${i})" title="Remove">✕</span>
+                </div>`;
+            }).join('');
+        }
+
+        async function removeAttachment(idx) {
+            const file = uploadedFiles[idx];
+            try { await fetch('/api/uploads/' + file.filename, { method: 'DELETE' }); } catch (e) { }
+            uploadedFiles.splice(idx, 1);
+            renderAttachments();
         }
     </script>
 </body>

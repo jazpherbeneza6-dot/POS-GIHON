@@ -749,6 +749,13 @@
                             <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                         </svg> Record
                         Payment</button>
+                    <button class="toolbar-btn" id="markAsOpenBtn" onclick="markAsOpen()"
+                        style="display:none;background:#16a34a;color:white;font-weight:600;"><svg width="14" height="14"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round"
+                            style="vertical-align:middle;margin-right:3px;">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg> Mark as Open</button>
                     <div class="kebab-wrap">
                         <button class="toolbar-btn" onclick="toggleKebab(event)">⋯</button>
                         <div class="kebab-dropdown" id="kebabDropdown">
@@ -764,10 +771,70 @@
                     </div>
                 </div>
 
+                <!-- Credits Available Banner -->
+                <div class="info-banner" id="creditsBanner"
+                    style="display:none;background:#f3f4f6;border-color:#d1d5db;color:#333;gap:8px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="16" x2="12" y2="12" />
+                        <line x1="12" y1="8" x2="12.01" y2="8" />
+                    </svg>
+                    <span>Credits Available: <strong id="creditsAvailableAmt">PHP 0.00</strong></span>
+                    <a href="#" onclick="openApplyCreditsModal(); return false;"
+                        style="color:#4285f4;font-weight:600;font-size:12px;text-decoration:none;margin-left:4px;">Apply
+                        Now</a>
+                </div>
+
                 <!-- Info Banner -->
-                <div class="info-banner" id="infoBanner">
+                <div class="info-banner" id="infoBanner" style="display:none;">
                     ⭐ WHAT'S NEXT? This bill is in the open status. You can now record payment for this bill.
                     <button class="record-btn" onclick="recordPayment()">Record Payment</button>
+                    <button class="record-btn" id="applyCreditsBtn" onclick="openApplyCreditsModal()"
+                        style="background:#2563eb;margin-left:4px;display:none;">Apply Credits</button>
+                </div>
+                <div class="info-banner" id="draftBanner"
+                    style="display:none;background:#fff3e0;border-color:#ffe0b2;color:#e65100;">
+                    📝 This bill is a draft. Mark it as open when you're ready to record payments and include it in your
+                    reports.
+                    <button class="record-btn" onclick="markAsOpen()" style="background:#16a34a;">Mark as Open</button>
+                </div>
+
+                <!-- Apply Credits Modal -->
+                <div id="applyCreditsModal"
+                    style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.45);z-index:5000;align-items:center;justify-content:center;">
+                    <div
+                        style="background:#fff;border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,0.18);max-width:540px;width:90%;padding:24px 28px;">
+                        <h3 style="font-size:16px;font-weight:600;color:#333;margin:0 0 6px;">Apply Credits to Bill</h3>
+                        <p style="font-size:12px;color:#666;margin:0 0 16px;">Select which credits to apply to this
+                            bill.</p>
+                        <table style="width:100%;border-collapse:collapse;margin-bottom:16px;">
+                            <thead>
+                                <tr>
+                                    <th
+                                        style="text-align:left;padding:8px 6px;font-size:10px;font-weight:600;color:#888;text-transform:uppercase;background:#f9fafb;border-bottom:1px solid #e9ecef;">
+                                        Select</th>
+                                    <th
+                                        style="text-align:left;padding:8px 6px;font-size:10px;font-weight:600;color:#888;text-transform:uppercase;background:#f9fafb;border-bottom:1px solid #e9ecef;">
+                                        Credit #</th>
+                                    <th
+                                        style="text-align:left;padding:8px 6px;font-size:10px;font-weight:600;color:#888;text-transform:uppercase;background:#f9fafb;border-bottom:1px solid #e9ecef;">
+                                        Date</th>
+                                    <th
+                                        style="text-align:right;padding:8px 6px;font-size:10px;font-weight:600;color:#888;text-transform:uppercase;background:#f9fafb;border-bottom:1px solid #e9ecef;">
+                                        Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="applyCreditsList"></tbody>
+                        </table>
+                        <div style="display:flex;gap:10px;justify-content:flex-end;">
+                            <button onclick="closeApplyCreditsModal()"
+                                style="padding:8px 22px;border-radius:5px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid #d1d5db;background:#fff;color:#333;font-family:inherit;">Cancel</button>
+                            <button onclick="applySelectedCredits()"
+                                style="padding:8px 22px;border-radius:5px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid #2563eb;background:#2563eb;color:#fff;font-family:inherit;">Apply
+                                Selected</button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Tabs -->
@@ -989,12 +1056,33 @@
                     }
                 } catch (e) { }
 
-                if (status === 'paid' || hasPayment) {
+                const markOpenBtn = document.getElementById('markAsOpenBtn');
+                const draftBanner = document.getElementById('draftBanner');
+
+                if (status === 'draft') {
+                    // Draft: show Mark as Open, hide Record Payment
                     banner.style.display = 'none';
+                    draftBanner.style.display = 'flex';
                     payBtn.style.display = 'none';
+                    markOpenBtn.style.display = 'flex';
+                } else if (status === 'paid' || hasPayment) {
+                    banner.style.display = 'none';
+                    draftBanner.style.display = 'none';
+                    payBtn.style.display = 'none';
+                    markOpenBtn.style.display = 'none';
                 } else {
+                    // Open, Overdue, etc: show Record Payment
                     banner.style.display = 'flex';
+                    draftBanner.style.display = 'none';
                     payBtn.style.display = 'flex';
+                    markOpenBtn.style.display = 'none';
+                }
+
+                // Credits Available check (non-blocking)
+                const creditsBanner = document.getElementById('creditsBanner');
+                creditsBanner.style.display = 'none';
+                if (status === 'open' || status === 'partially paid' || status === 'overdue') {
+                    checkVendorCredits(bill.supplier_id, bill.supplier_name);
                 }
 
                 // Bill ID on card
@@ -1097,6 +1185,265 @@
                 window.location.href = '/new-vendor-credit.html?billId=' + currentBill.id;
             } else {
                 window.location.href = '/new-vendor-credit.html';
+            }
+        }
+
+        async function markAsOpen() {
+            if (!currentBill) return;
+            if (!confirm('Mark this bill as Open? It will be included in reports and financial statements.')) return;
+            try {
+                const res = await fetch('/api/bills/' + currentBill.id, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'Open' })
+                });
+                if (res.ok) {
+                    loadBillDetail(currentBill.id);
+                    loadSidebar();
+                } else {
+                    const err = await res.json();
+                    alert(err.error || 'Failed to update bill status');
+                }
+            } catch (e) {
+                console.error(e);
+                alert('Error updating bill status');
+            }
+        }
+        let vendorCreditsCache = [];
+
+        async function checkVendorCredits(supplierId, supplierName) {
+            const creditsBanner = document.getElementById('creditsBanner');
+            vendorCreditsCache = [];
+            try {
+                // Also compute overpayment
+                const vName = (supplierName || '').trim().toLowerCase();
+                let totalBilled = 0, totalPaid = 0;
+                const [vcRes, bRes, pRes] = await Promise.all([
+                    fetch('/api/vendor-credits'),
+                    fetch('/api/bills'),
+                    fetch('/api/payments-made')
+                ]);
+
+                let vcTotal = 0;
+                if (vcRes.ok) {
+                    const allVC = await vcRes.json();
+                    vendorCreditsCache = allVC.filter(vc => {
+                        const matches = (vc.supplier_id == supplierId) || (vc.supplier_name || '').trim().toLowerCase() === vName;
+                        const st = (vc.status || '').toLowerCase();
+                        return matches && (st === 'open' || st === 'active');
+                    });
+                    vcTotal = vendorCreditsCache.reduce((s, vc) => s + parseFloat(vc.total_amount || 0), 0);
+                }
+
+                if (bRes.ok) {
+                    const allBills = await bRes.json();
+                    allBills.filter(b => (b.supplier_id == supplierId || (b.supplier_name || '').trim().toLowerCase() === vName) && (b.status || '').toUpperCase() !== 'DRAFT')
+                        .forEach(b => totalBilled += parseFloat(b.total_amount || 0));
+                }
+                if (pRes.ok) {
+                    const allPay = await pRes.json();
+                    allPay.filter(p => (p.supplier_id == supplierId || (p.supplier_name || '').trim().toLowerCase() === vName) && (p.status || '').toUpperCase() === 'PAID')
+                        .forEach(p => totalPaid += parseFloat(p.amount_paid || 0));
+                }
+
+                const overpayment = Math.max(0, totalPaid - totalBilled);
+                const totalUnused = vcTotal + overpayment;
+
+                if (totalUnused > 0) {
+                    document.getElementById('creditsAvailableAmt').textContent = 'PHP ' + totalUnused.toFixed(2);
+                    creditsBanner.style.display = 'flex';
+                    const acBtn = document.getElementById('applyCreditsBtn');
+                    if (acBtn) acBtn.style.display = 'inline-flex';
+                } else {
+                    creditsBanner.style.display = 'none';
+                    const acBtn = document.getElementById('applyCreditsBtn');
+                    if (acBtn) acBtn.style.display = 'none';
+                }
+            } catch (e) {
+                console.error('Error checking vendor credits:', e);
+                creditsBanner.style.display = 'none';
+            }
+        }
+
+        function openApplyCreditsModal() {
+            const modal = document.getElementById('applyCreditsModal');
+            const tbody = document.getElementById('applyCreditsList');
+            const fmtDate = d => { if (!d) return ''; const dt = new Date(d); return dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); };
+
+            // Compute current bill balance
+            const billTotal = parseFloat(currentBill.total_amount || 0);
+            // Fetch balance_due dynamically (we'll show it in the modal header)
+            const headerEl = document.querySelector('#applyCreditsModal h3');
+            const descEl = document.querySelector('#applyCreditsModal p');
+
+            (async () => {
+                try {
+                    const bRes = await fetch('/api/bills');
+                    if (bRes.ok) {
+                        const allBills = await bRes.json();
+                        const thisBill = allBills.find(b => b.id === currentBill.id);
+                        if (thisBill) {
+                            const balDue = parseFloat(thisBill.balance_due || thisBill.total_amount || 0);
+                            descEl.innerHTML = `Bill Balance Due: <strong>PHP ${balDue.toFixed(2)}</strong>. Select credits to apply (max: bill balance).`;
+                        }
+                    }
+                } catch (e) { }
+            })();
+
+            if (vendorCreditsCache.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;color:#999;font-size:12px;">No credits available to apply.</td></tr>';
+            } else {
+                tbody.innerHTML = vendorCreditsCache.map((vc, i) => {
+                    const amt = parseFloat(vc.total_amount || 0);
+                    return `<tr>
+                        <td style="padding:8px 6px;border-bottom:1px solid #f0f0f0;"><input type="checkbox" class="credit-check" data-idx="${i}" data-id="${vc.id}" data-amount="${amt}"></td>
+                        <td style="padding:8px 6px;border-bottom:1px solid #f0f0f0;font-size:12px;color:#4285f4;font-weight:500;">${vc.credit_number || 'VC-' + vc.id}</td>
+                        <td style="padding:8px 6px;border-bottom:1px solid #f0f0f0;font-size:12px;">${fmtDate(vc.credit_date)}</td>
+                        <td style="padding:8px 6px;border-bottom:1px solid #f0f0f0;font-size:12px;text-align:right;">PHP ${amt.toFixed(2)}</td>
+                    </tr>`;
+                }).join('');
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        function closeApplyCreditsModal() {
+            document.getElementById('applyCreditsModal').style.display = 'none';
+        }
+
+        async function applySelectedCredits() {
+            const checked = document.querySelectorAll('.credit-check:checked');
+            if (checked.length === 0) { alert('Please select at least one credit to apply.'); return; }
+
+            // Get current bill balance_due
+            let balanceDue = parseFloat(currentBill.total_amount || 0);
+            try {
+                const bRes = await fetch('/api/bills');
+                if (bRes.ok) {
+                    const allBills = await bRes.json();
+                    const thisBill = allBills.find(b => b.id === currentBill.id);
+                    if (thisBill) {
+                        balanceDue = parseFloat(thisBill.balance_due != null ? thisBill.balance_due : thisBill.total_amount || 0);
+                    }
+                }
+            } catch (e) { }
+
+            if (balanceDue <= 0) {
+                alert('This bill has no remaining balance to apply credits against.');
+                return;
+            }
+
+            // Collect selected credits
+            const selectedCredits = [];
+            let totalSelected = 0;
+            checked.forEach(cb => {
+                const amt = parseFloat(cb.dataset.amount || 0);
+                totalSelected += amt;
+                selectedCredits.push({ id: cb.dataset.id, amount: amt });
+            });
+
+            // The actual amount to apply is capped at the bill balance
+            const amountToApply = Math.min(totalSelected, balanceDue);
+
+            const msg = totalSelected > balanceDue
+                ? `The selected credits (PHP ${totalSelected.toFixed(2)}) exceed the bill balance (PHP ${balanceDue.toFixed(2)}).\n\nOnly PHP ${amountToApply.toFixed(2)} will be applied. The remaining PHP ${(totalSelected - amountToApply).toFixed(2)} will stay as unused credit.\n\nProceed?`
+                : `Apply PHP ${amountToApply.toFixed(2)} in credits to this bill?`;
+
+            if (!confirm(msg)) return;
+
+            try {
+                // Process credits: deduct from each credit in order until amountToApply is consumed
+                let remaining = amountToApply;
+
+                for (const credit of selectedCredits) {
+                    if (remaining <= 0) break;
+
+                    const creditAmt = credit.amount;
+                    const deduction = Math.min(remaining, creditAmt);
+                    const leftover = creditAmt - deduction;
+                    remaining -= deduction;
+
+                    if (leftover <= 0.01) {
+                        // Fully consumed — mark as applied
+                        await fetch('/api/vendor-credits/' + credit.id, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ status: 'applied', total_amount: 0 })
+                        });
+                    } else {
+                        // Partially consumed — reduce the credit amount, keep open
+                        await fetch('/api/vendor-credits/' + credit.id, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ total_amount: leftover, sub_total: leftover })
+                        });
+                    }
+                }
+
+                // Create a payment record for the credit application so balance_due auto-calculates
+                const today = new Date();
+                const payDate = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+
+                // Get next payment number
+                let payNum = 'CR-APPLIED';
+                try {
+                    const numRes = await fetch('/api/payments-made/next-number');
+                    if (numRes.ok) {
+                        const numData = await numRes.json();
+                        payNum = numData.next_number || payNum;
+                    }
+                } catch (e) { }
+
+                await fetch('/api/payments-made', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        payment_number: payNum,
+                        bill_id: currentBill.id,
+                        bill_number: currentBill.bill_number,
+                        supplier_id: currentBill.supplier_id || null,
+                        supplier_name: currentBill.supplier_name || '',
+                        amount_paid: amountToApply,
+                        bank_charges: 0,
+                        tax_deducted: false,
+                        payment_date: payDate,
+                        payment_mode: 'Credit Applied',
+                        paid_through: 'Vendor Credit',
+                        location: 'Head Office',
+                        reference_number: '',
+                        notes: 'Credit applied to bill',
+                        status: 'PAID'
+                    })
+                });
+
+                // Check if bill is now fully paid
+                const newBalance = balanceDue - amountToApply;
+                if (newBalance <= 0.01) {
+                    // Mark bill as PAID
+                    await fetch('/api/bills/' + currentBill.id, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status: 'Paid' })
+                    });
+                }
+
+                closeApplyCreditsModal();
+
+                const summaryParts = [`PHP ${amountToApply.toFixed(2)} in credits applied to this bill.`];
+                if (newBalance <= 0.01) {
+                    summaryParts.push('Bill has been marked as PAID.');
+                }
+                if (totalSelected > balanceDue) {
+                    summaryParts.push(`PHP ${(totalSelected - amountToApply).toFixed(2)} remains as unused credit.`);
+                }
+                alert(summaryParts.join('\n'));
+
+                // Reload to refresh everything
+                loadBillDetail(currentBill.id);
+                loadSidebar();
+            } catch (e) {
+                console.error('Error applying credits:', e);
+                alert('Failed to apply credits.');
             }
         }
     </script>

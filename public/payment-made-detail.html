@@ -783,24 +783,72 @@
             if (!currentPayment) return;
             if (!confirm('Mark this payment as PAID? This will also update the bill status.')) return;
 
+            // Disable button immediately to prevent double-clicks
+            const markBtn = document.getElementById('markAsPaidBtn');
+            markBtn.disabled = true;
+            markBtn.style.opacity = '0.6';
+            markBtn.style.pointerEvents = 'none';
+            const originalText = markBtn.innerHTML;
+            markBtn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:4px;">⏳ Processing...</span>';
+
             try {
                 const res = await fetch('/api/payments-made/' + currentPayment.id + '/mark-paid', {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' }
                 });
-                if (!res.ok) {
-                    const err = await res.json();
-                    alert('Error: ' + (err.error || 'Failed to update'));
+
+                if (res.ok) {
+                    showToast('Payment marked as Paid!');
+                    await loadSidebar();
+                    await loadPaymentDetail(currentPayment.id);
+                    highlightSidebar(currentPayment.id);
                     return;
                 }
 
-                showToast('Payment marked as Paid!');
-                await loadSidebar();
-                await loadPaymentDetail(currentPayment.id);
-                highlightSidebar(currentPayment.id);
+                // Response not OK — verify actual status before showing error
+                const verifyRes = await fetch('/api/payments-made/' + currentPayment.id);
+                if (verifyRes.ok) {
+                    const verified = await verifyRes.json();
+                    if ((verified.status || '').toUpperCase() === 'PAID') {
+                        // Payment actually succeeded — treat as success
+                        showToast('Payment marked as Paid!');
+                        await loadSidebar();
+                        await loadPaymentDetail(currentPayment.id);
+                        highlightSidebar(currentPayment.id);
+                        return;
+                    }
+                }
+
+                // Genuinely failed — show error
+                let errMsg = 'Failed to update';
+                try { const err = await res.json(); errMsg = err.error || errMsg; } catch (e) { }
+                alert('Error: ' + errMsg);
+                // Re-enable button
+                markBtn.disabled = false;
+                markBtn.style.opacity = '1';
+                markBtn.style.pointerEvents = '';
+                markBtn.innerHTML = originalText;
             } catch (e) {
                 console.error('Error marking as paid:', e);
-                alert('Failed to mark as paid');
+                // Network error — verify status before showing failure
+                try {
+                    const verifyRes = await fetch('/api/payments-made/' + currentPayment.id);
+                    if (verifyRes.ok) {
+                        const verified = await verifyRes.json();
+                        if ((verified.status || '').toUpperCase() === 'PAID') {
+                            showToast('Payment marked as Paid!');
+                            await loadSidebar();
+                            await loadPaymentDetail(currentPayment.id);
+                            highlightSidebar(currentPayment.id);
+                            return;
+                        }
+                    }
+                } catch (ve) { }
+                alert('Failed to mark as paid. Please refresh and try again.');
+                markBtn.disabled = false;
+                markBtn.style.opacity = '1';
+                markBtn.style.pointerEvents = '';
+                markBtn.innerHTML = originalText;
             }
         }
 

@@ -133,15 +133,38 @@ router.post('/', async (req, res) => {
     }
 });
 
-// PUT update vendor credit (status, etc.)
+// PUT update vendor credit (status, total_amount for partial application, etc.)
 router.put('/:id', async (req, res) => {
     try {
         const db = database.getDb();
-        const { status } = req.body;
-        if (!status) {
-            return res.status(400).json({ error: 'Status is required' });
+        const { status, total_amount, sub_total } = req.body;
+
+        // Build dynamic update
+        const updates = [];
+        const values = [];
+        let paramIdx = 1;
+
+        if (status) {
+            updates.push(`status = $${paramIdx++}`);
+            values.push(status);
         }
-        const result = await db.query('UPDATE vendor_credits SET status = $1 WHERE id = $2 RETURNING *', [status, req.params.id]);
+        if (total_amount !== undefined && total_amount !== null) {
+            updates.push(`total_amount = $${paramIdx++}`);
+            values.push(parseFloat(total_amount));
+            // Also update sub_total to stay in sync
+            updates.push(`sub_total = $${paramIdx++}`);
+            values.push(parseFloat(sub_total !== undefined && sub_total !== null ? sub_total : total_amount));
+        }
+
+        if (updates.length === 0) {
+            return res.status(400).json({ error: 'At least one field (status or total_amount) is required' });
+        }
+
+        values.push(req.params.id);
+        const result = await db.query(
+            `UPDATE vendor_credits SET ${updates.join(', ')} WHERE id = $${paramIdx} RETURNING *`,
+            values
+        );
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Vendor credit not found' });
         }

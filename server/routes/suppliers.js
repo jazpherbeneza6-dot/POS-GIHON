@@ -1,6 +1,30 @@
 const express = require('express');
 const router = express.Router();
 const database = require('../database');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+// Ensure vendor contacts upload directory exists
+const vendorContactUploadDir = path.join(__dirname, '../../public/uploads/vendor-contacts');
+if (!fs.existsSync(vendorContactUploadDir)) {
+  fs.mkdirSync(vendorContactUploadDir, { recursive: true });
+}
+
+const contactStorage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, vendorContactUploadDir),
+  filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname.replace(/\s+/g, '_'))
+});
+const contactUpload = multer({
+  storage: contactStorage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowed = /jpeg|jpg|png|gif|bmp/;
+    const ext = allowed.test(path.extname(file.originalname).toLowerCase());
+    const mime = allowed.test(file.mimetype);
+    cb(null, ext && mime);
+  }
+});
 
 // All vendor fields for INSERT/UPDATE
 const VENDOR_FIELDS = [
@@ -328,17 +352,47 @@ router.get('/:id/contacts', async (req, res) => {
 // Add contact person to vendor
 router.post('/:id/contacts', async (req, res) => {
   try {
-    const { salutation, first_name, last_name, email, phone } = req.body;
+    const { salutation, first_name, last_name, email, phone, profile_image } = req.body;
     const db = database.getDb();
     const result = await db.query(
-      `INSERT INTO vendor_contact_persons (vendor_id, salutation, first_name, last_name, email, phone)
-       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-      [req.params.id, salutation || null, first_name || null, last_name || null, email || null, phone || null]
+      `INSERT INTO vendor_contact_persons (vendor_id, salutation, first_name, last_name, email, phone, profile_image)
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+      [req.params.id, salutation || null, first_name || null, last_name || null, email || null, phone || null, profile_image || null]
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
     console.error('Error adding vendor contact:', error);
     res.status(500).json({ error: 'Failed to add contact' });
+  }
+});
+
+// Upload contact person profile image
+router.post('/:id/contacts/upload-image', contactUpload.single('profile_image'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+    const imageUrl = '/uploads/vendor-contacts/' + req.file.filename;
+    res.json({ imageUrl });
+  } catch (error) {
+    console.error('Error uploading contact image:', error);
+    res.status(500).json({ error: 'Failed to upload image' });
+  }
+});
+
+// Update contact person
+router.put('/:id/contacts/:contactId', async (req, res) => {
+  try {
+    const { salutation, first_name, last_name, email, phone, profile_image } = req.body;
+    const db = database.getDb();
+    const result = await db.query(
+      `UPDATE vendor_contact_persons SET salutation=$1, first_name=$2, last_name=$3, email=$4, phone=$5, profile_image=$6
+       WHERE id=$7 AND vendor_id=$8 RETURNING *`,
+      [salutation || null, first_name || null, last_name || null, email || null, phone || null, profile_image || null, req.params.contactId, req.params.id]
+    );
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Contact not found' });
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error updating vendor contact:', error);
+    res.status(500).json({ error: 'Failed to update contact' });
   }
 });
 

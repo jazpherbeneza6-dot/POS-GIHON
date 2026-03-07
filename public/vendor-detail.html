@@ -10,7 +10,7 @@
     <title>Vendor Detail - Inventory Management</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/sidebar.css">
-    <link rel="stylesheet" href="/css/global.css">
+    <!-- global.css removed — its body overflow:auto !important breaks panel-level scrolling -->
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
         rel="stylesheet">
@@ -28,6 +28,9 @@
             padding: 0;
             background: #f5f6fa;
             font-size: 13px;
+            overflow: hidden !important;
+            /* Override global.css — this page uses panel-level scroll */
+            height: 100vh !important;
         }
 
         .main-layout {
@@ -40,6 +43,10 @@
             flex: 1;
             margin-left: 260px;
             background: #f5f6fa;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
         }
 
         /* Top Header Bar */
@@ -198,11 +205,12 @@
             border-bottom-color: #4285f4;
         }
 
-        /* Main Content Area — explicit height for scroll to work */
+        /* Main Content Area — fills remaining space via flex */
         .detail-body {
             display: flex;
-            height: calc(100vh - 95px);
+            flex: 1;
             overflow: hidden;
+            min-height: 0;
         }
 
         /* Left Panel */
@@ -211,9 +219,29 @@
             min-width: 480px;
             background: white;
             border-right: 1px solid #e9ecef;
-            overflow-y: auto;
+            overflow-y: scroll;
             padding: 0;
             height: 100%;
+            /* Override global scrollbar hiding from main.css */
+            scrollbar-width: thin;
+        }
+
+        .detail-left::-webkit-scrollbar {
+            display: block;
+            width: 6px;
+        }
+
+        .detail-left::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 3px;
+        }
+
+        .detail-left::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .detail-left {
+            overscroll-behavior: contain;
         }
 
         .vendor-info-card {
@@ -439,10 +467,25 @@
         /* Right Panel — scrollable */
         .detail-right {
             flex: 1;
-            overflow-y: auto;
-            padding: 24px;
-            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
+
+        .detail-right::-webkit-scrollbar {
+            display: block;
+            width: 6px;
+        }
+
+        .detail-right::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 3px;
+        }
+
+        .detail-right::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
 
         /* What's Next Card */
         .whats-next-card {
@@ -707,10 +750,14 @@
         /* Tab content areas */
         .tab-content-area {
             display: none;
+            flex: 1;
+            overflow-y: auto;
         }
 
         .tab-content-area.active {
-            display: block;
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
         }
 
         /* Scrollable tab containers — pointer-events ensured, no max-height clipping */
@@ -1443,441 +1490,438 @@
                 <div class="detail-tab" data-tab="statement" onclick="switchTab('statement', this)">Statement</div>
             </div>
 
-            <!-- Scroll wrapper — bypasses all broken containers -->
-            <div id="vendorScrollWrapper" style="height: calc(100vh - 95px); overflow-y: scroll;">
-                <!-- Main Content body -->
-                <div class="detail-body">
-                    <!-- LEFT PANEL -->
-                    <div class="detail-left">
-                        <!-- Vendor Info Card -->
-                        <div class="vendor-info-card">
-                            <div class="vendor-info-label" id="vendorInfoLabel"></div>
-                            <div class="vendor-contact-row">
-                                <div class="vendor-avatar" id="vendorAvatar"><svg width="20" height="20"
-                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                                        <circle cx="12" cy="7" r="4" />
-                                    </svg></div>
-                                <div class="vendor-contact-details" id="vendorContactDetails">
-                                    <!-- Filled dynamically -->
+            <!-- Main Content body -->
+            <div class="detail-body">
+                <!-- LEFT PANEL -->
+                <div class="detail-left">
+                    <!-- Vendor Info Card -->
+                    <div class="vendor-info-card">
+                        <div class="vendor-info-label" id="vendorInfoLabel"></div>
+                        <div class="vendor-contact-row">
+                            <div class="vendor-avatar" id="vendorAvatar"><svg width="20" height="20" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                    <circle cx="12" cy="7" r="4" />
+                                </svg></div>
+                            <div class="vendor-contact-details" id="vendorContactDetails">
+                                <!-- Filled dynamically -->
+                            </div>
+                            <span class="vendor-settings-icon">⚙</span>
+                        </div>
+                    </div>
+
+                    <!-- ADDRESS Section -->
+                    <div class="section-header" onclick="toggleSection('address')">
+                        <span class="section-title">ADDRESS</span>
+                        <span class="section-toggle" id="addressToggle">▲</span>
+                    </div>
+                    <div class="section-content" id="addressContent">
+                        <div class="detail-row">
+                            <div class="detail-label">Billing Address</div>
+                            <div class="detail-value" id="billingAddressDisplay">No Billing Address</div>
+                            <div class="detail-value link" style="font-size: 12px; margin-top: 4px;"
+                                onclick="openAddressModal('billing')">+ New Address</div>
+                        </div>
+                        <div class="detail-row" style="margin-top: 14px;">
+                            <div class="detail-label">Shipping Address</div>
+                            <div class="detail-value" id="shippingAddressDisplay">No Shipping Address</div>
+                            <div class="detail-value link" style="font-size: 12px; margin-top: 4px;"
+                                onclick="openAddressModal('shipping')">+ New Address</div>
+                        </div>
+                    </div>
+
+                    <!-- OTHER DETAILS Section -->
+                    <div class="section-header" onclick="toggleSection('otherDetails')">
+                        <span class="section-title">OTHER DETAILS</span>
+                        <span class="section-toggle" id="otherDetailsToggle">▲</span>
+                    </div>
+                    <div class="section-content" id="otherDetailsContent">
+                        <div class="detail-row">
+                            <div class="detail-label">Default Currency</div>
+                            <div class="detail-value" id="currencyDisplay">PHP</div>
+                        </div>
+                    </div>
+
+                    <!-- CONTACT PERSONS Section -->
+                    <div class="contacts-header" onclick="toggleSection('contacts')">
+                        <span class="section-title">CONTACT PERSONS</span>
+                        <div class="contacts-actions">
+                            <button class="add-contact-icon" onclick="event.stopPropagation(); addContactPerson()"
+                                title="Add Contact Person">+</button>
+                            <span class="section-toggle" id="contactsToggle">▲</span>
+                        </div>
+                    </div>
+                    <div class="contacts-content" id="contactsContent">
+                        <div class="no-contacts" id="noContactsMessage">No contact persons found.</div>
+                        <div id="contactPersonsList"></div>
+                    </div>
+
+                    <!-- RECORD INFO Section -->
+                    <div class="section-header" onclick="toggleSection('recordInfo')">
+                        <span class="section-title">RECORD INFO</span>
+                        <span class="section-toggle" id="recordInfoToggle">▼</span>
+                    </div>
+                    <div class="section-content collapsed" id="recordInfoContent">
+                        <div class="detail-row">
+                            <div class="detail-label">Created</div>
+                            <div class="detail-value" id="createdAtDisplay">-</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Last Modified</div>
+                            <div class="detail-value" id="updatedAtDisplay">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT PANEL -->
+                <div class="detail-right">
+                    <!-- Overview Tab Content -->
+                    <div class="tab-content-area active" id="tab-overview">
+                        <!-- What's Next Card -->
+                        <div class="whats-next-card">
+                            <div class="whats-next-header">
+                                <span class="whats-next-icon">✦</span>
+                                <span class="whats-next-title">WHAT'S NEXT?</span>
+                            </div>
+                            <div class="whats-next-text">
+                                Create a <a href="#">purchase order</a> or record a <a href="#">bill</a> for your
+                                vendor
+                                purchases.
+                            </div>
+                            <div class="whats-next-actions">
+                                <button class="btn-wn btn-wn-primary">New Bill</button>
+                                <button class="btn-wn btn-wn-outline">New Purchase Order</button>
+                                <button class="btn-wn-more">⋮</button>
+                            </div>
+                        </div>
+
+                        <!-- Payment Info -->
+                        <div class="payment-info">
+                            <div class="payment-row">
+                                <div class="payment-label">Payment due period</div>
+                                <div class="payment-value" id="paymentTermsDisplay">Due on Receipt</div>
+                            </div>
+
+                            <div class="payables-title">Payables</div>
+                            <table class="payables-table">
+                                <thead>
+                                    <tr>
+                                        <th>CURRENCY</th>
+                                        <th>OUTSTANDING PAYABLES</th>
+                                        <th>UNUSED CREDITS</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td id="payableCurrency">PHP- Philippine Peso</td>
+                                        <td id="payableOutstanding">PHP0.00</td>
+                                        <td id="payableCredits">PHP0.00</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="items-summary">
+                                <div class="items-summary-item">
+                                    <span class="items-summary-label">Items to be received:</span>
+                                    <span class="items-summary-value" id="itemsToReceive">0</span>
                                 </div>
-                                <span class="vendor-settings-icon">⚙</span>
+                                <div class="items-summary-item">
+                                    <span class="items-summary-label">Total items ordered:</span>
+                                    <span class="items-summary-value" id="totalItemsOrdered">0</span>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- ADDRESS Section -->
-                        <div class="section-header" onclick="toggleSection('address')">
-                            <span class="section-title">ADDRESS</span>
-                            <span class="section-toggle" id="addressToggle">▲</span>
-                        </div>
-                        <div class="section-content" id="addressContent">
-                            <div class="detail-row">
-                                <div class="detail-label">Billing Address</div>
-                                <div class="detail-value" id="billingAddressDisplay">No Billing Address</div>
-                                <div class="detail-value link" style="font-size: 12px; margin-top: 4px;"
-                                    onclick="openAddressModal('billing')">+ New Address</div>
+                        <!-- Timeline -->
+                        <div id="timelineContainer"></div>
+                    </div>
+
+                    <!-- Comments Tab Content -->
+                    <div class="tab-content-area" id="tab-comments">
+                        <!-- Comment Editor -->
+                        <div class="comment-editor-card">
+                            <div class="comment-toolbar">
+                                <button class="comment-toolbar-btn bold" title="Bold"
+                                    onclick="formatComment('bold')">B</button>
+                                <button class="comment-toolbar-btn italic" title="Italic"
+                                    onclick="formatComment('italic')">I</button>
+                                <button class="comment-toolbar-btn underline" title="Underline"
+                                    onclick="formatComment('underline')">U</button>
                             </div>
-                            <div class="detail-row" style="margin-top: 14px;">
-                                <div class="detail-label">Shipping Address</div>
-                                <div class="detail-value" id="shippingAddressDisplay">No Shipping Address</div>
-                                <div class="detail-value link" style="font-size: 12px; margin-top: 4px;"
-                                    onclick="openAddressModal('shipping')">+ New Address</div>
+                            <textarea class="comment-input" id="commentInput" placeholder="Add Comment"></textarea>
+                        </div>
+
+                        <!-- All Comments Section -->
+                        <div class="all-comments-header">ALL COMMENTS</div>
+                        <div id="commentsListContainer">
+                            <div class="no-comments-msg" id="noCommentsMsg">No comments yet.</div>
+                        </div>
+                        <div id="commentsList"></div>
+                    </div>
+
+                    <!-- Transactions Tab Content -->
+                    <div class="tab-content-area" id="tab-transactions">
+                        <!-- Bills Section -->
+                        <div class="txn-section">
+                            <div class="txn-section-header" onclick="toggleTxnSection('bills')">
+                                <div class="txn-section-left">
+                                    <span class="txn-section-toggle" id="billsToggle">▼</span>
+                                    <span class="txn-section-title">Bills</span>
+                                </div>
+                                <div class="txn-section-actions">
+                                    <button class="txn-filter-btn">▼ Status: All ▾</button>
+                                    <button class="txn-new-btn">+ New</button>
+                                </div>
+                            </div>
+                            <div class="txn-section-body" id="billsBody">
+                                <table class="txn-table">
+                                    <thead>
+                                        <tr>
+                                            <th>DATE ⇅</th>
+                                            <th>BILL#</th>
+                                            <th>ORDER NUMBER</th>
+                                            <th>VENDOR NAME</th>
+                                            <th>AMOUNT</th>
+                                            <th>BALANCE DUE</th>
+                                            <th>STATUS</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                                <div class="txn-empty">There are no Bills -<a href="#">Add New</a></div>
                             </div>
                         </div>
 
-                        <!-- OTHER DETAILS Section -->
-                        <div class="section-header" onclick="toggleSection('otherDetails')">
-                            <span class="section-title">OTHER DETAILS</span>
-                            <span class="section-toggle" id="otherDetailsToggle">▲</span>
-                        </div>
-                        <div class="section-content" id="otherDetailsContent">
-                            <div class="detail-row">
-                                <div class="detail-label">Default Currency</div>
-                                <div class="detail-value" id="currencyDisplay">PHP</div>
+                        <!-- Bill Payments Section -->
+                        <div class="txn-section">
+                            <div class="txn-section-header" onclick="toggleTxnSection('billPayments')">
+                                <div class="txn-section-left">
+                                    <span class="txn-section-toggle" id="billPaymentsToggle">▼</span>
+                                    <span class="txn-section-title">Bill Payments</span>
+                                </div>
+                                <div class="txn-section-actions">
+                                    <button class="txn-new-btn">+ New</button>
+                                </div>
+                            </div>
+                            <div class="txn-section-body" id="billPaymentsBody">
+                                <table class="txn-table">
+                                    <thead>
+                                        <tr>
+                                            <th>DATE ⇅</th>
+                                            <th>PAYMENT NUMBER</th>
+                                            <th>REFERENCE NUMBER</th>
+                                            <th>PAYMENT MODE</th>
+                                            <th>AMOUNT PAID</th>
+                                            <th>UNUSED AMOUNT</th>
+                                            <th>STATUS</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                                <div class="txn-empty">No Payments Made yet. -<a href="#">Add New</a></div>
                             </div>
                         </div>
 
-                        <!-- CONTACT PERSONS Section -->
-                        <div class="contacts-header" onclick="toggleSection('contacts')">
-                            <span class="section-title">CONTACT PERSONS</span>
-                            <div class="contacts-actions">
-                                <button class="add-contact-icon" onclick="event.stopPropagation(); addContactPerson()"
-                                    title="Add Contact Person">+</button>
-                                <span class="section-toggle" id="contactsToggle">▲</span>
+                        <!-- Purchase Orders Section -->
+                        <div class="txn-section">
+                            <div class="txn-section-header" onclick="toggleTxnSection('purchaseOrders')">
+                                <div class="txn-section-left">
+                                    <span class="txn-section-toggle" id="purchaseOrdersToggle">▼</span>
+                                    <span class="txn-section-title">Purchase Orders</span>
+                                </div>
+                                <div class="txn-section-actions">
+                                    <button class="txn-filter-btn">▼ Status: All ▾</button>
+                                    <button class="txn-new-btn">+ New</button>
+                                </div>
                             </div>
-                        </div>
-                        <div class="contacts-content" id="contactsContent">
-                            <div class="no-contacts" id="noContactsMessage">No contact persons found.</div>
-                            <div id="contactPersonsList"></div>
+                            <div class="txn-section-body" id="purchaseOrdersBody">
+                                <table class="txn-table">
+                                    <thead>
+                                        <tr>
+                                            <th>PURCHASE ORDER#</th>
+                                            <th>REFERENCE NUMBER</th>
+                                            <th>DATE</th>
+                                            <th>DELIVERY DATE ⇅</th>
+                                            <th>AMOUNT</th>
+                                            <th>STATUS</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                                <div class="txn-empty">There are no Purchase Orders -<a href="#">Add New</a></div>
+                            </div>
                         </div>
 
-                        <!-- RECORD INFO Section -->
-                        <div class="section-header" onclick="toggleSection('recordInfo')">
-                            <span class="section-title">RECORD INFO</span>
-                            <span class="section-toggle" id="recordInfoToggle">▼</span>
-                        </div>
-                        <div class="section-content collapsed" id="recordInfoContent">
-                            <div class="detail-row">
-                                <div class="detail-label">Created</div>
-                                <div class="detail-value" id="createdAtDisplay">-</div>
+                        <!-- Purchase Receives Section -->
+                        <div class="txn-section">
+                            <div class="txn-section-header" onclick="toggleTxnSection('purchaseReceives')">
+                                <div class="txn-section-left">
+                                    <span class="txn-section-toggle" id="purchaseReceivesToggle">▼</span>
+                                    <span class="txn-section-title">Purchase Receives</span>
+                                </div>
+                                <div class="txn-section-actions">
+                                    <button class="txn-filter-btn">▼ Status: All ▾</button>
+                                    <button class="txn-new-btn">+ New</button>
+                                </div>
                             </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Last Modified</div>
-                                <div class="detail-value" id="updatedAtDisplay">-</div>
+                            <div class="txn-section-body" id="purchaseReceivesBody">
+                                <table class="txn-table">
+                                    <thead>
+                                        <tr>
+                                            <th>PURCHASE RECEIVE#</th>
+                                            <th>DATE</th>
+                                            <th>PURCHASE ORDER#</th>
+                                            <th>QUANTITY</th>
+                                            <th>STATUS</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                                <div class="txn-empty">There are no Purchase Receives -<a href="#">Add New</a></div>
+                            </div>
+                        </div>
+
+                        <!-- Vendor Credits Section -->
+                        <div class="txn-section">
+                            <div class="txn-section-header" onclick="toggleTxnSection('vendorCredits')">
+                                <div class="txn-section-left">
+                                    <span class="txn-section-toggle" id="vendorCreditsToggle">▼</span>
+                                    <span class="txn-section-title">Vendor Credits</span>
+                                </div>
+                                <div class="txn-section-actions">
+                                    <button class="txn-filter-btn">▼ Status: All ▾</button>
+                                    <button class="txn-new-btn">+ New</button>
+                                </div>
+                            </div>
+                            <div class="txn-section-body" id="vendorCreditsBody">
+                                <table class="txn-table">
+                                    <thead>
+                                        <tr>
+                                            <th>DATE ⇅</th>
+                                            <th>CREDIT NOTE NUMBER</th>
+                                            <th>ORDER NUMBER</th>
+                                            <th>BALANCE</th>
+                                            <th>AMOUNT</th>
+                                            <th>STATUS</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                                <div class="txn-empty">No data to display -<a href="#">Add New</a></div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- RIGHT PANEL -->
-                    <div class="detail-right">
-                        <!-- Overview Tab Content -->
-                        <div class="tab-content-area active" id="tab-overview">
-                            <!-- What's Next Card -->
-                            <div class="whats-next-card">
-                                <div class="whats-next-header">
-                                    <span class="whats-next-icon">✦</span>
-                                    <span class="whats-next-title">WHAT'S NEXT?</span>
-                                </div>
-                                <div class="whats-next-text">
-                                    Create a <a href="#">purchase order</a> or record a <a href="#">bill</a> for your
-                                    vendor
-                                    purchases.
-                                </div>
-                                <div class="whats-next-actions">
-                                    <button class="btn-wn btn-wn-primary">New Bill</button>
-                                    <button class="btn-wn btn-wn-outline">New Purchase Order</button>
-                                    <button class="btn-wn-more">⋮</button>
-                                </div>
+                    <!-- Mails Tab Content -->
+                    <div class="tab-content-area" id="tab-mails">
+                        <div class="mails-card">
+                            <div class="mails-header">
+                                <span class="mails-title">System Mails</span>
+                                <button class="link-email-btn"><svg width="14" height="14" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;">
+                                        <path
+                                            d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                        <polyline points="22,6 12,13 2,6" />
+                                    </svg> Link Email account ▾</button>
                             </div>
-
-                            <!-- Payment Info -->
-                            <div class="payment-info">
-                                <div class="payment-row">
-                                    <div class="payment-label">Payment due period</div>
-                                    <div class="payment-value" id="paymentTermsDisplay">Due on Receipt</div>
-                                </div>
-
-                                <div class="payables-title">Payables</div>
-                                <table class="payables-table">
-                                    <thead>
-                                        <tr>
-                                            <th>CURRENCY</th>
-                                            <th>OUTSTANDING PAYABLES</th>
-                                            <th>UNUSED CREDITS</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td id="payableCurrency">PHP- Philippine Peso</td>
-                                            <td id="payableOutstanding">PHP0.00</td>
-                                            <td id="payableCredits">PHP0.00</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-
-                                <div class="items-summary">
-                                    <div class="items-summary-item">
-                                        <span class="items-summary-label">Items to be received:</span>
-                                        <span class="items-summary-value" id="itemsToReceive">0</span>
-                                    </div>
-                                    <div class="items-summary-item">
-                                        <span class="items-summary-label">Total items ordered:</span>
-                                        <span class="items-summary-value" id="totalItemsOrdered">0</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Timeline -->
-                            <div id="timelineContainer"></div>
-                        </div>
-
-                        <!-- Comments Tab Content -->
-                        <div class="tab-content-area" id="tab-comments">
-                            <!-- Comment Editor -->
-                            <div class="comment-editor-card">
-                                <div class="comment-toolbar">
-                                    <button class="comment-toolbar-btn bold" title="Bold"
-                                        onclick="formatComment('bold')">B</button>
-                                    <button class="comment-toolbar-btn italic" title="Italic"
-                                        onclick="formatComment('italic')">I</button>
-                                    <button class="comment-toolbar-btn underline" title="Underline"
-                                        onclick="formatComment('underline')">U</button>
-                                </div>
-                                <textarea class="comment-input" id="commentInput" placeholder="Add Comment"></textarea>
-                            </div>
-
-                            <!-- All Comments Section -->
-                            <div class="all-comments-header">ALL COMMENTS</div>
-                            <div id="commentsListContainer">
-                                <div class="no-comments-msg" id="noCommentsMsg">No comments yet.</div>
-                            </div>
-                            <div id="commentsList"></div>
-                        </div>
-
-                        <!-- Transactions Tab Content -->
-                        <div class="tab-content-area" id="tab-transactions">
-                            <!-- Bills Section -->
-                            <div class="txn-section">
-                                <div class="txn-section-header" onclick="toggleTxnSection('bills')">
-                                    <div class="txn-section-left">
-                                        <span class="txn-section-toggle" id="billsToggle">▼</span>
-                                        <span class="txn-section-title">Bills</span>
-                                    </div>
-                                    <div class="txn-section-actions">
-                                        <button class="txn-filter-btn">▼ Status: All ▾</button>
-                                        <button class="txn-new-btn">+ New</button>
-                                    </div>
-                                </div>
-                                <div class="txn-section-body" id="billsBody">
-                                    <table class="txn-table">
-                                        <thead>
-                                            <tr>
-                                                <th>DATE ⇅</th>
-                                                <th>BILL#</th>
-                                                <th>ORDER NUMBER</th>
-                                                <th>VENDOR NAME</th>
-                                                <th>AMOUNT</th>
-                                                <th>BALANCE DUE</th>
-                                                <th>STATUS</th>
-                                            </tr>
-                                        </thead>
-                                    </table>
-                                    <div class="txn-empty">There are no Bills -<a href="#">Add New</a></div>
-                                </div>
-                            </div>
-
-                            <!-- Bill Payments Section -->
-                            <div class="txn-section">
-                                <div class="txn-section-header" onclick="toggleTxnSection('billPayments')">
-                                    <div class="txn-section-left">
-                                        <span class="txn-section-toggle" id="billPaymentsToggle">▼</span>
-                                        <span class="txn-section-title">Bill Payments</span>
-                                    </div>
-                                    <div class="txn-section-actions">
-                                        <button class="txn-new-btn">+ New</button>
-                                    </div>
-                                </div>
-                                <div class="txn-section-body" id="billPaymentsBody">
-                                    <table class="txn-table">
-                                        <thead>
-                                            <tr>
-                                                <th>DATE ⇅</th>
-                                                <th>PAYMENT NUMBER</th>
-                                                <th>REFERENCE NUMBER</th>
-                                                <th>PAYMENT MODE</th>
-                                                <th>AMOUNT PAID</th>
-                                                <th>UNUSED AMOUNT</th>
-                                                <th>STATUS</th>
-                                            </tr>
-                                        </thead>
-                                    </table>
-                                    <div class="txn-empty">No Payments Made yet. -<a href="#">Add New</a></div>
-                                </div>
-                            </div>
-
-                            <!-- Purchase Orders Section -->
-                            <div class="txn-section">
-                                <div class="txn-section-header" onclick="toggleTxnSection('purchaseOrders')">
-                                    <div class="txn-section-left">
-                                        <span class="txn-section-toggle" id="purchaseOrdersToggle">▼</span>
-                                        <span class="txn-section-title">Purchase Orders</span>
-                                    </div>
-                                    <div class="txn-section-actions">
-                                        <button class="txn-filter-btn">▼ Status: All ▾</button>
-                                        <button class="txn-new-btn">+ New</button>
-                                    </div>
-                                </div>
-                                <div class="txn-section-body" id="purchaseOrdersBody">
-                                    <table class="txn-table">
-                                        <thead>
-                                            <tr>
-                                                <th>PURCHASE ORDER#</th>
-                                                <th>REFERENCE NUMBER</th>
-                                                <th>DATE</th>
-                                                <th>DELIVERY DATE ⇅</th>
-                                                <th>AMOUNT</th>
-                                                <th>STATUS</th>
-                                            </tr>
-                                        </thead>
-                                    </table>
-                                    <div class="txn-empty">There are no Purchase Orders -<a href="#">Add New</a></div>
-                                </div>
-                            </div>
-
-                            <!-- Purchase Receives Section -->
-                            <div class="txn-section">
-                                <div class="txn-section-header" onclick="toggleTxnSection('purchaseReceives')">
-                                    <div class="txn-section-left">
-                                        <span class="txn-section-toggle" id="purchaseReceivesToggle">▼</span>
-                                        <span class="txn-section-title">Purchase Receives</span>
-                                    </div>
-                                    <div class="txn-section-actions">
-                                        <button class="txn-filter-btn">▼ Status: All ▾</button>
-                                        <button class="txn-new-btn">+ New</button>
-                                    </div>
-                                </div>
-                                <div class="txn-section-body" id="purchaseReceivesBody">
-                                    <table class="txn-table">
-                                        <thead>
-                                            <tr>
-                                                <th>PURCHASE RECEIVE#</th>
-                                                <th>DATE</th>
-                                                <th>PURCHASE ORDER#</th>
-                                                <th>QUANTITY</th>
-                                                <th>STATUS</th>
-                                            </tr>
-                                        </thead>
-                                    </table>
-                                    <div class="txn-empty">There are no Purchase Receives -<a href="#">Add New</a></div>
-                                </div>
-                            </div>
-
-                            <!-- Vendor Credits Section -->
-                            <div class="txn-section">
-                                <div class="txn-section-header" onclick="toggleTxnSection('vendorCredits')">
-                                    <div class="txn-section-left">
-                                        <span class="txn-section-toggle" id="vendorCreditsToggle">▼</span>
-                                        <span class="txn-section-title">Vendor Credits</span>
-                                    </div>
-                                    <div class="txn-section-actions">
-                                        <button class="txn-filter-btn">▼ Status: All ▾</button>
-                                        <button class="txn-new-btn">+ New</button>
-                                    </div>
-                                </div>
-                                <div class="txn-section-body" id="vendorCreditsBody">
-                                    <table class="txn-table">
-                                        <thead>
-                                            <tr>
-                                                <th>DATE ⇅</th>
-                                                <th>CREDIT NOTE NUMBER</th>
-                                                <th>ORDER NUMBER</th>
-                                                <th>BALANCE</th>
-                                                <th>AMOUNT</th>
-                                                <th>STATUS</th>
-                                            </tr>
-                                        </thead>
-                                    </table>
-                                    <div class="txn-empty">No data to display -<a href="#">Add New</a></div>
-                                </div>
+                            <div class="mails-empty">
+                                <span class="warn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                        stroke="#f59e0b" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path
+                                            d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                                        <line x1="12" y1="9" x2="12" y2="13" />
+                                        <line x1="12" y1="17" x2="12.01" y2="17" />
+                                    </svg></span> No emails sent.
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Mails Tab Content -->
-                        <div class="tab-content-area" id="tab-mails">
-                            <div class="mails-card">
-                                <div class="mails-header">
-                                    <span class="mails-title">System Mails</span>
-                                    <button class="link-email-btn"><svg width="14" height="14" viewBox="0 0 24 24"
-                                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;">
-                                            <path
-                                                d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                                            <polyline points="22,6 12,13 2,6" />
-                                        </svg> Link Email account ▾</button>
-                                </div>
-                                <div class="mails-empty">
-                                    <span class="warn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                                            stroke="#f59e0b" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round">
-                                            <path
-                                                d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-                                            <line x1="12" y1="9" x2="12" y2="13" />
-                                            <line x1="12" y1="17" x2="12.01" y2="17" />
-                                        </svg></span> No emails sent.
-                                </div>
-                            </div>
+                    <!-- Statement Tab Content -->
+                    <div class="tab-content-area" id="tab-statement">
+                        <div class="statement-header-info">
+                            <h2 id="stmtTitle">Vendor Statement</h2>
+                            <div class="date-range" id="stmtDateRange"></div>
                         </div>
 
-                        <!-- Statement Tab Content -->
-                        <div class="tab-content-area" id="tab-statement">
-                            <div class="statement-header-info">
-                                <h2 id="stmtTitle">Vendor Statement</h2>
-                                <div class="date-range" id="stmtDateRange"></div>
+                        <div class="statement-document">
+                            <!-- Company Info (top right) -->
+                            <div class="stmt-company-info">
+                                <div class="stmt-company-name">GIHON</div>
+                                <div class="stmt-company-detail">Philippines</div>
+                                <div class="stmt-company-detail">bitembling413@gmail.com</div>
                             </div>
 
-                            <div class="statement-document">
-                                <!-- Company Info (top right) -->
-                                <div class="stmt-company-info">
-                                    <div class="stmt-company-name">GIHON</div>
-                                    <div class="stmt-company-detail">Philippines</div>
-                                    <div class="stmt-company-detail">bitembling413@gmail.com</div>
-                                </div>
+                            <!-- To Section -->
+                            <div class="stmt-to-section">
+                                <div class="stmt-to-label">To</div>
+                                <div class="stmt-to-name" id="stmtToName"></div>
+                            </div>
 
-                                <!-- To Section -->
-                                <div class="stmt-to-section">
-                                    <div class="stmt-to-label">To</div>
-                                    <div class="stmt-to-name" id="stmtToName"></div>
-                                </div>
+                            <!-- Statement of Accounts Title -->
+                            <div class="stmt-title-section">
+                                <div class="stmt-title">Statement of Accounts</div>
+                                <div class="stmt-title-underline"></div>
+                                <div class="stmt-date-range" id="stmtAccountDateRange"></div>
+                            </div>
 
-                                <!-- Statement of Accounts Title -->
-                                <div class="stmt-title-section">
-                                    <div class="stmt-title">Statement of Accounts</div>
-                                    <div class="stmt-title-underline"></div>
-                                    <div class="stmt-date-range" id="stmtAccountDateRange"></div>
+                            <!-- Account Summary -->
+                            <div class="stmt-summary-box">
+                                <div class="stmt-summary-title">Account Summary</div>
+                                <div class="stmt-summary-row">
+                                    <span class="stmt-summary-label">Opening Balance</span>
+                                    <span class="stmt-summary-value" id="stmtOpeningBalance">PHP 0.00</span>
                                 </div>
-
-                                <!-- Account Summary -->
-                                <div class="stmt-summary-box">
-                                    <div class="stmt-summary-title">Account Summary</div>
-                                    <div class="stmt-summary-row">
-                                        <span class="stmt-summary-label">Opening Balance</span>
-                                        <span class="stmt-summary-value" id="stmtOpeningBalance">PHP 0.00</span>
-                                    </div>
-                                    <div class="stmt-summary-row">
-                                        <span class="stmt-summary-label">Billed Amount</span>
-                                        <span class="stmt-summary-value orange" id="stmtBilledAmount">PHP 0.00</span>
-                                    </div>
-                                    <div class="stmt-summary-row">
-                                        <span class="stmt-summary-label">Amount Paid</span>
-                                        <span class="stmt-summary-value" id="stmtAmountPaid">PHP 0.00</span>
-                                    </div>
-                                    <div class="stmt-summary-row">
-                                        <span class="stmt-summary-label">Credits Applied</span>
-                                        <span class="stmt-summary-value" id="stmtCreditsApplied">PHP 0.00</span>
-                                    </div>
-                                    <div class="stmt-summary-row">
-                                        <span class="stmt-summary-label">Balance Due</span>
-                                        <span class="stmt-summary-value" id="stmtBalanceDue">PHP 0.00</span>
-                                    </div>
+                                <div class="stmt-summary-row">
+                                    <span class="stmt-summary-label">Billed Amount</span>
+                                    <span class="stmt-summary-value orange" id="stmtBilledAmount">PHP 0.00</span>
                                 </div>
-
-                                <!-- Transactions Table -->
-                                <table class="stmt-transactions-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Date</th>
-                                            <th>Transactions</th>
-                                            <th>Details</th>
-                                            <th>Amount</th>
-                                            <th>Payments</th>
-                                            <th>Balance</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="stmtTransactionsBody">
-                                        <tr>
-                                            <td id="stmtOpeningDate"></td>
-                                            <td class="bold">***Opening Balance***</td>
-                                            <td></td>
-                                            <td>0.00</td>
-                                            <td></td>
-                                            <td>0.00</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-
-                                <!-- Balance Due Footer -->
-                                <div class="stmt-balance-due"
-                                    style="margin-top:16px;border-top:2px solid #333;padding-top:12px;">
-                                    <span class="label" style="font-size:14px;">Balance Due</span>
-                                    <span class="value" id="stmtFinalBalance" style="font-size:14px;">PHP 0.00</span>
+                                <div class="stmt-summary-row">
+                                    <span class="stmt-summary-label">Amount Paid</span>
+                                    <span class="stmt-summary-value" id="stmtAmountPaid">PHP 0.00</span>
                                 </div>
+                                <div class="stmt-summary-row">
+                                    <span class="stmt-summary-label">Credits Applied</span>
+                                    <span class="stmt-summary-value" id="stmtCreditsApplied">PHP 0.00</span>
+                                </div>
+                                <div class="stmt-summary-row">
+                                    <span class="stmt-summary-label">Balance Due</span>
+                                    <span class="stmt-summary-value" id="stmtBalanceDue">PHP 0.00</span>
+                                </div>
+                            </div>
+
+                            <!-- Transactions Table -->
+                            <table class="stmt-transactions-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Transactions</th>
+                                        <th>Details</th>
+                                        <th>Amount</th>
+                                        <th>Payments</th>
+                                        <th>Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="stmtTransactionsBody">
+                                    <tr>
+                                        <td id="stmtOpeningDate"></td>
+                                        <td class="bold">***Opening Balance***</td>
+                                        <td></td>
+                                        <td>0.00</td>
+                                        <td></td>
+                                        <td>0.00</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Balance Due Footer -->
+                            <div class="stmt-balance-due"
+                                style="margin-top:16px;border-top:2px solid #333;padding-top:12px;">
+                                <span class="label" style="font-size:14px;">Balance Due</span>
+                                <span class="value" id="stmtFinalBalance" style="font-size:14px;">PHP 0.00</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div><!-- end vendorScrollWrapper -->
+        </div>
     </div>
 
     <!-- Address Modal -->
@@ -1975,28 +2019,30 @@
                 window.history.replaceState({ vendorId: vendorId }, '', '/vendors/' + vendorId);
             }
 
-            // ===== RUNTIME SCROLL ENFORCER =====
-            // Force scroll styles via JS — uses same pattern as bill-detail.html
-            setTimeout(() => {
-                const detailRight = document.querySelector('.detail-right');
-                const detailBody = document.querySelector('.detail-body');
-                const detailLeft = document.querySelector('.detail-left');
+            // Layout is ready
+            console.log('[Vendor Detail] Layout initialized');
 
-                if (detailBody) {
-                    detailBody.style.height = 'calc(100vh - 95px)';
-                    detailBody.style.overflow = 'hidden';
-                    detailBody.style.display = 'flex';
-                }
-                if (detailRight) {
-                    detailRight.style.overflowY = 'auto';
-                    detailRight.style.height = '100%';
-                }
-                if (detailLeft) {
-                    detailLeft.style.overflowY = 'auto';
-                    detailLeft.style.height = '100%';
-                }
-                console.log('[Scroll Enforcer] Applied calc height pattern');
-            }, 300);
+            // ===== TEMPORARY DIAGNOSTIC - will be removed once scrolling is fixed =====
+            setTimeout(() => {
+                const content = document.querySelector('.content');
+                const detailBody = document.querySelector('.detail-body');
+                const detailRight = document.querySelector('.detail-right');
+                const activeTab = document.querySelector('.tab-content-area.active');
+
+                const info = [];
+                if (content) info.push(`content: h=${content.clientHeight} overflow=${getComputedStyle(content).overflow} display=${getComputedStyle(content).display} flexDir=${getComputedStyle(content).flexDirection}`);
+                if (detailBody) info.push(`detail-body: h=${detailBody.clientHeight} overflow=${getComputedStyle(detailBody).overflow} display=${getComputedStyle(detailBody).display} flex=${getComputedStyle(detailBody).flex}`);
+                if (detailRight) info.push(`detail-right: h=${detailRight.clientHeight} scrollH=${detailRight.scrollHeight} overflow=${getComputedStyle(detailRight).overflow} display=${getComputedStyle(detailRight).display} flexDir=${getComputedStyle(detailRight).flexDirection}`);
+                if (activeTab) info.push(`activeTab(${activeTab.id}): h=${activeTab.clientHeight} scrollH=${activeTab.scrollHeight} overflowY=${getComputedStyle(activeTab).overflowY} display=${getComputedStyle(activeTab).display} flex=${getComputedStyle(activeTab).flex}`);
+                info.push(`body: overflow=${getComputedStyle(document.body).overflow} h=${document.body.clientHeight} windowH=${window.innerHeight}`);
+
+                const banner = document.createElement('div');
+                banner.style.cssText = 'position:fixed;top:0;left:260px;right:0;background:red;color:white;padding:8px;font-size:11px;z-index:99999;font-family:monospace;white-space:pre-wrap;cursor:pointer;';
+                banner.textContent = 'SCROLL DEBUG (click to dismiss):\\n' + info.join('\\n');
+                banner.onclick = () => banner.remove();
+                document.body.appendChild(banner);
+                console.log('[Scroll Debug]', info.join(' | '));
+            }, 1500);
         });
 
         async function loadVendorDetail() {
@@ -2455,10 +2501,11 @@
             });
 
             payments.forEach(p => {
+                const detail = p.bill_number ? 'Payment for ' + p.bill_number : (p.payment_mode === 'Credit Applied' ? 'Credit Applied' : 'Payment');
                 transactions.push({
                     date: p.payment_date ? new Date(p.payment_date) : new Date(),
-                    type: 'Payment',
-                    ref: p.reference_number || p.payment_number || '',
+                    type: detail,
+                    ref: p.payment_number || '',
                     amount: 0,
                     payment: parseFloat(p.amount_paid || 0),
                     credit: 0

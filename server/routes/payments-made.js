@@ -68,6 +68,27 @@ router.post('/', async (req, res) => {
         // If status is PAID, update the bill status to PAID
         if (status === 'PAID' && bill_id) {
             await pool.query('UPDATE bills SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2', ['paid', bill_id]);
+
+            // Auto-close PO if all conditions met
+            const billRow = await pool.query('SELECT purchase_order_id FROM bills WHERE id = $1', [bill_id]);
+            if (billRow.rows.length > 0 && billRow.rows[0].purchase_order_id) {
+                const poId = billRow.rows[0].purchase_order_id;
+                const poResult = await pool.query('SELECT status FROM purchases WHERE id = $1', [poId]);
+                if (poResult.rows.length > 0 && poResult.rows[0].status !== 'CLOSED' && poResult.rows[0].status !== 'CANCELLED') {
+                    const orderedRes = await pool.query('SELECT COALESCE(SUM(quantity),0) as total FROM purchase_items WHERE purchase_id = $1', [poId]);
+                    const billedRes = await pool.query(`SELECT COALESCE(SUM(bi.quantity),0) as total FROM bill_items bi JOIN bills b ON bi.bill_id = b.id WHERE b.purchase_order_id = $1 AND UPPER(COALESCE(b.status,'')) != 'DRAFT'`, [poId]);
+                    const receivedRes = await pool.query(`SELECT COALESCE(SUM(pri.quantity_to_receive),0) as total FROM purchase_receive_items pri JOIN purchase_receives pr ON pri.receive_id = pr.id WHERE pr.purchase_id = $1 AND pr.status = 'received'`, [poId]);
+                    const returnedRes = await pool.query(`SELECT COALESCE(SUM(pri2.return_quantity),0) as total FROM purchase_return_items pri2 JOIN purchase_returns pr2 ON pri2.purchase_return_id = pr2.id WHERE pr2.purchase_order_id = $1`, [poId]);
+                    const totalOrdered = parseFloat(orderedRes.rows[0].total) || 0;
+                    const totalBilled = parseFloat(billedRes.rows[0].total) || 0;
+                    const netReceived = (parseFloat(receivedRes.rows[0].total) || 0) - (parseFloat(returnedRes.rows[0].total) || 0);
+                    const unpaidBillsRes = await pool.query(`SELECT COUNT(*) as cnt FROM bills WHERE purchase_order_id = $1 AND UPPER(COALESCE(status,'')) NOT IN ('PAID','DRAFT')`, [poId]);
+                    const hasUnpaidBills = parseInt(unpaidBillsRes.rows[0].cnt) > 0;
+                    if (totalOrdered > 0 && totalBilled >= totalOrdered && netReceived >= totalOrdered && !hasUnpaidBills) {
+                        await pool.query(`UPDATE purchases SET status = 'CLOSED', payment_status = 'PAID' WHERE id = $1`, [poId]);
+                    }
+                }
+            }
         }
 
         res.status(201).json(result.rows[0]);
@@ -95,6 +116,31 @@ router.patch('/:id/mark-paid', async (req, res) => {
         // Also update the linked bill status to paid
         if (payment.bill_id) {
             await pool.query('UPDATE bills SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2', ['paid', payment.bill_id]);
+
+            // Auto-close PO if all conditions met (non-blocking — don't fail the payment)
+            try {
+                const billRow = await pool.query('SELECT purchase_order_id FROM bills WHERE id = $1', [payment.bill_id]);
+                if (billRow.rows.length > 0 && billRow.rows[0].purchase_order_id) {
+                    const poId = billRow.rows[0].purchase_order_id;
+                    const poResult = await pool.query('SELECT status FROM purchases WHERE id = $1', [poId]);
+                    if (poResult.rows.length > 0 && poResult.rows[0].status !== 'CLOSED' && poResult.rows[0].status !== 'CANCELLED') {
+                        const orderedRes = await pool.query('SELECT COALESCE(SUM(quantity),0) as total FROM purchase_items WHERE purchase_id = $1', [poId]);
+                        const billedRes = await pool.query(`SELECT COALESCE(SUM(bi.quantity),0) as total FROM bill_items bi JOIN bills b ON bi.bill_id = b.id WHERE b.purchase_order_id = $1 AND UPPER(COALESCE(b.status,'')) != 'DRAFT'`, [poId]);
+                        const receivedRes = await pool.query(`SELECT COALESCE(SUM(pri.quantity_to_receive),0) as total FROM purchase_receive_items pri JOIN purchase_receives pr ON pri.receive_id = pr.id WHERE pr.purchase_id = $1 AND pr.status = 'received'`, [poId]);
+                        const returnedRes = await pool.query(`SELECT COALESCE(SUM(pri2.return_quantity),0) as total FROM purchase_return_items pri2 JOIN purchase_returns pr2 ON pri2.purchase_return_id = pr2.id WHERE pr2.purchase_order_id = $1`, [poId]);
+                        const totalOrdered = parseFloat(orderedRes.rows[0].total) || 0;
+                        const totalBilled = parseFloat(billedRes.rows[0].total) || 0;
+                        const netReceived = (parseFloat(receivedRes.rows[0].total) || 0) - (parseFloat(returnedRes.rows[0].total) || 0);
+                        const unpaidBillsRes = await pool.query(`SELECT COUNT(*) as cnt FROM bills WHERE purchase_order_id = $1 AND UPPER(COALESCE(status,'')) NOT IN ('PAID','DRAFT')`, [poId]);
+                        const hasUnpaidBills = parseInt(unpaidBillsRes.rows[0].cnt) > 0;
+                        if (totalOrdered > 0 && totalBilled >= totalOrdered && netReceived >= totalOrdered && !hasUnpaidBills) {
+                            await pool.query(`UPDATE purchases SET status = 'CLOSED', payment_status = 'PAID' WHERE id = $1`, [poId]);
+                        }
+                    }
+                }
+            } catch (autoCloseErr) {
+                console.error('PO auto-close error (non-blocking):', autoCloseErr.message);
+            }
         }
 
         res.json(payment);

@@ -131,6 +131,14 @@ router.post('/', async (req, res) => {
             }
         }
 
+        // Set discrepancy_resolved on the parent PO (user has addressed the surplus)
+        if (purchase_order_id) {
+            await pool.query(
+                `UPDATE purchases SET discrepancy_resolved = TRUE WHERE id = $1`,
+                [purchase_order_id]
+            );
+        }
+
         res.status(201).json(purchaseReturn);
     } catch (err) {
         console.error('Error creating purchase return:', err);
@@ -183,6 +191,29 @@ router.put('/:id', async (req, res) => {
                         [returnQty, item.item_id]
                     );
                 }
+            }
+
+            // Recalculate PO receive_status based on net received after return
+            if (current.purchase_order_id) {
+                const poId = current.purchase_order_id;
+                const orderedRes = await pool.query('SELECT COALESCE(SUM(quantity),0) as total FROM purchase_items WHERE purchase_id = $1', [poId]);
+                const receivedRes = await pool.query(`SELECT COALESCE(SUM(pri.quantity_to_receive),0) as total FROM purchase_receive_items pri JOIN purchase_receives pr ON pri.receive_id = pr.id WHERE pr.purchase_id = $1 AND pr.status = 'received'`, [poId]);
+                const returnedRes = await pool.query(`SELECT COALESCE(SUM(pri2.return_quantity),0) as total FROM purchase_return_items pri2 JOIN purchase_returns pr2 ON pri2.purchase_return_id = pr2.id WHERE pr2.purchase_order_id = $1 AND LOWER(pr2.return_status) = 'shipped'`, [poId]);
+                const totalOrdered = parseFloat(orderedRes.rows[0].total) || 0;
+                const totalReceived = parseFloat(receivedRes.rows[0].total) || 0;
+                // Include the items being shipped in THIS return
+                const totalReturnedSoFar = parseFloat(returnedRes.rows[0].total) || 0;
+                let thisReturnQty = 0;
+                for (const item of items) { thisReturnQty += parseFloat(item.return_quantity) || 0; }
+                const totalReturnedTotal = totalReturnedSoFar + thisReturnQty;
+                const netReceived = totalReceived - totalReturnedTotal;
+
+                let newRecvStatus;
+                if (netReceived <= 0) newRecvStatus = 'NOT RECEIVED';
+                else if (netReceived < totalOrdered) newRecvStatus = 'PARTIALLY RECEIVED';
+                else newRecvStatus = 'RECEIVED';
+
+                await pool.query('UPDATE purchases SET receive_status = $1 WHERE id = $2', [newRecvStatus, poId]);
             }
         }
 

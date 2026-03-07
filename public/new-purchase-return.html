@@ -397,8 +397,8 @@
                 </table>
 
                 <!-- Help Panel -->
-                <div
-                    style="margin:16px 0 0;padding:14px 18px;background:#e8f4fd;border:1px solid #b3d7f2;border-radius:6px;font-size:12px;color:#1a5276;line-height:1.6;">
+                <div id="surplusHelpPanel"
+                    style="display:none;margin:16px 0 0;padding:14px 18px;background:#e8f4fd;border:1px solid #b3d7f2;border-radius:6px;font-size:12px;color:#1a5276;line-height:1.6;">
                     <div style="font-weight:600;margin-bottom:6px;">ℹ️ How to handle Return Rows:</div>
                     <div style="margin-bottom:4px;">
                         <span
@@ -877,6 +877,11 @@
                 <td><button class="sr-remove-btn" onclick="removeItem(${idx})" title="Remove">✕</button></td>
             </tr>`;
             }).join('');
+
+            // Show/hide surplus help panel based on whether any items have split rows
+            const hasSurplus = returnItems.some(item => item.is_split);
+            const helpPanel = document.getElementById('surplusHelpPanel');
+            if (helpPanel) helpPanel.style.display = hasSurplus ? 'block' : 'none';
 
             updateTotalItems();
         }
