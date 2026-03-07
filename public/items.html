@@ -6901,10 +6901,23 @@
               </div>
 
               <div class="section-row">
-                <label class="section-label required">Cost Price*</label>
-                <div class="price-input">
-                  <span class="currency-label">PHP</span>
-                  <input type="number" class="form-input" id="itemCost" step="0.01">
+                <label class="section-label required">Cost Price* <span
+                    style="font-size:11px;color:#6b7280;font-weight:400;">(Enter in RMB)</span></label>
+                <div class="price-input" style="position:relative;">
+                  <span class="currency-label"
+                    style="background:#f3f4f6;color:#ef4444;font-weight:700;font-size:13px;min-width:45px;text-align:center;">RMD</span>
+                  <input type="number" class="form-input" id="itemCost" step="0.01" placeholder="Enter RMB amount"
+                    oninput="onCostInputChange()">
+                </div>
+                <!-- Auto PHP Conversion Preview -->
+                <div id="costConversionPreview"
+                  style="margin-top:6px;padding:8px 12px;background:linear-gradient(135deg,#eff6ff,#f0fdf4);border:1px solid #93c5fd;border-radius:8px;font-size:12px;color:#1e40af;">
+                  <div style="display:flex;align-items:center;justify-content:space-between;">
+
+                    <span id="convertedPhpValue" style="font-weight:700;font-size:14px;color:#059669;">₱0.00</span>
+                  </div>
+                  <div id="exchangeRateInfo" style="margin-top:4px;font-size:11px;color:#6b7280;">Rate: 1 CNY = ₱--
+                    (loading...)</div>
                 </div>
               </div>
 

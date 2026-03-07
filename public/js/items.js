@@ -22,6 +22,64 @@ let salesFilteredItemIds = null;
 let purchaseFilteredItemIds = null;
 let sortDirection = 'asc'; // Current sort direction
 
+// ========== RMB → PHP CURRENCY CONVERSION ==========
+let cachedExchangeRate = null; // CNY to PHP rate
+let exchangeRateTimestamp = null;
+const EXCHANGE_RATE_CACHE_MS = 30 * 60 * 1000; // Cache for 30 minutes
+
+async function fetchExchangeRate() {
+  // Return cached rate if still fresh
+  if (cachedExchangeRate && exchangeRateTimestamp && (Date.now() - exchangeRateTimestamp < EXCHANGE_RATE_CACHE_MS)) {
+    return cachedExchangeRate;
+  }
+  try {
+    const res = await fetch('https://open.er-api.com/v6/latest/CNY');
+    if (!res.ok) throw new Error('Exchange rate API error');
+    const data = await res.json();
+    if (data.result === 'success' && data.rates && data.rates.PHP) {
+      cachedExchangeRate = data.rates.PHP;
+      exchangeRateTimestamp = Date.now();
+      console.log('Exchange rate fetched: 1 CNY =', cachedExchangeRate, 'PHP');
+      return cachedExchangeRate;
+    }
+    throw new Error('PHP rate not found in API response');
+  } catch (err) {
+    console.error('Failed to fetch exchange rate:', err);
+    // Fallback rate (approximate)
+    if (!cachedExchangeRate) {
+      cachedExchangeRate = 8.05;
+      console.warn('Using fallback exchange rate: 1 CNY = 8.05 PHP');
+    }
+    return cachedExchangeRate;
+  }
+}
+
+function onCostCurrencyChange() {
+  // No-op: always RMB now
+  onCostInputChange();
+}
+
+async function onCostInputChange() {
+  const rmbValue = parseFloat(document.getElementById('itemCost')?.value) || 0;
+  const rate = await fetchExchangeRate();
+  const phpValue = rmbValue * rate;
+
+  const convertedEl = document.getElementById('convertedPhpValue');
+  if (convertedEl) {
+    convertedEl.textContent = '₱' + phpValue.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  const rateInfo = document.getElementById('exchangeRateInfo');
+  if (rateInfo) {
+    rateInfo.textContent = `Rate: 1 CNY = ₱${rate.toFixed(4)}`;
+  }
+}
+
+// Pre-fetch exchange rate on page load
+fetchExchangeRate().then(rate => {
+  const rateInfo = document.getElementById('exchangeRateInfo');
+  if (rateInfo) rateInfo.textContent = `Rate: 1 CNY = ₱${rate.toFixed(4)}`;
+});
+
 // Grid view render (stub - grid view uses same data as table)
 function renderItemsGrid() {
   // Grid view re-render handled by renderItemsTable's grid mode
@@ -4718,6 +4776,9 @@ function openItemModal(itemId = null) {
       document.getElementById('itemPrice').value = item.selling_price || '';
       document.getElementById('itemCost').value = item.purchase_cost || '';
 
+      // Show stored PHP cost as-is and update preview
+      onCostInputChange();
+
       // Reset image first, then load if exists
       resetImageUpload();
 
@@ -4853,6 +4914,8 @@ function openItemModal(itemId = null) {
       document.getElementById('itemAddedBy').value = '';
     }
     onItemTypeChange();
+    // Reset conversion preview for new items
+    onCostInputChange();
   }
 
   modal.classList.add('active');
@@ -4956,7 +5019,15 @@ async function saveItem(event) {
   const quantity = parseInt(quantityInput) || 0;
   const price = parseFloat(priceInput) || 0;
   const reorderPoint = parseInt(reorderPointInput) || 10;
-  const cost = parseFloat(costInput) || 0;
+
+  // Always convert RMB to PHP (Cost Price is always entered in RMB)
+  let cost = parseFloat(costInput) || 0;
+  if (cost > 0) {
+    const rate = await fetchExchangeRate();
+    const originalRmb = cost;
+    cost = parseFloat((cost * rate).toFixed(2));
+    console.log(`Converted cost: ¥${originalRmb} RMB × ${rate} = ₱${cost} PHP`);
+  }
 
   const data = {
     name: nameInput,
