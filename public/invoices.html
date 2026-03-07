@@ -2065,7 +2065,7 @@
                     invoicePayments = allPay.filter(p => String(p.invoice_id) === String(invoice.id));
                 }
             } catch (e) { }
-            const showRecordPayment = invoicePayments.length === 0 && !isPaid && statusLabel !== 'DRAFT' && statusLabel !== 'VOID';
+            const showRecordPayment = !isPaid && balanceDue > 0 && statusLabel !== 'DRAFT' && statusLabel !== 'VOID';
             const paymentCls = isPaid ? 'so-invoiced' : 'so-unpaid';
 
             // Extra totals

@@ -1957,52 +1957,62 @@
         }
 
         .stmt-company-info {
-            text-align: right;
-            margin-bottom: 30px;
-            font-size: 13px;
-            line-height: 1.6;
+            display: none;
         }
 
-        .stmt-company-name {
-            font-weight: 700;
-            font-size: 15px;
+        .stmt-header-centered {
+            text-align: center;
+            margin-bottom: 25px;
         }
 
-        .stmt-to-section {
-            font-size: 13px;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-
-        .stmt-to-label {
-            font-weight: 600;
-            color: #555;
+        .stmt-header-row {
+            display: flex;
+            align-items: baseline;
             margin-bottom: 2px;
         }
 
-        .stmt-to-name {
-            color: #1a73e8;
-            font-weight: 600;
-        }
-
-        .stmt-title {
-            text-align: center;
-            margin-bottom: 24px;
-        }
-
-        .stmt-title h2 {
-            font-size: 18px;
+        .stmt-header-left {
+            width: 60px;
+            flex-shrink: 0;
+            font-size: 13px;
             font-weight: 700;
-            margin: 0 0 2px 0;
-            text-decoration: underline;
+            text-transform: uppercase;
         }
 
-        .stmt-title-date {
-            font-size: 12px;
-            color: #666;
-            border-top: 2px solid #1a73e8;
-            display: inline-block;
-            padding-top: 4px;
+        .stmt-header-center {
+            flex: 1;
+            text-align: center;
+        }
+
+        .stmt-header-right {
+            width: 240px;
+            flex-shrink: 0;
+            text-align: right;
+            font-size: 13px;
+        }
+
+        .stmt-header-label {
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .stmt-customer-name {
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .stmt-main-title {
+            font-size: 18px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stmt-date-range {
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: underline;
         }
 
         .stmt-summary {
@@ -2065,6 +2075,49 @@
             font-weight: 700;
             padding: 10px 0;
             border-top: 2px solid #333;
+        }
+
+        .stmt-total-row td {
+            border-top: 2px solid #333;
+            padding-top: 10px;
+        }
+
+        .stmt-unpaid-section {
+            margin-top: 24px;
+        }
+
+        .stmt-unpaid-title {
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 6px;
+        }
+
+        .stmt-unpaid-table {
+            border-collapse: collapse;
+            font-size: 12px;
+            min-width: 280px;
+        }
+
+        .stmt-unpaid-table th {
+            text-align: left;
+            padding: 8px 14px;
+            font-weight: 600;
+            font-size: 11px;
+            border-bottom: 1px solid #ccc;
+            text-transform: uppercase;
+        }
+
+        .stmt-unpaid-table td {
+            padding: 8px 14px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .stmt-unpaid-total td {
+            border-top: 2px solid #333;
+            padding-top: 10px;
+            font-weight: 700;
         }
 
         /* Transactions tab */
@@ -4605,112 +4658,135 @@
             const { start, end } = getStatementDateRange();
             const fmtDate = d => d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
             try {
-                const [invRes, payRes, cnRes, credRes] = await Promise.all([
-                    fetch('/api/invoices'), fetch('/api/payments-received'), fetch('/api/credit-notes'),
-                    fetch('/api/customer-credits/' + currentCustomerId)
+                // Fetch Sales Orders for this customer and invoices/payments for unpaid status
+                const [soRes, invRes, payRes] = await Promise.all([
+                    fetch('/api/sales-orders?customer_id=' + currentCustomerId),
+                    fetch('/api/invoices'),
+                    fetch('/api/payments-received')
                 ]);
-                const allInv = await invRes.json();
-                const allPay = await payRes.json();
-                const allCn = await cnRes.json();
-                const credData = credRes.ok ? await credRes.json() : { entries: [] };
+                const allSalesOrders = await soRes.json();
+                const allInvoices = await invRes.json();
+                const allPayments = await payRes.json();
 
-                // All customer active invoices/payments (exclude DRAFT/VOID)
-                const custInvoices = allInv.filter(i => i.customer_id == currentCustomerId && (i.status || '').toUpperCase() !== 'DRAFT' && (i.status || '').toUpperCase() !== 'VOID');
-                const custPayments = allPay.filter(p => String(p.customer_id) === String(currentCustomerId) && (p.status || '').toUpperCase() !== 'DRAFT' && (p.status || '').toUpperCase() !== 'VOID');
-                const custDisplayName = (customer.display_name || '').toLowerCase().trim();
-                const custFullName = ((customer.salutation || '') + ' ' + (customer.first_name || '') + ' ' + (customer.last_name || '')).toLowerCase().trim();
-                const allCreditNotes = allCn.filter(cn => { const c = (cn.customer_name || '').toLowerCase().trim(); return (c === custDisplayName || c === custFullName) && (cn.status || '').toUpperCase() === 'OPEN'; });
-                const allAppliedCredits = (credData.entries || []).filter(c => c.type === 'CREDIT_APPLIED');
-                const allRefunds = (credData.entries || []).filter(c => c.type === 'REFUND');
+                // Filter sales orders within the date range (exclude CANCELLED)
+                const periodOrders = allSalesOrders.filter(so => {
+                    const d = new Date(so.order_date);
+                    const status = (so.status || '').toUpperCase();
+                    return d >= start && d <= end && status !== 'CANCELLED';
+                }).sort((a, b) => new Date(a.order_date) - new Date(b.order_date));
 
-                // Helper: calculate applied amount for a payment
-                function getAppliedAmount(pay) {
-                    let applied = 0;
-                    const s = pay.invoice_number || '';
-                    if (s.includes('|')) { s.split(',').forEach(part => { const segs = part.trim().split('|'); if (segs.length >= 3) applied += parseFloat(segs[2]) || 0; }); }
-                    else { const m = custInvoices.find(i => i.id == pay.invoice_id || i.invoice_number === s.trim()); applied = Math.min(Number(pay.amount_received || 0), m ? Number(m.total || 0) : Number(pay.amount_received || 0)); }
-                    return applied;
-                }
-
-                // === OPENING BALANCE: cumulative unpaid balance BEFORE start date ===
-                const priorInvTotal = custInvoices.filter(i => new Date(i.invoice_date) < start).reduce((s, i) => s + Number(i.total || 0), 0);
-                const priorPayTotal = custPayments.filter(p => new Date(p.payment_date) < start).reduce((s, p) => s + getAppliedAmount(p), 0);
-                const priorAcTotal = allAppliedCredits.filter(ac => new Date(ac.created_at) < start).reduce((s, ac) => s + Number(ac.amount || 0), 0);
-                const openingBalance = Math.max(0, priorInvTotal - priorPayTotal - priorAcTotal);
-
-                // === PERIOD TRANSACTIONS ===
-                const periodInvoices = custInvoices.filter(i => new Date(i.invoice_date) >= start && new Date(i.invoice_date) <= end);
-                const periodPayments = custPayments.filter(p => new Date(p.payment_date) >= start && new Date(p.payment_date) <= end);
-                const periodCreditNotes = allCreditNotes.filter(cn => { const d = new Date(cn.credit_note_date || cn.created_at); return d >= start && d <= end; });
-                const periodAppliedCredits = allAppliedCredits.filter(ac => new Date(ac.created_at) >= start && new Date(ac.created_at) <= end);
-                const periodRefunds = allRefunds.filter(r => { const d = new Date(r.created_at); return d >= start && d <= end; });
-
-                // Build timeline
-                const entries = [];
-                entries.push({ date: new Date(start), type: '***Opening Balance***', details: '', amount: openingBalance, payment: 0, sortOrder: 0 });
-                periodInvoices.forEach(inv => { entries.push({ date: new Date(inv.invoice_date), type: 'Invoice', details: `${inv.invoice_number} - due on ${inv.due_date ? fmtDate(new Date(inv.due_date)) : '-'}`, amount: Number(inv.total || 0), payment: 0, sortOrder: 1 }); });
-                periodPayments.forEach(pay => { const invNums = (pay.invoice_number || '').split(',').map(s => s.trim().split('|')[0]).filter(Boolean).join(', '); const applied = getAppliedAmount(pay); entries.push({ date: new Date(pay.payment_date), type: 'Payment Received', details: `${pay.payment_number}\nPHP${applied.toFixed(2)} for payment of ${invNums}`, amount: 0, payment: applied, sortOrder: 2 }); });
-                periodCreditNotes.forEach(cn => { entries.push({ date: new Date(cn.credit_note_date || cn.created_at), type: 'Credit Note', details: `${cn.credit_note_number}\nPHP${Number(cn.total || 0).toFixed(2)} unused credit added`, amount: 0, payment: 0, sortOrder: 3 }); });
-                periodAppliedCredits.forEach(ac => { const inv = allInv.find(i => i.id == ac.reference_id); entries.push({ date: new Date(ac.created_at), type: 'Credit Applied', details: `PHP${Number(ac.amount || 0).toFixed(2)} credit applied to ${inv ? inv.invoice_number : 'invoice'}`, amount: 0, payment: Number(ac.amount || 0), sortOrder: 4 }); });
-                periodRefunds.forEach(r => { const refAmt = Math.abs(Number(r.amount || 0)); entries.push({ date: new Date(r.created_at), type: 'Credit Note Refund', details: `${r.description || 'Refund'}\nPHP${refAmt.toFixed(2)} refunded to customer`, amount: 0, payment: 0, sortOrder: 5 }); });
-                entries.sort((a, b) => a.date - b.date || a.sortOrder - b.sortOrder);
-
-                // Calculate totals
-                const periodInvoicedTotal = periodInvoices.reduce((s, i) => s + Number(i.total || 0), 0);
-                const periodReceivedTotal = entries.filter(e => e.type === 'Payment Received').reduce((s, e) => s + e.payment, 0);
-                const periodAcTotal = entries.filter(e => e.type === 'Credit Applied').reduce((s, e) => s + e.payment, 0);
-                const totalAmountReceived = periodReceivedTotal + periodAcTotal;
-                const balanceDue = Math.max(0, openingBalance + periodInvoicedTotal - totalAmountReceived);
-
-                // Build running balance rows
-                let runBal = 0;
+                // Build table rows: DATE | S.O.# | AMOUNT
+                let totalAmount = 0;
                 let txnRows = '';
-                entries.forEach(e => {
-                    if (e.type === '***Opening Balance***') {
-                        runBal = openingBalance;
-                    } else {
-                        runBal += e.amount - e.payment;
-                    }
-                    const dateStr = fmtDate(e.date);
-                    const detailsHtml = (e.details || '').replace(/\n/g, '<br>');
-                    const amtStr = (e.type === '***Opening Balance***') ? '' : (e.amount ? Number(e.amount).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '');
-                    const payStr = e.payment ? Number(e.payment).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '';
-                    const balStr = Number(runBal).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                    txnRows += `<tr><td>${dateStr}</td><td>${e.type}</td><td>${detailsHtml}</td><td class="amt">${amtStr}</td><td class="amt">${payStr}</td><td class="amt">${balStr}</td></tr>`;
+                periodOrders.forEach(so => {
+                    const dateStr = fmtDate(new Date(so.order_date));
+                    const soNum = so.order_number || '-';
+                    const amount = Number(so.total || 0);
+                    totalAmount += amount;
+                    const amtStr = amount.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    txnRows += `<tr><td>${dateStr}</td><td>${soNum}</td><td class="amt">${amtStr}</td></tr>`;
                 });
 
-                // Customer address
-                const addr = [customer.billing_street, customer.billing_city, customer.billing_state, customer.billing_zip, customer.billing_country].filter(Boolean).join('<br>');
+                // Total row
+                const totalStr = totalAmount.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                txnRows += `<tr class="stmt-total-row"><td colspan="2" style="text-align:right;font-weight:700;padding-right:16px;">TOTAL</td><td class="amt" style="font-weight:700;border-top:2px solid #333;">${totalStr}</td></tr>`;
+
+                // Determine unpaid orders: only from selected period, whose invoice is not PAID or has no invoice
+                const unpaidOrders = allSalesOrders.filter(so => {
+                    const d = new Date(so.order_date);
+                    if (d < start || d > end) return false; // Only show orders within selected period
+                    const status = (so.status || '').toUpperCase();
+                    if (status === 'CANCELLED') return false;
+                    // Check if there's a paid invoice for this order
+                    const matchingInvoice = allInvoices.find(inv =>
+                        inv.order_number === so.order_number &&
+                        (inv.status || '').toUpperCase() !== 'DRAFT' &&
+                        (inv.status || '').toUpperCase() !== 'VOID'
+                    );
+                    if (!matchingInvoice) return true; // No invoice = unpaid
+                    const invStatus = (matchingInvoice.status || '').toUpperCase();
+                    if (invStatus === 'PAID') return false; // Fully paid
+                    // Check for partial payment
+                    const invTotal = Number(matchingInvoice.total || 0);
+                    const payments = allPayments.filter(p =>
+                        String(p.customer_id) === String(currentCustomerId) &&
+                        ((p.invoice_number || '').includes(matchingInvoice.invoice_number) || p.invoice_id == matchingInvoice.id)
+                    );
+                    const paidAmount = payments.reduce((sum, p) => sum + Number(p.amount_received || 0), 0);
+                    return paidAmount < invTotal;
+                });
+
+                // Build unpaid items list with remaining balance
+                let unpaidHtml = '';
+                let totalBalance = 0;
+                if (unpaidOrders.length > 0) {
+                    let unpaidRows = '';
+                    unpaidOrders.forEach(so => {
+                        const soTotal = Number(so.total || 0);
+                        // Calculate how much has been paid for this order
+                        const matchingInvoice = allInvoices.find(inv =>
+                            inv.order_number === so.order_number &&
+                            (inv.status || '').toUpperCase() !== 'DRAFT' &&
+                            (inv.status || '').toUpperCase() !== 'VOID'
+                        );
+                        let paidAmount = 0;
+                        if (matchingInvoice) {
+                            const invStatus = (matchingInvoice.status || '').toUpperCase();
+                            if (invStatus === 'PAID') {
+                                paidAmount = Number(matchingInvoice.total || 0);
+                            } else {
+                                const payments = allPayments.filter(p =>
+                                    String(p.customer_id) === String(currentCustomerId) &&
+                                    ((p.invoice_number || '').includes(matchingInvoice.invoice_number) || p.invoice_id == matchingInvoice.id)
+                                );
+                                paidAmount = payments.reduce((sum, p) => sum + Number(p.amount_received || 0), 0);
+                            }
+                        }
+                        const remaining = Math.max(0, soTotal - paidAmount);
+                        totalBalance += remaining;
+                        const remStr = remaining.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                        // Get due date from invoice or fallback to order date
+                        let dueDate = '-';
+                        if (matchingInvoice && matchingInvoice.due_date) {
+                            dueDate = fmtDate(new Date(matchingInvoice.due_date));
+                        } else if (so.expected_shipment_date) {
+                            dueDate = fmtDate(new Date(so.expected_shipment_date));
+                        } else if (so.order_date) {
+                            dueDate = fmtDate(new Date(so.order_date));
+                        }
+                        unpaidRows += `<tr><td>${so.order_number || '-'}</td><td>${dueDate}</td><td class="amt">${remStr}</td></tr>`;
+                    });
+                    const balStr = totalBalance.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    unpaidHtml = `
+                        <div class="stmt-unpaid-section">
+                            <div class="stmt-unpaid-title">Unpaid Items</div>
+                            <table class="stmt-unpaid-table">
+                                <thead><tr><th>S.O.#</th><th>DUE DATE</th><th class="amt">Balance</th></tr></thead>
+                                <tbody>${unpaidRows}
+                                <tr class="stmt-unpaid-total"><td style="font-weight:700;">BALANCE</td><td></td><td class="amt" style="font-weight:700;">₱${balStr}</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                }
+
+                const today = new Date();
+                const fmtDateShort = d => d.toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' });
+                const fmtRange = d => d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
                 container.innerHTML = `
                     <div class="stmt-card" id="stmtPrintArea">
-                        <div class="stmt-company-info">
-                            <div class="stmt-company-name">GIHON</div>
-                            <div>Philippines</div>
+                        <div class="stmt-header-centered">
+                            <div class="stmt-customer-name">${customer.display_name}</div>
+                            <div class="stmt-main-title">STATEMENT OF ACCOUNT</div>
+                            <div class="stmt-date-range">${fmtRange(start)} - ${fmtRange(end)}</div>
                         </div>
-                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">
-                            <div class="stmt-to-section">
-                                <div class="stmt-to-label">To</div>
-                                <div class="stmt-to-name">${customer.display_name}</div>
-                                ${addr ? '<div>' + addr + '</div>' : ''}
-                            </div>
-                            <div class="stmt-title">
-                                <h2>Statement of Accounts</h2>
-                                <div class="stmt-title-date">${fmtDate(start)} To ${fmtDate(end)}</div>
-                            </div>
-                        </div>
-                        <table class="stmt-summary">
-                            <tr><th colspan="2">Account Summary</th></tr>
-                            <tr><td>Opening Balance</td><td>PHP ${openingBalance.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td></tr>
-                            <tr><td>Invoiced Amount</td><td>PHP ${periodInvoicedTotal.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td></tr>
-                            <tr><td>Amount Received</td><td>PHP ${totalAmountReceived.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td></tr>
-                            <tr><td><strong>Balance Due</strong></td><td><strong>PHP ${balanceDue.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong></td></tr>
-                        </table>
                         <table class="stmt-txn-table">
-                            <thead><tr><th>Date</th><th>Transactions</th><th>Details</th><th class="amt">Amount</th><th class="amt">Payments</th><th class="amt">Balance</th></tr></thead>
+                            <thead><tr><th>DATE</th><th>S.O.#</th><th class="amt">AMOUNT</th></tr></thead>
                             <tbody>${txnRows}</tbody>
                         </table>
-                        <div class="stmt-balance-due">Balance Due &nbsp;&nbsp; PHP ${balanceDue.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                        ${unpaidHtml}
+                        <div class="stmt-balance-due" style="margin-top:20px;">Balance Due &nbsp;&nbsp; ₱${totalBalance.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                     </div>
                 `;
             } catch (err) {
@@ -4723,27 +4799,26 @@
             const content = document.getElementById('stmtPrintArea');
             if (!content) return;
             const w = window.open('', '_blank');
-            w.document.write(`<html><head><title>Statement of Accounts</title><style>
-                body{font-family:'Segoe UI',Arial,sans-serif;padding:20px;}
+            w.document.write(`<html><head><title>Statement of Account</title><style>
+                body{font-family:'Segoe UI',Arial,sans-serif;padding:20px;color:#333;}
                 .stmt-card{padding:0;border:none;}
-                .stmt-company-info{text-align:right;margin-bottom:30px;font-size:13px;line-height:1.6;}
-                .stmt-company-name{font-weight:700;font-size:15px;}
-                .stmt-to-section{font-size:13px;line-height:1.6;}
-                .stmt-to-label{font-weight:600;color:#555;}
-                .stmt-to-name{color:#1a73e8;font-weight:600;}
-                .stmt-title{text-align:center;}
-                .stmt-title h2{font-size:18px;margin:0 0 2px;text-decoration:underline;}
-                .stmt-title-date{font-size:12px;color:#666;border-top:2px solid #1a73e8;display:inline-block;padding-top:4px;}
-                .stmt-summary{width:280px;margin-left:auto;margin-bottom:24px;border-collapse:collapse;font-size:13px;}
-                .stmt-summary th{background:#e8e8e8;text-align:left;padding:6px 10px;font-weight:700;}
-                .stmt-summary td{padding:5px 10px;border-bottom:1px solid #eee;}
-                .stmt-summary td:last-child{text-align:right;}
-                .stmt-summary tr:last-child td{font-weight:700;border-top:1px solid #ccc;}
+                .stmt-company-info{display:none;}
+                .stmt-header-centered{text-align:center;margin-bottom:25px;}
+                .stmt-customer-name{font-size:16px;font-weight:700;text-transform:uppercase;}
+                .stmt-main-title{font-size:18px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;}
+                .stmt-date-range{font-size:13px;font-weight:600;text-decoration:underline;}
                 .stmt-txn-table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:16px;}
-                .stmt-txn-table th{background:#e8e8e8;padding:6px 10px;text-align:left;font-weight:700;font-size:11px;}
-                .stmt-txn-table td{padding:8px 10px;border-bottom:1px solid #eee;vertical-align:top;}
+                .stmt-txn-table th{background:#e8e8e8;padding:8px 12px;text-align:left;font-weight:700;font-size:12px;text-transform:uppercase;}
+                .stmt-txn-table td{padding:8px 12px;border-bottom:1px solid #eee;vertical-align:top;}
                 .amt{text-align:right;}
-                .stmt-balance-due{text-align:right;font-size:13px;font-weight:700;padding:10px 0;border-top:2px solid #333;}
+                .stmt-total-row td{border-top:2px solid #333;padding-top:10px;}
+                .stmt-balance-due{text-align:right;font-size:14px;font-weight:700;padding:10px 0;margin-top:8px;}
+                .stmt-unpaid-section{margin-top:24px;}
+                .stmt-unpaid-title{font-weight:700;font-size:14px;margin-bottom:10px;border-bottom:2px solid #333;padding-bottom:6px;}
+                .stmt-unpaid-table{border-collapse:collapse;font-size:12px;min-width:280px;}
+                .stmt-unpaid-table th{text-align:left;padding:8px 14px;font-weight:600;font-size:11px;border-bottom:1px solid #ccc;text-transform:uppercase;}
+                .stmt-unpaid-table td{padding:8px 14px;border-bottom:1px solid #eee;}
+                .stmt-unpaid-total td{border-top:2px solid #333;padding-top:10px;font-weight:700;}
             </style></head><body>${content.innerHTML}</body></html>`);
             w.document.close();
             w.print();
