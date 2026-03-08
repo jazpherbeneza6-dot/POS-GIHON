@@ -1722,7 +1722,7 @@
             <!-- Page Header -->
             <div class="page-header">
                 <div class="page-title-wrapper">
-                    <span class="page-icon">📄</span>
+                    <span class="page-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
                     <h1 class="page-title" id="invPageTitle">New Invoice</h1>
                 </div>
                 <div class="header-actions">
@@ -1877,7 +1877,7 @@
                         <!-- Attach Files -->
                         <div class="attach-section">
                             <div class="attach-title">Attach File(s) to Invoice</div>
-                            <button class="upload-btn" type="button" onclick="invAttachFiles()">📤 Upload File
+                            <button class="upload-btn" type="button" onclick="invAttachFiles()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> Upload File
                                 ▼</button>
                             <p class="upload-help">Max 10 files, 10MB each</p>
                             <div id="invAttachmentList" style="margin-top:8px;"></div>
@@ -1997,7 +1997,7 @@
                         <button class="btn-save-dropdown" onclick="toggleSaveDropdown(event)">▲</button>
                         <div class="save-dropdown-menu" id="saveDropdownMenu">
                             <div class="save-dropdown-item" onclick="saveAndPrint()">
-                                <span class="sdi-icon">🖨️</span> Save and Print
+                                <span class="sdi-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>️</span> Save and Print
                             </div>
                             <div class="save-dropdown-item" onclick="saveAndConfirm()">
                                 <span class="sdi-icon">✅</span> Save and Confirm
@@ -2161,7 +2161,7 @@
             if (invUploadedFiles.length === 0) { container.innerHTML = ''; return; }
             container.innerHTML = invUploadedFiles.map((f, i) => {
                 const sizeKB = (f.size / 1024).toFixed(1);
-                const icon = f.originalName.match(/\.(jpg|jpeg|png|gif)$/i) ? '🖼️' : '📄';
+                const icon = f.originalName.match(/\.(jpg|jpeg|png|gif)$/i) ? '🖼️' : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
                 return `<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#f8f9fa;border:1px solid #e9ecef;border-radius:4px;margin-bottom:4px;font-size:12px;">
                     <span>${icon}</span>
                     <a href="${f.url}" target="_blank" style="color:#4285f4;text-decoration:none;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${f.originalName}">${f.originalName}</a>

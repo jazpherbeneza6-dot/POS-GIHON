@@ -679,9 +679,12 @@
   z-index: 1000;
   padding: 0;
   overflow: hidden;
+  max-height: none;
+  opacity: 1;
 }
 
-.sidebar-collapsed .nav-group:hover .nav-submenu {
+.sidebar-collapsed .nav-group:hover .nav-submenu,
+.sidebar-collapsed .nav-group:focus-within .nav-submenu {
   display: block !important;
 }
 
@@ -713,9 +716,9 @@
   border-bottom: 1px solid #f0f0f0;
 }
 
-/* First submenu item - Dark background with white text */
+/* First submenu item - Red theme background with white text */
 .sidebar-collapsed .nav-submenu .nav-submenu-item:first-of-type {
-  background: #2d3748;
+  background: linear-gradient(135deg, #9a2424 0%, #d84040 100%);
   color: white;
   border-radius: 6px;
   margin: 8px;
@@ -724,7 +727,7 @@
 }
 
 .sidebar-collapsed .nav-submenu .nav-submenu-item:first-of-type:hover {
-  background: #374151;
+  background: linear-gradient(135deg, #b52d2d 0%, #e05050 100%);
 }
 
 /* Other submenu items */
@@ -736,7 +739,14 @@
 }
 
 .sidebar-collapsed .nav-submenu .nav-submenu-item:not(:first-of-type):hover {
-  background: #e8e8e8;
+  background: #ffffff;
+}
+
+/* Active submenu items in collapsed popout - keep text dark and readable */
+.sidebar-collapsed .nav-submenu .nav-submenu-item.active {
+  color: #333 !important;
+  background: #fff !important;
+  font-weight: 600;
 }
 
 /* Plus button for first item - visible and styled */

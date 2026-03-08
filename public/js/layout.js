@@ -259,6 +259,12 @@
         }, 50);
     }
 
+    // Check if sidebar is in collapsed (burger) mode
+    function isSidebarCollapsed() {
+        const sidebar = document.getElementById('sidebar');
+        return sidebar && sidebar.classList.contains('sidebar-collapsed');
+    }
+
     // Helper function to close all submenus
     function closeAllSubmenus() {
         const submenus = [
@@ -284,6 +290,7 @@
 
     // Global function to toggle items submenu
     window.toggleItemsSubmenu = function () {
+        if (isSidebarCollapsed()) return; // Let CSS hover handle it
         const itemsMenuToggle = document.getElementById('itemsMenuToggle');
         const itemsSubmenu = document.getElementById('itemsSubmenu');
         const itemsArrow = document.getElementById('itemsArrow');
@@ -306,6 +313,7 @@
 
     // Global function to toggle inventory submenu
     window.toggleInventorySubmenu = function () {
+        if (isSidebarCollapsed()) return; // Let CSS hover handle it
         const inventoryMenuToggle = document.getElementById('inventoryMenuToggle');
         const inventorySubmenu = document.getElementById('inventorySubmenu');
         const inventoryArrow = document.getElementById('inventoryArrow');
@@ -328,6 +336,7 @@
 
     // Global function to toggle sales submenu
     window.toggleSalesSubmenu = function () {
+        if (isSidebarCollapsed()) return; // Let CSS hover handle it
         const salesMenuToggle = document.getElementById('salesMenuToggle');
         const salesSubmenu = document.getElementById('salesSubmenu');
         const salesArrow = document.getElementById('salesArrow');
@@ -350,6 +359,7 @@
 
     // Global function to toggle purchases submenu
     window.togglePurchasesSubmenu = function () {
+        if (isSidebarCollapsed()) return; // Let CSS hover handle it
         const purchasesMenuToggle = document.getElementById('purchasesMenuToggle');
         const purchasesSubmenu = document.getElementById('purchasesSubmenu');
         const purchasesArrow = document.getElementById('purchasesArrow');
