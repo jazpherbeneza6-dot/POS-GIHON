@@ -4720,7 +4720,7 @@
                 });
 
                 const totalStr = totalAmount.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                const MAX_ROWS_PER_COL = 44;
+                const MAX_ROWS_PER_COL = 20;
 
                 // Helper: build a table HTML from an array of row objects
                 function buildStmtTable(rows, showTotal, totalValue) {
@@ -4786,7 +4786,7 @@
                 let unpaidHtml = '';
                 let totalBalance = 0;
                 if (unpaidOrders.length > 0) {
-                    let unpaidRows = '';
+                    const unpaidRowData = [];
                     unpaidOrders.forEach(so => {
                         const soTotal = Number(so.total || 0);
                         // Calculate how much has been paid for this order
@@ -4820,20 +4820,48 @@
                         } else if (so.order_date) {
                             dueDate = fmtDate(new Date(so.order_date));
                         }
-                        unpaidRows += `<tr><td>${so.order_number || '-'}</td><td>${dueDate}</td><td class="amt">${remStr}</td></tr>`;
+                        unpaidRowData.push({ soNum: so.order_number || '-', dueDate, remStr });
                     });
                     const balStr = totalBalance.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                    unpaidHtml = `
-                        <div class="stmt-unpaid-section">
-                            <div class="stmt-unpaid-title">Unpaid Items</div>
-                            <table class="stmt-unpaid-table">
-                                <thead><tr><th>S.O.#</th><th>DUE DATE</th><th class="amt">Balance</th></tr></thead>
-                                <tbody>${unpaidRows}
-                                <tr class="stmt-unpaid-total"><td style="font-weight:700;">BALANCE</td><td></td><td class="amt" style="font-weight:700;">₱${balStr}</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    `;
+
+                    // Helper: build unpaid table
+                    const MAX_UNPAID_PER_COL = 9;
+                    function buildUnpaidTable(rows, showBalanceDue, balValue) {
+                        let html = `<table class="stmt-unpaid-table"><thead><tr><th>S.O.#</th><th>DUE DATE</th><th class="amt">Balance</th></tr></thead><tbody>`;
+                        rows.forEach(r => {
+                            html += `<tr><td>${r.soNum}</td><td>${r.dueDate}</td><td class="amt">${r.remStr}</td></tr>`;
+                        });
+                        if (showBalanceDue) {
+                            html += `<tr class="stmt-unpaid-total"><td style="font-weight:700;">BALANCE DUE</td><td></td><td class="amt" style="font-weight:700;">₱${balValue}</td></tr>`;
+                        }
+                        html += `</tbody></table>`;
+                        return html;
+                    }
+
+                    if (unpaidRowData.length > MAX_UNPAID_PER_COL) {
+                        const leftUnpaid = unpaidRowData.slice(0, MAX_UNPAID_PER_COL);
+                        const rightUnpaid = unpaidRowData.slice(MAX_UNPAID_PER_COL);
+                        unpaidHtml = `
+                            <div class="stmt-unpaid-section">
+                                <div class="stmt-unpaid-title">Unpaid Items</div>
+                                <div class="stmt-columns-wrapper">
+                                    <div class="stmt-column">
+                                        ${buildUnpaidTable(leftUnpaid, false)}
+                                    </div>
+                                    <div class="stmt-column">
+                                        ${buildUnpaidTable(rightUnpaid, true, balStr)}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        unpaidHtml = `
+                            <div class="stmt-unpaid-section">
+                                <div class="stmt-unpaid-title">Unpaid Items</div>
+                                ${buildUnpaidTable(unpaidRowData, true, balStr)}
+                            </div>
+                        `;
+                    }
                 }
 
                 const today = new Date();
@@ -4849,7 +4877,6 @@
                         </div>
                         ${txnHtml}
                         ${unpaidHtml}
-                        <div class="stmt-balance-due" style="margin-top:20px;">Balance Due &nbsp;&nbsp; ₱${totalBalance.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                     </div>
                 `;
             } catch (err) {
