@@ -49,7 +49,7 @@ router.post('/', async (req, res) => {
         const {
             credit_number, bill_id, bill_number, supplier_id, supplier_name,
             credit_date, reference, reason, discount_percent, adjustment,
-            items, status
+            items, status, currency_code, exchange_rate
         } = req.body;
 
         if (!items || !Array.isArray(items) || items.length === 0) {
@@ -83,8 +83,8 @@ router.post('/', async (req, res) => {
         await database.transaction(async (client) => {
             const creditResult = await client.query(`
                 INSERT INTO vendor_credits (credit_number, bill_id, bill_number, supplier_id, supplier_name,
-                    credit_date, reference, reason, discount_percent, adjustment, sub_total, total_amount, status)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+                    credit_date, reference, reason, discount_percent, adjustment, sub_total, total_amount, status, currency_code, exchange_rate)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
                 RETURNING id
             `, [
                 finalCreditNumber,
@@ -99,7 +99,9 @@ router.post('/', async (req, res) => {
                 adj,
                 subTotal,
                 totalAmount,
-                status || 'draft'
+                status || 'draft',
+                currency_code || 'PHP',
+                parseFloat(exchange_rate) || 1
             ]);
 
             creditId = creditResult.rows[0].id;
@@ -109,9 +111,10 @@ router.post('/', async (req, res) => {
                 const rate = parseFloat(item.rate) || 0;
                 const amount = qty * rate;
 
+                const baseCurrencyAmount = amount * (parseFloat(exchange_rate) || 1);
                 await client.query(`
-                    INSERT INTO vendor_credit_items (vendor_credit_id, item_id, item_name, account, account_type, quantity, rate, amount)
-                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                    INSERT INTO vendor_credit_items (vendor_credit_id, item_id, item_name, account, account_type, quantity, rate, amount, base_currency_amount)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                 `, [
                     creditId,
                     item.item_id || null,
@@ -120,7 +123,8 @@ router.post('/', async (req, res) => {
                     item.account_type || 'inventory',
                     qty,
                     rate,
-                    amount
+                    amount,
+                    baseCurrencyAmount
                 ]);
             }
         });

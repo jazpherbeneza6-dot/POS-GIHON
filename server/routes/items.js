@@ -440,7 +440,7 @@ router.get('/search', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const db = database.getDb();
-    const { name, sku, unit, quantity, reorder_point, price, cost, can_be_wholesale, image_url, group_id, manufacturer, brand, description, upc, ean, isbn, dimensions, tax_rate, account, type, weight, purchase_account, purchase_description } = req.body;
+    const { name, sku, unit, quantity, reorder_point, price, cost, can_be_wholesale, image_url, group_id, manufacturer, brand, description, upc, ean, isbn, dimensions, tax_rate, account, type, weight, purchase_account, purchase_description, purchase_currency } = req.body;
 
 
     if (!name || name.trim() === '') {
@@ -485,6 +485,7 @@ router.post('/', async (req, res) => {
     const weightValue = weight || null;
     const purchaseAccountValue = purchase_account || null;
     const purchaseDescriptionValue = purchase_description || null;
+    const purchaseCurrencyValue = purchase_currency || 'PHP';
 
     if (isNaN(stockQuantity) || stockQuantity < 0) {
       return res.status(400).json({ error: 'Quantity must be a valid positive number' });
@@ -533,10 +534,10 @@ router.post('/', async (req, res) => {
     const addedByValue = req.body.added_by || null;
 
     const result = await db.query(`
-      INSERT INTO items (name, sku, unit, stock_quantity, reorder_point, selling_price, purchase_cost, can_be_wholesale, image_url, group_id, manufacturer, brand, description, upc, ean, isbn, dimensions, tax_rate, account, type, weight, purchase_account, purchase_description, preferred_vendor, added_by)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25)
+      INSERT INTO items (name, sku, unit, stock_quantity, reorder_point, selling_price, purchase_cost, can_be_wholesale, image_url, group_id, manufacturer, brand, description, upc, ean, isbn, dimensions, tax_rate, account, type, weight, purchase_account, purchase_description, preferred_vendor, added_by, purchase_currency)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26)
       RETURNING id
-    `, [name.trim(), finalSku, unitValue, stockQuantity, reorderPointValue, sellingPrice, purchaseCost, can_be_wholesale || false, image_url || null, groupIdValue, manufacturerValue, brandValue, descriptionValue, upcValue, eanValue, isbnValue, dimensionsValue, taxRateValue, accountValue, typeValue, weightValue, purchaseAccountValue, purchaseDescriptionValue, preferredVendorValue, addedByValue]);
+    `, [name.trim(), finalSku, unitValue, stockQuantity, reorderPointValue, sellingPrice, purchaseCost, can_be_wholesale || false, image_url || null, groupIdValue, manufacturerValue, brandValue, descriptionValue, upcValue, eanValue, isbnValue, dimensionsValue, taxRateValue, accountValue, typeValue, weightValue, purchaseAccountValue, purchaseDescriptionValue, preferredVendorValue, addedByValue, purchaseCurrencyValue]);
 
     const itemId = result.rows[0].id;
     const itemResult = await db.query('SELECT * FROM items WHERE id = $1', [itemId]);
@@ -647,7 +648,7 @@ router.get('/:id/history', async (req, res) => {
 // Update item
 router.put('/:id', async (req, res) => {
   try {
-    const { name, sku, unit, quantity, reorder_point, price, cost, can_be_wholesale, image_url, group_id, manufacturer, brand, description, upc, ean, isbn, dimensions, tax_rate, account, type, weight, purchase_account, purchase_description, status, is_active, _partialUpdate, selling_price, purchase_cost, stock_quantity } = req.body;
+    const { name, sku, unit, quantity, reorder_point, price, cost, can_be_wholesale, image_url, group_id, manufacturer, brand, description, upc, ean, isbn, dimensions, tax_rate, account, type, weight, purchase_account, purchase_description, status, is_active, _partialUpdate, selling_price, purchase_cost, stock_quantity, purchase_currency } = req.body;
     const db = database.getDb();
 
     // Check if this is a partial/single-field update from bulk update
@@ -679,6 +680,7 @@ router.put('/:id', async (req, res) => {
         'weight': 'weight',
         'purchase_account': 'purchase_account',
         'purchase_description': 'purchase_description',
+        'purchase_currency': 'purchase_currency',
         'preferred_vendor': 'preferred_vendor',
         'status': 'status',
         'is_returnable': 'is_returnable',
@@ -837,6 +839,7 @@ router.put('/:id', async (req, res) => {
     const weightValue = weight !== undefined ? weight : null;
     const purchaseAccountValue = purchase_account !== undefined ? purchase_account : null;
     const purchaseDescriptionValue = purchase_description !== undefined ? purchase_description : null;
+    const purchaseCurrencyValue = purchase_currency || 'PHP';
     const preferredVendorValue = req.body.preferred_vendor !== undefined ? req.body.preferred_vendor : null;
     const addedByValue = req.body.added_by !== undefined ? req.body.added_by : null;
 
@@ -855,9 +858,9 @@ router.put('/:id', async (req, res) => {
           group_id = $10, manufacturer = $11, brand = $12, description = $13, upc = $14,
           ean = $15, isbn = $16, dimensions = $17, tax_rate = $18, account = $19,
           type = $20, weight = $21, purchase_account = $22, purchase_description = $23,
-          preferred_vendor = $24, added_by = $25, updated_at = CURRENT_TIMESTAMP
-      WHERE id = $26
-    `, [name.trim(), sku || null, unitValue, stockQuantity, reorderPointValue, sellingPrice, purchaseCost, can_be_wholesale || false, image_url || null, groupIdValue, manufacturerValue, brandValue, descriptionValue, upcValue, eanValue, isbnValue, dimensionsValue, taxRateValue, accountValue, typeValue, weightValue, purchaseAccountValue, purchaseDescriptionValue, preferredVendorValue, addedByValue, req.params.id]);
+          preferred_vendor = $24, added_by = $25, purchase_currency = $26, updated_at = CURRENT_TIMESTAMP
+      WHERE id = $27
+    `, [name.trim(), sku || null, unitValue, stockQuantity, reorderPointValue, sellingPrice, purchaseCost, can_be_wholesale || false, image_url || null, groupIdValue, manufacturerValue, brandValue, descriptionValue, upcValue, eanValue, isbnValue, dimensionsValue, taxRateValue, accountValue, typeValue, weightValue, purchaseAccountValue, purchaseDescriptionValue, preferredVendorValue, addedByValue, purchaseCurrencyValue, req.params.id]);
 
     const result = await db.query(`
       SELECT i.*, ig.name as group_name,

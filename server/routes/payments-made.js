@@ -55,14 +55,15 @@ router.post('/', async (req, res) => {
         const {
             payment_number, bill_id, bill_number, supplier_id, supplier_name,
             amount_paid, bank_charges, tax_deducted, payment_date, payment_made_on,
-            payment_mode, paid_through, location, reference_number, notes, status
+            payment_mode, paid_through, location, reference_number, notes, status,
+            currency_code, exchange_rate
         } = req.body;
 
         const result = await pool.query(
-            `INSERT INTO payments_made (payment_number, bill_id, bill_number, supplier_id, supplier_name, amount_paid, bank_charges, tax_deducted, payment_date, payment_made_on, payment_mode, paid_through, location, reference_number, notes, status)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+            `INSERT INTO payments_made (payment_number, bill_id, bill_number, supplier_id, supplier_name, amount_paid, bank_charges, tax_deducted, payment_date, payment_made_on, payment_mode, paid_through, location, reference_number, notes, status, currency_code, exchange_rate)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
              RETURNING *`,
-            [payment_number, bill_id || null, bill_number || null, supplier_id || null, supplier_name || null, amount_paid || 0, bank_charges || 0, tax_deducted || false, payment_date || new Date(), payment_made_on || null, payment_mode || 'Cash', paid_through || 'Petty Cash', location || 'Head Office', reference_number || '', notes || '', status || 'DRAFT']
+            [payment_number, bill_id || null, bill_number || null, supplier_id || null, supplier_name || null, amount_paid || 0, bank_charges || 0, tax_deducted || false, payment_date || new Date(), payment_made_on || null, payment_mode || 'Cash', paid_through || 'Petty Cash', location || 'Head Office', reference_number || '', notes || '', status || 'DRAFT', currency_code || 'PHP', parseFloat(exchange_rate) || 1]
         );
 
         // If status is PAID, update the bill status to PAID

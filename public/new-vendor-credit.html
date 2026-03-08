@@ -721,6 +721,17 @@
                 await loadPRNData(sourcePrnId);
             }
 
+            // If vendor_id is passed, auto-select and lock vendor
+            const preVendorId = urlParams.get('vendor_id');
+            if (preVendorId && !sourceBillId && !sourcePrnId) {
+                const v = allVendors.find(x => String(x.id) === preVendorId);
+                if (v) {
+                    selectVendor(v);
+                    document.getElementById('vendorInput').style.pointerEvents = 'none';
+                    document.getElementById('vendorInput').style.background = '#f5f5f5';
+                }
+            }
+
             // Close dropdowns on outside click
             document.addEventListener('click', function (e) {
                 if (!document.getElementById('vendorDropdownWrap').contains(e.target)) {
@@ -1163,10 +1174,13 @@
         }
 
         function goBack() {
+            const fromVendor = urlParams.get('vendor_id');
             if (sourcePrnId) {
                 window.location.href = '/purchase-returns.html?id=' + sourcePrnId;
             } else if (sourceBillId) {
                 window.location.href = '/bill-detail.html?id=' + sourceBillId;
+            } else if (fromVendor) {
+                window.location.href = '/vendors.html#vendor=' + fromVendor;
             } else {
                 window.location.href = '/vendor-credits.html';
             }

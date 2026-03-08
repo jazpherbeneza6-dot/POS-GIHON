@@ -116,7 +116,8 @@ router.post('/', async (req, res) => {
         const {
             bill_number, purchase_order_id, supplier_id, supplier_name,
             order_number, bill_date, due_date, payment_terms, subject,
-            notes, discount_percent, adjustment, items, status
+            notes, discount_percent, adjustment, items, status,
+            currency_code, exchange_rate
         } = req.body;
 
         if (!items || !Array.isArray(items) || items.length === 0) {
@@ -168,8 +169,8 @@ router.post('/', async (req, res) => {
             const billResult = await client.query(`
         INSERT INTO bills (bill_number, purchase_order_id, supplier_id, supplier_name,
           order_number, bill_date, due_date, payment_terms, subject, notes,
-          discount_percent, adjustment, sub_total, total_amount, status)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+          discount_percent, adjustment, sub_total, total_amount, status, currency_code, exchange_rate)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
         RETURNING id
       `, [
                 finalBillNumber,
@@ -186,7 +187,9 @@ router.post('/', async (req, res) => {
                 adj,
                 subTotal,
                 totalAmount,
-                status || 'draft'
+                status || 'draft',
+                currency_code || 'PHP',
+                parseFloat(exchange_rate) || 1
             ]);
 
             billId = billResult.rows[0].id;
@@ -196,9 +199,10 @@ router.post('/', async (req, res) => {
                 const rate = parseFloat(item.rate) || 0;
                 const amount = qty * rate;
 
+                const baseCurrencyAmount = amount * (parseFloat(exchange_rate) || 1);
                 await client.query(`
-          INSERT INTO bill_items (bill_id, item_id, item_name, account, account_type, quantity, rate, tax_percent, amount)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+          INSERT INTO bill_items (bill_id, item_id, item_name, account, account_type, quantity, rate, tax_percent, amount, base_currency_amount)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
         `, [
                     billId,
                     item.item_id || null,
@@ -208,7 +212,8 @@ router.post('/', async (req, res) => {
                     qty,
                     rate,
                     parseFloat(item.tax_percent) || 0,
-                    amount
+                    amount,
+                    baseCurrencyAmount
                 ]);
             }
 

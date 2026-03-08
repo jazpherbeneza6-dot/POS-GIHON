@@ -517,6 +517,17 @@ async function init() {
       `);
       console.log('Customer comments table created');
 
+      // Vendor comments table
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS vendor_comments (
+          id SERIAL PRIMARY KEY,
+          vendor_id INTEGER NOT NULL,
+          comment_html TEXT NOT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+      console.log('Vendor comments table created');
+
       // Packages table
       await pool.query(`
         CREATE TABLE IF NOT EXISTS packages (
@@ -759,6 +770,26 @@ async function init() {
       // Add discrepancy_resolved flag for over-receipt banner dismissal
       await pool.query(`ALTER TABLE purchases ADD COLUMN IF NOT EXISTS discrepancy_resolved BOOLEAN DEFAULT FALSE;`);
       console.log('Discrepancy resolved flag migration completed');
+
+      // ========== Multi-currency support migration ==========
+      // Transaction header tables: add currency_code and exchange_rate
+      await pool.query(`ALTER TABLE purchases ADD COLUMN IF NOT EXISTS currency_code VARCHAR(10) DEFAULT 'PHP';`);
+      await pool.query(`ALTER TABLE purchases ADD COLUMN IF NOT EXISTS exchange_rate NUMERIC(18,8) DEFAULT 1;`);
+      await pool.query(`ALTER TABLE bills ADD COLUMN IF NOT EXISTS currency_code VARCHAR(10) DEFAULT 'PHP';`);
+      await pool.query(`ALTER TABLE bills ADD COLUMN IF NOT EXISTS exchange_rate NUMERIC(18,8) DEFAULT 1;`);
+      await pool.query(`ALTER TABLE payments_made ADD COLUMN IF NOT EXISTS currency_code VARCHAR(10) DEFAULT 'PHP';`);
+      await pool.query(`ALTER TABLE payments_made ADD COLUMN IF NOT EXISTS exchange_rate NUMERIC(18,8) DEFAULT 1;`);
+      await pool.query(`ALTER TABLE vendor_credits ADD COLUMN IF NOT EXISTS currency_code VARCHAR(10) DEFAULT 'PHP';`);
+      await pool.query(`ALTER TABLE vendor_credits ADD COLUMN IF NOT EXISTS exchange_rate NUMERIC(18,8) DEFAULT 1;`);
+      // Line item tables: add base_currency_amount (amount in PHP)
+      await pool.query(`ALTER TABLE purchase_items ADD COLUMN IF NOT EXISTS base_currency_amount NUMERIC(38,10) DEFAULT 0;`);
+      await pool.query(`ALTER TABLE bill_items ADD COLUMN IF NOT EXISTS base_currency_amount NUMERIC(38,10) DEFAULT 0;`);
+      await pool.query(`ALTER TABLE vendor_credit_items ADD COLUMN IF NOT EXISTS base_currency_amount NUMERIC(38,10) DEFAULT 0;`);
+      console.log('Multi-currency migration completed');
+
+      // Item-level purchase currency (PHP or CNY)
+      await pool.query(`ALTER TABLE items ADD COLUMN IF NOT EXISTS purchase_currency VARCHAR(10) DEFAULT 'PHP';`);
+      console.log('Item purchase currency migration completed');
     } catch (migrationError) {
       // Column might already exist, ignore error
       console.log('Migration note:', migrationError.message);

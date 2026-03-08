@@ -896,6 +896,26 @@
             color: #333;
         }
 
+        .comment-add-btn {
+            margin-top: 8px;
+            padding: 6px 16px;
+            background: #f0f0f0;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            color: #555;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .comment-add-btn:hover {
+            background: #e8e8e8;
+        }
+
+        .comment-input:empty::before {
+            content: 'Write a comment...';
+            color: #aaa;
+        }
+
         /* ========== TRANSACTIONS TAB ========== */
         .txn-section {
             background: white;
@@ -1486,7 +1506,7 @@
                 <div class="detail-tab" data-tab="comments" onclick="switchTab('comments', this)">Comments</div>
                 <div class="detail-tab" data-tab="transactions" onclick="switchTab('transactions', this)">Transactions
                 </div>
-                <div class="detail-tab" data-tab="mails" onclick="switchTab('mails', this)">Mails</div>
+
                 <div class="detail-tab" data-tab="statement" onclick="switchTab('statement', this)">Statement</div>
             </div>
 
@@ -1642,14 +1662,15 @@
                         <!-- Comment Editor -->
                         <div class="comment-editor-card">
                             <div class="comment-toolbar">
-                                <button class="comment-toolbar-btn bold" title="Bold"
-                                    onclick="formatComment('bold')">B</button>
-                                <button class="comment-toolbar-btn italic" title="Italic"
-                                    onclick="formatComment('italic')">I</button>
+                                <button class="comment-toolbar-btn bold" title="Bold" onclick="execFormat('bold')"
+                                    style="font-weight:700;">B</button>
+                                <button class="comment-toolbar-btn italic" title="Italic" onclick="execFormat('italic')"
+                                    style="font-style:italic;">I</button>
                                 <button class="comment-toolbar-btn underline" title="Underline"
-                                    onclick="formatComment('underline')">U</button>
+                                    onclick="execFormat('underline')" style="text-decoration:underline;">U</button>
                             </div>
-                            <textarea class="comment-input" id="commentInput" placeholder="Add Comment"></textarea>
+                            <div class="comment-input" id="commentEditor" contenteditable="true"></div>
+                            <button class="comment-add-btn" onclick="addVendorComment()">Add Comment</button>
                         </div>
 
                         <!-- All Comments Section -->
@@ -1808,31 +1829,7 @@
                         </div>
                     </div>
 
-                    <!-- Mails Tab Content -->
-                    <div class="tab-content-area" id="tab-mails">
-                        <div class="mails-card">
-                            <div class="mails-header">
-                                <span class="mails-title">System Mails</span>
-                                <button class="link-email-btn"><svg width="14" height="14" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;">
-                                        <path
-                                            d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                                        <polyline points="22,6 12,13 2,6" />
-                                    </svg> Link Email account ▾</button>
-                            </div>
-                            <div class="mails-empty">
-                                <span class="warn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                                        stroke="#f59e0b" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round">
-                                        <path
-                                            d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-                                        <line x1="12" y1="9" x2="12" y2="13" />
-                                        <line x1="12" y1="17" x2="12.01" y2="17" />
-                                    </svg></span> No emails sent.
-                            </div>
-                        </div>
-                    </div>
+
 
                     <!-- Statement Tab Content -->
                     <div class="tab-content-area" id="tab-statement">
@@ -2013,6 +2010,7 @@
                 return;
             }
             loadVendorDetail();
+            loadVendorComments();
 
             // Push clean URL so hard-refresh stays on this page
             if (vendorId && !window.location.pathname.match(/\/vendors\/\d+/)) {
@@ -2435,11 +2433,80 @@
             }
         }
 
-        // ====== Comment Formatting (placeholder) ======
-        function formatComment(type) {
-            const input = document.getElementById('commentInput');
-            input.focus();
-            // Basic placeholder logic; rich text not fully functional for textarea
+        // ====== Comment Formatting (Rich Text) ======
+        function execFormat(command) {
+            document.getElementById('commentEditor').focus();
+            document.execCommand(command, false, null);
+        }
+
+        // ====== Add Vendor Comment ======
+        async function addVendorComment() {
+            if (!vendorId) return;
+            const editor = document.getElementById('commentEditor');
+            const html = editor.innerHTML.trim();
+            if (!html || html === '<br>' || html === '<div><br></div>') {
+                alert('Please write a comment before adding.');
+                return;
+            }
+            try {
+                const res = await fetch('/api/suppliers/' + vendorId + '/comments', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ comment_html: html })
+                });
+                if (res.ok) {
+                    editor.innerHTML = '';
+                    loadVendorComments();
+                } else {
+                    alert('Failed to add comment.');
+                }
+            } catch (err) {
+                console.error('Error adding comment:', err);
+                alert('Failed to add comment.');
+            }
+        }
+
+        // ====== Load Vendor Comments ======
+        async function loadVendorComments() {
+            if (!vendorId) return;
+            const container = document.getElementById('commentsListContainer');
+            const noMsg = document.getElementById('noCommentsMsg');
+            const listDiv = document.getElementById('commentsList');
+            try {
+                const res = await fetch('/api/suppliers/' + vendorId + '/comments');
+                if (!res.ok) return;
+                const comments = await res.json();
+                if (comments.length === 0) {
+                    noMsg.style.display = 'block';
+                    listDiv.innerHTML = '';
+                    return;
+                }
+                noMsg.style.display = 'none';
+                listDiv.innerHTML = comments.map(c => {
+                    const d = new Date(c.created_at);
+                    const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) + ' ' + d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                    return `<div class="comment-item">
+                        <div class="comment-text">${c.comment_html}</div>
+                        <div class="comment-meta" style="display:flex;justify-content:space-between;align-items:center;">
+                            <span>${dateStr}</span>
+                            <span style="cursor:pointer;color:#999;font-size:16px;" onclick="deleteVendorComment(${c.id})" title="Delete">×</span>
+                        </div>
+                    </div>`;
+                }).join('');
+            } catch (err) {
+                console.error('Error loading comments:', err);
+            }
+        }
+
+        // ====== Delete Vendor Comment ======
+        async function deleteVendorComment(commentId) {
+            if (!vendorId) return;
+            try {
+                await fetch('/api/suppliers/' + vendorId + '/comments/' + commentId, { method: 'DELETE' });
+                loadVendorComments();
+            } catch (err) {
+                console.error('Error deleting comment:', err);
+            }
         }
 
         // ====== Statement Rendering ======

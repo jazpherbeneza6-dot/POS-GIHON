@@ -1001,6 +1001,9 @@
                 if (v) {
                     const name = v.name || v.display_name || v.supplier_name || 'Unnamed';
                     selectVendor(v.id, name);
+                    // Lock vendor dropdown
+                    document.getElementById('vendDdTrigger').style.pointerEvents = 'none';
+                    document.getElementById('vendDdTrigger').style.background = '#f5f5f5';
                 }
             }
 
@@ -1353,6 +1356,7 @@
 
         function goBack() {
             if (preselectedBillId) window.location.href = '/bill-detail.html?id=' + preselectedBillId;
+            else if (preselectedVendorId) window.location.href = '/vendors.html#vendor=' + preselectedVendorId;
             else window.location.href = '/payments-made.html';
         }
 

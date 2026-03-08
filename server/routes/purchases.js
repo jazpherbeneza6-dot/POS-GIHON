@@ -5,7 +5,7 @@ const database = require('../database');
 // Create purchase
 router.post('/', async (req, res) => {
   try {
-    const { supplier_id, supplier_name, items, invoice_number, po_number, expected_date, payment_terms, notes, status, date, delivery_address, reference_number, discount_percent, adjustment, terms_conditions, shipment_preference } = req.body;
+    const { supplier_id, supplier_name, items, invoice_number, po_number, expected_date, payment_terms, notes, status, date, delivery_address, reference_number, discount_percent, adjustment, terms_conditions, shipment_preference, currency_code, exchange_rate } = req.body;
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ error: 'At least one item is required' });
@@ -56,10 +56,10 @@ router.post('/', async (req, res) => {
     const discountAmt = totalAmount * (discPct / 100);
     totalAmount = totalAmount - discountAmt + adj;
 
-    // Auto-generate PO number
-    const poCountResult = await db.query('SELECT COUNT(*) as cnt FROM purchases');
-    const poCount = parseInt(poCountResult.rows[0].cnt) || 0;
-    const generatedPONumber = 'PO-' + String(poCount + 1).padStart(5, '0');
+    // Auto-generate PO number based on highest existing 5-digit PO number
+    const poMaxResult = await db.query("SELECT MAX(CAST(SUBSTRING(po_number FROM 4) AS INTEGER)) as max_num FROM purchases WHERE po_number ~ '^PO-[0-9]{5}$'");
+    const maxNum = parseInt(poMaxResult.rows[0].max_num) || 0;
+    const generatedPONumber = 'PO-' + String(maxNum + 1).padStart(5, '0');
 
     // Generate invoice number if not provided
     const invoiceNum = invoice_number || generatedPONumber;
@@ -73,8 +73,8 @@ router.post('/', async (req, res) => {
       const recvStatus = status === 'received' ? 'RECEIVED' : 'NOT RECEIVED';
 
       const purchaseResult = await client.query(`
-        INSERT INTO purchases (supplier_id, supplier_name, total_amount, invoice_number, po_number, expected_date, payment_terms, notes, status, receive_status, bill_status, date, delivery_address, reference_number, discount_percent, adjustment, terms_conditions, shipment_preference)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'UNBILLED', COALESCE($11, CURRENT_TIMESTAMP), $12, $13, $14, $15, $16, $17)
+        INSERT INTO purchases (supplier_id, supplier_name, total_amount, invoice_number, po_number, expected_date, payment_terms, notes, status, receive_status, bill_status, date, delivery_address, reference_number, discount_percent, adjustment, terms_conditions, shipment_preference, currency_code, exchange_rate)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'UNBILLED', COALESCE($11, CURRENT_TIMESTAMP), $12, $13, $14, $15, $16, $17, $18, $19)
         RETURNING id
       `, [
         finalSupplierId,
@@ -93,7 +93,9 @@ router.post('/', async (req, res) => {
         discPct,
         adj,
         terms_conditions || null,
-        shipment_preference || null
+        shipment_preference || null,
+        currency_code || 'PHP',
+        parseFloat(exchange_rate) || 1
       ]);
 
       purchaseId = purchaseResult.rows[0].id;
@@ -129,10 +131,11 @@ router.post('/', async (req, res) => {
         }
 
         // Insert purchase item record
+        const baseCurrencyAmount = totalPrice * (parseFloat(exchange_rate) || 1);
         await client.query(`
-          INSERT INTO purchase_items (purchase_id, item_id, quantity, unit_price, total_price, item_name, selling_price, is_new)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-        `, [purchaseId, itemId || null, qty, item.unit_price, totalPrice, item.item_name || null, item.selling_price || null, item.is_new === true]);
+          INSERT INTO purchase_items (purchase_id, item_id, quantity, unit_price, total_price, item_name, selling_price, is_new, base_currency_amount)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        `, [purchaseId, itemId || null, qty, item.unit_price, totalPrice, item.item_name || null, item.selling_price || null, item.is_new === true, baseCurrencyAmount]);
 
         // CASE 2: Existing item that needs stock update (only when status is 'received')
         // Only update if: status is received, we have an item_id, AND item was NOT just created
@@ -195,9 +198,9 @@ router.post('/', async (req, res) => {
 router.get('/next-number', async (req, res) => {
   try {
     const db = database.getDb();
-    const countResult = await db.query('SELECT COUNT(*) as cnt FROM purchases');
-    const count = parseInt(countResult.rows[0].cnt) || 0;
-    const poNumber = 'PO-' + String(count + 1).padStart(5, '0');
+    const maxResult = await db.query("SELECT MAX(CAST(SUBSTRING(po_number FROM 4) AS INTEGER)) as max_num FROM purchases WHERE po_number ~ '^PO-[0-9]{5}$'");
+    const maxNum = parseInt(maxResult.rows[0].max_num) || 0;
+    const poNumber = 'PO-' + String(maxNum + 1).padStart(5, '0');
     res.json({ po_number: poNumber });
   } catch (error) {
     console.error('Error generating next PO number:', error);
@@ -296,7 +299,7 @@ router.get('/:id', async (req, res) => {
 // Update purchase (full edit)
 router.put('/:id', async (req, res) => {
   try {
-    const { supplier_id, supplier_name, items, po_number, expected_date, payment_terms, notes, status, receive_status, bill_status, date, delivery_address, reference_number, discount_percent, adjustment, terms_conditions, shipment_preference, received_date, receiving_notes, discrepancy_resolved } = req.body;
+    const { supplier_id, supplier_name, items, po_number, expected_date, payment_terms, notes, status, receive_status, bill_status, date, delivery_address, reference_number, discount_percent, adjustment, terms_conditions, shipment_preference, received_date, receiving_notes, discrepancy_resolved, currency_code, exchange_rate } = req.body;
     const db = database.getDb();
 
     // Check if purchase exists
@@ -345,8 +348,9 @@ router.put('/:id', async (req, res) => {
             notes = $7, status = $8, date = COALESCE($9, date),
             delivery_address = $10, reference_number = $11, 
             discount_percent = $12, adjustment = $13, 
-            terms_conditions = $14, shipment_preference = $15
-          WHERE id = $16
+            terms_conditions = $14, shipment_preference = $15,
+            currency_code = $16, exchange_rate = $17
+          WHERE id = $18
         `, [
           finalSupplierId, finalSupplierName, totalAmount,
           po_number || existingPurchase.po_number,
@@ -360,6 +364,8 @@ router.put('/:id', async (req, res) => {
           discPct, adj,
           terms_conditions !== undefined ? terms_conditions : existingPurchase.terms_conditions,
           shipment_preference !== undefined ? shipment_preference : existingPurchase.shipment_preference,
+          currency_code || existingPurchase.currency_code || 'PHP',
+          parseFloat(exchange_rate) || parseFloat(existingPurchase.exchange_rate) || 1,
           req.params.id
         ]);
 
@@ -368,9 +374,10 @@ router.put('/:id', async (req, res) => {
 
         for (const item of items) {
           const totalPrice = (parseFloat(item.quantity) || 0) * (parseFloat(item.unit_price) || 0);
+          const baseCurrencyAmount = totalPrice * (parseFloat(exchange_rate) || parseFloat(existingPurchase.exchange_rate) || 1);
           await client.query(`
-            INSERT INTO purchase_items (purchase_id, item_id, quantity, unit_price, total_price, item_name, selling_price, is_new)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            INSERT INTO purchase_items (purchase_id, item_id, quantity, unit_price, total_price, item_name, selling_price, is_new, base_currency_amount)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
           `, [
             req.params.id,
             item.item_id || null,
@@ -379,7 +386,8 @@ router.put('/:id', async (req, res) => {
             totalPrice,
             item.item_name || null,
             item.selling_price || null,
-            item.is_new === true
+            item.is_new === true,
+            baseCurrencyAmount
           ]);
         }
       });

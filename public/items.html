@@ -6901,23 +6901,60 @@
               </div>
 
               <div class="section-row">
-                <label class="section-label required">Cost Price* <span
-                    style="font-size:11px;color:#6b7280;font-weight:400;">(Enter in RMB)</span></label>
+                <label class="section-label">Currency</label>
+                <select class="form-select" id="itemPurchaseCurrency" onchange="onPurchaseCurrencyChange()">
+                  <optgroup label="Common Currencies">
+                    <option value="PHP">PHP - Philippine Peso</option>
+                    <option value="CNY">CNY/RMB - Chinese Yuan</option>
+                    <option value="USD">USD - US Dollar</option>
+                  </optgroup>
+                  <optgroup label="Other Currencies">
+                    <option value="EUR">EUR - Euro</option>
+                    <option value="JPY">JPY - Japanese Yen</option>
+                    <option value="GBP">GBP - British Pound</option>
+                    <option value="KRW">KRW - Korean Won</option>
+                    <option value="SGD">SGD - Singapore Dollar</option>
+                    <option value="HKD">HKD - Hong Kong Dollar</option>
+                    <option value="TWD">TWD - Taiwan Dollar</option>
+                    <option value="THB">THB - Thai Baht</option>
+                    <option value="MYR">MYR - Malaysian Ringgit</option>
+                    <option value="IDR">IDR - Indonesian Rupiah</option>
+                    <option value="VND">VND - Vietnamese Dong</option>
+                    <option value="AUD">AUD - Australian Dollar</option>
+                    <option value="CAD">CAD - Canadian Dollar</option>
+                    <option value="AED">AED - UAE Dirham</option>
+                    <option value="SAR">SAR - Saudi Riyal</option>
+                    <option value="INR">INR - Indian Rupee</option>
+                  </optgroup>
+                </select>
+              </div>
+
+              <div class="section-row">
+                <label class="section-label required" id="costPriceLabel">Cost Price* <span
+                    style="font-size:11px;color:#6b7280;font-weight:400;" id="costPriceHint"></span></label>
                 <div class="price-input" style="position:relative;">
-                  <span class="currency-label"
-                    style="background:#f3f4f6;color:#ef4444;font-weight:700;font-size:13px;min-width:45px;text-align:center;">RMD</span>
-                  <input type="number" class="form-input" id="itemCost" step="0.01" placeholder="Enter RMB amount"
+                  <span class="currency-label" id="costCurrencyPrefix"
+                    style="background:#f3f4f6;font-weight:700;font-size:13px;min-width:45px;text-align:center;">₱</span>
+                  <input type="number" class="form-input" id="itemCost" step="0.01" placeholder="Enter amount"
                     oninput="onCostInputChange()">
                 </div>
-                <!-- Auto PHP Conversion Preview -->
+                <!-- Auto PHP Conversion Preview (only shown for non-PHP currencies) -->
                 <div id="costConversionPreview"
-                  style="margin-top:6px;padding:8px 12px;background:linear-gradient(135deg,#eff6ff,#f0fdf4);border:1px solid #93c5fd;border-radius:8px;font-size:12px;color:#1e40af;">
+                  style="display:none;margin-top:6px;padding:10px 14px;background:linear-gradient(135deg,#eff6ff,#f0fdf4);border:1px solid #93c5fd;border-radius:8px;font-size:12px;color:#1e40af;">
                   <div style="display:flex;align-items:center;justify-content:space-between;">
-
+                    <span style="font-size:12px;color:#6b7280;">PHP Equivalent:</span>
                     <span id="convertedPhpValue" style="font-weight:700;font-size:14px;color:#059669;">₱0.00</span>
                   </div>
-                  <div id="exchangeRateInfo" style="margin-top:4px;font-size:11px;color:#6b7280;">Rate: 1 CNY = ₱--
-                    (loading...)</div>
+                  <div style="margin-top:8px;display:flex;align-items:center;gap:8px;">
+                    <span style="font-size:11px;color:#6b7280;white-space:nowrap;" id="exchangeRateLabel">1 CNY =
+                      ₱</span>
+                    <input type="number" id="manualExchangeRate" step="0.0001" min="0"
+                      style="width:90px;padding:4px 8px;border:1px solid #d1d5db;border-radius:6px;font-size:12px;text-align:right;background:#fff;"
+                      oninput="onManualRateChange()">
+                    <button type="button" onclick="resetExchangeRate()" title="Fetch latest rate"
+                      style="padding:3px 8px;border:1px solid #d1d5db;border-radius:6px;background:#f9fafb;cursor:pointer;font-size:11px;color:#6b7280;white-space:nowrap;">↻
+                      Auto</button>
+                  </div>
                 </div>
               </div>
 

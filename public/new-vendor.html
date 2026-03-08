@@ -515,65 +515,85 @@
 
             <!-- Main Form Area -->
             <div class="form-main">
-                <!-- Primary Contact Section -->
-                <div class="form-section">
-                    <div class="form-row">
-                        <label class="form-label">Primary Contact</label>
-                        <div class="name-group">
-                            <select class="form-select" id="salutation">
-                                <option value="">Salutation</option>
-                                <option value="mr">Mr.</option>
-                                <option value="mrs">Mrs.</option>
-                                <option value="ms">Ms.</option>
-                                <option value="dr">Dr.</option>
+                <!-- Top area: form + image upload -->
+                <div style="display:flex;gap:32px;">
+                    <!-- Primary Contact Section -->
+                    <div class="form-section" style="flex:1;">
+                        <div class="form-row">
+                            <label class="form-label">Primary Contact</label>
+                            <div class="name-group">
+                                <select class="form-select" id="salutation">
+                                    <option value="">Salutation</option>
+                                    <option value="mr">Mr.</option>
+                                    <option value="mrs">Mrs.</option>
+                                    <option value="ms">Ms.</option>
+                                    <option value="dr">Dr.</option>
+                                </select>
+                                <input type="text" class="form-input" id="firstName" placeholder="First Name">
+                                <input type="text" class="form-input" id="lastName" placeholder="Last Name">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label">Company Name</label>
+                            <input type="text" class="form-input" id="companyName">
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label required">Display Name*</label>
+                            <select class="form-select" id="displayName">
+                                <option value="">Select or type to add</option>
                             </select>
-                            <input type="text" class="form-input" id="firstName" placeholder="First Name">
-                            <input type="text" class="form-input" id="lastName" placeholder="Last Name">
                         </div>
-                    </div>
-                    <div class="form-row">
-                        <label class="form-label">Company Name</label>
-                        <input type="text" class="form-input" id="companyName">
-                    </div>
-                    <div class="form-row">
-                        <label class="form-label required">Display Name*</label>
-                        <select class="form-select" id="displayName">
-                            <option value="">Select or type to add</option>
-                        </select>
-                    </div>
-                    <div class="form-row">
-                        <label class="form-label">Email Address</label>
-                        <div class="email-wrapper">
-                            <span class="email-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path
-                                        d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                                    <polyline points="22,6 12,13 2,6" />
-                                </svg></span>
-                            <input type="email" class="form-input" id="email">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <label class="form-label">Phone</label>
-                        <div class="phone-group">
-                            <div class="phone-pair">
-                                <select class="form-select" id="workPhoneCode">
-                                    <option value="+63">+63</option>
-                                    <option value="+1">+1</option>
-                                </select>
-                                <input type="text" class="form-input" id="workPhone" placeholder="Work Phone">
+                        <div class="form-row">
+                            <label class="form-label">Email Address</label>
+                            <div class="email-wrapper">
+                                <span class="email-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path
+                                            d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                        <polyline points="22,6 12,13 2,6" />
+                                    </svg></span>
+                                <input type="email" class="form-input" id="email">
                             </div>
-                            <div class="phone-pair">
-                                <select class="form-select" id="mobileCode">
-                                    <option value="+63">+63</option>
-                                    <option value="+1">+1</option>
-                                </select>
-                                <input type="text" class="form-input" id="mobile" placeholder="Mobile">
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label">Phone</label>
+                            <div class="phone-group">
+                                <div class="phone-pair">
+                                    <select class="form-select" id="workPhoneCode">
+                                        <option value="+63">+63</option>
+                                        <option value="+1">+1</option>
+                                    </select>
+                                    <input type="text" class="form-input" id="workPhone" placeholder="Work Phone">
+                                </div>
+                                <div class="phone-pair">
+                                    <select class="form-select" id="mobileCode">
+                                        <option value="+63">+63</option>
+                                        <option value="+1">+1</option>
+                                    </select>
+                                    <input type="text" class="form-input" id="mobile" placeholder="Mobile">
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+
+                    <!-- Right: Profile Image Upload -->
+                    <div style="width:220px;flex-shrink:0;padding-top:16px;margin-right:40px;">
+                        <div id="vendorImageUpload" onclick="document.getElementById('vendorImageInput').click()"
+                            style="border:2px dashed #d0d5dd;border-radius:8px;padding:32px 16px;text-align:center;cursor:pointer;transition:border-color 0.2s;min-height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;"
+                            onmouseover="this.style.borderColor='#4285f4'"
+                            onmouseout="this.style.borderColor='#d0d5dd'">
+                            <div style="font-size:40px;margin-bottom:8px;color:#ccc;">🖼️</div>
+                            <div style="font-size:13px;color:#555;margin-bottom:4px;">Drag image(s) here or</div>
+                            <div style="font-size:13px;color:#4285f4;font-weight:500;">Browse Images</div>
+                            <div style="font-size:11px;color:#999;margin-top:8px;">Max file size: 5MB</div>
+                            <div style="font-size:11px;color:#999;">jpg, jpeg, png, gif, bmp</div>
+                            <img id="vendorImagePreview"
+                                style="max-width:100%;margin-top:10px;border-radius:4px;display:none;">
+                        </div>
+                        <input type="file" id="vendorImageInput" accept="image/*" style="display:none;">
+                    </div>
+                </div> <!-- end flex container -->
 
                 <hr class="form-divider">
 
@@ -583,9 +603,7 @@
                         <div class="tab active" data-tab="other-details">Other Details</div>
                         <div class="tab" data-tab="address">Address</div>
                         <div class="tab" data-tab="contact-persons">Contact Persons</div>
-                        <div class="tab" data-tab="custom-fields">Custom Fields</div>
-                        <div class="tab" data-tab="reporting-tags">Reporting Tags</div>
-                        <div class="tab" data-tab="remarks">Remarks</div>
+                        <div class="tab" data-tab="remarks-tab">Remarks</div>
                     </div>
                 </div>
 
@@ -599,9 +617,6 @@
                                 <option value="12">VAT 12%</option>
                                 <option value="0">Exempt</option>
                             </select>
-                            <div class="tab-hint">To associate more than one tax, you need to create a tax group in
-                                <a href="#">Settings</a>.
-                            </div>
                         </div>
                     </div>
                     <div class="tab-form-row">
@@ -611,8 +626,40 @@
                     <div class="tab-form-row">
                         <label class="form-label">Currency</label>
                         <select class="form-select" id="currency" style="max-width: 380px;">
-                            <option value="php">PHP- Philippine Peso</option>
-                            <option value="usd">USD- US Dollar</option>
+                            <option value="php">PHP - Philippine Peso</option>
+                            <option value="cny">CNY/RMB - Chinese Yuan Renminbi</option>
+                            <option value="usd">USD - US Dollar</option>
+                            <option disabled>──────────────</option>
+                            <option value="aed">AED - UAE Dirham</option>
+                            <option value="aud">AUD - Australian Dollar</option>
+                            <option value="bdt">BDT - Bangladeshi Taka</option>
+                            <option value="brl">BRL - Brazilian Real</option>
+                            <option value="cad">CAD - Canadian Dollar</option>
+                            <option value="chf">CHF - Swiss Franc</option>
+                            <option value="dkk">DKK - Danish Krone</option>
+                            <option value="eur">EUR - Euro</option>
+                            <option value="gbp">GBP - British Pound</option>
+                            <option value="hkd">HKD - Hong Kong Dollar</option>
+                            <option value="idr">IDR - Indonesian Rupiah</option>
+                            <option value="inr">INR - Indian Rupee</option>
+                            <option value="jpy">JPY - Japanese Yen</option>
+                            <option value="krw">KRW - South Korean Won</option>
+                            <option value="mxn">MXN - Mexican Peso</option>
+                            <option value="myr">MYR - Malaysian Ringgit</option>
+                            <option value="ngn">NGN - Nigerian Naira</option>
+                            <option value="nok">NOK - Norwegian Krone</option>
+                            <option value="nzd">NZD - New Zealand Dollar</option>
+                            <option value="pkr">PKR - Pakistani Rupee</option>
+                            <option value="pln">PLN - Polish Zloty</option>
+                            <option value="rub">RUB - Russian Ruble</option>
+                            <option value="sar">SAR - Saudi Riyal</option>
+                            <option value="sek">SEK - Swedish Krona</option>
+                            <option value="sgd">SGD - Singapore Dollar</option>
+                            <option value="thb">THB - Thai Baht</option>
+                            <option value="try">TRY - Turkish Lira</option>
+                            <option value="twd">TWD - Taiwan Dollar</option>
+                            <option value="vnd">VND - Vietnamese Dong</option>
+                            <option value="zar">ZAR - South African Rand</option>
                         </select>
                     </div>
                     <div class="tab-form-row">
@@ -638,39 +685,83 @@
 
                 <!-- Address Tab -->
                 <div class="tab-content" id="address">
-                    <div class="address-section">
-                        <div class="address-title">Billing Address</div>
-                        <div class="tab-form-row">
-                            <label class="form-label">Attention</label>
-                            <input type="text" class="form-input" id="billingAttention" style="max-width: 380px;">
+                    <div style="display:flex;gap:40px;flex-wrap:wrap;">
+                        <!-- Billing Address -->
+                        <div class="address-section" style="flex:1;min-width:300px;">
+                            <div class="address-title">Billing Address</div>
+                            <div class="tab-form-row">
+                                <label class="form-label">Attention</label>
+                                <input type="text" class="form-input" id="billingAttention" style="max-width: 300px;">
+                            </div>
+                            <div class="tab-form-row">
+                                <label class="form-label">Country/Region</label>
+                                <select class="form-select" id="billingCountry" style="max-width: 300px;">
+                                    <option value="ph">Philippines</option>
+                                    <option value="us">United States</option>
+                                </select>
+                            </div>
+                            <div class="tab-form-row">
+                                <label class="form-label">Address</label>
+                                <textarea class="form-input" id="billingAddress" rows="3"
+                                    style="max-width: 300px; resize: vertical;"></textarea>
+                            </div>
+                            <div class="tab-form-row">
+                                <label class="form-label">City</label>
+                                <input type="text" class="form-input" id="billingCity" style="max-width: 300px;">
+                            </div>
+                            <div class="tab-form-row">
+                                <label class="form-label">State</label>
+                                <input type="text" class="form-input" id="billingState" style="max-width: 300px;">
+                            </div>
+                            <div class="tab-form-row">
+                                <label class="form-label">ZIP Code</label>
+                                <input type="text" class="form-input" id="billingZip" style="max-width: 200px;">
+                            </div>
+                            <div class="tab-form-row">
+                                <label class="form-label">Phone</label>
+                                <input type="text" class="form-input" id="billingPhone" style="max-width: 280px;">
+                            </div>
                         </div>
-                        <div class="tab-form-row">
-                            <label class="form-label">Country/Region</label>
-                            <select class="form-select" id="billingCountry" style="max-width: 380px;">
-                                <option value="ph">Philippines</option>
-                                <option value="us">United States</option>
-                            </select>
-                        </div>
-                        <div class="tab-form-row">
-                            <label class="form-label">Address</label>
-                            <textarea class="form-input" id="billingAddress" rows="3"
-                                style="max-width: 380px; resize: vertical;"></textarea>
-                        </div>
-                        <div class="tab-form-row">
-                            <label class="form-label">City</label>
-                            <input type="text" class="form-input" id="billingCity" style="max-width: 380px;">
-                        </div>
-                        <div class="tab-form-row">
-                            <label class="form-label">State</label>
-                            <input type="text" class="form-input" id="billingState" style="max-width: 380px;">
-                        </div>
-                        <div class="tab-form-row">
-                            <label class="form-label">Zip Code</label>
-                            <input type="text" class="form-input" id="billingZip" style="max-width: 200px;">
-                        </div>
-                        <div class="tab-form-row">
-                            <label class="form-label">Phone</label>
-                            <input type="text" class="form-input" id="billingPhone" style="max-width: 280px;">
+
+                        <!-- Shipping Address -->
+                        <div class="address-section" style="flex:1;min-width:300px;">
+                            <div class="address-title" style="display:flex;align-items:center;gap:12px;">Shipping
+                                Address <span style="font-size:12px;font-weight:400;">( <a href="#"
+                                        onclick="copyBillingToShipping(event)"
+                                        style="color:#4285f4;text-decoration:none;">⬇ Copy billing address</a> )</span>
+                            </div>
+                            <div class="tab-form-row">
+                                <label class="form-label">Attention</label>
+                                <input type="text" class="form-input" id="shippingAttention" style="max-width: 300px;">
+                            </div>
+                            <div class="tab-form-row">
+                                <label class="form-label">Country/Region</label>
+                                <select class="form-select" id="shippingCountry" style="max-width: 300px;">
+                                    <option value="ph">Philippines</option>
+                                    <option value="us">United States</option>
+                                </select>
+                            </div>
+                            <div class="tab-form-row">
+                                <label class="form-label">Address</label>
+                                <textarea class="form-input" id="shippingAddress" rows="3"
+                                    style="max-width: 300px; resize: vertical;"></textarea>
+                            </div>
+                            <div class="tab-form-row">
+                                <label class="form-label">City</label>
+                                <input type="text" class="form-input" id="shippingCity" style="max-width: 300px;">
+                            </div>
+                            <div class="tab-form-row">
+                                <label class="form-label">State</label>
+                                <input type="text" class="form-input" id="shippingState" style="max-width: 300px;">
+                            </div>
+                            <div class="tab-form-row">
+                                <label class="form-label">ZIP Code</label>
+                                <input type="text" class="form-input" id="shippingZip" style="max-width: 200px;">
+                            </div>
+                            <div class="tab-form-row">
+                                <label class="form-label">Phone</label>
+                                <input type="text" class="form-input" id="shippingPhone" style="max-width: 280px;">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -707,22 +798,11 @@
                         </tbody>
                     </table>
                     <button class="add-contact-btn" onclick="addContactPerson()">+ Add Contact Person</button>
-                </div>
 
-                <!-- Custom Fields Tab -->
-                <div class="tab-content" id="custom-fields">
-                    <p style="color: #888; font-size: 13px;">No custom fields have been created yet. <a href="#"
-                            style="color: #4285f4; text-decoration: none;">Add Custom Field</a></p>
-                </div>
-
-                <!-- Reporting Tags Tab -->
-                <div class="tab-content" id="reporting-tags">
-                    <p style="color: #888; font-size: 13px;">No reporting tags have been created yet. <a href="#"
-                            style="color: #4285f4; text-decoration: none;">Add Reporting Tag</a></p>
                 </div>
 
                 <!-- Remarks Tab -->
-                <div class="tab-content" id="remarks">
+                <div class="tab-content" id="remarks-tab">
                     <div class="tab-form-row">
                         <label class="form-label">Remarks</label>
                         <textarea class="form-input" id="remarks" rows="4" style="max-width: 500px; resize: vertical;"
@@ -730,74 +810,111 @@
                     </div>
                 </div>
 
-                <!-- Add More Details -->
-                <div class="add-more-link">
-                    <a href="#">Add more details</a>
+                <!-- Footer -->
+                <div class="form-footer">
+                    <button class="btn-save" onclick="saveVendor()">Save</button>
+                    <button class="btn-cancel" onclick="goBack()">Cancel</button>
                 </div>
             </div>
-
-            <!-- Footer -->
-            <div class="form-footer">
-                <button class="btn-save" onclick="saveVendor()">Save</button>
-                <button class="btn-cancel" onclick="goBack()">Cancel</button>
-            </div>
         </div>
-    </div>
 
-    <!-- Layout Script -->
-    <script src="/js/layout.js"></script>
-    <script>
-        // Tab functionality
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', function () {
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        <!-- Layout Script -->
+        <script src="/js/layout.js"></script>
+        <script>
+            // Tab functionality
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function () {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
 
-                this.classList.add('active');
-                const tabId = this.getAttribute('data-tab');
-                document.getElementById(tabId).classList.add('active');
+                    this.classList.add('active');
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
             });
-        });
 
-        // Update display name options based on first/last name
-        const firstName = document.getElementById('firstName');
-        const lastName = document.getElementById('lastName');
-        const displayName = document.getElementById('displayName');
+            // Update display name options based on first/last name
+            const firstName = document.getElementById('firstName');
+            const lastName = document.getElementById('lastName');
+            const displayName = document.getElementById('displayName');
 
-        function updateDisplayNameOptions() {
-            const first = firstName.value;
-            const last = lastName.value;
+            function updateDisplayNameOptions() {
+                const first = firstName.value;
+                const last = lastName.value;
+                const currentVal = displayName.value;
 
-            displayName.innerHTML = '<option value="">Select or type to add</option>';
+                displayName.innerHTML = '<option value="">Select or type to add</option>';
 
-            if (first || last) {
-                if (first && last) {
-                    displayName.innerHTML += `<option value="${first} ${last}">${first} ${last}</option>`;
-                    displayName.innerHTML += `<option value="${last}, ${first}">${last}, ${first}</option>`;
+                const options = [];
+                if (first || last) {
+                    if (first && last) {
+                        options.push(`${first} ${last}`);
+                        options.push(`${last}, ${first}`);
+                    }
+                    if (first) options.push(first);
+                    if (last) options.push(last);
                 }
-                if (first) displayName.innerHTML += `<option value="${first}">${first}</option>`;
-                if (last) displayName.innerHTML += `<option value="${last}">${last}</option>`;
+
+                // If we have a saved display name that's not in the generated options, include it
+                if (currentVal && !options.includes(currentVal)) {
+                    options.unshift(currentVal);
+                }
+
+                options.forEach(opt => {
+                    displayName.innerHTML += `<option value="${opt}">${opt}</option>`;
+                });
+
+                // Re-select the current value
+                if (currentVal) displayName.value = currentVal;
             }
-        }
 
-        firstName.addEventListener('input', updateDisplayNameOptions);
-        lastName.addEventListener('input', updateDisplayNameOptions);
+            firstName.addEventListener('input', updateDisplayNameOptions);
+            lastName.addEventListener('input', updateDisplayNameOptions);
 
-        function goBack() {
-            window.location.href = '/vendors.html';
-        }
+            function goBack() {
+                if (editVendorId) {
+                    window.location.href = '/vendors.html#vendor=' + editVendorId;
+                } else {
+                    window.location.href = '/vendors.html';
+                }
+            }
 
-        function uploadDocument() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.pdf,.doc,.docx,.jpg,.png';
-            input.click();
-        }
+            function uploadDocument() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.pdf,.doc,.docx,.jpg,.png';
+                input.click();
+            }
 
-        function addContactPerson() {
-            const tbody = document.getElementById('contactPersonsBody');
-            const newRow = document.createElement('tr');
-            newRow.innerHTML = `
+            function copyBillingToShipping(e) {
+                e.preventDefault();
+                document.getElementById('shippingAttention').value = document.getElementById('billingAttention').value;
+                document.getElementById('shippingCountry').value = document.getElementById('billingCountry').value;
+                document.getElementById('shippingAddress').value = document.getElementById('billingAddress').value;
+                document.getElementById('shippingCity').value = document.getElementById('billingCity').value;
+                document.getElementById('shippingState').value = document.getElementById('billingState').value;
+                document.getElementById('shippingZip').value = document.getElementById('billingZip').value;
+                document.getElementById('shippingPhone').value = document.getElementById('billingPhone').value;
+            }
+
+            // Image upload preview
+            document.getElementById('vendorImageInput').addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (ev) {
+                        const preview = document.getElementById('vendorImagePreview');
+                        preview.src = ev.target.result;
+                        preview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            function addContactPerson() {
+                const tbody = document.getElementById('contactPersonsBody');
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `
                 <td>
                     <select class="form-select" style="max-width: 100px;">
                         <option value="">-</option>
@@ -812,88 +929,203 @@
                 <td><input type="text" class="form-input" style="max-width: 150px;"></td>
                 <td><button class="remove-btn" onclick="removeContactPerson(this)">×</button></td>
             `;
-            tbody.appendChild(newRow);
-        }
-
-        function removeContactPerson(btn) {
-            btn.closest('tr').remove();
-        }
-
-        async function saveVendor() {
-            const displayNameValue = document.getElementById('displayName').value;
-
-            if (!displayNameValue) {
-                alert('Please enter a Display Name');
-                return;
+                tbody.appendChild(newRow);
             }
 
-            // Collect contact persons
-            const contactPersons = [];
-            document.querySelectorAll('#contactPersonsBody tr').forEach(row => {
-                const inputs = row.querySelectorAll('input');
-                const select = row.querySelector('select');
-                if (inputs.length >= 4 && (inputs[0].value || inputs[1].value || inputs[2].value)) {
-                    contactPersons.push({
-                        salutation: select ? select.value : '',
-                        first_name: inputs[0].value,
-                        last_name: inputs[1].value,
-                        email: inputs[2].value,
-                        phone: inputs[3].value
-                    });
+            function removeContactPerson(btn) {
+                btn.closest('tr').remove();
+            }
+
+            // ===== Edit Mode =====
+            let editVendorId = null;
+
+            (async function checkEditMode() {
+                const params = new URLSearchParams(window.location.search);
+                const editId = params.get('id');
+                if (!editId) return;
+
+                editVendorId = editId;
+
+                // Update page title
+                document.querySelector('.page-title').textContent = 'Edit Vendor';
+                document.title = 'Edit Vendor - Inventory Management';
+
+                try {
+                    const res = await fetch('/api/suppliers/' + editId);
+                    if (!res.ok) return;
+                    const v = await res.json();
+
+                    // Fill primary contact fields (with fallbacks for legacy data)
+                    if (v.salutation) document.getElementById('salutation').value = v.salutation;
+                    document.getElementById('firstName').value = v.first_name || v.contact_person || '';
+                    document.getElementById('lastName').value = v.last_name || '';
+                    document.getElementById('companyName').value = v.company_name || '';
+
+                    // Set display name (use display_name or name as fallback)
+                    const displayNameValue = v.display_name || v.name || '';
+                    if (displayNameValue) {
+                        const sel = document.getElementById('displayName');
+                        const opt = document.createElement('option');
+                        opt.value = displayNameValue;
+                        opt.textContent = displayNameValue;
+                        sel.appendChild(opt);
+                        sel.value = displayNameValue;
+                    }
+
+                    document.getElementById('email').value = v.email || '';
+                    document.getElementById('workPhone').value = v.work_phone || v.phone || '';
+                    document.getElementById('mobile').value = v.mobile || '';
+
+                    // Other Details tab
+                    if (v.tax_rate) document.getElementById('taxRate').value = v.tax_rate;
+                    if (v.company_id_number) document.getElementById('companyId').value = v.company_id_number;
+                    if (v.currency) document.getElementById('currency').value = v.currency;
+                    if (v.payment_terms) document.getElementById('paymentTerms').value = v.payment_terms;
+
+                    // Address tab - billing
+                    if (v.billing_attention) document.getElementById('billingAttention').value = v.billing_attention;
+                    if (v.billing_country) document.getElementById('billingCountry').value = v.billing_country;
+                    if (v.billing_address) document.getElementById('billingAddress').value = v.billing_address;
+                    if (v.billing_city) document.getElementById('billingCity').value = v.billing_city;
+                    if (v.billing_state) document.getElementById('billingState').value = v.billing_state;
+                    if (v.billing_zip) document.getElementById('billingZip').value = v.billing_zip;
+                    if (v.billing_phone) document.getElementById('billingPhone').value = v.billing_phone;
+
+                    // Address tab - shipping
+                    if (v.shipping_attention) document.getElementById('shippingAttention').value = v.shipping_attention;
+                    if (v.shipping_country) document.getElementById('shippingCountry').value = v.shipping_country;
+                    if (v.shipping_address) document.getElementById('shippingAddress').value = v.shipping_address;
+                    if (v.shipping_city) document.getElementById('shippingCity').value = v.shipping_city;
+                    if (v.shipping_state) document.getElementById('shippingState').value = v.shipping_state;
+                    if (v.shipping_zip) document.getElementById('shippingZip').value = v.shipping_zip;
+                    if (v.shipping_phone) document.getElementById('shippingPhone').value = v.shipping_phone;
+
+                    // Remarks tab
+                    if (v.remarks) document.getElementById('remarks').value = v.remarks;
+
+                    // Update display name options
+                    updateDisplayNameOptions();
+
+                    // Load contact persons (from inline response or separate API)
+                    const contacts = v.contact_persons || [];
+                    if (contacts.length > 0) {
+                        const tbody = document.getElementById('contactPersonsBody');
+                        tbody.innerHTML = '';
+                        contacts.forEach(cp => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                            <td>
+                                <select class="form-select" style="max-width: 100px;">
+                                    <option value="">-</option>
+                                    <option value="mr" ${cp.salutation === 'mr' || cp.salutation === 'Mr.' ? 'selected' : ''}>Mr.</option>
+                                    <option value="mrs" ${cp.salutation === 'mrs' || cp.salutation === 'Mrs.' ? 'selected' : ''}>Mrs.</option>
+                                    <option value="ms" ${cp.salutation === 'ms' || cp.salutation === 'Ms.' ? 'selected' : ''}>Ms.</option>
+                                </select>
+                            </td>
+                            <td><input type="text" class="form-input" style="max-width: 150px;" value="${cp.first_name || ''}"></td>
+                            <td><input type="text" class="form-input" style="max-width: 150px;" value="${cp.last_name || ''}"></td>
+                            <td><input type="email" class="form-input" style="max-width: 200px;" value="${cp.email || ''}"></td>
+                            <td><input type="text" class="form-input" style="max-width: 150px;" value="${cp.phone || cp.work_phone || ''}"></td>
+                            <td><button class="remove-btn" onclick="removeContactPerson(this)">×</button></td>
+                        `;
+                            tbody.appendChild(row);
+                        });
+                    }
+                } catch (err) {
+                    console.error('Error loading vendor for edit:', err);
                 }
-            });
+            })();
 
-            const vendorData = {
-                salutation: document.getElementById('salutation').value,
-                first_name: document.getElementById('firstName').value,
-                last_name: document.getElementById('lastName').value,
-                company_name: document.getElementById('companyName').value,
-                display_name: displayNameValue,
-                name: displayNameValue,
-                email: document.getElementById('email').value,
-                work_phone: document.getElementById('workPhone').value,
-                mobile: document.getElementById('mobile').value,
-                phone: document.getElementById('workPhone').value,
-                // Other Details tab
-                tax_rate: document.getElementById('taxRate').value,
-                company_id_number: document.getElementById('companyId').value,
-                currency: document.getElementById('currency').value,
-                payment_terms: document.getElementById('paymentTerms').value,
-                // Address tab
-                billing_attention: document.getElementById('billingAttention') ? document.getElementById('billingAttention').value : '',
-                billing_country: document.getElementById('billingCountry') ? document.getElementById('billingCountry').value : '',
-                billing_address: document.getElementById('billingAddress') ? document.getElementById('billingAddress').value : '',
-                billing_city: document.getElementById('billingCity') ? document.getElementById('billingCity').value : '',
-                billing_state: document.getElementById('billingState') ? document.getElementById('billingState').value : '',
-                billing_zip: document.getElementById('billingZip') ? document.getElementById('billingZip').value : '',
-                billing_phone: document.getElementById('billingPhone') ? document.getElementById('billingPhone').value : '',
-                // Remarks tab
-                remarks: document.getElementById('remarks') ? document.getElementById('remarks').value : '',
-                // Contact persons
-                contact_persons: contactPersons
-            };
+            async function saveVendor() {
+                const displayNameValue = document.getElementById('displayName').value;
 
-            try {
-                const response = await fetch('/api/suppliers', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(vendorData)
-                });
-
-                if (!response.ok) {
-                    const err = await response.json();
-                    alert('Error: ' + (err.error || 'Failed to save vendor'));
+                if (!displayNameValue) {
+                    alert('Please enter a Display Name');
                     return;
                 }
 
-                const saved = await response.json();
-                window.location.href = '/vendor-detail.html?id=' + saved.id;
-            } catch (error) {
-                console.error('Error saving vendor:', error);
-                alert('Error saving vendor: ' + error.message);
+                // Collect contact persons
+                const contactPersons = [];
+                document.querySelectorAll('#contactPersonsBody tr').forEach(row => {
+                    const inputs = row.querySelectorAll('input');
+                    const select = row.querySelector('select');
+                    if (inputs.length >= 4 && (inputs[0].value || inputs[1].value || inputs[2].value)) {
+                        contactPersons.push({
+                            salutation: select ? select.value : '',
+                            first_name: inputs[0].value,
+                            last_name: inputs[1].value,
+                            email: inputs[2].value,
+                            phone: inputs[3].value
+                        });
+                    }
+                });
+
+                const vendorData = {
+                    salutation: document.getElementById('salutation').value,
+                    first_name: document.getElementById('firstName').value,
+                    last_name: document.getElementById('lastName').value,
+                    company_name: document.getElementById('companyName').value,
+                    display_name: displayNameValue,
+                    name: displayNameValue,
+                    email: document.getElementById('email').value,
+                    work_phone: document.getElementById('workPhone').value,
+                    mobile: document.getElementById('mobile').value,
+                    phone: document.getElementById('workPhone').value,
+                    // Other Details tab
+                    tax_rate: document.getElementById('taxRate').value,
+                    company_id_number: document.getElementById('companyId').value,
+                    currency: document.getElementById('currency').value,
+                    payment_terms: document.getElementById('paymentTerms').value,
+                    // Address tab - billing
+                    billing_attention: document.getElementById('billingAttention') ? document.getElementById('billingAttention').value : '',
+                    billing_country: document.getElementById('billingCountry') ? document.getElementById('billingCountry').value : '',
+                    billing_address: document.getElementById('billingAddress') ? document.getElementById('billingAddress').value : '',
+                    billing_city: document.getElementById('billingCity') ? document.getElementById('billingCity').value : '',
+                    billing_state: document.getElementById('billingState') ? document.getElementById('billingState').value : '',
+                    billing_zip: document.getElementById('billingZip') ? document.getElementById('billingZip').value : '',
+                    billing_phone: document.getElementById('billingPhone') ? document.getElementById('billingPhone').value : '',
+                    // Address tab - shipping
+                    shipping_attention: document.getElementById('shippingAttention') ? document.getElementById('shippingAttention').value : '',
+                    shipping_country: document.getElementById('shippingCountry') ? document.getElementById('shippingCountry').value : '',
+                    shipping_address: document.getElementById('shippingAddress') ? document.getElementById('shippingAddress').value : '',
+                    shipping_city: document.getElementById('shippingCity') ? document.getElementById('shippingCity').value : '',
+                    shipping_state: document.getElementById('shippingState') ? document.getElementById('shippingState').value : '',
+                    shipping_zip: document.getElementById('shippingZip') ? document.getElementById('shippingZip').value : '',
+                    shipping_phone: document.getElementById('shippingPhone') ? document.getElementById('shippingPhone').value : '',
+                    // Remarks tab
+                    remarks: document.getElementById('remarks') ? document.getElementById('remarks').value : '',
+                    // Contact persons
+                    contact_persons: contactPersons
+                };
+
+                try {
+                    const url = editVendorId
+                        ? '/api/suppliers/' + editVendorId
+                        : '/api/suppliers';
+                    const method = editVendorId ? 'PUT' : 'POST';
+
+                    const response = await fetch(url, {
+                        method: method,
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(vendorData)
+                    });
+
+                    if (!response.ok) {
+                        const err = await response.json();
+                        alert('Error: ' + (err.error || 'Failed to save vendor'));
+                        return;
+                    }
+
+                    const saved = await response.json();
+                    const vendorId = editVendorId || saved.id;
+                    alert(editVendorId ? 'Vendor updated successfully!' : 'Vendor saved successfully!');
+                    window.location.href = '/vendors.html#vendor=' + vendorId;
+                } catch (error) {
+                    console.error('Error saving vendor:', error);
+                    alert('Error saving vendor: ' + error.message);
+                }
             }
-        }
-    </script>
+        </script>
 </body>
 
 </html>

@@ -83,10 +83,28 @@ router.get('/', async (req, res) => {
         sd.currency,
         sd.payment_terms,
         sd.status,
+        sd.created_at,
+        sd.updated_at,
         COALESCE(a.total_quantity, 0) AS total_quantity,
-        COALESCE(a.total_spent, 0)::numeric(12,2) AS total_spent
+        COALESCE(a.total_spent, 0)::numeric(12,2) AS total_spent,
+        COALESCE(ob.outstanding, 0)::numeric(12,2) AS payables_bcy,
+        COALESCE(uc.unused_credits, 0)::numeric(12,2) AS unused_credits_bcy
       FROM supplier_details sd
       LEFT JOIN agg a ON a.norm_name = sd.norm_name
+      LEFT JOIN (
+        SELECT supplier_id, SUM(
+          total_amount - COALESCE((SELECT SUM(pm.amount_paid) FROM payments_made pm WHERE pm.bill_id = b.id AND UPPER(pm.status) = 'PAID'), 0)
+        )::numeric(12,2) AS outstanding
+        FROM bills b
+        WHERE UPPER(COALESCE(status,'')) NOT IN ('DRAFT', 'PAID')
+        GROUP BY supplier_id
+      ) ob ON sd.id = ob.supplier_id
+      LEFT JOIN (
+        SELECT supplier_id, SUM(total_amount)::numeric(12,2) AS unused_credits
+        FROM vendor_credits
+        WHERE LOWER(status) = 'open'
+        GROUP BY supplier_id
+      ) uc ON sd.id = uc.supplier_id
       ORDER BY COALESCE(sd.name, sd.sn_display_name) ASC
     `);
     res.json(result.rows);
@@ -405,6 +423,55 @@ router.delete('/:id/contacts/:contactId', async (req, res) => {
   } catch (error) {
     console.error('Error deleting vendor contact:', error);
     res.status(500).json({ error: 'Failed to delete contact' });
+  }
+});
+
+
+// ========== Vendor Comments ==========
+
+// GET comments for a vendor
+router.get('/:id/comments', async (req, res) => {
+  try {
+    const db = database.getDb();
+    const result = await db.query(
+      'SELECT * FROM vendor_comments WHERE vendor_id = $1 ORDER BY created_at DESC',
+      [req.params.id]
+    );
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching vendor comments:', error);
+    res.status(500).json({ error: 'Failed to fetch comments' });
+  }
+});
+
+// POST add a vendor comment
+router.post('/:id/comments', async (req, res) => {
+  try {
+    const db = database.getDb();
+    const { comment_html } = req.body;
+    if (!comment_html || !comment_html.trim()) {
+      return res.status(400).json({ error: 'Comment cannot be empty' });
+    }
+    const result = await db.query(
+      'INSERT INTO vendor_comments (vendor_id, comment_html) VALUES ($1, $2) RETURNING *',
+      [req.params.id, comment_html]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error('Error adding vendor comment:', error);
+    res.status(500).json({ error: 'Failed to add comment' });
+  }
+});
+
+// DELETE a vendor comment
+router.delete('/:vendorId/comments/:commentId', async (req, res) => {
+  try {
+    const db = database.getDb();
+    await db.query('DELETE FROM vendor_comments WHERE id = $1 AND vendor_id = $2', [req.params.commentId, req.params.vendorId]);
+    res.json({ message: 'Comment deleted' });
+  } catch (error) {
+    console.error('Error deleting vendor comment:', error);
+    res.status(500).json({ error: 'Failed to delete comment' });
   }
 });
 

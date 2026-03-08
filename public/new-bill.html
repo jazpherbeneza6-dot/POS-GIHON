@@ -188,6 +188,454 @@
             font-weight: 500;
         }
 
+        .po-dropdown-wrap {
+            position: relative;
+            width: 100%;
+        }
+
+        .po-dropdown-trigger {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 7px 10px;
+            border: 1px solid #d0d5dd;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            background: #fff;
+            color: #333;
+            min-height: 34px;
+        }
+
+        .po-dropdown-trigger:hover {
+            border-color: #4285f4;
+        }
+
+        .po-dropdown-trigger .placeholder {
+            color: #999;
+        }
+
+        .po-dropdown-panel {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1px solid #d0d5dd;
+            border-radius: 6px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            z-index: 200;
+            margin-top: 4px;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .po-dropdown-panel.show {
+            display: block;
+        }
+
+        .po-dropdown-option {
+            padding: 8px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .po-dropdown-option:last-child {
+            border-bottom: none;
+        }
+
+        .po-dropdown-option:hover {
+            background: #f0f5ff;
+        }
+
+        .po-dropdown-option .po-number {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .po-dropdown-option .po-date {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .po-dropdown-empty {
+            padding: 12px;
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+        }
+
+        .po-dropdown-none {
+            padding: 8px 12px;
+            font-size: 12px;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            font-style: italic;
+        }
+
+        .po-dropdown-none:hover {
+            background: #f5f5f5;
+        }
+
+        /* Discount Column */
+        .disc-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+        }
+
+        .disc-cell input {
+            width: 50px !important;
+            text-align: right;
+            padding: 5px 4px !important;
+        }
+
+        .disc-deduct {
+            font-size: 9px;
+            color: #dc2626;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .disc-toggle {
+            background: #f0f0f0;
+            border: 1px solid #d0d5dd;
+            border-radius: 3px;
+            font-size: 9px;
+            padding: 4px 4px;
+            cursor: pointer;
+            color: #555;
+            font-weight: 600;
+            min-width: 22px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .disc-toggle:hover {
+            background: #e0e0e0;
+        }
+
+        /* Bulk Add Modal */
+        .bulk-add-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 99999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .bulk-add-overlay.active {
+            display: flex;
+        }
+
+        .bulk-add-panel {
+            background: #fff;
+            border-radius: 10px;
+            width: 900px;
+            max-width: 95vw;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .bulk-add-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .bulk-add-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .bulk-add-close {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: #e57373;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .bulk-add-body {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            min-height: 400px;
+        }
+
+        .bulk-add-left {
+            width: 50%;
+            border-right: 1px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bulk-add-right {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bulk-add-search {
+            padding: 14px 16px;
+        }
+
+        .bulk-add-search input {
+            width: 100%;
+            padding: 9px 12px;
+            border: 2px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        .bulk-add-search input:focus {
+            border-color: #4285f4;
+        }
+
+        .bulk-add-items-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        .bulk-item-row {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .bulk-item-row:hover {
+            background: #f0f5ff;
+        }
+
+        .bulk-item-row.selected {
+            background: #e8f5e9;
+        }
+
+        .bulk-item-info {
+            flex: 1;
+        }
+
+        .bulk-item-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .bulk-item-meta {
+            font-size: 11px;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .bulk-item-stock {
+            text-align: right;
+            font-size: 12px;
+            color: #666;
+            min-width: 100px;
+        }
+
+        .bulk-item-stock .stock-label {
+            color: #888;
+            font-size: 11px;
+        }
+
+        .bulk-item-stock .stock-value {
+            font-weight: 600;
+            color: #2e7d32;
+        }
+
+        .bulk-item-check {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 8px;
+        }
+
+        .bulk-item-check .check-icon {
+            width: 22px;
+            height: 22px;
+            background: #4caf50;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .bulk-selected-header {
+            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .bulk-selected-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .bulk-selected-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #e3f2fd;
+            color: #1976d2;
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .bulk-total-qty {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .bulk-selected-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+
+        .bulk-sel-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
+            gap: 12px;
+        }
+
+        .bulk-sel-name {
+            flex: 1;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .bulk-sel-qty-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            border: 2px solid #4285f4;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .bulk-sel-qty-btn {
+            background: #e3f2fd;
+            border: none;
+            width: 30px;
+            height: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            color: #1976d2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s;
+        }
+
+        .bulk-sel-qty-btn:hover {
+            background: #bbdefb;
+        }
+
+        .bulk-sel-qty-input {
+            width: 40px;
+            text-align: center;
+            border: none;
+            font-size: 13px;
+            font-weight: 600;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .bulk-sel-remove {
+            background: none;
+            border: none;
+            color: #e57373;
+            font-size: 18px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .bulk-sel-remove:hover {
+            color: #c62828;
+        }
+
+        .bulk-add-footer {
+            padding: 14px 24px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            gap: 10px;
+        }
+
+        .bulk-add-confirm {
+            padding: 8px 20px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .bulk-add-confirm:hover {
+            background: #3367d6;
+        }
+
+        .bulk-add-cancel-btn {
+            padding: 8px 20px;
+            background: #f5f5f5;
+            color: #333;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .bulk-add-cancel-btn:hover {
+            background: #e9ecef;
+        }
+
+        .bulk-sel-empty {
+            padding: 40px;
+            text-align: center;
+            color: #bbb;
+            font-size: 13px;
+        }
+
         /* Item Table */
         .item-table-section {
             padding: 16px;
@@ -1184,6 +1632,23 @@
                             <div class="vendor-billing-address" id="vendorBillingAddress" style="display:none;"></div>
                         </div>
                     </div>
+                    <!-- Exchange Rate Row (shown when vendor currency != PHP) -->
+                    <div class="form-section" id="exchangeRateSection" style="display: none;">
+                        <div class="form-row">
+                            <label class="form-label" style="color: #e67700; font-weight: 600;">Exchange Rate</label>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 12px; color: #666;">1</span>
+                                <span id="exRateCurrLabel"
+                                    style="font-size: 12px; font-weight: 600; color: #333;">CNY</span>
+                                <span style="font-size: 12px; color: #666;">=</span>
+                                <span style="font-size: 12px; color: #666;">₱</span>
+                                <input type="number" class="form-input" id="exchangeRateInput" value="7.69" step="0.01"
+                                    min="0.001" style="max-width: 120px; font-weight: 600;"
+                                    oninput="onExchangeRateChange()">
+                                <span style="font-size: 10px; color: #999;">PHP</span>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Bill Details Section -->
                     <div class="form-section">
@@ -1193,7 +1658,15 @@
                         </div>
                         <div class="form-row">
                             <label class="form-label">Order Number</label>
-                            <span class="po-ref-badge" id="orderNumberDisplay">-</span>
+                            <span class="po-ref-badge" id="orderNumberDisplay" style="display:none;">-</span>
+                            <div class="po-dropdown-wrap" id="poDropdownWrap">
+                                <div class="po-dropdown-trigger" id="poDropdownTrigger" onclick="togglePODropdown()">
+                                    <span id="poDropdownLabel" class="placeholder">Select a Purchase Order</span>
+                                    <span style="font-size:10px;color:#999;">▼</span>
+                                </div>
+                                <div class="po-dropdown-panel" id="poDropdownPanel">
+                                </div>
+                            </div>
                         </div>
                         <div class="form-row">
                             <label class="form-label required">Bill Date*</label>
@@ -1277,12 +1750,12 @@
                                     <th style="width: 32px;"></th>
                                     <th>ITEM DETAILS</th>
                                     <th class="center" style="width: 70px;">QTY</th>
-                                    <th class="center" style="width: 80px;">RATE ₱</th>
-                                    <th style="width: 90px;">DISCOUNT <span
-                                            style="display:inline-block;width:14px;height:14px;background:#4285f4;border-radius:50%;color:white;text-align:center;line-height:14px;font-size:9px;">%</span>
-                                    </th>
+                                    <th class="center" style="width: 80px;" id="rateHeader">RATE ₱</th>
+                                    <th class="center" style="width: 100px;">DISCOUNT</th>
                                     <th style="width: 80px;">TAX</th>
-                                    <th class="center" style="width: 80px;">AMOUNT</th>
+                                    <th class="center" style="width: 80px;" id="amountHeader">AMOUNT</th>
+                                    <th class="center amt-php-col"
+                                        style="width: 90px; background: #f0f0f0; display: none;">AMOUNT (PHP)</th>
                                     <th style="width: 30px;"></th>
                                 </tr>
                             </thead>
@@ -1292,7 +1765,7 @@
                         </table>
                         <div class="add-row-actions">
                             <button class="add-row-btn primary" onclick="addNewRow()">+ Add New Row</button>
-                            <button class="add-row-btn" onclick="addNewRow()">+ Add Items in Bulk</button>
+                            <button class="add-row-btn" onclick="openBulkAddModal()">+ Add Items in Bulk</button>
                         </div>
                     </div>
 
@@ -1326,8 +1799,15 @@
                                 </div>
                             </div>
                             <div class="totals-row total">
-                                <span class="totals-label">Total ( PHP )</span>
+                                <span class="totals-label" id="totalCurrLabel">Total ( PHP )</span>
                                 <span class="totals-value" id="total">0</span>
+                            </div>
+                            <div class="totals-row" id="totalPhpRow"
+                                style="display: none; border-top: 1px dashed #ccc; padding-top: 6px; margin-top: 4px;">
+                                <span class="totals-label" style="color: #e67700; font-weight: 600;">Total ( PHP
+                                    )</span>
+                                <span class="totals-value" id="totalPhp"
+                                    style="color: #e67700; font-weight: 600;">0</span>
                             </div>
                         </div>
                     </div>
@@ -1349,6 +1829,42 @@
         </div>
     </div>
 
+    <!-- Bulk Add Items Modal -->
+    <div class="bulk-add-overlay" id="bulkAddOverlay" onclick="if(event.target===this)closeBulkAddModal()">
+        <div class="bulk-add-panel">
+            <div class="bulk-add-header">
+                <span class="bulk-add-title">Add Items in Bulk</span>
+                <button class="bulk-add-close" onclick="closeBulkAddModal()">&times;</button>
+            </div>
+            <div class="bulk-add-body">
+                <div class="bulk-add-left">
+                    <div class="bulk-add-search">
+                        <input type="text" id="bulkSearchInput"
+                            placeholder="Type to search or scan the barcode of the item"
+                            oninput="renderBulkItemsList()">
+                    </div>
+                    <div class="bulk-add-items-list" id="bulkItemsList"></div>
+                </div>
+                <div class="bulk-add-right">
+                    <div class="bulk-selected-header">
+                        <div>
+                            <span class="bulk-selected-title">Selected Items</span>
+                            <span class="bulk-selected-badge" id="bulkSelCount">0</span>
+                        </div>
+                        <span class="bulk-total-qty" id="bulkTotalQty">Total Quantity: 0</span>
+                    </div>
+                    <div class="bulk-selected-list" id="bulkSelectedList">
+                        <div class="bulk-sel-empty">Click items on the left to select them</div>
+                    </div>
+                </div>
+            </div>
+            <div class="bulk-add-footer">
+                <button class="bulk-add-confirm" onclick="confirmBulkAdd()">Add Items</button>
+                <button class="bulk-add-cancel-btn" onclick="closeBulkAddModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Layout Script -->
     <script src="/js/layout.js"></script>
     <script>
@@ -1360,6 +1876,113 @@
         let poData = null;
         let allVendors = [];
         let selectedVendor = null;
+        let currentCurrencyCode = 'PHP';
+        let currentExchangeRate = 1;
+        const defaultExchangeRates = {
+            'PHP': 1, 'CNY': 7.69, 'USD': 56.0, 'EUR': 61.0, 'GBP': 71.0, 'JPY': 0.37,
+            'AUD': 36.0, 'CAD': 41.0, 'CHF': 63.0, 'HKD': 7.2, 'SGD': 42.0, 'MYR': 12.2,
+            'THB': 1.6, 'KRW': 0.041, 'INR': 0.67, 'IDR': 0.0036, 'TWD': 1.73, 'VND': 0.0022,
+            'AED': 15.3, 'SAR': 14.9, 'BRL': 9.7, 'MXN': 3.2, 'ZAR': 3.1, 'NOK': 5.3,
+            'SEK': 5.2, 'DKK': 8.2, 'PLN': 14.0, 'RUB': 0.63, 'NGN': 0.037, 'PKR': 0.20,
+            'BDT': 0.52, 'NZD': 33.0, 'TRY': 1.7
+        };
+
+        // ===== ITEM TABLE PERSISTENCE =====
+        const BILL_DRAFT_KEY = 'gihon_bill_draft';
+
+        function saveItemsToStorage() {
+            try {
+                const rows = document.getElementById('itemTableBody').rows;
+                const items = [];
+                for (let i = 0; i < rows.length; i++) {
+                    const r = rows[i];
+                    const nameInput = r.querySelector('.item-name-input') || r.querySelector('input[type="text"]');
+                    const name = nameInput ? nameInput.value.trim() : '';
+                    if (!name) continue;
+                    const discInput = r.querySelector('.disc-input');
+                    const discToggle = r.querySelector('.disc-toggle');
+                    items.push({
+                        itemId: r.getAttribute('data-item-id') || null,
+                        name: name,
+                        qty: parseFloat(r.querySelector('.qty-input')?.value) || 1,
+                        phpRate: parseFloat(r.getAttribute('data-php-rate')) || 0,
+                        rate: parseFloat(r.querySelector('.rate-input')?.value) || 0,
+                        discount: parseFloat(discInput?.value) || 0,
+                        discountType: discToggle?.dataset?.type || '%',
+                        tax: r.querySelector('.tax-select')?.value || ''
+                    });
+                }
+                const draft = {
+                    items: items,
+                    vendorId: selectedVendor?.id || null,
+                    vendorName: selectedVendor?.name || '',
+                    currencyCode: currentCurrencyCode,
+                    exchangeRate: currentExchangeRate
+                };
+                localStorage.setItem(BILL_DRAFT_KEY, JSON.stringify(draft));
+            } catch (e) { console.warn('Failed to save bill items:', e); }
+        }
+
+        function loadItemsFromStorage() {
+            try {
+                const raw = localStorage.getItem(BILL_DRAFT_KEY);
+                if (!raw) return false;
+                const draft = JSON.parse(raw);
+                if (!draft.items || !draft.items.length) return false;
+
+                if (draft.currencyCode && draft.currencyCode !== 'PHP') {
+                    currentCurrencyCode = draft.currencyCode;
+                    currentExchangeRate = draft.exchangeRate || defaultExchangeRates[draft.currencyCode] || 1;
+                }
+
+                if (draft.vendorId && draft.vendorName) {
+                    selectedVendor = { id: draft.vendorId, name: draft.vendorName };
+                    document.getElementById('vendorSearchInput').value = draft.vendorName;
+                    setTimeout(() => {
+                        const v = allVendors.find(v => String(v.id) === String(draft.vendorId));
+                        if (v) selectVendor(v);
+                    }, 500);
+                }
+
+                const tbody = document.getElementById('itemTableBody');
+                tbody.innerHTML = '';
+                const isMulti = draft.currencyCode !== 'PHP';
+
+                draft.items.forEach(item => {
+                    const displayRate = isMulti && item.phpRate > 0 && currentExchangeRate > 0
+                        ? currRound(item.phpRate / currentExchangeRate)
+                        : item.phpRate || item.rate;
+                    const amt = currRound(item.qty * displayRate).toFixed(2);
+
+                    const tr = document.createElement('tr');
+                    if (item.itemId) tr.setAttribute('data-item-id', item.itemId);
+                    tr.setAttribute('data-php-rate', item.phpRate || item.rate);
+                    tr.innerHTML = buildRowHTML(item.name, item.qty, displayRate, amt, item.phpRate || item.rate);
+
+                    // Restore discount
+                    const discInput = tr.querySelector('.disc-input');
+                    const discToggle = tr.querySelector('.disc-toggle');
+                    if (discInput && item.discount) discInput.value = item.discount;
+                    if (discToggle && item.discountType && item.discountType !== '%') {
+                        discToggle.dataset.type = item.discountType;
+                        discToggle.textContent = item.discountType;
+                    }
+                    // Restore tax
+                    const taxSelect = tr.querySelector('.tax-select');
+                    if (taxSelect && item.tax) taxSelect.value = item.tax;
+
+                    tbody.appendChild(tr);
+                    updateRowAmount(tr.querySelector('.qty-input'));
+                });
+
+                recalculateTotals();
+                return true;
+            } catch (e) { console.warn('Failed to load bill items:', e); return false; }
+        }
+
+        function clearDraftStorage() {
+            try { localStorage.removeItem(BILL_DRAFT_KEY); } catch (e) { }
+        }
 
         // ===== VENDOR DROPDOWN =====
         async function loadVendors() {
@@ -1435,6 +2058,184 @@
             } else {
                 addrDiv.style.display = 'none';
             }
+
+            // Load unbilled POs for this vendor (only when not coming from a PO)
+            if (!sourcePOId) {
+                loadVendorPOs(vendor.id, name);
+            }
+
+            // Detect vendor currency
+            const vendorCurrency = (vendor.currency || 'PHP').toUpperCase();
+            toggleMultiCurrency(vendorCurrency);
+        }
+
+        function toggleMultiCurrency(currCode) {
+            currentCurrencyCode = currCode;
+            const isMulti = currCode !== 'PHP';
+            document.getElementById('exchangeRateSection').style.display = isMulti ? '' : 'none';
+            if (isMulti) {
+                document.getElementById('exRateCurrLabel').textContent = currCode;
+                // Load from localStorage first, fall back to defaults
+                const savedRate = localStorage.getItem('gihon_exrate_' + currCode);
+                const rate = savedRate ? parseFloat(savedRate) : (defaultExchangeRates[currCode] || 1);
+                setExchangeRate(rate);
+            } else {
+                setExchangeRate(1);
+            }
+            document.querySelectorAll('.amt-php-col').forEach(el => { el.style.display = isMulti ? '' : 'none'; });
+            document.getElementById('rateHeader').textContent = isMulti ? 'RATE (' + currCode + ')' : 'RATE ₱';
+            document.getElementById('totalCurrLabel').textContent = isMulti ? 'Total ( ' + currCode + ' )' : 'Total ( PHP )';
+            document.getElementById('totalPhpRow').style.display = isMulti ? 'flex' : 'none';
+            recalculateAllRows();
+            recalculateTotals();
+        }
+
+        // Centralized exchange rate state setter
+        function setExchangeRate(rate) {
+            currentExchangeRate = rate;
+            document.getElementById('exchangeRateInput').value = rate;
+            if (currentCurrencyCode !== 'PHP') {
+                try { localStorage.setItem('gihon_exrate_' + currentCurrencyCode, rate); } catch (e) { }
+            }
+        }
+
+        function onExchangeRateChange() {
+            const val = parseFloat(document.getElementById('exchangeRateInput').value);
+            if (!val || val <= 0) return;
+            currentExchangeRate = val;
+            if (currentCurrencyCode !== 'PHP') {
+                try { localStorage.setItem('gihon_exrate_' + currentCurrencyCode, val); } catch (e) { }
+            }
+            recalculateAllRows();
+            recalculateTotals();
+        }
+
+        // Banker's rounding helper
+        function currRound(val, decimals) {
+            if (decimals === undefined) decimals = 2;
+            const factor = Math.pow(10, decimals);
+            return Math.round((val + Number.EPSILON) * factor) / factor;
+        }
+
+        // Offline fallback rates (approximate) for cross-currency conversion
+        function getOfflineFallbackRate(currencyCode) {
+            const rates = { CNY: 8.05, USD: 56.0, EUR: 61.0, JPY: 0.38, GBP: 72.0, KRW: 0.042, SGD: 42.0, HKD: 7.2, TWD: 1.8, THB: 1.6, MYR: 12.5, IDR: 0.0036, VND: 0.0023, AUD: 37.0, CAD: 41.0, AED: 15.3, SAR: 14.9, INR: 0.67 };
+            return rates[currencyCode] || 1;
+        }
+
+        function recalculateAllRows() {
+            const rows = document.getElementById('itemTableBody').rows;
+            const isMulti = currentCurrencyCode !== 'PHP';
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const phpRate = parseFloat(row.getAttribute('data-php-rate')) || 0;
+                const qty = parseFloat(row.querySelector('.qty-input')?.value) || 0;
+                const rateInput = row.querySelector('.rate-input');
+                if (isMulti && phpRate > 0 && currentExchangeRate > 0) {
+                    const vendorRate = currRound(phpRate / currentExchangeRate);
+                    if (rateInput) rateInput.value = vendorRate.toFixed(2);
+                }
+                // Trigger full updateRowAmount for each row (handles discount logic)
+                if (rateInput) updateRowAmount(rateInput);
+            }
+        }
+
+        // ===== PO DROPDOWN FOR ORDER NUMBER =====
+        let allPurchaseOrders = [];
+        let vendorPOs = [];
+        let selectedPOFromDropdown = null;
+
+        async function loadVendorPOs(vendorId, vendorName) {
+            // Reset PO dropdown
+            selectedPOFromDropdown = null;
+            document.getElementById('poDropdownLabel').textContent = 'Select a Purchase Order';
+            document.getElementById('poDropdownLabel').className = 'placeholder';
+
+            try {
+                const [posRes, billsRes] = await Promise.all([
+                    fetch('/api/purchases'),
+                    fetch('/api/bills')
+                ]);
+                const allPOs = posRes.ok ? await posRes.json() : [];
+                const allBills = billsRes.ok ? await billsRes.json() : [];
+
+                // Get PO IDs that already have bills
+                const billedPOIds = new Set();
+                allBills.forEach(b => {
+                    if (b.purchase_order_id) billedPOIds.add(b.purchase_order_id);
+                });
+
+                // Filter: vendor's POs that are not cancelled and not yet billed
+                const vName = (vendorName || '').toLowerCase();
+                vendorPOs = allPOs.filter(po => {
+                    const nameMatch = String(po.supplier_id) === String(vendorId) || (po.supplier_name || '').toLowerCase() === vName;
+                    const status = (po.status || '').toUpperCase();
+                    const notCancelled = status !== 'CANCELLED';
+                    const notBilled = !billedPOIds.has(po.id);
+                    return nameMatch && notCancelled && notBilled;
+                });
+
+                renderPODropdown();
+            } catch (e) {
+                console.error('Error loading POs:', e);
+                vendorPOs = [];
+                renderPODropdown();
+            }
+        }
+
+        function renderPODropdown() {
+            const panel = document.getElementById('poDropdownPanel');
+            let html = '<div class="po-dropdown-none" onclick="clearPOSelection()">— None —</div>';
+
+            if (vendorPOs.length === 0) {
+                html += '<div class="po-dropdown-empty">No unbilled purchase orders found</div>';
+            } else {
+                vendorPOs.forEach(po => {
+                    const date = po.date ? new Date(po.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+                    const total = parseFloat(po.total_amount || 0).toFixed(2);
+                    html += `<div class="po-dropdown-option" onclick="selectPOFromDropdown(${po.id})">
+                        <span class="po-number">${po.po_number || 'PO-' + po.id}</span>
+                        <span class="po-date">${date}${total > 0 ? ' — PHP ' + total : ''}</span>
+                    </div>`;
+                });
+            }
+            panel.innerHTML = html;
+        }
+
+        function togglePODropdown() {
+            if (!selectedVendor) {
+                alert('Please select a vendor first');
+                return;
+            }
+            const panel = document.getElementById('poDropdownPanel');
+            panel.classList.toggle('show');
+        }
+
+        function clearPOSelection() {
+            selectedPOFromDropdown = null;
+            poData = null;
+            document.getElementById('poDropdownLabel').textContent = 'Select a Purchase Order';
+            document.getElementById('poDropdownLabel').className = 'placeholder';
+            document.getElementById('poDropdownPanel').classList.remove('show');
+
+            // Clear items table and add empty row
+            const tbody = document.getElementById('itemTableBody');
+            tbody.innerHTML = '';
+            addNewRow();
+            recalculateTotals();
+        }
+
+        async function selectPOFromDropdown(poId) {
+            document.getElementById('poDropdownPanel').classList.remove('show');
+            const po = vendorPOs.find(p => p.id === poId);
+            if (!po) return;
+
+            selectedPOFromDropdown = po;
+            document.getElementById('poDropdownLabel').textContent = po.po_number || 'PO-' + po.id;
+            document.getElementById('poDropdownLabel').className = '';
+
+            // Load the PO data and populate items (fromDropdown = true)
+            await loadPOData(poId, true);
         }
 
         // ===== PAGE INIT =====
@@ -1458,15 +2259,44 @@
                 }
             } catch (e) { console.error(e); }
 
-            // Load PO data if converting
+            // Load PO data if converting from PO
             if (sourcePOId) {
+                // Hide PO dropdown, show static badge
+                document.getElementById('poDropdownWrap').style.display = 'none';
+                document.getElementById('orderNumberDisplay').style.display = 'inline-block';
                 await loadPOData(sourcePOId);
             } else {
-                addNewRow();
+                // Only restore draft items on page REFRESH (F5), not on fresh navigation
+                const navEntries = performance.getEntriesByType('navigation');
+                const isReload = navEntries.length > 0 && navEntries[0].type === 'reload';
+                if (isReload && loadItemsFromStorage()) {
+                    // Items restored from refresh
+                } else {
+                    clearDraftStorage();
+                    addNewRow();
+                }
+                // If vendor_id was pre-selected, auto-select the vendor and lock it
+                const preVendorId = urlParams.get('vendor_id');
+                if (preVendorId) {
+                    const vendor = allVendors.find(v => String(v.id) === preVendorId);
+                    if (vendor) {
+                        selectVendor(vendor);
+                        document.getElementById('vendorSearchInput').readOnly = true;
+                        document.getElementById('vendorSearchInput').style.background = '#f5f5f5';
+                        document.getElementById('vendorSearchInput').style.pointerEvents = 'none';
+                    }
+                }
             }
+
+            // Close PO dropdown on outside click
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.po-dropdown-wrap')) {
+                    document.getElementById('poDropdownPanel').classList.remove('show');
+                }
+            });
         });
 
-        async function loadPOData(poId) {
+        async function loadPOData(poId, fromDropdown) {
             try {
                 // Fetch PO, receives, returns, and existing bills in parallel
                 const [poRes, recvRes, retRes, billsRes] = await Promise.all([
@@ -1477,6 +2307,19 @@
                 ]);
                 if (!poRes.ok) { alert('Failed to load Purchase Order'); return; }
                 poData = await poRes.json();
+
+                // Only set page title and vendor when NOT called from dropdown
+                if (!fromDropdown) {
+                    document.getElementById('pageTitle').textContent = isSupplemental ? 'Supplemental Bill (from PO)' : 'New Bill (from PO)';
+                    document.getElementById('vendorSearchInput').value = poData.supplier_name || '';
+                    selectedVendor = { id: poData.supplier_id, name: poData.supplier_name };
+                    document.getElementById('vendorSearchInput').readOnly = true;
+                    document.getElementById('orderNumberDisplay').textContent = poData.po_number || 'PO-' + poId;
+                }
+
+                if (poData.payment_terms) {
+                    document.getElementById('paymentTerms').value = poData.payment_terms;
+                }
 
                 // Build per-item received totals
                 const receivedByItem = {};
@@ -1525,17 +2368,6 @@
                     }
                 }
 
-                document.getElementById('pageTitle').textContent = isSupplemental ? 'Supplemental Bill (from PO)' : 'New Bill (from PO)';
-                // Set vendor from PO
-                document.getElementById('vendorSearchInput').value = poData.supplier_name || '';
-                selectedVendor = { id: poData.supplier_id, name: poData.supplier_name };
-                document.getElementById('vendorSearchInput').readOnly = true;
-                document.getElementById('orderNumberDisplay').textContent = poData.po_number || 'PO-' + poId;
-
-                if (poData.payment_terms) {
-                    document.getElementById('paymentTerms').value = poData.payment_terms;
-                }
-
                 // Populate items with three-way match qty
                 const tbody = document.getElementById('itemTableBody');
                 tbody.innerHTML = '';
@@ -1550,7 +2382,7 @@
                         const received = receivedByItem[itemKey] || 0;
                         const returned = returnedByItem[itemKey] || 0;
                         const billed = billedByItem[itemKey] || 0;
-                        const rate = parseFloat(item.unit_price) || 0;
+                        const rate = parseFloat(item.unit_price) || (parseFloat(item.total_price) / (parseFloat(item.quantity) || 1)) || parseFloat(item.purchase_cost) || 0;
 
                         let billQty;
                         if (isSupplemental) {
@@ -1572,7 +2404,8 @@
                         const amt = (billQty * rate).toFixed(2);
                         const tr = document.createElement('tr');
                         if (item.item_id) tr.setAttribute('data-item-id', item.item_id);
-                        tr.innerHTML = buildRowHTML(item.item_name || '', billQty, rate, amt);
+                        tr.setAttribute('data-php-rate', rate);
+                        tr.innerHTML = buildRowHTML(item.item_name || '', billQty, rate, amt, rate);
                         tbody.appendChild(tr);
                         hasItems = true;
                     });
@@ -1613,7 +2446,11 @@
         }
 
         // ===== ITEM TABLE =====
-        function buildRowHTML(name, qty, rate, amt) {
+        function buildRowHTML(name, qty, rate, amt, phpRate) {
+            const isMulti = currentCurrencyCode !== 'PHP';
+            const phpColDisplay = isMulti ? '' : 'display:none;';
+            const storedPhpRate = phpRate || (isMulti ? currRound(parseFloat(rate) * currentExchangeRate) : parseFloat(rate));
+            const phpAmt = currRound(qty * storedPhpRate).toFixed(2);
             return `<td><div class="item-image"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div></td>
                 <td><div class="item-autocomplete-wrap">
                     <input type="text" value="${name}" placeholder="Type or click to select an item." class="item-name-input" onfocus="openItemDropdown(this)" oninput="filterItemDropdown(this)">
@@ -1621,24 +2458,22 @@
                 </div></td>
                 <td class="center"><input type="number" value="${qty}" style="text-align:center;" class="qty-input" onchange="updateRowAmount(this)"></td>
                 <td class="center"><input type="number" value="${parseFloat(rate).toFixed(2)}" style="text-align:right;" class="rate-input" onchange="updateRowAmount(this)"></td>
-                <td><div style="display:flex;align-items:center;gap:2px;">
-                    <input type="number" value="0" style="width:40px;" class="disc-input" onchange="updateRowAmount(this)">
-                    <span>%</span>
-                    <select style="width:40px;padding:4px;font-size:10px;"><option>%</option><option>₱</option></select>
-                </div></td>
+                <td><div class="disc-cell"><input type="number" value="0" class="disc-input" onchange="updateRowAmount(this)"><button class="disc-toggle" onclick="toggleDiscType(this)" data-type="%">%</button><span class="disc-deduct"></span></div></td>
                 <td><select class="tax-select" onchange="updateRowAmount(this)">
                     <option value="">Select Tax</option>
                     <option value="12">VAT 12%</option>
                     <option value="0">Exempt</option>
                 </select></td>
                 <td class="center row-amount" style="font-weight:500;">${amt}</td>
+                <td class="center row-amount-php amt-php-col" style="font-weight:500;background:#f9f9f9;color:#888;${phpColDisplay}">${phpAmt}</td>
                 <td class="center"><button class="delete-row-btn" onclick="deleteRow(this)">×</button></td>`;
         }
 
         function addNewRow() {
             const tr = document.createElement('tr');
-            tr.innerHTML = buildRowHTML('', 1, 0, '0.00');
+            tr.innerHTML = buildRowHTML('', 1, 0, '0.00', 0);
             document.getElementById('itemTableBody').appendChild(tr);
+            saveItemsToStorage();
         }
 
         function deleteRow(btn) {
@@ -1646,6 +2481,7 @@
             if (tbody.rows.length > 1) {
                 btn.closest('tr').remove();
                 recalculateTotals();
+                saveItemsToStorage();
             }
         }
 
@@ -1653,9 +2489,224 @@
             const row = input.closest('tr');
             const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
             const rate = parseFloat(row.querySelector('.rate-input').value) || 0;
+            const subtotal = qty * rate;
+
+            // Apply per-row discount
+            const discInput = row.querySelector('.disc-input');
+            const discToggle = row.querySelector('.disc-toggle');
+            const discDeduct = row.querySelector('.disc-deduct');
+            const discVal = parseFloat(discInput?.value) || 0;
+            const discType = discToggle ? discToggle.dataset.type : '%';
+            let discAmt = 0;
+            if (discType === '%') {
+                discAmt = subtotal * (discVal / 100);
+            } else {
+                discAmt = discVal;
+            }
+            if (discDeduct && discAmt > 0) {
+                discDeduct.textContent = '-' + discAmt.toFixed(2);
+            } else if (discDeduct) {
+                discDeduct.textContent = '';
+            }
+
+            const amount = subtotal - discAmt;
             const ac = row.querySelector('.row-amount');
-            if (ac) ac.textContent = (qty * rate).toFixed(2);
+            if (ac) ac.textContent = currRound(amount).toFixed(2);
+
+            // PHP amount: calculate from stored PHP rate directly
+            const isMulti = currentCurrencyCode !== 'PHP';
+            if (isMulti && currentExchangeRate > 0) {
+                // Use the STORED original PHP rate if it exists — never overwrite it
+                let phpRate = parseFloat(row.getAttribute('data-php-rate')) || 0;
+                if (phpRate <= 0) {
+                    // No stored PHP rate: back-convert as fallback
+                    const rate = parseFloat(row.querySelector('.rate-input').value) || 0;
+                    phpRate = currRound(rate * currentExchangeRate);
+                    row.setAttribute('data-php-rate', phpRate);
+                }
+                const phpSubtotal = qty * phpRate;
+                let phpDiscAmt = 0;
+                if (discType === '%') {
+                    phpDiscAmt = phpSubtotal * (discVal / 100);
+                } else {
+                    phpDiscAmt = discVal * currentExchangeRate;
+                }
+                const phpAmount = currRound(phpSubtotal - phpDiscAmt);
+                const phpEl = row.querySelector('.row-amount-php');
+                if (phpEl) phpEl.textContent = phpAmount.toFixed(2);
+            } else {
+                const rate = parseFloat(row.querySelector('.rate-input').value) || 0;
+                row.setAttribute('data-php-rate', rate);
+            }
             recalculateTotals();
+            saveItemsToStorage();
+        }
+
+        function toggleDiscType(btn) {
+            const row = btn.closest('tr');
+            btn.dataset.type = btn.dataset.type === '%' ? '₱' : '%';
+            btn.textContent = btn.dataset.type;
+            updateRowAmount(row.querySelector('.qty-input'));
+        }
+
+        // ===== BULK ADD ITEMS =====
+        let bulkSelectedItems = [];
+
+        function openBulkAddModal() {
+            bulkSelectedItems = [];
+            document.getElementById('bulkSearchInput').value = '';
+            renderBulkItemsList();
+            renderBulkSelected();
+            document.getElementById('bulkAddOverlay').classList.add('active');
+            document.getElementById('bulkSearchInput').focus();
+        }
+
+        function closeBulkAddModal() {
+            document.getElementById('bulkAddOverlay').classList.remove('active');
+        }
+
+        function renderBulkItemsList() {
+            const q = (document.getElementById('bulkSearchInput').value || '').toLowerCase();
+            const list = document.getElementById('bulkItemsList');
+            let items = allItems;
+            if (q) {
+                items = items.filter(item =>
+                    (item.name || '').toLowerCase().includes(q) ||
+                    (item.sku || '').toLowerCase().includes(q) ||
+                    (item.barcode || '').toLowerCase().includes(q)
+                );
+            }
+            if (items.length === 0) {
+                list.innerHTML = '<div style="padding:30px;text-align:center;color:#bbb;font-size:12px;">No items found</div>';
+                return;
+            }
+            list.innerHTML = items.map(item => {
+                const isSelected = bulkSelectedItems.some(s => s.id === item.id);
+                const rate = parseFloat(item.purchase_cost || item.selling_price || 0).toFixed(2);
+                const stock = parseFloat(item.stock_quantity || 0).toFixed(2);
+                const unit = item.unit || 'pcs';
+                const sku = item.sku ? `SKU: ${item.sku}  ` : '';
+                const bsym = { 'PHP': '₱', 'CNY': '¥', 'USD': '$', 'EUR': '€', 'JPY': '¥', 'GBP': '£', 'KRW': '₩' }[item.purchase_currency || 'PHP'] || (item.purchase_currency || 'PHP');
+                const meta = `${sku}Rate: ${bsym}${rate}`;
+                return `<div class="bulk-item-row${isSelected ? ' selected' : ''}" onclick="toggleBulkItem(${item.id})">
+                    <div class="bulk-item-info">
+                        <div class="bulk-item-name">${item.name || 'Unnamed'}</div>
+                        <div class="bulk-item-meta">${meta}</div>
+                    </div>
+                    <div class="bulk-item-stock">
+                        <div class="stock-label">Stock on Hand</div>
+                        <div class="stock-value">${stock} ${unit}</div>
+                    </div>
+                    <div class="bulk-item-check">
+                        ${isSelected ? '<div class="check-icon">✓</div>' : ''}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function toggleBulkItem(itemId) {
+            const idx = bulkSelectedItems.findIndex(s => s.id === itemId);
+            if (idx >= 0) {
+                bulkSelectedItems.splice(idx, 1);
+            } else {
+                const item = allItems.find(i => i.id === itemId);
+                if (item) {
+                    bulkSelectedItems.push({
+                        id: item.id,
+                        name: item.name,
+                        sku: item.sku || '',
+                        price: parseFloat(item.purchase_cost || item.selling_price || 0),
+                        purchase_currency: item.purchase_currency || 'PHP',
+                        qty: 1
+                    });
+                }
+            }
+            renderBulkItemsList();
+            renderBulkSelected();
+        }
+
+        function renderBulkSelected() {
+            const list = document.getElementById('bulkSelectedList');
+            document.getElementById('bulkSelCount').textContent = bulkSelectedItems.length;
+            if (bulkSelectedItems.length === 0) {
+                list.innerHTML = '<div class="bulk-sel-empty">Click items on the left to select them</div>';
+                updateBulkTotalQty();
+                return;
+            }
+            list.innerHTML = bulkSelectedItems.map((item, i) => {
+                const label = item.sku ? `[${item.sku}] ${item.name}` : item.name;
+                return `<div class="bulk-sel-item">
+                    <div class="bulk-sel-name">${label}</div>
+                    <div class="bulk-sel-qty-wrap">
+                        <button class="bulk-sel-qty-btn" onclick="changeBulkQty(${i}, -1)">−</button>
+                        <input type="number" class="bulk-sel-qty-input" value="${item.qty}" min="1" onchange="updateBulkQty(${i}, this.value)">
+                        <button class="bulk-sel-qty-btn" onclick="changeBulkQty(${i}, 1)">+</button>
+                    </div>
+                    <button class="bulk-sel-remove" onclick="removeBulkItem(${i})">⊗</button>
+                </div>`;
+            }).join('');
+            updateBulkTotalQty();
+        }
+
+        function changeBulkQty(idx, delta) {
+            bulkSelectedItems[idx].qty = Math.max(1, bulkSelectedItems[idx].qty + delta);
+            renderBulkSelected();
+        }
+
+        function updateBulkQty(idx, val) {
+            bulkSelectedItems[idx].qty = Math.max(1, parseInt(val) || 1);
+            renderBulkSelected();
+        }
+
+        function removeBulkItem(idx) {
+            bulkSelectedItems.splice(idx, 1);
+            renderBulkItemsList();
+            renderBulkSelected();
+        }
+
+        function updateBulkTotalQty() {
+            const total = bulkSelectedItems.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById('bulkTotalQty').textContent = 'Total Quantity: ' + total;
+        }
+
+        function confirmBulkAdd() {
+            if (bulkSelectedItems.length === 0) { alert('No items selected.'); return; }
+            const tbody = document.getElementById('itemTableBody');
+            const vendorCurrency = (currentCurrencyCode || 'PHP').toUpperCase();
+            bulkSelectedItems.forEach(item => {
+                const purchaseCost = item.price;
+                const itemCurrency = (item.purchase_currency || 'PHP').toUpperCase();
+
+                let displayRate = purchaseCost;
+                let phpRate = purchaseCost;
+
+                if (itemCurrency === vendorCurrency) {
+                    displayRate = purchaseCost;
+                    phpRate = itemCurrency === 'PHP' ? purchaseCost : purchaseCost * (currentExchangeRate || 1);
+                } else if (itemCurrency === 'PHP' && vendorCurrency !== 'PHP') {
+                    displayRate = currentExchangeRate > 0 ? currRound(purchaseCost / currentExchangeRate) : purchaseCost;
+                    phpRate = purchaseCost;
+                } else if (itemCurrency !== 'PHP' && vendorCurrency === 'PHP') {
+                    displayRate = purchaseCost * (currentExchangeRate || 1);
+                    phpRate = displayRate;
+                } else {
+                    const itemRateKey = `manual_rate_${itemCurrency}_PHP`;
+                    const itemToPhp = parseFloat(localStorage.getItem(itemRateKey)) || getOfflineFallbackRate(itemCurrency);
+                    phpRate = purchaseCost * itemToPhp;
+                    displayRate = currentExchangeRate > 0 ? currRound(phpRate / currentExchangeRate) : purchaseCost;
+                }
+
+                const amt = currRound(item.qty * displayRate).toFixed(2);
+                const tr = document.createElement('tr');
+                if (item.id) tr.setAttribute('data-item-id', item.id);
+                tr.setAttribute('data-php-rate', phpRate);
+                tr.innerHTML = buildRowHTML(item.name, item.qty, displayRate, amt, phpRate);
+                tbody.appendChild(tr);
+                updateRowAmount(tr.querySelector('.qty-input'));
+            });
+            closeBulkAddModal();
+            recalculateTotals();
+            saveItemsToStorage();
         }
 
         function recalculateTotals() {
@@ -1681,8 +2732,24 @@
             document.getElementById('adjustmentAmount').textContent = adj.toFixed(0);
 
             const total = sub - da + shipping + adj;
-            document.getElementById('total').textContent = total.toFixed(0);
-            document.getElementById('footerTotal').textContent = 'PHP ' + total.toFixed(2);
+            document.getElementById('total').textContent = currRound(total).toFixed(0);
+            const isMulti = currentCurrencyCode !== 'PHP';
+            if (isMulti) {
+                // PHP total from direct line-item sums
+                let subPhp = 0;
+                for (let i = 0; i < rows.length; i++) {
+                    const ap = rows[i].querySelector('.row-amount-php');
+                    if (ap) subPhp += parseFloat(ap.textContent) || 0;
+                }
+                const daPhp = currRound(subPhp * (dp / 100));
+                const shippingPhp = currRound(shipping * currentExchangeRate);
+                const adjPhp = currRound(adj * currentExchangeRate);
+                const phpTotal = currRound(subPhp - daPhp + shippingPhp + adjPhp);
+                document.getElementById('totalPhp').textContent = phpTotal.toFixed(2);
+                document.getElementById('footerTotal').textContent = currentCurrencyCode + ' ' + total.toFixed(2) + ' (₱' + phpTotal.toFixed(2) + ')';
+            } else {
+                document.getElementById('footerTotal').textContent = 'PHP ' + total.toFixed(2);
+            }
             document.getElementById('footerQty').textContent = totalQty;
         }
 
@@ -1720,13 +2787,14 @@
                 const price = parseFloat(item.purchase_cost) || 0;
                 const stock = parseFloat(item.stock_quantity) || 0;
                 const stockClass = stock > 0 ? 'green' : 'red';
+                const sym = { 'PHP': '₱', 'CNY': '¥', 'USD': '$', 'EUR': '€', 'JPY': '¥', 'GBP': '£', 'KRW': '₩', 'SGD': 'S$', 'HKD': 'HK$', 'TWD': 'NT$', 'THB': '฿', 'MYR': 'RM', 'IDR': 'Rp', 'VND': '₫', 'AUD': 'A$', 'CAD': 'C$', 'INR': '₹' }[item.purchase_currency || 'PHP'] || (item.purchase_currency || '₱');
                 html += `<div class="item-ac-option" onclick="selectItem(this, ${item.id})">
                     <div>
                         <div class="item-ac-name">${item.name}</div>
                         <div class="item-ac-sku">SKU: ${item.sku || '-'}</div>
                     </div>
                     <div class="item-ac-right">
-                        <div class="item-ac-price">₱${price.toFixed(2)}</div>
+                        <div class="item-ac-price">${sym}${price.toFixed(2)}</div>
                         <div class="item-ac-stock ${stockClass}">${stock} ${item.unit || 'pcs'}</div>
                     </div>
                 </div>`;
@@ -1742,12 +2810,44 @@
             row.querySelector('.item-name-input').value = item.name;
             row.setAttribute('data-item-id', item.id);
 
+            const purchaseCost = parseFloat(item.purchase_cost) || 0;
+            const itemCurrency = (item.purchase_currency || 'PHP').toUpperCase();
+            const vendorCurrency = (currentCurrencyCode || 'PHP').toUpperCase();
+
+            let displayRate = purchaseCost;
+            let phpRate = purchaseCost;
+
+            if (itemCurrency === vendorCurrency) {
+                displayRate = purchaseCost;
+                if (itemCurrency === 'PHP') {
+                    phpRate = purchaseCost;
+                } else {
+                    phpRate = purchaseCost * (currentExchangeRate || 1);
+                }
+            } else if (itemCurrency === 'PHP' && vendorCurrency !== 'PHP') {
+                displayRate = currentExchangeRate > 0 ? currRound(purchaseCost / currentExchangeRate) : purchaseCost;
+                phpRate = purchaseCost;
+            } else if (itemCurrency !== 'PHP' && vendorCurrency === 'PHP') {
+                displayRate = purchaseCost * (currentExchangeRate || 1);
+                phpRate = displayRate;
+            } else {
+                // Cross-currency: item foreign, vendor different foreign
+                const itemRateKey = `manual_rate_${itemCurrency}_PHP`;
+                const itemToPhp = parseFloat(localStorage.getItem(itemRateKey)) || getOfflineFallbackRate(itemCurrency);
+                phpRate = purchaseCost * itemToPhp;
+                displayRate = currentExchangeRate > 0 ? currRound(phpRate / currentExchangeRate) : purchaseCost;
+            }
+
+            row.setAttribute('data-php-rate', phpRate);
+
             const rateInput = row.querySelector('.rate-input');
-            const cost = parseFloat(item.purchase_cost) || 0;
-            if (cost > 0) rateInput.value = cost.toFixed(2);
+            if (purchaseCost > 0) {
+                rateInput.value = displayRate.toFixed(2);
+            }
 
             updateRowAmount(rateInput);
             optionEl.closest('.item-autocomplete-dropdown').classList.remove('open');
+            saveItemsToStorage();
         }
 
         document.addEventListener('click', function (e) {
@@ -1782,7 +2882,7 @@
 
             const payload = {
                 bill_number: billNumber,
-                purchase_order_id: sourcePOId ? parseInt(sourcePOId) : null,
+                purchase_order_id: sourcePOId ? parseInt(sourcePOId) : (selectedPOFromDropdown ? selectedPOFromDropdown.id : null),
                 supplier_id: selectedVendor?.id || poData?.supplier_id || null,
                 supplier_name: selectedVendor?.name || poData?.supplier_name || '',
                 order_number: poData?.po_number || null,
@@ -1792,6 +2892,8 @@
                 notes: document.getElementById('notes').value.trim(),
                 discount_percent: parseFloat(document.getElementById('discountValue').value) || 0,
                 adjustment: parseFloat(document.getElementById('adjustmentValue').value) || 0,
+                currency_code: currentCurrencyCode,
+                exchange_rate: currentExchangeRate,
                 items: items,
                 status: status
             };
@@ -1806,6 +2908,7 @@
                 if (!res.ok) { alert('Error: ' + (result.error || 'Failed to save')); return; }
 
                 showToast('New Bill has been created');
+                clearDraftStorage();
                 setTimeout(() => {
                     window.location.href = '/bills.html';
                 }, 1200);
@@ -1836,8 +2939,12 @@
         }
 
         function goBack() {
+            clearDraftStorage();
+            const vendorIdParam = urlParams.get('vendor_id');
             if (sourcePOId) {
                 window.location.href = '/purchase-order-detail.html?id=' + sourcePOId;
+            } else if (vendorIdParam) {
+                window.location.href = '/vendors.html#vendor=' + vendorIdParam;
             } else {
                 window.location.href = '/bills.html';
             }

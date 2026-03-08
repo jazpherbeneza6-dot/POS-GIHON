@@ -1644,6 +1644,7 @@
         .detail-left-header-actions {
             display: flex;
             gap: 6px;
+            position: relative;
         }
 
         .detail-left-header-actions button {
@@ -1891,6 +1892,45 @@
             font-size: 10px;
             cursor: pointer;
             border-left: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .more-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            min-width: 180px;
+            padding: 4px 0;
+            z-index: 200;
+            margin-top: 4px;
+        }
+
+        .more-dropdown-menu.show {
+            display: block;
+        }
+
+        .more-dropdown-item {
+            padding: 10px 16px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .more-dropdown-item:hover {
+            background: #f0f5ff;
+        }
+
+        .more-dropdown-item.danger {
+            color: #dc2626;
+        }
+
+        .more-dropdown-item.danger:hover {
+            background: #fef2f2;
         }
 
         .btn-close-detail {
@@ -2632,6 +2672,45 @@
             box-sizing: border-box;
         }
 
+        .comment-input:empty::before {
+            content: 'Write a comment...';
+            color: #aaa;
+        }
+
+        .comment-add-btn {
+            margin-top: 8px;
+            padding: 6px 16px;
+            background: #f0f0f0;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            color: #555;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .comment-add-btn:hover {
+            background: #e8e8e8;
+        }
+
+        .comment-item {
+            background: #f9fafb;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+        }
+
+        .comment-text {
+            font-size: 13px;
+            color: #333;
+        }
+
+        .comment-meta {
+            font-size: 11px;
+            color: #999;
+            margin-top: 6px;
+        }
+
         .all-comments-header {
             font-size: 11px;
             font-weight: 700;
@@ -3321,13 +3400,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="vendor-kebab-divider"></div>
-                            <!-- Preferences -->
-                            <div class="vendor-kebab-item"
-                                onclick="showVendorToast('Preferences settings coming soon.', 'info'); closeVendorKebab();">
-                                <span class="kebab-icon">⚙</span>
-                                <span class="kebab-label">Preferences</span>
-                            </div>
                             <!-- Refresh List -->
                             <div class="vendor-kebab-item" onclick="refreshVendorList(); closeVendorKebab();">
                                 <span class="kebab-icon">🔃</span>
@@ -3443,7 +3515,49 @@
                         </div>
                         <div class="detail-left-header-actions">
                             <button class="detail-left-add" onclick="createNewVendor()" title="New Vendor">+</button>
-                            <button class="detail-left-more" title="More">⋯</button>
+                            <button class="detail-left-more" title="More" onclick="toggleDetailKebab(event)">⋯</button>
+                            <div class="vendor-kebab-menu" id="detailKebabMenu"
+                                style="left:auto;right:0;min-width:200px;">
+                                <!-- Sort by (flat) -->
+                                <div class="vendor-kebab-item"
+                                    style="font-size:10px;color:#888;padding:6px 14px;cursor:default;">
+                                    <span class="kebab-icon">⇅</span>
+                                    <span class="kebab-label" style="font-weight:600;text-transform:uppercase;">Sort
+                                        by</span>
+                                </div>
+                                <div class="vendor-kebab-item"
+                                    onclick="sortVendors('name', 'Name'); closeDetailKebab();">
+                                    <span class="kebab-icon"> </span><span class="kebab-label">Name</span>
+                                </div>
+                                <div class="vendor-kebab-item"
+                                    onclick="sortVendors('company_name', 'Company Name'); closeDetailKebab();">
+                                    <span class="kebab-icon"> </span><span class="kebab-label">Company Name</span>
+                                </div>
+                                <div class="vendor-kebab-item"
+                                    onclick="sortVendors('payables_bcy', 'Payables'); closeDetailKebab();">
+                                    <span class="kebab-icon"> </span><span class="kebab-label">Payables (BCY)</span>
+                                </div>
+                                <div class="vendor-kebab-item"
+                                    onclick="sortVendors('created_at', 'Created Time'); closeDetailKebab();">
+                                    <span class="kebab-icon"> </span><span class="kebab-label">Created Time</span>
+                                </div>
+                                <div class="vendor-kebab-divider"></div>
+                                <!-- Import -->
+                                <div class="vendor-kebab-item" onclick="importVendors(); closeDetailKebab();">
+                                    <span class="kebab-icon">⬇</span>
+                                    <span class="kebab-label">Import Vendors</span>
+                                </div>
+                                <!-- Export -->
+                                <div class="vendor-kebab-item" onclick="exportAllVendors(); closeDetailKebab();">
+                                    <span class="kebab-icon">⬆</span>
+                                    <span class="kebab-label">Export Vendors</span>
+                                </div>
+                                <!-- Refresh -->
+                                <div class="vendor-kebab-item" onclick="refreshVendorList(); closeDetailKebab();">
+                                    <span class="kebab-icon">🔃</span>
+                                    <span class="kebab-label">Refresh List</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="detail-left-list" id="detailLeftList"></div>
@@ -3455,7 +3569,6 @@
                         <div class="detail-header-name" id="detailVendorName">Vendor Name</div>
                         <div class="detail-header-actions">
                             <button class="btn-edit" onclick="editCurrentVendor()">Edit</button>
-                            <button class="btn-info" title="Info">ⓘ</button>
                             <div class="txn-dropdown-wrapper">
                                 <button class="btn-new-transaction" onclick="toggleTxnDropdown(event)">New
                                     Transaction</button>
@@ -3463,16 +3576,31 @@
                                     onclick="toggleTxnDropdown(event)">▼</button>
                                 <div class="txn-dropdown-menu" id="txnDropdownMenu">
                                     <div class="txn-dropdown-category">PURCHASES</div>
-                                    <div class="txn-dropdown-item">Bill</div>
-                                    <div class="txn-dropdown-item">Bill Payment</div>
-                                    <div class="txn-dropdown-item">Purchase Order</div>
-                                    <div class="txn-dropdown-item">Purchase Receive</div>
-                                    <div class="txn-dropdown-item">Vendor Credit</div>
+                                    <div class="txn-dropdown-item"
+                                        onclick="window.location.href='/new-bill.html?vendor_id='+currentVendorId">Bill
+                                    </div>
+                                    <div class="txn-dropdown-item"
+                                        onclick="window.location.href='/record-payment.html?vendor_id='+currentVendorId">
+                                        Bill Payment</div>
+                                    <div class="txn-dropdown-item"
+                                        onclick="window.location.href='/new-purchase-order.html?vendor_id='+currentVendorId">
+                                        Purchase Order</div>
+                                    <div class="txn-dropdown-item"
+                                        onclick="window.location.href='/new-purchase-receive.html?vendor_id='+currentVendorId">
+                                        Purchase Receive</div>
+                                    <div class="txn-dropdown-item"
+                                        onclick="window.location.href='/new-vendor-credit.html?vendor_id='+currentVendorId">
+                                        Vendor Credit</div>
                                 </div>
                             </div>
-                            <div style="display:flex;">
-                                <button class="btn-more-detail">More</button>
-                                <button class="btn-more-dropdown2">▼</button>
+                            <div style="display:flex;position:relative;" id="moreDropdownWrap">
+                                <button class="btn-more-detail" onclick="toggleMoreDropdown(event)">More</button>
+                                <button class="btn-more-dropdown2" onclick="toggleMoreDropdown(event)">▼</button>
+                                <div class="more-dropdown-menu" id="moreDropdownMenu">
+                                    <div class="more-dropdown-item" id="moreInactiveBtn" onclick="toggleVendorActive()">
+                                        Mark as Inactive</div>
+                                    <div class="more-dropdown-item danger" onclick="deleteVendor()">Delete</div>
+                                </div>
                             </div>
                             <button class="btn-close-detail" onclick="closeDetailView()">×</button>
                         </div>
@@ -3486,7 +3614,7 @@
                         </div>
                         <div class="detail-tab" data-tab="transactions" onclick="switchDetailTab('transactions', this)">
                             Transactions</div>
-                        <div class="detail-tab" data-tab="mails" onclick="switchDetailTab('mails', this)">Mails</div>
+
                         <div class="detail-tab" data-tab="statement" onclick="switchDetailTab('statement', this)">
                             Statement
                         </div>
@@ -3496,6 +3624,9 @@
                     <div class="tab-content-area active" id="dtab-overview">
                         <div class="overview-left">
                             <div class="vendor-info-card">
+                                <div id="dVendorCompanyName"
+                                    style="font-size:14px;color:#666;margin-bottom:20px;display:none;">
+                                </div>
                                 <div class="vendor-contact-row">
                                     <div class="vendor-avatar" id="dVendorAvatar"><svg width="20" height="20"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -3620,14 +3751,22 @@
                     <div class="tab-content-area" id="dtab-comments" style="flex-direction:column;padding:20px 24px;">
                         <div class="comment-editor-card">
                             <div class="comment-toolbar">
-                                <button class="comment-toolbar-btn" style="font-weight:700;">B</button>
-                                <button class="comment-toolbar-btn" style="font-style:italic;">I</button>
-                                <button class="comment-toolbar-btn" style="text-decoration:underline;">U</button>
+                                <button class="comment-toolbar-btn" style="font-weight:700;"
+                                    onclick="vendorExecFormat('bold')" title="Bold">B</button>
+                                <button class="comment-toolbar-btn" style="font-style:italic;"
+                                    onclick="vendorExecFormat('italic')" title="Italic">I</button>
+                                <button class="comment-toolbar-btn" style="text-decoration:underline;"
+                                    onclick="vendorExecFormat('underline')" title="Underline">U</button>
                             </div>
-                            <textarea class="comment-input" placeholder="Add Comment"></textarea>
+                            <div class="comment-input" id="vendorCommentEditor" contenteditable="true"></div>
+                            <button class="comment-add-btn" onclick="addVendorListComment()">Add Comment</button>
                         </div>
                         <div class="all-comments-header">ALL COMMENTS</div>
-                        <div style="text-align:center;padding:20px;color:#888;font-size:13px;">No comments yet.</div>
+                        <div id="vendorCommentsListContainer">
+                            <div id="vendorNoCommentsMsg"
+                                style="text-align:center;padding:20px;color:#888;font-size:13px;">No comments yet.</div>
+                        </div>
+                        <div id="vendorCommentsList"></div>
                     </div>
 
                     <!-- Tab: Transactions -->
@@ -3811,20 +3950,8 @@
                         </div>
                     </div>
 
-                    <!-- Tab: Mails -->
-                    <div class="tab-content-area" id="dtab-mails" style="flex-direction:column;padding:20px 24px;">
-                        <div style="text-align:center;padding:60px 20px;color:#888;font-size:14px;"><svg width="14"
-                                height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round"
-                                style="vertical-align:middle;margin-right:4px;">
-                                <path
-                                    d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-                                <line x1="12" y1="9" x2="12" y2="13" />
-                                <line x1="12" y1="17" x2="12.01" y2="17" />
-                            </svg> No email has been
-                            sent
-                            yet.</div>
-                    </div>
+
+
 
                     <!-- Tab: Statement -->
                     <div class="tab-content-area" id="dtab-statement" style="flex-direction:column;padding:0;">
@@ -3856,22 +3983,8 @@
                                         <option value="payments">Payments Only</option>
                                     </select>
                                 </div>
-                                <div class="stmt-filter-select">
-                                    Location: <select id="vendorStmtLocation">
-                                        <option value="all">All Locations</option>
-                                        <option value="head_office">Head Office</option>
-                                    </select>
-                                </div>
                             </div>
                             <div class="stmt-toolbar-right">
-                                <button class="stmt-icon-btn" title="Print" onclick="printVendorStatement()"><svg
-                                        width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M6 9V2h12v7" />
-                                        <path
-                                            d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
-                                        <rect x="6" y="14" width="12" height="8" />
-                                    </svg></button>
                                 <button class="stmt-icon-btn" title="PDF" onclick="printVendorStatement()"><svg
                                         width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -3880,22 +3993,14 @@
                                         <line x1="16" y1="13" x2="8" y2="13" />
                                         <line x1="16" y1="17" x2="8" y2="17" />
                                     </svg></button>
-                                <button class="stmt-icon-btn" title="Print Preview"
-                                    onclick="printVendorStatement()"><svg width="14" height="14" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round">
+                                <button class="stmt-icon-btn" title="Print" onclick="printVendorStatement()"><svg
+                                        width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M6 9V2h12v7" />
                                         <path
                                             d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
                                         <rect x="6" y="14" width="12" height="8" />
                                     </svg></button>
-                                <button class="stmt-send-btn"><svg width="14" height="14" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;">
-                                        <path
-                                            d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                                        <polyline points="22,6 12,13 2,6" />
-                                    </svg> Send Email</button>
                             </div>
                         </div>
                         <!-- Statement heading -->
@@ -4498,9 +4603,9 @@
                         case 'phone':
                             return vendor.phone || '';
                         case 'payables_bcy':
-                            return 'PHP' + parseFloat(vendor.total_spent || 0).toFixed(2);
+                            return 'PHP' + parseFloat(vendor.payables_bcy || 0).toFixed(2);
                         case 'unused_credits_bcy':
-                            return 'PHP0.00';
+                            return 'PHP' + parseFloat(vendor.unused_credits_bcy || 0).toFixed(2);
                         case 'payables':
                             return 'PHP' + parseFloat(vendor.total_spent || 0).toFixed(2);
                         case 'unused_credits':
@@ -4554,13 +4659,67 @@
                     if (menu) menu.classList.remove('open');
                 }
 
+                async function toggleVendorActiveFromKebab() {
+                    if (!currentVendorId) { alert('Please select a vendor first.'); return; }
+                    const vendor = filteredVendors.find(v => v.id == currentVendorId);
+                    const currentStatus = vendor?.status || 'active';
+                    const newStatus = currentStatus === 'inactive' ? 'active' : 'inactive';
+                    const action = newStatus === 'inactive' ? 'mark as inactive' : 'mark as active';
+                    if (!confirm(`Are you sure you want to ${action} this vendor?`)) return;
+                    try {
+                        const res = await fetch('/api/suppliers/' + currentVendorId, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ status: newStatus })
+                        });
+                        if (res.ok) {
+                            alert(`Vendor ${newStatus === 'inactive' ? 'marked as inactive' : 'marked as active'} successfully.`);
+                            loadVendors();
+                        } else {
+                            const err = await res.json();
+                            alert(err.error || 'Failed to update vendor status.');
+                        }
+                    } catch (e) { alert('Failed to update vendor status.'); }
+                }
+
+                async function deleteVendorFromKebab() {
+                    if (!currentVendorId) { alert('Please select a vendor first.'); return; }
+                    if (!confirm('Are you sure you want to delete this vendor? This action cannot be undone.')) return;
+                    try {
+                        const res = await fetch('/api/suppliers/' + currentVendorId, { method: 'DELETE' });
+                        if (res.ok) {
+                            alert('Vendor deleted successfully.');
+                            closeDetailView();
+                            loadVendors();
+                        } else {
+                            const err = await res.json();
+                            alert(err.error || 'Failed to delete vendor.');
+                        }
+                    } catch (e) { alert('Failed to delete vendor.'); }
+                }
+
                 // Close on click outside
                 document.addEventListener('click', function (e) {
                     const wrapper = document.querySelector('.vendor-kebab-wrapper');
                     if (wrapper && !wrapper.contains(e.target)) {
                         closeVendorKebab();
                     }
+                    const detailActions = document.querySelector('.detail-left-header-actions');
+                    if (detailActions && !detailActions.contains(e.target)) {
+                        closeDetailKebab();
+                    }
                 });
+
+                function toggleDetailKebab(e) {
+                    e.stopPropagation();
+                    const menu = document.getElementById('detailKebabMenu');
+                    if (menu) menu.classList.toggle('open');
+                }
+
+                function closeDetailKebab() {
+                    const menu = document.getElementById('detailKebabMenu');
+                    if (menu) menu.classList.remove('open');
+                }
 
                 function updateSortCheckmarks() {
                     const fields = ['name', 'company_name', 'payables_bcy', 'unused_credits_bcy', 'created_at', 'updated_at'];
@@ -4613,8 +4772,44 @@
                         return valA.localeCompare(valB) * dir;
                     });
 
-                    const dirLabel = vendorSortDirection === 'asc' ? 'ascending' : 'descending';
+                    let dirLabel;
+                    const stringFields = ['name', 'company_name', 'display_name'];
+                    if (stringFields.includes(field)) {
+                        dirLabel = vendorSortDirection === 'asc' ? 'A-Z' : 'Z-A';
+                    } else if (numericFields.includes(field)) {
+                        dirLabel = vendorSortDirection === 'asc' ? 'Lowest-Highest' : 'Highest-Lowest';
+                    } else if (dateFields.includes(field)) {
+                        dirLabel = vendorSortDirection === 'asc' ? 'Oldest-Newest' : 'Newest-Oldest';
+                    } else {
+                        dirLabel = vendorSortDirection === 'asc' ? 'Ascending' : 'Descending';
+                    }
                     renderVendors();
+                    // If detail view is open, re-render the left sidebar list and stay in detail view
+                    const detailView = document.getElementById('detailView');
+                    if (detailView && detailView.classList.contains('show')) {
+                        document.querySelector('.page-header').style.display = 'none';
+                        document.getElementById('bulkActionsBar').style.display = 'none';
+                        document.getElementById('emptyState').style.display = 'none';
+                        document.getElementById('vendorsContainer').style.display = 'none';
+                        detailView.classList.add('show');
+                        // Re-render left list
+                        const leftList = document.getElementById('detailLeftList');
+                        leftList.innerHTML = '';
+                        allVendors.forEach(v => {
+                            const div = document.createElement('div');
+                            div.className = 'detail-left-item' + (v.id == currentVendorId ? ' active' : '');
+                            div.onclick = () => openDetailView(v.id);
+                            const amt = 'PHP' + parseFloat(v.total_spent || 0).toFixed(2);
+                            div.innerHTML = `
+                                <input type="checkbox" class="detail-left-item-checkbox" onclick="event.stopPropagation();">
+                                <div class="detail-left-item-info">
+                                    <div class="detail-left-item-name">${v.display_name || v.name || 'Unnamed'}</div>
+                                    <div class="detail-left-item-sub">${amt}</div>
+                                </div>
+                            `;
+                            leftList.appendChild(div);
+                        });
+                    }
                     showVendorToast(`Sorted by ${label} (${dirLabel}).`, 'info');
                 }
 
@@ -4687,6 +4882,13 @@
 
                 // ===== RESET COLUMN WIDTHS =====
                 function resetVendorColumnWidths() {
+                    // Clear saved column settings from localStorage
+                    localStorage.removeItem('vendorColumnSettings');
+                    // Reset vendorAllColumns to defaults
+                    vendorAllColumns.forEach(col => {
+                        col.visible = (col.id === 'name' || col.id === 'company_name' || col.id === 'email' || col.id === 'phone' || col.id === 'payables_bcy' || col.id === 'unused_credits_bcy');
+                    });
+                    // Clear inline widths
                     const table = document.querySelector('#vendorsContainer table');
                     if (table) {
                         table.querySelectorAll('th').forEach(th => {
@@ -4700,11 +4902,52 @@
                             td.style.maxWidth = '';
                         });
                     }
+                    // Re-render the table with default columns
+                    renderVendors();
                     showVendorToast('Column widths reset to default.', 'success');
                 }
 
                 function importVendors() {
-                    window.location.href = '/import-vendors.html';
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = '.csv,.xls,.xlsx';
+                    input.onchange = async (e) => {
+                        const file = e.target.files[0];
+                        if (!file) return;
+                        try {
+                            const text = await file.text();
+                            const lines = text.split('\n').filter(l => l.trim());
+                            if (lines.length < 2) { alert('File is empty or has no data rows.'); return; }
+                            const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+                            let imported = 0;
+                            for (let i = 1; i < lines.length; i++) {
+                                const vals = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+                                const row = {};
+                                headers.forEach((h, idx) => { row[h] = vals[idx] || ''; });
+                                const name = row['display name'] || row['name'] || row['vendor name'] || row['display_name'] || '';
+                                if (!name) continue;
+                                const body = {
+                                    display_name: name,
+                                    company_name: row['company name'] || row['company_name'] || '',
+                                    email: row['email'] || '',
+                                    phone: row['phone'] || row['work phone'] || '',
+                                    mobile: row['mobile'] || '',
+                                };
+                                await fetch('/api/suppliers', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify(body)
+                                });
+                                imported++;
+                            }
+                            alert(`Successfully imported ${imported} vendor(s).`);
+                            loadVendors();
+                        } catch (err) {
+                            console.error(err);
+                            alert('Error importing file: ' + err.message);
+                        }
+                    };
+                    input.click();
                 }
 
                 // Fetch and display vendors
@@ -5096,12 +5339,21 @@
                     // Header name
                     document.getElementById('detailVendorName').textContent = v.display_name || v.name || 'Unnamed Vendor';
 
+                    // Company name above contact card
+                    const companyEl = document.getElementById('dVendorCompanyName');
+                    if (v.company_name) {
+                        companyEl.textContent = v.company_name;
+                        companyEl.style.display = 'block';
+                    } else {
+                        companyEl.style.display = 'none';
+                    }
+
                     // Contact details
                     const salutation = v.salutation ? (v.salutation.charAt(0).toUpperCase() + v.salutation.slice(1)) : '';
                     const fullName = [salutation ? salutation + '.' : '', v.first_name || '', v.last_name || ''].filter(Boolean).join(' ');
                     let contactHtml = '';
                     if (fullName.trim()) contactHtml += `<div class="vendor-contact-name">${fullName}</div>`;
-                    if (v.display_name) contactHtml += `<div class="vendor-contact-name">${v.display_name}</div>`;
+                    if (!fullName.trim() && (v.display_name || v.name)) contactHtml += `<div class="vendor-contact-name">${v.display_name || v.name}</div>`;
                     if (v.work_phone || v.phone) contactHtml += `<div class="vendor-contact-item"><span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span> ${v.work_phone || v.phone}</div>`;
                     if (v.mobile) contactHtml += `<div class="vendor-contact-item"><span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></span> ${v.mobile}</div>`;
                     if (v.email) contactHtml += `<div class="vendor-contact-item"><span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span> ${v.email}</div>`;
@@ -5121,9 +5373,34 @@
                     document.getElementById('dPayTerms').textContent = termsMap[v.payment_terms] || v.payment_terms || 'Due on Receipt';
 
                     // Payables — only subtract PAID payments
-                    const cp = (v.currency || '').toUpperCase() === 'USD' ? 'USD' : 'PHP';
-                    document.getElementById('dPayCurrency').textContent = cp === 'USD' ? 'USD- US Dollar' : 'PHP- Philippine Peso';
-                    document.getElementById('dPayCredits').textContent = cp + parseFloat(v.unused_credits || 0).toFixed(2);
+                    const currencyMap = {
+                        'php': 'PHP - Philippine Peso', 'cny': 'CNY/RMB - Chinese Yuan Renminbi', 'usd': 'USD - US Dollar',
+                        'aed': 'AED - UAE Dirham', 'aud': 'AUD - Australian Dollar', 'bdt': 'BDT - Bangladeshi Taka',
+                        'brl': 'BRL - Brazilian Real', 'cad': 'CAD - Canadian Dollar', 'chf': 'CHF - Swiss Franc',
+                        'dkk': 'DKK - Danish Krone', 'eur': 'EUR - Euro', 'gbp': 'GBP - British Pound',
+                        'hkd': 'HKD - Hong Kong Dollar', 'idr': 'IDR - Indonesian Rupiah', 'inr': 'INR - Indian Rupee',
+                        'jpy': 'JPY - Japanese Yen', 'krw': 'KRW - South Korean Won', 'mxn': 'MXN - Mexican Peso',
+                        'myr': 'MYR - Malaysian Ringgit', 'ngn': 'NGN - Nigerian Naira', 'nok': 'NOK - Norwegian Krone',
+                        'nzd': 'NZD - New Zealand Dollar', 'pkr': 'PKR - Pakistani Rupee', 'pln': 'PLN - Polish Zloty',
+                        'rub': 'RUB - Russian Ruble', 'sar': 'SAR - Saudi Riyal', 'sek': 'SEK - Swedish Krona',
+                        'sgd': 'SGD - Singapore Dollar', 'thb': 'THB - Thai Baht', 'try': 'TRY - Turkish Lira',
+                        'twd': 'TWD - Taiwan Dollar', 'vnd': 'VND - Vietnamese Dong', 'zar': 'ZAR - South African Rand'
+                    };
+                    // Exchange rates: how much 1 PHP is worth in each currency (approximate)
+                    const phpExchangeRates = {
+                        'php': 1, 'cny': 0.13, 'usd': 0.018, 'eur': 0.016, 'gbp': 0.014, 'jpy': 2.68,
+                        'aud': 0.027, 'cad': 0.024, 'chf': 0.016, 'hkd': 0.14, 'sgd': 0.024, 'myr': 0.082,
+                        'thb': 0.62, 'krw': 24.5, 'inr': 1.49, 'idr': 281, 'twd': 0.57, 'vnd': 445,
+                        'aed': 0.065, 'sar': 0.067, 'brl': 0.091, 'mxn': 0.31, 'zar': 0.32, 'nok': 0.19,
+                        'sek': 0.19, 'dkk': 0.12, 'pln': 0.071, 'rub': 1.58, 'ngn': 27.0, 'pkr': 4.97,
+                        'bdt': 1.91, 'nzd': 0.030, 'try': 0.58
+                    };
+                    const currKey = (v.currency || 'php').toLowerCase();
+                    const cp = currKey.toUpperCase() === 'CNY' ? 'CNY' : currKey.toUpperCase();
+                    const exRate = phpExchangeRates[currKey] || 1;
+                    function convertFromPHP(phpAmount) { return phpAmount * exRate; }
+                    document.getElementById('dPayCurrency').textContent = currencyMap[currKey] || cp + ' - ' + cp;
+                    document.getElementById('dPayCredits').textContent = cp + convertFromPHP(parseFloat(v.unused_credits || 0)).toFixed(2);
                     // Calculate outstanding: total billed minus only PAID payments
                     (async () => {
                         try {
@@ -5144,12 +5421,12 @@
                             const rawOutstanding = totalBilled - totalPaid;
                             const outstanding = Math.max(0, rawOutstanding);
                             const overpayment = rawOutstanding < 0 ? Math.abs(rawOutstanding) : 0;
-                            document.getElementById('dPayOutstanding').textContent = cp + outstanding.toFixed(2);
+                            document.getElementById('dPayOutstanding').textContent = cp + convertFromPHP(outstanding).toFixed(2);
                             // Add overpayment to unused credits
                             const existingCredits = parseFloat(v.unused_credits || 0);
-                            document.getElementById('dPayCredits').textContent = cp + (existingCredits + overpayment).toFixed(2);
+                            document.getElementById('dPayCredits').textContent = cp + convertFromPHP(existingCredits + overpayment).toFixed(2);
                         } catch (e) {
-                            document.getElementById('dPayOutstanding').textContent = cp + parseFloat(v.total_spent || 0).toFixed(2);
+                            document.getElementById('dPayOutstanding').textContent = cp + convertFromPHP(parseFloat(v.total_spent || 0)).toFixed(2);
                         }
                     })();
 
@@ -5298,6 +5575,79 @@
                     if (area) area.classList.add('active');
                     if (tabName === 'transactions' && currentVendorId) loadVendorTransactions();
                     if (tabName === 'statement' && currentVendorId) loadVendorStatement();
+                    if (tabName === 'comments' && currentVendorId) loadVendorListComments();
+                }
+
+                // ===== Vendor Comments (Overview Detail View) =====
+                function vendorExecFormat(command) {
+                    document.getElementById('vendorCommentEditor').focus();
+                    document.execCommand(command, false, null);
+                }
+
+                async function addVendorListComment() {
+                    if (!currentVendorId) return;
+                    const editor = document.getElementById('vendorCommentEditor');
+                    const html = editor.innerHTML.trim();
+                    if (!html || html === '<br>' || html === '<div><br></div>') {
+                        alert('Please write a comment before adding.');
+                        return;
+                    }
+                    try {
+                        const res = await fetch('/api/suppliers/' + currentVendorId + '/comments', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ comment_html: html })
+                        });
+                        if (res.ok) {
+                            editor.innerHTML = '';
+                            loadVendorListComments();
+                        } else {
+                            alert('Failed to add comment.');
+                        }
+                    } catch (err) {
+                        console.error('Error adding comment:', err);
+                        alert('Failed to add comment.');
+                    }
+                }
+
+                async function loadVendorListComments() {
+                    if (!currentVendorId) return;
+                    const noMsg = document.getElementById('vendorNoCommentsMsg');
+                    const listDiv = document.getElementById('vendorCommentsList');
+                    try {
+                        const res = await fetch('/api/suppliers/' + currentVendorId + '/comments');
+                        if (!res.ok) return;
+                        const comments = await res.json();
+                        if (comments.length === 0) {
+                            if (noMsg) noMsg.style.display = 'block';
+                            listDiv.innerHTML = '';
+                            return;
+                        }
+                        if (noMsg) noMsg.style.display = 'none';
+                        listDiv.innerHTML = comments.map(c => {
+                            const d = new Date(c.created_at);
+                            const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) + ' ' + d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                            return `<div class="comment-item">
+                                <div class="comment-text">${c.comment_html}</div>
+                                <div class="comment-meta" style="display:flex;justify-content:space-between;align-items:center;">
+                                    <span>${dateStr}</span>
+                                    <span style="cursor:pointer;color:#999;font-size:16px;" onclick="deleteVendorListComment(${c.id})" title="Delete">&times;</span>
+                                </div>
+                            </div>`;
+                        }).join('');
+                    } catch (err) {
+                        console.error('Error loading comments:', err);
+                    }
+                }
+
+                async function deleteVendorListComment(commentId) {
+                    if (!currentVendorId) return;
+                    try {
+                        await fetch('/api/suppliers/' + currentVendorId + '/comments/' + commentId, { method: 'DELETE' });
+                        loadVendorListComments();
+                    } catch (err) {
+                        console.error('Error deleting comment:', err);
+                    }
                 }
 
 
@@ -5610,7 +5960,87 @@
                     e.stopPropagation();
                     const menu = document.getElementById('txnDropdownMenu');
                     if (menu) menu.classList.toggle('open');
+                    // Close more dropdown if open
+                    document.getElementById('moreDropdownMenu').classList.remove('show');
                 }
+
+                function toggleMoreDropdown(e) {
+                    e.stopPropagation();
+                    const menu = document.getElementById('moreDropdownMenu');
+                    menu.classList.toggle('show');
+                    // Close txn dropdown if open
+                    const txnMenu = document.getElementById('txnDropdownMenu');
+                    if (txnMenu) txnMenu.classList.remove('open');
+
+                    // Update button text based on current status
+                    const btn = document.getElementById('moreInactiveBtn');
+                    if (btn) {
+                        // Check current vendor status
+                        const vendor = filteredVendors.find(v => v.id == currentVendorId);
+                        if (vendor && vendor.status === 'inactive') {
+                            btn.textContent = 'Mark as Active';
+                        } else {
+                            btn.textContent = 'Mark as Inactive';
+                        }
+                    }
+                }
+
+                async function toggleVendorActive() {
+                    if (!currentVendorId) return;
+                    const vendor = filteredVendors.find(v => v.id == currentVendorId);
+                    const currentStatus = vendor?.status || 'active';
+                    const newStatus = currentStatus === 'inactive' ? 'active' : 'inactive';
+                    const action = newStatus === 'inactive' ? 'mark as inactive' : 'mark as active';
+                    if (!confirm(`Are you sure you want to ${action} this vendor?`)) return;
+
+                    try {
+                        const res = await fetch('/api/suppliers/' + currentVendorId, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ status: newStatus })
+                        });
+                        if (res.ok) {
+                            alert(`Vendor ${newStatus === 'inactive' ? 'marked as inactive' : 'marked as active'} successfully.`);
+                            document.getElementById('moreDropdownMenu').classList.remove('show');
+                            loadVendors(); // Refresh list
+                        } else {
+                            const err = await res.json();
+                            alert(err.error || 'Failed to update vendor status.');
+                        }
+                    } catch (e) {
+                        console.error(e);
+                        alert('Failed to update vendor status.');
+                    }
+                }
+
+                async function deleteVendor() {
+                    if (!currentVendorId) return;
+                    if (!confirm('Are you sure you want to delete this vendor? This action cannot be undone.')) return;
+
+                    try {
+                        const res = await fetch('/api/suppliers/' + currentVendorId, { method: 'DELETE' });
+                        if (res.ok) {
+                            alert('Vendor deleted successfully.');
+                            document.getElementById('moreDropdownMenu').classList.remove('show');
+                            closeDetailView();
+                            loadVendors(); // Refresh list
+                        } else {
+                            const err = await res.json();
+                            alert(err.error || 'Failed to delete vendor.');
+                        }
+                    } catch (e) {
+                        console.error(e);
+                        alert('Failed to delete vendor.');
+                    }
+                }
+
+                // Close More dropdown on outside click
+                document.addEventListener('click', function (e) {
+                    const wrap = document.getElementById('moreDropdownWrap');
+                    if (wrap && !wrap.contains(e.target)) {
+                        document.getElementById('moreDropdownMenu').classList.remove('show');
+                    }
+                });
 
                 function editCurrentVendor() {
                     if (currentVendorId) window.location.href = '/new-vendor.html?id=' + currentVendorId;
@@ -6010,13 +6440,15 @@
                 });
 
                 function editCurrentVendor() {
-                    document.getElementById('vendorGearDropdown').classList.remove('open');
+                    const dd = document.getElementById('vendorGearDropdown');
+                    if (dd) dd.classList.remove('open');
                     if (!currentVendorId) return;
                     window.location.href = '/new-vendor.html?id=' + currentVendorId;
                 }
 
                 async function deleteCurrentVendor() {
-                    document.getElementById('vendorGearDropdown').classList.remove('open');
+                    const dd = document.getElementById('vendorGearDropdown');
+                    if (dd) dd.classList.remove('open');
                     if (!currentVendorId) return;
                     const name = currentVendorData ? (currentVendorData.name || 'this vendor') : 'this vendor';
                     if (!confirm('Delete "' + name + '"? This cannot be undone.')) return;

@@ -22,62 +22,174 @@ let salesFilteredItemIds = null;
 let purchaseFilteredItemIds = null;
 let sortDirection = 'asc'; // Current sort direction
 
-// ========== RMB → PHP CURRENCY CONVERSION ==========
-let cachedExchangeRate = null; // CNY to PHP rate
+// ========== MULTI-CURRENCY CONVERSION ==========
+let cachedExchangeRate = null; // CNY to PHP rate (legacy, kept for PO compatibility)
 let exchangeRateTimestamp = null;
 const EXCHANGE_RATE_CACHE_MS = 30 * 60 * 1000; // Cache for 30 minutes
 
-async function fetchExchangeRate() {
-  // Return cached rate if still fresh
-  if (cachedExchangeRate && exchangeRateTimestamp && (Date.now() - exchangeRateTimestamp < EXCHANGE_RATE_CACHE_MS)) {
+// Currency symbol map
+const CURRENCY_SYMBOLS = {
+  PHP: '₱', CNY: '¥', USD: '$', EUR: '€', JPY: '¥', GBP: '£',
+  KRW: '₩', SGD: 'S$', HKD: 'HK$', TWD: 'NT$', THB: '฿',
+  MYR: 'RM', IDR: 'Rp', VND: '₫', AUD: 'A$', CAD: 'C$',
+  AED: 'د.إ', SAR: '﷼', INR: '₹'
+};
+
+function getCurrencySymbol(code) {
+  return CURRENCY_SYMBOLS[code] || code;
+}
+
+// Fetch exchange rate for any currency → PHP
+async function fetchExchangeRate(fromCurrency) {
+  fromCurrency = fromCurrency || 'CNY';
+
+  // Check localStorage for a manually saved rate
+  const manualKey = `manual_rate_${fromCurrency}_PHP`;
+  const manualRate = localStorage.getItem(manualKey);
+  if (manualRate && !isNaN(parseFloat(manualRate))) {
+    const rate = parseFloat(manualRate);
+    if (fromCurrency === 'CNY') cachedExchangeRate = rate;
+    return rate;
+  }
+
+  // Check memory cache for CNY (legacy compatibility)
+  if (fromCurrency === 'CNY' && cachedExchangeRate && exchangeRateTimestamp && (Date.now() - exchangeRateTimestamp < EXCHANGE_RATE_CACHE_MS)) {
     return cachedExchangeRate;
   }
+
   try {
-    const res = await fetch('https://open.er-api.com/v6/latest/CNY');
+    const res = await fetch(`https://open.er-api.com/v6/latest/${fromCurrency}`);
     if (!res.ok) throw new Error('Exchange rate API error');
     const data = await res.json();
     if (data.result === 'success' && data.rates && data.rates.PHP) {
-      cachedExchangeRate = data.rates.PHP;
-      exchangeRateTimestamp = Date.now();
-      console.log('Exchange rate fetched: 1 CNY =', cachedExchangeRate, 'PHP');
-      return cachedExchangeRate;
+      const rate = data.rates.PHP;
+      if (fromCurrency === 'CNY') {
+        cachedExchangeRate = rate;
+        exchangeRateTimestamp = Date.now();
+      }
+      console.log(`Exchange rate fetched: 1 ${fromCurrency} = ${rate} PHP`);
+      return rate;
     }
     throw new Error('PHP rate not found in API response');
   } catch (err) {
     console.error('Failed to fetch exchange rate:', err);
-    // Fallback rate (approximate)
-    if (!cachedExchangeRate) {
-      cachedExchangeRate = 8.05;
-      console.warn('Using fallback exchange rate: 1 CNY = 8.05 PHP');
+    // Fallback rates
+    const fallbacks = { CNY: 8.05, USD: 56.0, EUR: 61.0, JPY: 0.38, GBP: 72.0, KRW: 0.042, SGD: 42.0, HKD: 7.2, TWD: 1.8, THB: 1.6, MYR: 12.5, IDR: 0.0036, VND: 0.0023, AUD: 37.0, CAD: 41.0, AED: 15.3, SAR: 14.9, INR: 0.67 };
+    const fallback = fallbacks[fromCurrency] || 1;
+    if (fromCurrency === 'CNY' && !cachedExchangeRate) {
+      cachedExchangeRate = fallback;
+      console.warn(`Using fallback exchange rate: 1 ${fromCurrency} = ${fallback} PHP`);
     }
-    return cachedExchangeRate;
+    return fromCurrency === 'CNY' && cachedExchangeRate ? cachedExchangeRate : fallback;
   }
 }
 
 function onCostCurrencyChange() {
-  // No-op: always RMB now
+  onPurchaseCurrencyChange();
+}
+
+// Called when the purchase currency dropdown changes
+function onPurchaseCurrencyChange() {
+  const currency = document.getElementById('itemPurchaseCurrency')?.value || 'PHP';
+  const prefix = document.getElementById('costCurrencyPrefix');
+  const hint = document.getElementById('costPriceHint');
+  const preview = document.getElementById('costConversionPreview');
+  const costInput = document.getElementById('itemCost');
+  const rateLabel = document.getElementById('exchangeRateLabel');
+
+  if (currency !== 'PHP') {
+    const symbol = getCurrencySymbol(currency);
+    if (prefix) { prefix.textContent = symbol; prefix.style.color = '#ef4444'; }
+    if (hint) hint.textContent = `(Enter in ${currency})`;
+    if (costInput) costInput.placeholder = `Enter ${currency} amount`;
+    if (preview) preview.style.display = 'block';
+    if (rateLabel) rateLabel.textContent = `1 ${currency} = ₱`;
+
+    // Load manual rate or fetch from API
+    const manualKey = `manual_rate_${currency}_PHP`;
+    const savedRate = localStorage.getItem(manualKey);
+    const rateInput = document.getElementById('manualExchangeRate');
+
+    if (savedRate && rateInput) {
+      rateInput.value = savedRate;
+      onCostInputChange();
+    } else {
+      // Fetch from API and populate rate input
+      fetchExchangeRate(currency).then(rate => {
+        if (rateInput) rateInput.value = rate.toFixed(4);
+        onCostInputChange();
+      });
+    }
+  } else {
+    if (prefix) { prefix.textContent = '₱'; prefix.style.color = ''; }
+    if (hint) hint.textContent = '';
+    if (costInput) costInput.placeholder = 'Enter PHP amount';
+    if (preview) preview.style.display = 'none';
+  }
   onCostInputChange();
 }
 
 async function onCostInputChange() {
-  const rmbValue = parseFloat(document.getElementById('itemCost')?.value) || 0;
-  const rate = await fetchExchangeRate();
-  const phpValue = rmbValue * rate;
+  const currency = document.getElementById('itemPurchaseCurrency')?.value || 'PHP';
+  if (currency === 'PHP') return; // No conversion needed for PHP
+
+  // Use the manual rate input value
+  const rateInput = document.getElementById('manualExchangeRate');
+  let rate = parseFloat(rateInput?.value) || 0;
+  if (rate <= 0) {
+    rate = await fetchExchangeRate(currency);
+    if (rateInput && rate > 0) rateInput.value = rate.toFixed(4);
+  }
+
+  const costValue = parseFloat(document.getElementById('itemCost')?.value) || 0;
+  const phpValue = costValue * rate;
 
   const convertedEl = document.getElementById('convertedPhpValue');
   if (convertedEl) {
     convertedEl.textContent = '₱' + phpValue.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
-  const rateInfo = document.getElementById('exchangeRateInfo');
-  if (rateInfo) {
-    rateInfo.textContent = `Rate: 1 CNY = ₱${rate.toFixed(4)}`;
-  }
 }
 
-// Pre-fetch exchange rate on page load
-fetchExchangeRate().then(rate => {
-  const rateInfo = document.getElementById('exchangeRateInfo');
-  if (rateInfo) rateInfo.textContent = `Rate: 1 CNY = ₱${rate.toFixed(4)}`;
+// Called when user manually edits the exchange rate
+function onManualRateChange() {
+  const currency = document.getElementById('itemPurchaseCurrency')?.value || 'PHP';
+  const rateInput = document.getElementById('manualExchangeRate');
+  const rate = parseFloat(rateInput?.value) || 0;
+
+  if (rate > 0 && currency !== 'PHP') {
+    // Save manual rate to localStorage
+    localStorage.setItem(`manual_rate_${currency}_PHP`, rate.toString());
+    // Update cached rate for CNY (legacy compatibility)
+    if (currency === 'CNY') cachedExchangeRate = rate;
+  }
+
+  onCostInputChange();
+}
+
+// Reset to auto-fetched exchange rate
+async function resetExchangeRate() {
+  const currency = document.getElementById('itemPurchaseCurrency')?.value || 'PHP';
+  if (currency === 'PHP') return;
+
+  // Remove manual override
+  localStorage.removeItem(`manual_rate_${currency}_PHP`);
+  // Clear memory cache to force refetch
+  if (currency === 'CNY') { cachedExchangeRate = null; exchangeRateTimestamp = null; }
+
+  const rate = await fetchExchangeRate(currency);
+  const rateInput = document.getElementById('manualExchangeRate');
+  if (rateInput) rateInput.value = rate.toFixed(4);
+  onCostInputChange();
+}
+
+// Pre-fetch exchange rate on page load (for CNY — most common foreign currency)
+fetchExchangeRate('CNY').then(rate => {
+  const rateInput = document.getElementById('manualExchangeRate');
+  // Only populate if currently viewing CNY
+  const currency = document.getElementById('itemPurchaseCurrency')?.value;
+  if (currency === 'CNY' && rateInput && !rateInput.value) {
+    rateInput.value = rate.toFixed(4);
+  }
 });
 
 // Grid view render (stub - grid view uses same data as table)
@@ -2238,7 +2350,20 @@ function openItemDetailView(itemId) {
   document.getElementById('detailItemUnit').textContent = item.unit || 'pcs';
   document.getElementById('detailItemManufacturer').textContent = item.manufacturer || '-';
   document.getElementById('detailItemBrand').textContent = item.brand || '-';
-  document.getElementById('detailItemCost').textContent = 'PHP' + formatNumber(item.purchase_cost || 0);
+  // Show correct currency symbol for cost price, with PHP conversion for non-PHP items
+  const costCurrency = item.purchase_currency || 'PHP';
+  const costValue = parseFloat(item.purchase_cost) || 0;
+  if (costCurrency !== 'PHP') {
+    const costSymbol = getCurrencySymbol(costCurrency);
+    // Show foreign price immediately, then append PHP conversion
+    document.getElementById('detailItemCost').textContent = costSymbol + formatNumber(costValue);
+    fetchExchangeRate(costCurrency).then(rate => {
+      const phpEquivalent = costValue * rate;
+      document.getElementById('detailItemCost').textContent = costSymbol + formatNumber(costValue) + ' (₱' + formatNumber(phpEquivalent) + ')';
+    });
+  } else {
+    document.getElementById('detailItemCost').textContent = '₱' + formatNumber(costValue);
+  }
   document.getElementById('detailItemPrice').textContent = 'PHP' + formatNumber(item.selling_price || 0);
   document.getElementById('detailOpeningStock').textContent = formatNumber(item.stock_quantity || 0);
   document.getElementById('detailStockOnHand').textContent = ': ' + formatNumber(item.stock_quantity || 0);
@@ -2548,7 +2673,8 @@ async function cloneCurrentItem() {
       weight: item.weight,
       purchase_account: item.purchase_account,
       purchase_description: item.purchase_description,
-      preferred_vendor: item.preferred_vendor
+      preferred_vendor: item.preferred_vendor,
+      purchase_currency: item.purchase_currency || 'PHP'
     };
     await itemsAPI.create(cloneData);
     showToast('Item cloned successfully', 'success');
@@ -4776,7 +4902,14 @@ function openItemModal(itemId = null) {
       document.getElementById('itemPrice').value = item.selling_price || '';
       document.getElementById('itemCost').value = item.purchase_cost || '';
 
-      // Show stored PHP cost as-is and update preview
+      // Restore purchase currency dropdown
+      const currencySelect = document.getElementById('itemPurchaseCurrency');
+      if (currencySelect) {
+        currencySelect.value = item.purchase_currency || 'PHP';
+        onPurchaseCurrencyChange();
+      }
+
+      // Show stored cost and update preview
       onCostInputChange();
 
       // Reset image first, then load if exists
@@ -4914,8 +5047,12 @@ function openItemModal(itemId = null) {
       document.getElementById('itemAddedBy').value = '';
     }
     onItemTypeChange();
-    // Reset conversion preview for new items
-    onCostInputChange();
+    // Reset purchase currency to PHP for new items
+    const currencySelect = document.getElementById('itemPurchaseCurrency');
+    if (currencySelect) {
+      currencySelect.value = 'PHP';
+      onPurchaseCurrencyChange();
+    }
   }
 
   modal.classList.add('active');
@@ -5020,14 +5157,10 @@ async function saveItem(event) {
   const price = parseFloat(priceInput) || 0;
   const reorderPoint = parseInt(reorderPointInput) || 10;
 
-  // Always convert RMB to PHP (Cost Price is always entered in RMB)
+  // Store cost in the selected currency (no conversion)
   let cost = parseFloat(costInput) || 0;
-  if (cost > 0) {
-    const rate = await fetchExchangeRate();
-    const originalRmb = cost;
-    cost = parseFloat((cost * rate).toFixed(2));
-    console.log(`Converted cost: ¥${originalRmb} RMB × ${rate} = ₱${cost} PHP`);
-  }
+  const purchaseCurrency = document.getElementById('itemPurchaseCurrency')?.value || 'PHP';
+  console.log(`Cost: ${cost} in ${purchaseCurrency}`);
 
   const data = {
     name: nameInput,
@@ -5053,7 +5186,8 @@ async function saveItem(event) {
     purchase_account: purchaseAccountInput,
     purchase_description: purchaseDescriptionInput,
     preferred_vendor: preferredVendorInput,
-    added_by: document.getElementById('itemAddedBy')?.value || null
+    added_by: document.getElementById('itemAddedBy')?.value || null,
+    purchase_currency: purchaseCurrency
   };
 
   console.log('Saving item with data:', data);
