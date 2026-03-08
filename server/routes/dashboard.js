@@ -227,31 +227,73 @@ router.get('/sales-summary', async (req, res) => {
   }
 });
 
-// Sales trend for chart
+// Sales trend for chart - combines all sales sources
 router.get('/sales-trend', async (req, res) => {
   try {
     const { period } = req.query;
     const db = database.getDb();
-    const dateFilter = buildDateFilter(req, 'date').replace('AND ', 'WHERE ');
 
     // Determine grouping based on period
-    let groupFormat = "TO_CHAR(date, 'Mon DD')";
+    let groupFormat = "TO_CHAR(combined_date, 'Mon DD')";
     if (period === 'today' || period === 'yesterday') {
-      groupFormat = "TO_CHAR(date, 'HH24:00')";
+      groupFormat = "TO_CHAR(combined_date, 'HH24:00')";
     } else if (period === 'thisYear' || period === 'previousYear') {
-      groupFormat = "TO_CHAR(date, 'Mon YYYY')";
+      groupFormat = "TO_CHAR(combined_date, 'Mon YYYY')";
     }
+
+    // Build date filters for each source table
+    const salesDateFilter = buildDateFilter(req, 's.date');
+    const soDateFilter = buildDateFilter(req, 'so.order_date');
+    const invDateFilter = buildDateFilter(req, 'inv.invoice_date');
+    const srDateFilter = buildDateFilter(req, 'sr.receipt_date');
 
     const result = await db.query(`
       SELECT 
-        ${groupFormat} as label,
-        DATE(date) as date_key,
-        COUNT(*) as sale_count,
-        COALESCE(SUM(total_amount), 0) as total_revenue
-      FROM sales
-      ${dateFilter.replace('AND ', 'WHERE ')}
-      GROUP BY ${groupFormat}, DATE(date)
-      ORDER BY DATE(date) ASC
+        ${groupFormat.replace(/combined_date/g, 'combined_date')} as label,
+        DATE(combined_date) as date_key,
+        SUM(sale_count) as sale_count,
+        SUM(total_revenue) as total_revenue
+      FROM (
+        -- POS Direct Sales
+        SELECT 
+          s.date as combined_date,
+          1 as sale_count,
+          COALESCE(s.total_amount, 0) as total_revenue
+        FROM sales s
+        WHERE s.status = 'completed' ${salesDateFilter}
+
+        UNION ALL
+
+        -- Sales Orders (Confirmed/Completed)
+        SELECT 
+          so.order_date as combined_date,
+          1 as sale_count,
+          COALESCE(so.total, 0) as total_revenue
+        FROM sales_orders so
+        WHERE UPPER(so.status) IN ('CONFIRMED', 'COMPLETED', 'CLOSED') ${soDateFilter}
+
+        UNION ALL
+
+        -- Invoices
+        SELECT 
+          inv.invoice_date as combined_date,
+          1 as sale_count,
+          COALESCE(inv.total, 0) as total_revenue
+        FROM invoices inv
+        WHERE inv.status NOT IN ('DRAFT', 'VOID', 'Void', 'draft') ${invDateFilter}
+
+        UNION ALL
+
+        -- Sales Receipts
+        SELECT 
+          sr.receipt_date as combined_date,
+          1 as sale_count,
+          COALESCE(sr.total, 0) as total_revenue
+        FROM sales_receipts sr
+        WHERE 1=1 ${srDateFilter}
+      ) combined
+      GROUP BY ${groupFormat.replace(/combined_date/g, 'combined_date')}, DATE(combined_date)
+      ORDER BY DATE(combined_date) ASC
     `);
 
     res.json(result.rows);
