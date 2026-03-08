@@ -4720,7 +4720,7 @@
                 });
 
                 const totalStr = totalAmount.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                const MAX_ROWS_PER_COL = 20;
+                const MAX_ROWS_PER_COL = 15;
 
                 // Helper: build a table HTML from an array of row objects
                 function buildStmtTable(rows, showTotal, totalValue) {
@@ -4746,10 +4746,6 @@
                                 ${buildStmtTable(leftRows, false)}
                             </div>
                             <div class="stmt-column">
-                                <div class="stmt-amount-due-box">
-                                    <span class="label">AMOUNT DUE</span>
-                                    <span class="value">₱${totalStr}</span>
-                                </div>
                                 ${buildStmtTable(rightRows, true, totalStr)}
                             </div>
                         </div>`;
