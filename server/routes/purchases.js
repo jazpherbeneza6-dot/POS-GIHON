@@ -5,7 +5,7 @@ const database = require('../database');
 // Create purchase
 router.post('/', async (req, res) => {
   try {
-    const { supplier_id, supplier_name, items, invoice_number, po_number, expected_date, payment_terms, notes, status, date, delivery_address, reference_number, discount_percent, adjustment, terms_conditions, shipment_preference, currency_code, exchange_rate } = req.body;
+    const { supplier_id, supplier_name, items, invoice_number, po_number, expected_date, payment_terms, notes, status, date, delivery_address, reference_number, discount_percent, discount_type: table_discount_type, adjustment, terms_conditions, shipment_preference, currency_code, exchange_rate } = req.body;
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ error: 'At least one item is required' });
@@ -47,13 +47,17 @@ router.post('/', async (req, res) => {
       if (!item.quantity || item.unit_price === undefined || item.unit_price === null) {
         return res.status(400).json({ error: 'Each item must have quantity and unit_price' });
       }
-      totalAmount += item.quantity * item.unit_price;
+      const lineDisc = parseFloat(item.discount_percent) || 0;
+      const discType = item.discount_type || '%';
+      const lineTotal = discType === '%' ? item.quantity * item.unit_price * (1 - lineDisc / 100) : item.quantity * item.unit_price - lineDisc;
+      totalAmount += lineTotal;
     }
 
     // Apply discount and adjustment
     const discPct = parseFloat(discount_percent) || 0;
     const adj = parseFloat(adjustment) || 0;
-    const discountAmt = totalAmount * (discPct / 100);
+    const tblDiscType = table_discount_type || '%';
+    const discountAmt = tblDiscType === '%' ? totalAmount * (discPct / 100) : discPct;
     totalAmount = totalAmount - discountAmt + adj;
 
     // Auto-generate PO number based on highest existing 5-digit PO number
@@ -73,8 +77,8 @@ router.post('/', async (req, res) => {
       const recvStatus = status === 'received' ? 'RECEIVED' : 'NOT RECEIVED';
 
       const purchaseResult = await client.query(`
-        INSERT INTO purchases (supplier_id, supplier_name, total_amount, invoice_number, po_number, expected_date, payment_terms, notes, status, receive_status, bill_status, date, delivery_address, reference_number, discount_percent, adjustment, terms_conditions, shipment_preference, currency_code, exchange_rate)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'UNBILLED', COALESCE($11, CURRENT_TIMESTAMP), $12, $13, $14, $15, $16, $17, $18, $19)
+        INSERT INTO purchases (supplier_id, supplier_name, total_amount, invoice_number, po_number, expected_date, payment_terms, notes, status, receive_status, bill_status, date, delivery_address, reference_number, discount_percent, adjustment, terms_conditions, shipment_preference, currency_code, exchange_rate, discount_type)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'UNBILLED', COALESCE($11, CURRENT_TIMESTAMP), $12, $13, $14, $15, $16, $17, $18, $19, $20)
         RETURNING id
       `, [
         finalSupplierId,
@@ -95,14 +99,17 @@ router.post('/', async (req, res) => {
         terms_conditions || null,
         shipment_preference || null,
         currency_code || 'PHP',
-        parseFloat(exchange_rate) || 1
+        parseFloat(exchange_rate) || 1,
+        tblDiscType
       ]);
 
       purchaseId = purchaseResult.rows[0].id;
 
       // Create purchase items and update inventory
       for (const item of items) {
-        const totalPrice = item.quantity * item.unit_price;
+        const lineDisc = parseFloat(item.discount_percent) || 0;
+        const discType = item.discount_type || '%';
+        const totalPrice = discType === '%' ? item.quantity * item.unit_price * (1 - lineDisc / 100) : item.quantity * item.unit_price - lineDisc;
         const qty = parseInt(item.quantity) || 0;
         let itemId = item.item_id;
         let itemWasCreatedNow = false; // Track if we created the item in this transaction
@@ -133,9 +140,9 @@ router.post('/', async (req, res) => {
         // Insert purchase item record
         const baseCurrencyAmount = totalPrice * (parseFloat(exchange_rate) || 1);
         await client.query(`
-          INSERT INTO purchase_items (purchase_id, item_id, quantity, unit_price, total_price, item_name, selling_price, is_new, base_currency_amount)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-        `, [purchaseId, itemId || null, qty, item.unit_price, totalPrice, item.item_name || null, item.selling_price || null, item.is_new === true, baseCurrencyAmount]);
+          INSERT INTO purchase_items (purchase_id, item_id, quantity, unit_price, total_price, item_name, selling_price, is_new, base_currency_amount, discount_percent, discount_type)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+        `, [purchaseId, itemId || null, qty, item.unit_price, totalPrice, item.item_name || null, item.selling_price || null, item.is_new === true, baseCurrencyAmount, lineDisc, discType]);
 
         // CASE 2: Existing item that needs stock update (only when status is 'received')
         // Only update if: status is received, we have an item_id, AND item was NOT just created
@@ -194,6 +201,20 @@ router.post('/', async (req, res) => {
   }
 });
 
+// Get distinct shipment preferences
+router.get('/shipment-preferences', async (req, res) => {
+  try {
+    const db = database.getDb();
+    const result = await db.query(
+      `SELECT DISTINCT shipment_preference FROM purchases WHERE shipment_preference IS NOT NULL AND shipment_preference != '' ORDER BY shipment_preference`
+    );
+    res.json(result.rows.map(r => r.shipment_preference));
+  } catch (error) {
+    console.error('Error fetching shipment preferences:', error);
+    res.status(500).json({ error: 'Failed to fetch shipment preferences' });
+  }
+});
+
 // Get next PO number (for display before saving)
 router.get('/next-number', async (req, res) => {
   try {
@@ -228,6 +249,8 @@ router.get('/', async (req, res) => {
                  'item_name', COALESCE(i.name, pi.item_name),
                  'quantity', pi.quantity,
                  'unit_price', pi.unit_price,
+                 'discount_percent', pi.discount_percent,
+                 'discount_type', pi.discount_type,
                  'is_new', pi.is_new,
                  'selling_price', pi.selling_price
                ) ORDER BY pi.id
@@ -279,6 +302,8 @@ router.get('/:id', async (req, res) => {
       SELECT pi.*, 
              COALESCE(i.name, pi.item_name) as item_name, 
              i.sku, i.barcode, i.unit,
+             pi.discount_percent as item_discount_percent,
+             pi.discount_type as item_discount_type,
              pi.is_new, pi.selling_price as pi_selling_price
       FROM purchase_items pi
       LEFT JOIN items i ON pi.item_id = i.id
@@ -299,7 +324,7 @@ router.get('/:id', async (req, res) => {
 // Update purchase (full edit)
 router.put('/:id', async (req, res) => {
   try {
-    const { supplier_id, supplier_name, items, po_number, expected_date, payment_terms, notes, status, receive_status, bill_status, date, delivery_address, reference_number, discount_percent, adjustment, terms_conditions, shipment_preference, received_date, receiving_notes, discrepancy_resolved, currency_code, exchange_rate } = req.body;
+    const { supplier_id, supplier_name, items, po_number, expected_date, payment_terms, notes, status, receive_status, bill_status, date, delivery_address, reference_number, discount_percent, discount_type: table_discount_type, adjustment, terms_conditions, shipment_preference, received_date, receiving_notes, discrepancy_resolved, currency_code, exchange_rate } = req.body;
     const db = database.getDb();
 
     // Check if purchase exists
@@ -332,11 +357,14 @@ router.put('/:id', async (req, res) => {
       // Calculate total
       let totalAmount = 0;
       for (const item of items) {
-        totalAmount += (parseFloat(item.quantity) || 0) * (parseFloat(item.unit_price) || 0);
+        const lineDisc = parseFloat(item.discount_percent) || 0;
+        const discType = item.discount_type || '%';
+        totalAmount += discType === '%' ? (parseFloat(item.quantity) || 0) * (parseFloat(item.unit_price) || 0) * (1 - lineDisc / 100) : (parseFloat(item.quantity) || 0) * (parseFloat(item.unit_price) || 0) - lineDisc;
       }
       const discPct = parseFloat(discount_percent) || parseFloat(existingPurchase.discount_percent) || 0;
       const adj = parseFloat(adjustment) || parseFloat(existingPurchase.adjustment) || 0;
-      const discountAmt = totalAmount * (discPct / 100);
+      const tblDiscType = table_discount_type || existingPurchase.discount_type || '%';
+      const discountAmt = tblDiscType === '%' ? totalAmount * (discPct / 100) : discPct;
       totalAmount = totalAmount - discountAmt + adj;
 
       await database.transaction(async (client) => {
@@ -349,8 +377,8 @@ router.put('/:id', async (req, res) => {
             delivery_address = $10, reference_number = $11, 
             discount_percent = $12, adjustment = $13, 
             terms_conditions = $14, shipment_preference = $15,
-            currency_code = $16, exchange_rate = $17
-          WHERE id = $18
+            currency_code = $16, exchange_rate = $17, discount_type = $18
+          WHERE id = $19
         `, [
           finalSupplierId, finalSupplierName, totalAmount,
           po_number || existingPurchase.po_number,
@@ -366,6 +394,7 @@ router.put('/:id', async (req, res) => {
           shipment_preference !== undefined ? shipment_preference : existingPurchase.shipment_preference,
           currency_code || existingPurchase.currency_code || 'PHP',
           parseFloat(exchange_rate) || parseFloat(existingPurchase.exchange_rate) || 1,
+          tblDiscType,
           req.params.id
         ]);
 
@@ -373,11 +402,13 @@ router.put('/:id', async (req, res) => {
         await client.query('DELETE FROM purchase_items WHERE purchase_id = $1', [req.params.id]);
 
         for (const item of items) {
-          const totalPrice = (parseFloat(item.quantity) || 0) * (parseFloat(item.unit_price) || 0);
+          const lineDisc = parseFloat(item.discount_percent) || 0;
+          const discType = item.discount_type || '%';
+          const totalPrice = discType === '%' ? (parseFloat(item.quantity) || 0) * (parseFloat(item.unit_price) || 0) * (1 - lineDisc / 100) : (parseFloat(item.quantity) || 0) * (parseFloat(item.unit_price) || 0) - lineDisc;
           const baseCurrencyAmount = totalPrice * (parseFloat(exchange_rate) || parseFloat(existingPurchase.exchange_rate) || 1);
           await client.query(`
-            INSERT INTO purchase_items (purchase_id, item_id, quantity, unit_price, total_price, item_name, selling_price, is_new, base_currency_amount)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            INSERT INTO purchase_items (purchase_id, item_id, quantity, unit_price, total_price, item_name, selling_price, is_new, base_currency_amount, discount_percent, discount_type)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
           `, [
             req.params.id,
             item.item_id || null,
@@ -387,7 +418,9 @@ router.put('/:id', async (req, res) => {
             item.item_name || null,
             item.selling_price || null,
             item.is_new === true,
-            baseCurrencyAmount
+            baseCurrencyAmount,
+            lineDisc,
+            discType
           ]);
         }
       });
@@ -489,10 +522,25 @@ router.put('/:id', async (req, res) => {
       const orderedRes = await db.query('SELECT COALESCE(SUM(quantity),0) as total FROM purchase_items WHERE purchase_id = $1', [req.params.id]);
       const billedRes = await db.query(`SELECT COALESCE(SUM(bi.quantity),0) as total FROM bill_items bi JOIN bills b ON bi.bill_id = b.id WHERE b.purchase_order_id = $1 AND UPPER(COALESCE(b.status,'')) != 'DRAFT'`, [req.params.id]);
       const receivedRes = await db.query(`SELECT COALESCE(SUM(pri.quantity_to_receive),0) as total FROM purchase_receive_items pri JOIN purchase_receives pr ON pri.receive_id = pr.id WHERE pr.purchase_id = $1 AND pr.status = 'received'`, [req.params.id]);
+      const returnedRes = await db.query(`SELECT COALESCE(SUM(pri2.return_quantity),0) as total FROM purchase_return_items pri2 JOIN purchase_returns pr2 ON pri2.purchase_return_id = pr2.id WHERE pr2.purchase_order_id = $1`, [req.params.id]);
       const totalOrdered = parseFloat(orderedRes.rows[0].total) || 0;
       const totalBilled = parseFloat(billedRes.rows[0].total) || 0;
       const totalReceived = parseFloat(receivedRes.rows[0].total) || 0;
-      if (totalOrdered > 0 && totalBilled >= totalOrdered && totalReceived === totalOrdered) {
+      const totalReturned = parseFloat(returnedRes.rows[0].total) || 0;
+      const netReceived = totalReceived - totalReturned;
+
+      // Check for unpaid bills
+      const unpaidBillsRes = await db.query(`SELECT COUNT(*) as cnt FROM bills WHERE purchase_order_id = $1 AND UPPER(COALESCE(status,'')) NOT IN ('PAID','DRAFT')`, [req.params.id]);
+      const hasUnpaidBills = parseInt(unpaidBillsRes.rows[0].cnt) > 0;
+
+      // Surplus-aware auto-close — ALL bills must be PAID
+      let canClose = false;
+      if (netReceived > totalOrdered) {
+        canClose = totalBilled >= netReceived && !hasUnpaidBills;
+      } else {
+        canClose = totalOrdered > 0 && totalBilled >= totalOrdered && netReceived >= totalOrdered && !hasUnpaidBills;
+      }
+      if (canClose) {
         await db.query(`UPDATE purchases SET status = 'CLOSED' WHERE id = $1`, [req.params.id]);
         updatedPO.status = 'CLOSED';
       }
@@ -631,23 +679,133 @@ router.post('/:id/accept-quantities', async (req, res) => {
       );
     }
 
-    // Update PO total and set discrepancy_resolved (but keep status as-is)
+    // Update PO total, mark as received (ordered now matches received), and set discrepancy_resolved
     await db.query(
-      'UPDATE purchases SET total_amount = $1, discrepancy_resolved = TRUE WHERE id = $2',
+      `UPDATE purchases SET total_amount = $1, receive_status = 'RECEIVED', discrepancy_resolved = TRUE WHERE id = $2`,
       [newTotal, poId]
     );
 
+    // Fetch PO info for logging
+    const poRow = await db.query('SELECT * FROM purchases WHERE id = $1', [poId]);
+    const po = poRow.rows[0];
+    const poNumber = po?.po_number || 'PO-' + poId;
+
+    // ===== VENDOR CREDIT GENERATION FOR PAID POs =====
+    // Check if all bills for this PO are PAID
+    let vendorCreditInfo = null;
+    const billsRes = await db.query(
+      `SELECT * FROM bills WHERE purchase_order_id = $1`,
+      [poId]
+    );
+    const poBills = billsRes.rows || [];
+    const allBillsPaid = poBills.length > 0 && poBills.every(b => (b.status || '').toUpperCase() === 'PAID');
+
+    if (allBillsPaid) {
+      // Get billed rates per item from bill_items (using 3-decimal precision)
+      const billedRatesRes = await db.query(`
+        SELECT bi.item_id, bi.item_name, bi.quantity as billed_qty,
+               ROUND(bi.amount::numeric / NULLIF(bi.quantity::numeric, 0), 3) as billed_unit_rate
+        FROM bill_items bi
+        JOIN bills b ON bi.bill_id = b.id
+        WHERE b.purchase_order_id = $1 AND UPPER(COALESCE(b.status,'')) != 'DRAFT'
+      `, [poId]);
+
+      // Build per-item billed rate map
+      const billedRateByItem = {};
+      billedRatesRes.rows.forEach(r => {
+        const key = r.item_id || ('name:' + (r.item_name || ''));
+        if (!billedRateByItem[key]) {
+          billedRateByItem[key] = parseFloat(r.billed_unit_rate) || 0;
+        }
+      });
+
+      // Calculate credit items: for each item where originalOrdered > netReceived
+      const creditItems = [];
+      let creditSubTotal = 0;
+      for (const item of itemsResult.rows) {
+        const key = item.item_id || ('name:' + (item.item_name || ''));
+        const originalOrderedQty = parseFloat(item.quantity) || 0;
+        const received = receivedByItem[key] || 0;
+        const returned = returnedByItem[key] || 0;
+        const netReceived = Math.max(0, received - returned);
+        const missingQty = originalOrderedQty - netReceived;
+
+        if (missingQty > 0) {
+          const billedRate = billedRateByItem[key] || (parseFloat(item.unit_price) || 0);
+          const creditAmount = parseFloat((missingQty * billedRate).toFixed(3));
+          creditSubTotal += creditAmount;
+          creditItems.push({
+            item_id: item.item_id || null,
+            item_name: item.item_name || null,
+            quantity: missingQty,
+            rate: billedRate,
+            amount: creditAmount
+          });
+        }
+      }
+
+      if (creditItems.length > 0 && creditSubTotal > 0) {
+        // Generate vendor credit number
+        const vcCountRes = await db.query('SELECT COUNT(*) as cnt FROM vendor_credits');
+        const vcCount = parseInt(vcCountRes.rows[0].cnt) || 0;
+        const creditNumber = 'VC-' + String(vcCount + 1).padStart(5, '0');
+
+        const exRate = parseFloat(po.exchange_rate) || 1;
+        const currCode = po.currency_code || 'PHP';
+
+        // Insert vendor credit (status = 'open', immediately usable)
+        const vcResult = await db.query(`
+          INSERT INTO vendor_credits (credit_number, supplier_id, supplier_name,
+            credit_date, reason, sub_total, total_amount, status, currency_code, exchange_rate)
+          VALUES ($1, $2, $3, CURRENT_DATE, $4, $5, $6, 'open', $7, $8)
+          RETURNING id
+        `, [
+          creditNumber,
+          po.supplier_id,
+          po.supplier_name,
+          'Shortage accepted on Paid PO ' + poNumber + '. Credit for unreceived items.',
+          creditSubTotal,
+          creditSubTotal,
+          currCode,
+          exRate
+        ]);
+
+        const vcId = vcResult.rows[0].id;
+
+        // Insert vendor credit items
+        for (const ci of creditItems) {
+          const baseCurrAmt = parseFloat((ci.amount * exRate).toFixed(3));
+          await db.query(`
+            INSERT INTO vendor_credit_items (vendor_credit_id, item_id, item_name, account_type, quantity, rate, amount, base_currency_amount)
+            VALUES ($1, $2, $3, 'inventory', $4, $5, $6, $7)
+          `, [vcId, ci.item_id, ci.item_name, ci.quantity, ci.rate, ci.amount, baseCurrAmt]);
+        }
+
+        vendorCreditInfo = { id: vcId, credit_number: creditNumber, total_amount: creditSubTotal };
+
+        // Close the PO since it's fully reconciled (paid + credit generated)
+        await db.query(`UPDATE purchases SET status = 'CLOSED' WHERE id = $1`, [poId]);
+      }
+    }
+
     // Log the action with old→new quantities
-    const poRow = await db.query('SELECT po_number FROM purchases WHERE id = $1', [poId]);
-    const poNumber = poRow.rows[0]?.po_number || 'PO-' + poId;
+    const missingTotal = oldOrderedTotal - totalNetQty;
+    let logDescription = `Order quantities finalized. Ordered amount adjusted from ${oldOrderedTotal} to ${totalNetQty} to match stock on hand.`;
+    if (vendorCreditInfo) {
+      logDescription = `Shortage accepted on Paid PO. Ordered quantity adjusted from ${oldOrderedTotal} to ${totalNetQty} and Vendor Credit ${vendorCreditInfo.credit_number} generated for ${missingTotal} missing unit(s).`;
+    }
     await db.query(
       `INSERT INTO activity_log (entity_type, entity_id, entity_name, action, description)
        VALUES ('purchase_order', $1, $2, 'accept_quantities', $3)`,
-      [poId, poNumber, `Order quantities finalized. Ordered amount adjusted from ${oldOrderedTotal} to ${totalNetQty} to match stock on hand.`]
+      [poId, poNumber, logDescription]
     );
 
     const updated = await db.query('SELECT * FROM purchases WHERE id = $1', [poId]);
-    res.json(updated.rows[0]);
+    const response = { ...updated.rows[0] };
+    if (vendorCreditInfo) {
+      response.vendor_credit = vendorCreditInfo;
+    }
+    res.json(response);
   } catch (error) {
     console.error('Error accepting quantities:', error);
     res.status(500).json({ error: 'Failed to accept current quantities' });

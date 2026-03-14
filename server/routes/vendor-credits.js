@@ -137,11 +137,18 @@ router.post('/', async (req, res) => {
     }
 });
 
-// PUT update vendor credit (status, total_amount for partial application, etc.)
+// PUT update vendor credit (full edit or status-only update)
 router.put('/:id', async (req, res) => {
     try {
         const db = database.getDb();
-        const { status, total_amount, sub_total } = req.body;
+        const {
+            status, total_amount, sub_total,
+            credit_number, bill_id, bill_number,
+            supplier_id, supplier_name,
+            credit_date, reference, reason,
+            discount_percent, adjustment,
+            items, currency_code, exchange_rate
+        } = req.body;
 
         // Build dynamic update
         const updates = [];
@@ -152,27 +159,129 @@ router.put('/:id', async (req, res) => {
             updates.push(`status = $${paramIdx++}`);
             values.push(status);
         }
-        if (total_amount !== undefined && total_amount !== null) {
+        if (credit_number) {
+            updates.push(`credit_number = $${paramIdx++}`);
+            values.push(credit_number);
+        }
+        if (supplier_id !== undefined) {
+            updates.push(`supplier_id = $${paramIdx++}`);
+            values.push(supplier_id);
+        }
+        if (supplier_name !== undefined) {
+            updates.push(`supplier_name = $${paramIdx++}`);
+            values.push(supplier_name);
+        }
+        if (credit_date !== undefined) {
+            updates.push(`credit_date = $${paramIdx++}`);
+            values.push(credit_date);
+        }
+        if (reference !== undefined) {
+            updates.push(`reference = $${paramIdx++}`);
+            values.push(reference);
+        }
+        if (reason !== undefined) {
+            updates.push(`reason = $${paramIdx++}`);
+            values.push(reason);
+        }
+        if (discount_percent !== undefined) {
+            updates.push(`discount_percent = $${paramIdx++}`);
+            values.push(parseFloat(discount_percent) || 0);
+        }
+        if (adjustment !== undefined) {
+            updates.push(`adjustment = $${paramIdx++}`);
+            values.push(parseFloat(adjustment) || 0);
+        }
+        if (currency_code) {
+            updates.push(`currency_code = $${paramIdx++}`);
+            values.push(currency_code);
+        }
+        if (exchange_rate !== undefined) {
+            updates.push(`exchange_rate = $${paramIdx++}`);
+            values.push(parseFloat(exchange_rate) || 1);
+        }
+        if (bill_id !== undefined) {
+            updates.push(`bill_id = $${paramIdx++}`);
+            values.push(bill_id);
+        }
+        if (bill_number !== undefined) {
+            updates.push(`bill_number = $${paramIdx++}`);
+            values.push(bill_number);
+        }
+
+        // If items array is provided, recalculate totals
+        if (items && Array.isArray(items) && items.length > 0) {
+            let subTotal = 0;
+            for (const item of items) {
+                subTotal += (parseFloat(item.quantity) || 0) * (parseFloat(item.rate) || 0);
+            }
+            const discPct = (discount_percent !== undefined ? parseFloat(discount_percent) : 0) || 0;
+            const adj = (adjustment !== undefined ? parseFloat(adjustment) : 0) || 0;
+            const discountAmt = subTotal * (discPct / 100);
+            const totalAmt = subTotal - discountAmt + adj;
+
+            updates.push(`sub_total = $${paramIdx++}`);
+            values.push(subTotal);
+            updates.push(`total_amount = $${paramIdx++}`);
+            values.push(totalAmt);
+        } else if (total_amount !== undefined && total_amount !== null) {
             updates.push(`total_amount = $${paramIdx++}`);
             values.push(parseFloat(total_amount));
-            // Also update sub_total to stay in sync
             updates.push(`sub_total = $${paramIdx++}`);
             values.push(parseFloat(sub_total !== undefined && sub_total !== null ? sub_total : total_amount));
         }
 
-        if (updates.length === 0) {
-            return res.status(400).json({ error: 'At least one field (status or total_amount) is required' });
+        updates.push(`updated_at = CURRENT_TIMESTAMP`);
+
+        if (updates.length <= 1) {
+            return res.status(400).json({ error: 'At least one field is required' });
         }
 
-        values.push(req.params.id);
-        const result = await db.query(
-            `UPDATE vendor_credits SET ${updates.join(', ')} WHERE id = $${paramIdx} RETURNING *`,
-            values
-        );
+        const creditId = req.params.id;
+        values.push(creditId);
+
+        if (items && Array.isArray(items) && items.length > 0) {
+            // Full edit with items — use transaction
+            await database.transaction(async (client) => {
+                await client.query(
+                    `UPDATE vendor_credits SET ${updates.join(', ')} WHERE id = $${paramIdx} RETURNING *`,
+                    values
+                );
+                // Delete old items and re-insert
+                await client.query('DELETE FROM vendor_credit_items WHERE vendor_credit_id = $1', [creditId]);
+                for (const item of items) {
+                    const qty = parseFloat(item.quantity) || 0;
+                    const rate = parseFloat(item.rate) || 0;
+                    const amount = qty * rate;
+                    const exRate = parseFloat(exchange_rate) || 1;
+                    await client.query(`
+                        INSERT INTO vendor_credit_items (vendor_credit_id, item_id, item_name, account, account_type, quantity, rate, amount, base_currency_amount)
+                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+                    `, [
+                        creditId,
+                        item.item_id || null,
+                        item.item_name || null,
+                        item.account || null,
+                        item.account_type || 'inventory',
+                        qty, rate, amount,
+                        amount * exRate
+                    ]);
+                }
+            });
+        } else {
+            // Status-only or partial update
+            await db.query(
+                `UPDATE vendor_credits SET ${updates.join(', ')} WHERE id = $${paramIdx} RETURNING *`,
+                values
+            );
+        }
+
+        // Return updated credit with items
+        const result = await db.query('SELECT * FROM vendor_credits WHERE id = $1', [creditId]);
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Vendor credit not found' });
         }
-        res.json(result.rows[0]);
+        const itemsResult = await db.query('SELECT * FROM vendor_credit_items WHERE vendor_credit_id = $1 ORDER BY id', [creditId]);
+        res.json({ ...result.rows[0], items: itemsResult.rows });
     } catch (error) {
         console.error('Error updating vendor credit:', error);
         res.status(500).json({ error: error.message });

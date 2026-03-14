@@ -465,6 +465,11 @@
         // Dispatch event to notify that layout is ready
         document.dispatchEvent(new CustomEvent('layoutReady'));
 
+        // Load toast script globally
+        const toastScript = document.createElement('script');
+        toastScript.src = '/js/toast.js';
+        document.body.appendChild(toastScript);
+
         // Load notifications script dynamically
         const script = document.createElement('script');
         script.src = '/js/notifications.js';

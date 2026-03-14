@@ -1778,15 +1778,6 @@
         });
 
         // Toast notification
-        function showPrToast(msg) {
-            const container = document.getElementById('prToastContainer');
-            const toast = document.createElement('div');
-            toast.className = 'pr-toast';
-            toast.innerHTML = '<span class="pr-toast-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></span><span class="pr-toast-message">' + msg + '</span><button class="pr-toast-close" onclick="this.parentElement.remove()">✕</button>';
-            container.appendChild(toast);
-            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => { toast.remove(); }, 300); }, 3000);
-        }
-
         // Sort By logic
         let prSortField = 'date';
         let prSortDir = 'desc';
@@ -1820,7 +1811,7 @@
 
             // Toast
             const dirLabel = (PR_SORT_LABELS[field] || { asc: 'Ascending', desc: 'Descending' })[prSortDir];
-            showPrToast('Sorted by ' + (PR_FIELD_NAMES[field] || field) + ': ' + dirLabel);
+            showToast('Sorted by ' + (PR_FIELD_NAMES[field] || field) + ': ' + dirLabel);
 
             // Update active state
             document.querySelectorAll('.pr-sort-item').forEach(function (item) {
@@ -1862,7 +1853,7 @@
                 if (!file) return;
                 const text = await file.text();
                 const lines = text.split('\n').filter(function (l) { return l.trim(); });
-                if (lines.length < 2) { showPrToast('CSV file is empty or has no data rows.'); return; }
+                if (lines.length < 2) { showToast('CSV file is empty or has no data rows.'); return; }
                 const headers = lines[0].split(',').map(function (h) { return h.trim().toLowerCase().replace(/[^a-z_]/g, ''); });
                 let imported = 0;
                 for (var i = 1; i < lines.length; i++) {
@@ -1878,7 +1869,7 @@
                         if (res.ok) imported++;
                     } catch (e) { console.error('Import error:', e); }
                 }
-                showPrToast(imported + ' payment' + (imported !== 1 ? 's' : '') + ' imported successfully.');
+                showToast(imported + ' payment' + (imported !== 1 ? 's' : '') + ' imported successfully.');
                 loadPayments();
             };
             input.click();
@@ -1887,7 +1878,7 @@
         function prExportPayments() {
             document.getElementById('prMoreMenu').classList.remove('show');
             if (!payments || payments.length === 0) {
-                showPrToast('No payments to export.');
+                showToast('No payments to export.');
                 return;
             }
             var cols = ['payment_date', 'payment_number', 'customer_name', 'reference_number', 'invoice_number', 'payment_mode', 'amount_received', 'unused_amount', 'status', 'deposit_to', 'salesperson_name', 'bank_charges', 'notes'];
@@ -1907,13 +1898,13 @@
             a.download = 'payments_received_' + new Date().toISOString().slice(0, 10) + '.csv';
             a.click();
             URL.revokeObjectURL(url);
-            showPrToast('Exported ' + payments.length + ' payment' + (payments.length !== 1 ? 's' : '') + ' to CSV.');
+            showToast('Exported ' + payments.length + ' payment' + (payments.length !== 1 ? 's' : '') + ' to CSV.');
         }
 
         function prRefreshList() {
             document.getElementById('prMoreMenu').classList.remove('show');
             loadPayments();
-            showPrToast('Payment list refreshed.');
+            showToast('Payment list refreshed.');
         }
 
         function prResetColumnWidth() {
@@ -1922,7 +1913,7 @@
             localStorage.setItem('prColConfig', JSON.stringify(prAllColumns.map(function (c) { return { key: c.key, visible: c.visible }; })));
             rebuildPrTable();
             renderPaymentsList();
-            showPrToast('Column widths have been reset.');
+            showToast('Column widths have been reset.');
         }
 
         function togglePrColDropdown(e) {
@@ -2187,7 +2178,7 @@
                     alert('Error: ' + (data.error || 'Failed to refund'));
                     return;
                 }
-                showPrToast('Payment refunded successfully.');
+                showToast('Payment refunded successfully.');
                 // Refresh the detail view
                 selectPayment(selectedPaymentId);
                 loadPayments();
@@ -2227,7 +2218,7 @@
                     alert('Error: ' + (data.error || 'Failed to void'));
                     return;
                 }
-                showPrToast('Payment voided successfully.');
+                showToast('Payment voided successfully.');
                 selectPayment(selectedPaymentId);
                 loadPayments();
             } catch (e) {
@@ -2245,7 +2236,7 @@
                     alert('Error: ' + (data.error || 'Failed to delete'));
                     return;
                 }
-                showPrToast('Payment deleted successfully.');
+                showToast('Payment deleted successfully.');
                 closePaymentDetail();
                 loadPayments();
             } catch (e) {

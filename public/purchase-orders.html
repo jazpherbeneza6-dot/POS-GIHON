@@ -459,11 +459,14 @@
         }
 
         /* Clip Text Mode */
+        .orders-table.clip-text {
+            table-layout: fixed;
+        }
+
         .orders-table.clip-text td {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 180px;
         }
 
         /* Wrap Text Mode (default) */
@@ -787,6 +790,46 @@
             border-radius: 4px;
         }
 
+        /* Selection Kebab Dropdown */
+        .sel-kebab-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            min-width: 140px;
+            z-index: 200;
+            margin-top: 6px;
+            overflow: hidden;
+        }
+
+        .sel-kebab-dropdown.show {
+            display: block;
+        }
+
+        .sel-kebab-item {
+            padding: 10px 16px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+
+        .sel-kebab-item:hover {
+            background: #f5f8ff;
+        }
+
+        .sel-kebab-item.danger {
+            color: #dc2626;
+        }
+
+        .sel-kebab-item.danger:hover {
+            background: #fef2f2;
+        }
+
         /* Bulk Update Modal */
         .bu-overlay {
             display: none;
@@ -975,23 +1018,11 @@
 
         /* Sort by - highlighted blue */
         .kebab-item.ki-sort {
-            background: #4285f4;
-            color: white;
-            border-radius: 6px;
-            margin: 4px 8px;
-            padding: 10px 14px;
-        }
-
-        .kebab-item.ki-sort .ki-icon {
-            color: white;
-        }
-
-        .kebab-item.ki-sort .ki-arrow {
-            color: rgba(255, 255, 255, 0.7);
+            position: relative;
         }
 
         .kebab-item.ki-sort:hover {
-            background: #3367d6;
+            background: #f5f7fa;
         }
 
         /* Sort Submenu */
@@ -1008,7 +1039,8 @@
             z-index: 1001;
         }
 
-        .kebab-item.ki-sort:hover .sort-submenu {
+        .kebab-item.ki-sort:hover .sort-submenu,
+        .kebab-item:hover>.sort-submenu {
             display: block;
         }
 
@@ -1037,15 +1069,12 @@
         }
 
         .sort-sub-item.active {
-            background: #4285f4;
-            color: white;
-            border-radius: 6px;
-            margin: 2px 6px;
-            padding: 9px 12px;
+            color: #333;
+            font-weight: 600;
         }
 
         .sort-sub-item.active:hover {
-            background: #3367d6;
+            background: #f5f7fa;
         }
 
         .sort-sub-item .sort-dir {
@@ -1866,8 +1895,6 @@
         <div class="content" id="content">
             <!-- Selection Action Bar -->
             <div class="selection-bar" id="selectionBar">
-                <button class="sel-btn" onclick="bulkUpdatePO()">Bulk Update</button>
-                <div class="sel-divider"></div>
                 <button class="sel-icon-btn" title="PDF" onclick="selPdfPO()"><svg width="14" height="14"
                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
@@ -1883,18 +1910,14 @@
                         <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
                         <rect x="6" y="14" width="12" height="8" />
                     </svg></button>
-                <button class="sel-icon-btn" title="Email" onclick="selEmailPO()"><svg width="14" height="14"
-                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                        <polyline points="22,6 12,13 2,6" />
-                    </svg></button>
-                <div class="sel-divider"></div>
-                <button class="sel-btn" onclick="selConvertToBill()">Convert to Bill</button>
-                <button class="sel-btn" onclick="selMarkAsIssued()">Mark as Issued</button>
-                <button class="sel-btn" onclick="selMarkAsReceived()">Mark as Received</button>
-                <button class="sel-btn" onclick="selMarkAsUnreceived()">Mark as Unreceived</button>
-                <button class="sel-icon-btn" title="More" onclick="alert('More actions - coming soon')">⋯</button>
+                <div class="sel-kebab-wrap" style="position:relative;display:inline-block;">
+                    <button class="sel-icon-btn" title="More" onclick="toggleSelKebab(event)">⋯</button>
+                    <div class="sel-kebab-dropdown" id="selKebabDropdown">
+                        <div class="sel-kebab-item" onclick="selCancelPO()">Cancel</div>
+                        <div class="sel-kebab-item" onclick="selUncancelPO()">Uncancel</div>
+                        <div class="sel-kebab-item danger" onclick="selDeletePO()">Delete</div>
+                    </div>
+                </div>
                 <div class="sel-count">
                     <span class="sel-count-num" id="selCountNum">0</span>
                     <span>Selected</span>
@@ -1930,16 +1953,7 @@
                                 <span>Draft</span><span class="po-filter-star"
                                     onclick="event.stopPropagation(); togglePOStar(this)">☆</span>
                             </div>
-                            <div class="po-filter-item" data-filter="pending_approval"
-                                onclick="selectPOFilter('pending_approval', 'Pending Approval')">
-                                <span>Pending Approval</span><span class="po-filter-star"
-                                    onclick="event.stopPropagation(); togglePOStar(this)">☆</span>
-                            </div>
-                            <div class="po-filter-item" data-filter="approved"
-                                onclick="selectPOFilter('approved', 'Approved')">
-                                <span>Approved</span><span class="po-filter-star"
-                                    onclick="event.stopPropagation(); togglePOStar(this)">☆</span>
-                            </div>
+
                             <div class="po-filter-item" data-filter="issued"
                                 onclick="selectPOFilter('issued', 'Issued')">
                                 <span>Issued</span><span class="po-filter-star"
@@ -1980,21 +1994,7 @@
                                 <span>Pending Received</span><span class="po-filter-star"
                                     onclick="event.stopPropagation(); togglePOStar(this)">☆</span>
                             </div>
-                            <div class="po-filter-item" data-filter="dropshipped"
-                                onclick="selectPOFilter('dropshipped', 'Dropshipped')">
-                                <span>Dropshipped</span><span class="po-filter-star"
-                                    onclick="event.stopPropagation(); togglePOStar(this)">☆</span>
-                            </div>
-                            <div class="po-filter-item" data-filter="backorder"
-                                onclick="selectPOFilter('backorder', 'Backorder')">
-                                <span>Backorder</span><span class="po-filter-star"
-                                    onclick="event.stopPropagation(); togglePOStar(this)">☆</span>
-                            </div>
-                            <div class="po-filter-item" data-filter="unbilled_backorder"
-                                onclick="selectPOFilter('unbilled_backorder', 'Unbilled Backorder')">
-                                <span>Unbilled Backorder</span><span class="po-filter-star"
-                                    onclick="event.stopPropagation(); togglePOStar(this)">☆</span>
-                            </div>
+
                             <div class="po-filter-item" data-filter="billed_not_received"
                                 onclick="selectPOFilter('billed_not_received', 'Billed &amp; Not Received')">
                                 <span>Billed &amp; Not Received</span><span class="po-filter-star"
@@ -2006,12 +2006,7 @@
                                     onclick="event.stopPropagation(); togglePOStar(this)">☆</span>
                             </div>
                         </div>
-                        <div class="po-filter-footer">
-                            <button class="po-filter-new-view" onclick="alert('New Custom View - coming soon')">
-                                <span class="plus-icon">+</span>
-                                New Custom View
-                            </button>
-                        </div>
+
                     </div>
                 </div>
                 <div class="global-search-container">
@@ -2083,33 +2078,21 @@
                                 <span>Import Purchase Orders</span>
                             </div>
                             <!-- Export Purchase Orders -->
-                            <div class="kebab-item" onclick="openExportPOModal()">
+                            <div class="kebab-item" style="position:relative;">
                                 <span class="ki-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"
                                         stroke="currentColor" stroke-width="2">
                                         <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" />
                                     </svg></span>
-                                <span>Export Purchase Orders</span>
-                            </div>
-                            <!-- Preferences -->
-                            <div class="kebab-item" onclick="openPOPreferences()">
-                                <span class="ki-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                        stroke="currentColor" stroke-width="2">
-                                        <circle cx="12" cy="12" r="3" />
-                                        <path
-                                            d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
-                                    </svg></span>
-                                <span>Preferences</span>
-                            </div>
-                            <!-- Manage Custom Fields -->
-                            <div class="kebab-item" onclick="manageCustomFields()">
-                                <span class="ki-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                        stroke="currentColor" stroke-width="2">
-                                        <rect x="3" y="3" width="7" height="7" />
-                                        <rect x="14" y="3" width="7" height="7" />
-                                        <rect x="3" y="14" width="7" height="7" />
-                                        <rect x="14" y="14" width="7" height="7" />
-                                    </svg></span>
-                                <span>Manage Custom Fields</span>
+                                <span>Export</span>
+                                <span class="ki-arrow">›</span>
+                                <div class="sort-submenu" style="min-width:210px;">
+                                    <div class="sort-sub-item"
+                                        onclick="event.stopPropagation(); exportAllPO(); document.getElementById('kebabDropdown').classList.remove('show');">
+                                        Export Purchase Orders</div>
+                                    <div class="sort-sub-item"
+                                        onclick="event.stopPropagation(); exportCurrentPOView(); document.getElementById('kebabDropdown').classList.remove('show');">
+                                        Export Current View</div>
+                                </div>
                             </div>
                             <!-- Refresh List -->
                             <div class="kebab-item" onclick="refreshPOList()">
@@ -2176,7 +2159,6 @@
                             <th><input type="checkbox" class="row-checkbox" id="selectAllPO"
                                     onclick="toggleSelectAllPO(this)"></th>
                             <th>DATE</th>
-                            <th>LOCATION</th>
                             <th>PURCHASE ORDER#</th>
                             <th>REFERENCE#</th>
                             <th>VENDOR NAME</th>
@@ -2327,7 +2309,7 @@
 
         // Go to In Transit Receives
         function goToTransitReceives() {
-            window.location.href = '/purchase-receives.html';
+            window.location.href = '/purchase-receives.html?filter=in-transit';
         }
 
         let allPurchasesList = [];
@@ -2444,7 +2426,7 @@
             pageData.forEach(po => {
                 const date = po.date ? new Date(po.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
                 const mainStatus = (po.status || 'DRAFT').toUpperCase();
-                const amount = parseFloat(po.total_amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                const amount = parseFloat(po.total_amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 3 });
 
                 const statusColors = {
                     'DRAFT': '#856404; background: #fff3cd',
@@ -2474,7 +2456,7 @@
                     <td><span style="padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; color: ${statusColorStr}">${mainStatus}</span></td>
                     <td style="text-align:center;">${receivedDot}</td>
                     <td style="text-align:center;">${billedDot}</td>
-                    <td style="font-weight: 500;">PHP${amount}</td>
+                    <td style="font-weight: 500;">${po.currency_code || 'PHP'}${amount}${(po.currency_code && po.currency_code !== 'PHP') ? '<br><span style="font-size:11px;color:#888;font-weight:400;">PHP' + (parseFloat(po.total_amount || 0) * (parseFloat(po.exchange_rate) || 1)).toLocaleString('en-PH', { minimumFractionDigits: 3 }) + '</span>' : ''}</td>
                 `;
                 tbody.appendChild(row);
             });
@@ -2500,22 +2482,14 @@
             if (isClipMode) {
                 table.classList.add('clip-text');
                 document.getElementById('clipTextLabel').textContent = 'Wrap Text';
-                showClipToast('Clip Text enabled - Click Wrap Text to expand');
+                showToast('Clip Text enabled - Click Wrap Text to expand');
             } else {
                 table.classList.remove('clip-text');
                 document.getElementById('clipTextLabel').textContent = 'Clip Text';
-                showClipToast('Wrap Text enabled - Text will wrap');
+                showToast('Wrap Text enabled - Text will wrap');
             }
 
             document.getElementById('colSettingsDropdown').classList.remove('show');
-        }
-
-        function showClipToast(message) {
-            const toast = document.getElementById('clipToast');
-            document.getElementById('clipToastText').textContent = message;
-            toast.classList.add('show');
-            clearTimeout(window._clipToastTimer);
-            window._clipToastTimer = setTimeout(() => { toast.classList.remove('show'); }, 4000);
         }
 
         function hideClipToast() {
@@ -2670,16 +2644,141 @@
                 closeBulkUpdate();
                 clearAllSelections();
                 await loadPurchaseOrders();
-                showClipToast(ids.length + ' purchase order(s) updated successfully');
+                showToast(ids.length + ' purchase order(s) updated successfully');
             } catch (e) {
                 console.error(e);
                 alert('Error updating purchase orders');
             }
         }
-        function selPdfPO() { alert('Generate PDF for ' + getSelectedPOIds().length + ' purchase orders'); }
-        function selPrintPO() { alert('Print ' + getSelectedPOIds().length + ' purchase orders'); }
-        function selEmailPO() { alert('Email ' + getSelectedPOIds().length + ' purchase orders'); }
+        function generatePOHtml(po) {
+            const fmtDate = d => d ? new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+            const orderDate = fmtDate(po.date);
+            const deliveryDate = po.expected_date ? fmtDate(po.expected_date + 'T00:00:00') : '-';
+            const refNumber = po.reference_number || '-';
+            const vendorName = po.supplier_name || '-';
+            const poNumber = po.po_number || ('PO-' + po.id);
+            const ptLabels = { 'due-end-next-month': 'Due end of next month', 'due-end-month': 'Due end of the month', 'due-on-receipt': 'Due on Receipt', 'net-15': 'Net 15', 'net-30': 'Net 30', 'net-45': 'Net 45', 'net-60': 'Net 60' };
+            const paymentTerms = ptLabels[po.payment_terms] || po.payment_terms || '-';
+            let itemsRows = '', subtotal = 0;
+            if (po.items && po.items.length > 0) {
+                po.items.forEach((item, i) => {
+                    const qty = parseFloat(item.quantity) || 0, rate = parseFloat(item.unit_price) || 0, amount = qty * rate;
+                    subtotal += amount;
+                    const desc = item.description || item.purchase_description || '';
+                    itemsRows += `<tr><td style="padding:12px 10px;text-align:center;font-size:13px;border-bottom:1px solid #eee;">${i + 1}</td><td style="padding:12px 10px;font-size:13px;border-bottom:1px solid #eee;"><strong>${item.item_name || '-'}</strong>${desc ? '<br><span style="color:#888;font-size:12px;">' + desc + '</span>' : ''}</td><td style="padding:12px 10px;text-align:right;font-size:13px;border-bottom:1px solid #eee;">${qty.toLocaleString('en-PH', { maximumFractionDigits: 6 })}</td><td style="padding:12px 10px;text-align:right;font-size:13px;border-bottom:1px solid #eee;">${rate.toLocaleString('en-PH', { minimumFractionDigits: 3 })}</td><td style="padding:12px 10px;text-align:right;font-size:13px;border-bottom:1px solid #eee;">${amount.toLocaleString('en-PH', { minimumFractionDigits: 3 })}</td></tr>`;
+                });
+            }
+            const discPct = parseFloat(po.discount_percent) || 0, discAmt = subtotal * (discPct / 100), adj = parseFloat(po.adjustment) || 0, total = subtotal - discAmt + adj;
+            let totalsHtml = `<tr><td colspan="3"></td><td style="padding:8px 10px;text-align:right;font-weight:600;font-size:13px;color:#555;">Sub Total</td><td style="padding:8px 10px;text-align:right;font-size:13px;">${subtotal.toLocaleString('en-PH', { minimumFractionDigits: 3 })}</td></tr>`;
+            if (discPct > 0) totalsHtml += `<tr><td colspan="3"></td><td style="padding:6px 10px;text-align:right;font-size:13px;color:#555;">Discount (${discPct}%)</td><td style="padding:6px 10px;text-align:right;font-size:13px;">${discAmt.toLocaleString('en-PH', { minimumFractionDigits: 3 })}</td></tr>`;
+            if (adj !== 0) totalsHtml += `<tr><td colspan="3"></td><td style="padding:6px 10px;text-align:right;font-size:13px;color:#555;">Adjustment</td><td style="padding:6px 10px;text-align:right;font-size:13px;">${adj.toLocaleString('en-PH', { minimumFractionDigits: 3 })}</td></tr>`;
+            totalsHtml += `<tr><td colspan="3"></td><td style="padding:12px 10px;text-align:right;font-weight:700;font-size:14px;border-top:2px solid #333;">Total</td><td style="padding:12px 10px;text-align:right;font-weight:700;font-size:14px;border-top:2px solid #333;">${(po.currency_code || 'PHP')}${total.toLocaleString('en-PH', { minimumFractionDigits: 3 })}</td></tr>`;
+            return `<div style="font-family:'Inter','Helvetica Neue',Arial,sans-serif;max-width:750px;margin:0 auto;padding:40px;color:#333;background:white;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:30px;"><div><div style="font-size:20px;font-weight:800;color:#1a1a1a;">GIHON</div><div style="font-size:12px;color:#888;margin-top:2px;">Philippines</div><div style="font-size:12px;color:#888;">btambling413@gmail.com</div></div><div style="text-align:right;"><div style="font-size:28px;font-weight:800;color:#1a1a1a;letter-spacing:1px;">PURCHASE ORDER</div><div style="font-size:13px;color:#555;margin-top:4px;"># ${poNumber}</div></div></div>
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:30px;"><div style="max-width:55%;"><div style="font-size:11px;color:#999;margin-bottom:4px;">Vendor Address</div><div style="font-size:14px;font-weight:600;color:#1a1a1a;margin-bottom:16px;">${vendorName}</div></div><div style="text-align:right;"><table style="border-collapse:collapse;margin-left:auto;"><tr><td style="padding:4px 16px 4px 0;font-size:12px;color:#888;text-align:right;">Date :</td><td style="padding:4px 0;font-size:13px;font-weight:500;text-align:right;">${orderDate}</td></tr><tr><td style="padding:4px 16px 4px 0;font-size:12px;color:#888;text-align:right;">Delivery Date :</td><td style="padding:4px 0;font-size:13px;font-weight:500;text-align:right;">${deliveryDate}</td></tr><tr><td style="padding:4px 16px 4px 0;font-size:12px;color:#888;text-align:right;">Ref# :</td><td style="padding:4px 0;font-size:13px;font-weight:500;text-align:right;">${refNumber}</td></tr><tr><td style="padding:4px 16px 4px 0;font-size:12px;color:#888;text-align:right;">Payment Terms :</td><td style="padding:4px 0;font-size:13px;font-weight:500;text-align:right;">${paymentTerms}</td></tr></table></div></div>
+                <table style="width:100%;border-collapse:collapse;margin-bottom:20px;"><thead><tr style="background:#f8f0e8;"><th style="padding:10px;text-align:center;font-size:12px;font-weight:600;color:#8b5e34;width:40px;">#</th><th style="padding:10px;text-align:left;font-size:12px;font-weight:600;color:#8b5e34;">Item & Description</th><th style="padding:10px;text-align:right;font-size:12px;font-weight:600;color:#8b5e34;width:90px;">Qty</th><th style="padding:10px;text-align:right;font-size:12px;font-weight:600;color:#8b5e34;width:100px;">Rate</th><th style="padding:10px;text-align:right;font-size:12px;font-weight:600;color:#8b5e34;width:100px;">Amount</th></tr></thead><tbody>${itemsRows}${totalsHtml}</tbody></table>
+            </div>`;
+        }
+
+        async function selPdfPO() {
+            const ids = getSelectedPOIds();
+            if (!ids.length) return;
+            let allHtml = '';
+            for (let i = 0; i < ids.length; i++) {
+                try {
+                    const res = await fetch('/api/purchases/' + ids[i]);
+                    if (!res.ok) continue;
+                    const po = await res.json();
+                    if (i > 0) allHtml += '<div style="page-break-before:always;"></div>';
+                    allHtml += generatePOHtml(po);
+                } catch (e) { console.error(e); }
+            }
+            const w = window.open('', '_blank');
+            w.document.write(`<!DOCTYPE html><html><head><title>Purchase Orders - PDF</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"><style>@media print{body{margin:0;padding:0;}@page{margin:15mm;}}body{font-family:'Inter',Arial,sans-serif;background:white;margin:0;padding:0;}</style></head><body>${allHtml}<script>setTimeout(function(){window.print();},500);<\/script></body></html>`);
+            w.document.close();
+        }
+
+        async function selPrintPO() {
+            const ids = getSelectedPOIds();
+            if (!ids.length) return;
+            let allHtml = '';
+            for (let i = 0; i < ids.length; i++) {
+                try {
+                    const res = await fetch('/api/purchases/' + ids[i]);
+                    if (!res.ok) continue;
+                    const po = await res.json();
+                    if (i > 0) allHtml += '<div style="page-break-before:always;"></div>';
+                    allHtml += generatePOHtml(po);
+                } catch (e) { console.error(e); }
+            }
+            const w = window.open('', '_blank');
+            w.document.write(`<!DOCTYPE html><html><head><title>Purchase Orders - Print</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"><style>@media print{body{margin:0;padding:0;}@page{margin:15mm;}}body{font-family:'Inter',Arial,sans-serif;background:white;margin:0;padding:0;}</style></head><body>${allHtml}<script>setTimeout(function(){window.print();},500);<\/script></body></html>`);
+            w.document.close();
+        }
+        function selEmailPO() { }
         function selConvertToBill() { alert('Convert to Bill - ' + getSelectedPOIds().length + ' purchase orders'); }
+
+        function toggleSelKebab(e) {
+            e.stopPropagation();
+            document.getElementById('selKebabDropdown').classList.toggle('show');
+        }
+        document.addEventListener('click', function () {
+            const dd = document.getElementById('selKebabDropdown');
+            if (dd) dd.classList.remove('show');
+        });
+
+        async function selCancelPO() {
+            document.getElementById('selKebabDropdown').classList.remove('show');
+            const ids = getSelectedPOIds();
+            if (!ids.length) return;
+            if (!confirm('Cancel ' + ids.length + ' purchase order(s)?')) return;
+            try {
+                for (const id of ids) {
+                    await fetch('/api/purchases/' + id, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status: 'CANCELLED' })
+                    });
+                }
+                clearAllSelections();
+                await loadPurchaseOrders();
+                showToast(ids.length + ' purchase order(s) cancelled');
+            } catch (e) { console.error(e); alert('Error cancelling'); }
+        }
+
+        async function selUncancelPO() {
+            document.getElementById('selKebabDropdown').classList.remove('show');
+            const ids = getSelectedPOIds();
+            if (!ids.length) return;
+            if (!confirm('Uncancel ' + ids.length + ' purchase order(s)? They will revert to ISSUED.')) return;
+            try {
+                for (const id of ids) {
+                    await fetch('/api/purchases/' + id, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status: 'ISSUED' })
+                    });
+                }
+                clearAllSelections();
+                await loadPurchaseOrders();
+                showToast(ids.length + ' purchase order(s) uncancelled');
+            } catch (e) { console.error(e); alert('Error uncancelling'); }
+        }
+
+        async function selDeletePO() {
+            document.getElementById('selKebabDropdown').classList.remove('show');
+            const ids = getSelectedPOIds();
+            if (!ids.length) return;
+            if (!confirm('Delete ' + ids.length + ' purchase order(s)? This cannot be undone.')) return;
+            try {
+                for (const id of ids) {
+                    await fetch('/api/purchases/' + id, { method: 'DELETE' });
+                }
+                clearAllSelections();
+                await loadPurchaseOrders();
+                showToast(ids.length + ' purchase order(s) deleted');
+            } catch (e) { console.error(e); alert('Error deleting'); }
+        }
 
         async function selMarkAsIssued() {
             const ids = getSelectedPOIds();
@@ -2695,7 +2794,7 @@
                 }
                 clearAllSelections();
                 await loadPurchaseOrders();
-                showClipToast(ids.length + ' purchase order(s) marked as Issued');
+                showToast(ids.length + ' purchase order(s) marked as Issued');
             } catch (e) { alert('Error updating purchase orders'); }
         }
 
@@ -2713,7 +2812,7 @@
                 }
                 clearAllSelections();
                 await loadPurchaseOrders();
-                showClipToast(ids.length + ' purchase order(s) marked as Received');
+                showToast(ids.length + ' purchase order(s) marked as Received');
             } catch (e) { alert('Error updating purchase orders'); }
         }
 
@@ -2731,7 +2830,7 @@
                 }
                 clearAllSelections();
                 await loadPurchaseOrders();
-                showClipToast(ids.length + ' purchase order(s) marked as Unreceived');
+                showToast(ids.length + ' purchase order(s) marked as Unreceived');
             } catch (e) { alert('Error updating purchase orders'); }
         }
 
@@ -2754,10 +2853,18 @@
             const query = (document.getElementById('poSearchInput').value || '').toLowerCase();
             if (!query) { applyPOFilter(); return; }
             const filtered = allPurchasesList.filter(po => {
+                const dateStr = po.date ? new Date(po.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+                const delivDateStr = po.expected_date ? new Date(po.expected_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+                const amtStr = String(po.total_amount || '');
                 return (po.po_number || '').toLowerCase().includes(query) ||
                     (po.supplier_name || '').toLowerCase().includes(query) ||
                     (po.reference_number || '').toLowerCase().includes(query) ||
-                    (po.status || '').toLowerCase().includes(query);
+                    (po.status || '').toLowerCase().includes(query) ||
+                    (po.company_name || '').toLowerCase().includes(query) ||
+                    (po.currency_code || '').toLowerCase().includes(query) ||
+                    dateStr.toLowerCase().includes(query) ||
+                    delivDateStr.toLowerCase().includes(query) ||
+                    amtStr.includes(query);
             });
             renderFilteredPOs(filtered);
         }
@@ -2765,8 +2872,24 @@
         // Load and display purchase orders
         async function loadPurchaseOrders() {
             try {
-                const response = await fetch('/api/purchases');
-                const purchases = await response.json();
+                const [purchasesRes, billsRes] = await Promise.all([
+                    fetch('/api/purchases'),
+                    fetch('/api/bills')
+                ]);
+                const purchases = await purchasesRes.json();
+                const allBills = billsRes.ok ? await billsRes.json() : [];
+
+                // Override bill_status for each PO based on actual non-draft bills
+                purchases.forEach(po => {
+                    const poBills = allBills.filter(b => b.purchase_order_id == po.id);
+                    const nonDraftBills = poBills.filter(b => (b.status || '').toUpperCase() !== 'DRAFT');
+                    if (nonDraftBills.length > 0) {
+                        po.bill_status = 'BILLED';
+                    } else {
+                        po.bill_status = 'UNBILLED';
+                    }
+                });
+
                 allPurchasesList = purchases;
                 applyPOFilter();
             } catch (error) {
@@ -2807,7 +2930,6 @@
         // ===== Customize Columns =====
         const allColumns = [
             { key: 'date', label: 'Date', locked: true, visible: true },
-            { key: 'location', label: 'Location', locked: false, visible: true },
             { key: 'po_number', label: 'Purchase Order#', locked: true, visible: true },
             { key: 'reference', label: 'Reference#', locked: false, visible: true },
             { key: 'vendor', label: 'Vendor Name', locked: true, visible: true },
@@ -2943,7 +3065,7 @@
                 const date = po.date ? new Date(po.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
                 const deliveryDate = po.expected_date ? new Date(po.expected_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
                 const mainStatus = (po.status || 'DRAFT').toUpperCase();
-                const amount = parseFloat(po.total_amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                const amount = parseFloat(po.total_amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 3 });
                 const statusColors = {
                     'DRAFT': '#856404; background: #fff3cd',
                     'ISSUED': '#084298; background: #cfe2ff',
@@ -2957,14 +3079,13 @@
 
                 const colData = {
                     'date': `<td>${date}</td>`,
-                    'location': `<td>Head Office</td>`,
                     'po_number': `<td style="color: #3366cc; font-weight: 500;">${po.po_number || 'PO-' + po.id}</td>`,
                     'reference': `<td>${po.reference_number || '-'}</td>`,
                     'vendor': `<td>${po.supplier_name || '-'}</td>`,
                     'status': `<td><span style="padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; color: ${statusColorStr}">${mainStatus}</span></td>`,
                     'received': `<td style="text-align:center;">${receivedDot}</td>`,
                     'billed': `<td style="text-align:center;">${billedDot}</td>`,
-                    'amount': `<td style="font-weight: 500;">PHP${amount}</td>`,
+                    'amount': `<td style="font-weight: 500;">${po.currency_code || 'PHP'}${amount}${(po.currency_code && po.currency_code !== 'PHP') ? '<br><span style="font-size:11px;color:#888;font-weight:400;">PHP' + (parseFloat(po.total_amount || 0) * (parseFloat(po.exchange_rate) || 1)).toLocaleString('en-PH', { minimumFractionDigits: 3 }) + '</span>' : ''}</td>`,
                     'delivery_date': `<td>${deliveryDate}</td>`,
                     'company_name': `<td>${po.supplier_name || '-'}</td>`,
                     'expected_delivery': `<td>${deliveryDate}</td>`
@@ -3077,7 +3198,7 @@
             } else {
                 dirLabel = currentPOSortDir === 'desc' ? 'Z-A' : 'A-Z';
             }
-            showClipToast(`Sorted by ${field.replace(/_/g, ' ')} (${dirLabel})`);
+            showToast(`Sorted by ${field.replace(/_/g, ' ')} (${dirLabel})`);
             document.getElementById('kebabDropdown').classList.remove('show');
         }
 
@@ -3085,12 +3206,7 @@
 
         function importPurchaseOrders() {
             document.getElementById('kebabDropdown').classList.remove('show');
-            document.getElementById('importPOOverlay').classList.add('show');
-        }
-
-        function closeImportPO() {
-            document.getElementById('importPOOverlay').classList.remove('show');
-            removeImportFile();
+            document.getElementById('importFileInput').click();
         }
 
         function handleImportFile(file) {
@@ -3098,17 +3214,15 @@
             const allowed = ['csv', 'tsv', 'xls', 'xlsx'];
             const ext = file.name.split('.').pop().toLowerCase();
             if (!allowed.includes(ext)) {
-                showClipToast('Please select a CSV, TSV, or XLS file');
+                showToast('Please select a CSV, TSV, or XLS file');
                 return;
             }
             if (file.size > 25 * 1024 * 1024) {
-                showClipToast('File must be less than 25 MB');
+                showToast('File must be less than 25 MB');
                 return;
             }
-            importSelectedFile = file;
-            document.getElementById('importFileName').textContent = file.name;
-            document.getElementById('importFileSize').textContent = (file.size / 1024).toFixed(1) + ' KB';
-            document.getElementById('importFileSelected').classList.add('show');
+            alert('File selected: ' + file.name + '\nImport processing will be available soon.');
+            document.getElementById('importFileInput').value = '';
         }
 
         function removeImportFile() {
@@ -3127,21 +3241,21 @@
             a.download = 'purchase_orders_sample.csv';
             a.click();
             URL.revokeObjectURL(url);
-            showClipToast('Sample file downloaded');
+            showToast('Sample file downloaded');
         }
 
         async function processImportFile() {
             if (!importSelectedFile) {
-                showClipToast('Please select a file first');
+                showToast('Please select a file first');
                 return;
             }
-            showClipToast('Processing import file...');
+            showToast('Processing import file...');
 
             try {
                 const text = await importSelectedFile.text();
                 const lines = text.split('\n').filter(l => l.trim());
                 if (lines.length < 2) {
-                    showClipToast('File is empty or has no data rows');
+                    showToast('File is empty or has no data rows');
                     return;
                 }
 
@@ -3184,79 +3298,55 @@
                 }
 
                 closeImportPO();
-                showClipToast(`Imported ${importedCount} purchase order(s) successfully`);
+                showToast(`Imported ${importedCount} purchase order(s) successfully`);
                 setTimeout(() => location.reload(), 1500);
             } catch (err) {
                 console.error('Import error:', err);
-                showClipToast('Error processing import file');
+                showToast('Error processing import file');
             }
         }
 
-        function openExportPOModal() {
-            document.getElementById('kebabDropdown').classList.remove('show');
-            document.getElementById('exportPOOverlay').classList.add('show');
-        }
+        function escapePOCSV(val) { return '"' + String(val || '').replace(/"/g, '""') + '"'; }
 
-        function closeExportPO() {
-            document.getElementById('exportPOOverlay').classList.remove('show');
-        }
-
-        function toggleExportPwdVisibility() {
-            const input = document.getElementById('exportPassword');
-            input.type = input.type === 'password' ? 'text' : 'password';
-        }
-
-        function executeExportPO() {
-            const format = document.querySelector('input[name="exportFormat"]:checked')?.value || 'csv';
-            const range = document.querySelector('input[name="exportRange"]:checked')?.value || 'all';
-
-            let dataToExport = [...allPurchasesList];
-
-            // Filter by date if specific period
-            if (range === 'period') {
-                const from = document.getElementById('exportDateFrom').value;
-                const to = document.getElementById('exportDateTo').value;
-                if (from) dataToExport = dataToExport.filter(po => new Date(po.date) >= new Date(from));
-                if (to) dataToExport = dataToExport.filter(po => new Date(po.date) <= new Date(to));
-            }
-
-            if (dataToExport.length === 0) {
-                showClipToast('No data to export');
-                return;
-            }
-
-            // Build CSV content
-            const headers = ['Date', 'Location', 'Purchase Order#', 'Reference#', 'Vendor Name', 'Status', 'Amount', 'Delivery Date'];
-            let csvContent = headers.join(',') + '\n';
-            dataToExport.forEach(po => {
-                const date = po.date ? new Date(po.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
-                const amount = parseFloat(po.total_amount || 0).toFixed(2);
-                const expDate = po.expected_date ? new Date(po.expected_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
-                const row = [
-                    `"${date}"`,
-                    '"Head Office"',
-                    `"${po.po_number || 'PO-' + po.id}"`,
-                    `"${po.reference_number || '-'}"`,
-                    `"${po.supplier_name || '-'}"`,
-                    `"${(po.status || 'DRAFT').toUpperCase()}"`,
-                    `"${amount}"`,
-                    `"${expDate}"`
-                ];
-                csvContent += row.join(',') + '\n';
-            });
-
-            const mimeType = format === 'csv' ? 'text/csv' : 'application/vnd.ms-excel';
-            const ext = format === 'xlsx' ? 'xlsx' : (format === 'xls' ? 'xls' : 'csv');
-            const blob = new Blob([csvContent], { type: mimeType });
+        function downloadPOCSV(filename, csv) {
+            const blob = new Blob([csv], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = url;
-            a.download = `purchase_orders.${ext}`;
-            a.click();
+            a.href = url; a.download = filename; a.click();
             URL.revokeObjectURL(url);
+        }
 
-            closeExportPO();
-            showClipToast(`Exported ${dataToExport.length} purchase orders as ${format.toUpperCase()}`);
+        function buildPOcsv(list) {
+            const headers = ['Date', 'Purchase Order#', 'Reference#', 'Vendor Name', 'Status', 'Amount', 'Delivery Date'];
+            let csv = headers.map(escapePOCSV).join(',') + '\n';
+            list.forEach(po => {
+                const date = po.date ? new Date(po.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+                const amount = parseFloat(po.total_amount || 0).toFixed(3);
+                const expDate = po.expected_date ? new Date(po.expected_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+                csv += [date, po.po_number || 'PO-' + po.id, po.reference_number || '-', po.supplier_name || '-', (po.status || 'DRAFT').toUpperCase(), amount, expDate].map(escapePOCSV).join(',') + '\n';
+            });
+            return csv;
+        }
+
+        function exportAllPO() {
+            if (allPurchasesList.length === 0) { showToast('No purchase orders to export.'); return; }
+            downloadPOCSV('GiHon_All_Purchase_Orders.csv', buildPOcsv(allPurchasesList));
+            showToast('Exported ' + allPurchasesList.length + ' purchase order(s) successfully.');
+        }
+
+        function exportCurrentPOView() {
+            let filtered = [...allPurchasesList];
+            // Apply current tab/status filter if any
+            const activeTab = document.querySelector('.status-tab.active');
+            if (activeTab) {
+                const status = activeTab.getAttribute('data-status');
+                if (status && status !== 'all') {
+                    filtered = filtered.filter(po => (po.status || '').toLowerCase() === status.toLowerCase());
+                }
+            }
+            if (filtered.length === 0) { showToast('No purchase orders in current view to export.'); return; }
+            downloadPOCSV('GiHon_Filtered_Purchase_Orders.csv', buildPOcsv(filtered));
+            showToast('Exported ' + filtered.length + ' purchase order(s) from current view.');
         }
 
         function openPOPreferences() {
@@ -3292,31 +3382,21 @@
             const terms = document.getElementById('poPrefTerms').value;
             const notes = document.getElementById('poPrefNotes').value;
             localStorage.setItem('poPreferences', JSON.stringify({ closeOption, terms, notes }));
-            showClipToast('Preferences saved successfully!');
+            showToast('Preferences saved successfully!');
             closePOPreferences();
         }
 
         function manageCustomFields() {
             document.getElementById('kebabDropdown').classList.remove('show');
-            showClipToast('Manage Custom Fields — coming soon');
+            showToast('Manage Custom Fields — coming soon');
         }
 
         function refreshPOList() {
             document.getElementById('kebabDropdown').classList.remove('show');
-            showClipToast('Refreshing list...');
+            showToast('Refreshing list...');
             setTimeout(() => {
                 location.reload();
             }, 500);
-        }
-
-        function showClipToast(msg) {
-            const toast = document.getElementById('clipToast');
-            const text = document.getElementById('clipToastText');
-            if (toast && text) {
-                text.textContent = msg;
-                toast.classList.add('show');
-                setTimeout(() => { toast.classList.remove('show'); }, 3000);
-            }
         }
 
         function hideClipToast() {
@@ -3325,212 +3405,15 @@
         }
     </script>
 
-    <!-- Export Purchase Orders Modal -->
-    <div class="export-modal-overlay" id="exportPOOverlay" onclick="if(event.target===this)closeExportPO()">
-        <div class="export-modal">
-            <div class="export-modal-header">
-                <h2>Export Purchase Orders</h2>
-                <button class="export-modal-close" onclick="closeExportPO()">&times;</button>
-            </div>
-            <div class="export-modal-info">
-                <span class="info-icon">i</span>
-                <span>You can export your data from Zoho Inventory in CSV, XLS or XLSX format.</span>
-            </div>
-            <div class="export-modal-body">
-                <!-- Module -->
-                <div class="export-field-group">
-                    <div class="export-field-label">Module*</div>
-                    <select class="export-field-select">
-                        <option>Purchase Orders</option>
-                    </select>
-                </div>
-                <!-- Range -->
-                <div class="export-field-group">
-                    <div class="export-radio-group">
-                        <label><input type="radio" name="exportRange" value="all" checked> All Purchase Orders</label>
-                        <label><input type="radio" name="exportRange" value="period"
-                                onclick="document.getElementById('exportDateRange').style.display='flex'"> Specific
-                            Period</label>
-                    </div>
-                    <div id="exportDateRange" style="display:none; gap:12px; margin-top:10px; align-items:center;">
-                        <input type="date" id="exportDateFrom"
-                            style="padding:8px 12px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;">
-                        <span style="font-size:13px;color:#999;">to</span>
-                        <input type="date" id="exportDateTo"
-                            style="padding:8px 12px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;">
-                    </div>
-                </div>
-                <!-- Export Template -->
-                <div class="export-field-group">
-                    <div class="export-field-label normal">Export Template <span style="color:#aaa;cursor:help;"
-                            title="Template for the export">&#9432;</span></div>
-                    <select class="export-field-select">
-                        <option>Select an Export Template</option>
-                    </select>
-                </div>
-                <!-- Decimal Format -->
-                <div class="export-field-group">
-                    <div class="export-field-label">Decimal Format*</div>
-                    <select class="export-field-select" id="exportDecimalFormat">
-                        <option value="1234567.89">1234567.89</option>
-                        <option value="1,234,567.89">1,234,567.89</option>
-                        <option value="1.234.567,89">1.234.567,89</option>
-                    </select>
-                </div>
-                <!-- Export File Format -->
-                <div class="export-field-group">
-                    <div class="export-field-label">Export File Format*</div>
-                    <div class="export-radio-group">
-                        <label><input type="radio" name="exportFormat" value="csv" checked> CSV (Comma Separated
-                            Value)</label>
-                        <label><input type="radio" name="exportFormat" value="xls"> XLS (Microsoft Excel 1997-2004
-                            Compatible)</label>
-                        <label><input type="radio" name="exportFormat" value="xlsx"> XLSX (Microsoft Excel)</label>
-                    </div>
-                </div>
-                <!-- PII -->
-                <label class="export-pii-check">
-                    <input type="checkbox" id="exportPII">
-                    Include Sensitive Personally Identifiable Information (PII) while exporting.
-                </label>
-                <!-- Password -->
-                <div class="export-password-group">
-                    <label>File Protection Password</label>
-                    <div class="export-password-wrap">
-                        <input type="password" id="exportPassword" placeholder="">
-                        <button class="export-password-toggle" type="button"
-                            onclick="toggleExportPwdVisibility()">👁</button>
-                    </div>
-                    <div class="export-password-hint">Your password must be at least 12 characters and include one
-                        uppercase letter, lowercase letter, number, and special character.</div>
-                </div>
-                <!-- Note -->
-                <div class="export-note">
-                    <strong>Note:</strong> You can export only the first 25,000 rows. If you have more rows, please
-                    initiate a backup for the data in your Zoho Inventory organization, and download it. <a href="#"
-                        onclick="event.preventDefault()">Backup Your Data</a>
-                </div>
-            </div>
-            <div class="export-modal-footer">
-                <button class="btn-export" onclick="executeExportPO()">Export</button>
-                <button class="btn-cancel" onclick="closeExportPO()">Cancel</button>
-            </div>
-        </div>
-    </div>
 
 
-    <!-- Import Purchase Orders Modal -->
-    <div class="import-overlay" id="importPOOverlay">
-        <div class="import-header">
-            <h2>Purchase Orders - Select File</h2>
-            <button class="import-close" onclick="closeImportPO()">&times;</button>
-            <div class="import-stepper">
-                <div class="step-item active">
-                    <span class="step-num">1</span>
-                    <span>Configure</span>
-                </div>
-                <div class="step-line"></div>
-                <div class="step-item">
-                    <span class="step-num">2</span>
-                    <span>Map Fields</span>
-                </div>
-                <div class="step-line"></div>
-                <div class="step-item">
-                    <span class="step-num">3</span>
-                    <span>Preview</span>
-                </div>
-            </div>
-        </div>
-        <div class="import-body">
-            <div class="import-content">
-                <!-- Dropzone -->
-                <div class="import-dropzone" id="importDropzone"
-                    onclick="document.getElementById('importFileInput').click()"
-                    ondragover="event.preventDefault(); this.classList.add('dragover')"
-                    ondragleave="this.classList.remove('dragover')"
-                    ondrop="event.preventDefault(); this.classList.remove('dragover'); handleImportFile(event.dataTransfer.files[0])">
-                    <div class="import-dropzone-icon">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4285f4" stroke-width="2">
-                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
-                            <polyline points="7 10 12 15 17 10" />
-                            <line x1="12" y1="15" x2="12" y2="3" />
-                        </svg>
-                    </div>
-                    <div class="import-dropzone-text">Drag and drop file to import</div>
-                    <div class="import-choose-btn"
-                        onclick="event.stopPropagation(); document.getElementById('importFileInput').click()">
-                        <span>Choose File</span>
-                        <span>▾</span>
-                    </div>
-                    <div class="import-file-info">Maximum File Size: 25 MB &bull; File Format: CSV or TSV or XLS</div>
-                    <div class="import-file-selected" id="importFileSelected">
-                        <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                <polyline points="14 2 14 8 20 8" />
-                                <line x1="16" y1="13" x2="8" y2="13" />
-                                <line x1="16" y1="17" x2="8" y2="17" />
-                            </svg></span>
-                        <span class="import-file-name" id="importFileName"></span>
-                        <span class="import-file-size" id="importFileSize"></span>
-                        <button class="import-file-remove"
-                            onclick="event.stopPropagation(); removeImportFile()">&times;</button>
-                    </div>
-                </div>
-                <input type="file" id="importFileInput" accept=".csv,.tsv,.xls,.xlsx" style="display:none"
-                    onchange="handleImportFile(this.files[0])">
 
-                <div class="import-sample-link">
-                    Download a <a href="#" onclick="event.preventDefault(); downloadSampleCSV()">sample file</a> and
-                    compare it to your import file to ensure you have the file perfect for the import.
-                </div>
 
-                <!-- Character Encoding -->
-                <div class="import-option-row">
-                    <label>Character Encoding <span style="color:#aaa;cursor:help;"
-                            title="The character encoding used in your file">&#9432;</span></label>
-                    <select id="importEncoding">
-                        <option value="utf-8">UTF-8 (Unicode)</option>
-                        <option value="ascii">ASCII</option>
-                        <option value="iso-8859-1">ISO-8859-1 (Latin-1)</option>
-                        <option value="windows-1252">Windows-1252</option>
-                    </select>
-                </div>
 
-                <!-- Auto-Generate -->
-                <div class="import-checkbox-row">
-                    <label>
-                        <input type="checkbox" id="importAutoGenPO">
-                        Auto-Generate Purchase Order Numbers
-                    </label>
-                </div>
-                <div class="import-checkbox-hint">
-                    Purchase Order numbers will be generated automatically according to your settings. Any Purchase
-                    Order numbers in the import file will be ignored.
-                </div>
 
-                <!-- Page Tips -->
-                <div class="import-tips">
-                    <div class="import-tips-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                            stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            style="vertical-align:middle;margin-right:4px;">
-                            <circle cx="12" cy="12" r="10" />
-                            <line x1="12" y1="16" x2="12" y2="12" />
-                            <line x1="12" y1="8" x2="12.01" y2="8" />
-                        </svg> Page Tips</div>
-                    <ul>
-                        <li>If you have files in other formats, you can convert it to an accepted file format using any
-                            online/offline converter.</li>
-                        <li>You can configure your import settings and save them for future too!</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="import-footer">
-            <button class="import-next-btn" onclick="processImportFile()">Next <span>›</span></button>
-            <button class="import-cancel-btn" onclick="closeImportPO()">Cancel</button>
-        </div>
-    </div>
+    <!-- Hidden file input for Import -->
+    <input type="file" id="importFileInput" accept=".csv,.tsv,.xls,.xlsx" style="display:none"
+        onchange="handleImportFile(this.files[0])">
 
 </body>
 

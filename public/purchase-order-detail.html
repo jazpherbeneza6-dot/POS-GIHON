@@ -693,6 +693,55 @@
                 display: none;
             }
         }
+
+        /* Print styles — hide all UI chrome, show only document */
+        @media print {
+
+            #sidebarContainer,
+            .sidebar-list,
+            .header-bar,
+            .toolbar,
+            .assoc-tabs-section,
+            .pdf-toggle-row,
+            .detail-tabs,
+            .whats-next-banner,
+            .nav-sidebar {
+                display: none !important;
+            }
+
+            body,
+            .main-layout,
+            .content,
+            .page-layout,
+            .detail-panel {
+                margin: 0 !important;
+                padding: 0 !important;
+                background: white !important;
+            }
+
+            .content {
+                margin-left: 0 !important;
+            }
+
+            .page-layout {
+                display: block !important;
+            }
+
+            .detail-panel {
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+
+            .document-card {
+                box-shadow: none !important;
+                border: none !important;
+                margin: 0 !important;
+            }
+
+            @page {
+                margin: 15mm;
+            }
+        }
     </style>
 </head>
 
@@ -739,8 +788,21 @@
                                 </svg> PDF/Print ▾
                             </button>
                             <div class="pdf-print-menu" id="pdfPrintMenu">
-                                <button class="pdf-print-menu-item" onclick="downloadPDF()"><span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span> PDF</button>
-                                <button class="pdf-print-menu-item" onclick="printPO()"><span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg></span> Print</button>
+                                <button class="pdf-print-menu-item" onclick="downloadPDF()"><span><svg width="14"
+                                            height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                            <polyline points="7 10 12 15 17 10" />
+                                            <line x1="12" y1="15" x2="12" y2="3" />
+                                        </svg></span> PDF</button>
+                                <button class="pdf-print-menu-item" onclick="printPO()"><span><svg width="14"
+                                            height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="6 9 6 2 18 2 18 9" />
+                                            <path
+                                                d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                                            <rect x="6" y="14" width="12" height="8" />
+                                        </svg></span> Print</button>
                             </div>
                         </div>
                         <button class="action-btn" id="receiveBtn" style="display:none;" onclick="receivePO()">
@@ -816,6 +878,13 @@
                         </div>
                     </div>
 
+                    <!-- Info Banner -->
+                    <div class="info-banner" id="infoBanner" style="display:none;">
+                        <span>⭐</span>
+                        <span>WHAT'S NEXT? Mark this purchase order as issued.</span>
+                        <button class="btn-mark" onclick="markAsIssued()">Mark as Issued</button>
+                    </div>
+
                     <!-- Dynamic What's Next Banner -->
                     <div id="whatsNextBanner"
                         style="display:none;padding:14px 18px;border-radius:8px;margin:8px 16px;font-size:13px;">
@@ -888,14 +957,6 @@
                         </div>
                     </div>
 
-                    <!-- Info Banner -->
-                    <div class="info-banner" id="infoBanner" style="display:none;">
-                        <span>⭐</span>
-                        <span>WHAT'S NEXT? Send this purchase order to your vendor or mark it as issued.</span>
-                        <button class="btn-send" onclick="sendPO()">Send Purchase Order</button>
-                        <button class="btn-mark" onclick="markAsIssued()">Mark as Issued</button>
-                    </div>
-
                     <!-- Always-visible Document Card -->
                     <div class="po-detail-card" id="poDetailCard">
                         <div class="po-header">
@@ -906,7 +967,8 @@
                             <div style="text-align: right;">
                                 <div style="font-size:11px;color:#888;font-weight:600;">VENDOR ADDRESS</div>
                                 <div id="detailVendorName" style="color:#1a73e8;font-weight:500;font-size:14px;">-</div>
-                                <div style="font-size:11px;color:#888;font-weight:600;margin-top:16px;">DELIVERY ADDRESS
+                                <div style="font-size:11px;color:#888;font-weight:600;margin-top:16px;">DELIVERY
+                                    ADDRESS
                                 </div>
                                 <div id="detailDeliveryAddress" style="font-size:13px;color:#333;">-</div>
                             </div>
@@ -1064,14 +1126,14 @@
                     const isActive = po.id == currentPOId;
                     const date = po.date ? new Date(po.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
                     const mainStatus = (po.status || 'DRAFT').toUpperCase();
-                    const statusColors = { 'DRAFT': '#856404', 'ISSUED': '#084298', 'CLOSED': '#0a3622', 'CANCELLED': '#842029', 'APPROVED': '#0d6efd' };
+                    const statusColors = { 'DRAFT': '#856404', 'ISSUED': '#084298', 'CLOSED': '#0a3622', 'CANCELLED': '#842029', 'APPROVED': '#0d6efd', 'AWAITING REPLACEMENT': '#e65100' };
                     html += `<div class="sidebar-list-item ${isActive ? 'active' : ''}" onclick="navigateToPO(${po.id})">
                         <div>
                             <div class="sidebar-vendor">${po.supplier_name || 'Unknown Vendor'}</div>
                             <div class="sidebar-po-number">${po.po_number || 'PO-' + po.id} • ${date}</div>
                             <div class="sidebar-status" style="color:${statusColors[mainStatus] || '#666'}">${mainStatus}</div>
                         </div>
-                        <div><div class="sidebar-amount">PHP${parseFloat(po.total_amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</div></div>
+                        <div><div class="sidebar-amount">${po.currency_code || 'PHP'}${parseFloat(po.total_amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}${(po.currency_code && po.currency_code !== 'PHP') ? '<br><span style="font-size:11px;color:#888;font-weight:400;">PHP' + (parseFloat(po.total_amount || 0) * (parseFloat(po.exchange_rate) || 1)).toLocaleString('en-PH', { minimumFractionDigits: 2 }) + '</span>' : ''}</div></div>
                     </div>`;
                 });
                 container.innerHTML = html;
@@ -1096,9 +1158,13 @@
                 document.getElementById('assocHistoryArea').style.display = 'none';
                 document.getElementById('whatsNextBanner').style.display = 'none';
 
-                // Transaction Guard: track draft bills/returns
+                // Clean up any dynamically inserted guard messages from previous PO load
+                document.querySelectorAll('.guard-msg').forEach(el => el.remove());
+
+                // Transaction Guard: track draft bills/returns/receives
                 let draftBill = null;
                 let draftReturn = null;
+                let draftReceive = null;
 
                 // Header
                 document.getElementById('poTitleBar').textContent = po.po_number || 'PO-' + po.id;
@@ -1108,8 +1174,8 @@
                 const billSt = (po.bill_status || '').toUpperCase();
 
                 // Order status badge
-                const badgeMap = { 'DRAFT': 'status-draft', 'ISSUED': 'status-issued', 'CLOSED': 'status-closed', 'CANCELLED': 'status-cancelled', 'APPROVED': 'status-issued' };
-                document.getElementById('docOrderStatus').innerHTML = `<span class="status-badge ${badgeMap[mainStatus] || 'status-draft'}">${mainStatus}</span>`;
+                const badgeMap = { 'DRAFT': 'status-draft', 'ISSUED': 'status-issued', 'CLOSED': 'status-closed', 'CANCELLED': 'status-cancelled', 'APPROVED': 'status-issued', 'AWAITING REPLACEMENT': 'status-draft' };
+                document.getElementById('docOrderStatus').innerHTML = `<span class="status-badge ${badgeMap[mainStatus] || 'status-draft'}" ${mainStatus === 'AWAITING REPLACEMENT' ? 'style="background:#fff3e0;color:#e65100;border-color:#ffcc80;"' : ''}>${mainStatus}</span>`;
 
                 // Bill status text (SO-style colored text, not badge)
                 if (billSt === 'BILLED') {
@@ -1134,17 +1200,22 @@
                 const infoBanner = document.getElementById('infoBanner');
                 infoBanner.style.display = (mainStatus === 'DRAFT') ? 'flex' : 'none';
 
-                // Receive button: show when ISSUED or PARTIALLY RECEIVED
+                // Receive button: show when ISSUED or PARTIALLY RECEIVED, or AWAITING REPLACEMENT
                 const receiveBtn = document.getElementById('receiveBtn');
-                if (mainStatus !== 'DRAFT' && recvStatus !== 'RECEIVED') {
+                if (mainStatus === 'AWAITING REPLACEMENT') {
+                    receiveBtn.style.display = 'inline-flex';
+                } else if (mainStatus !== 'DRAFT' && mainStatus !== 'CANCELLED' && mainStatus !== 'CLOSED' && recvStatus !== 'RECEIVED') {
                     receiveBtn.style.display = 'inline-flex';
                 } else {
                     receiveBtn.style.display = 'none';
                 }
 
-                // Convert to Bill button: show when not already billed
+                // Info banner for AWAITING REPLACEMENT — handled by What's Next banner below
+
+                // Convert to Bill button: initially show if PO is not draft
+                // Will be hidden below if ANY bill (draft or open) already exists for this PO
                 const convertBillBtn = document.getElementById('convertBillBtn');
-                if (mainStatus !== 'DRAFT' && billSt !== 'BILLED') {
+                if (mainStatus !== 'DRAFT' && mainStatus !== 'CANCELLED' && mainStatus !== 'CLOSED') {
                     convertBillBtn.style.display = 'inline-flex';
                 } else {
                     convertBillBtn.style.display = 'none';
@@ -1178,9 +1249,18 @@
                         poPRs.forEach(pr => {
                             historyEvents.push({ date: pr.receive_date || pr.created_at, type: 'receive', text: `<strong>${pr.receive_number || 'PR-' + pr.id}</strong> — ${(pr.status || 'draft').toUpperCase()} receive recorded`, icon: '📦' });
                         });
+                        // Transaction Guard: detect draft or in-transit receives
+                        const pendingReceives = poPRs.filter(pr => {
+                            const st = (pr.status || '').toLowerCase();
+                            return st === 'draft' || st === 'in_transit';
+                        });
+                        if (pendingReceives.length > 0) {
+                            draftReceive = pendingReceives[0];
+                        }
                         // Hide Receive button only if fully received OR there's an active draft/in-transit PR
+                        // Exception: AWAITING REPLACEMENT — Receive button must stay visible
                         const hasActiveDraftPR = poPRs.some(pr => pr.status === 'draft' || pr.status === 'in_transit');
-                        if (recvStatus === 'RECEIVED' || hasActiveDraftPR) {
+                        if (mainStatus !== 'AWAITING REPLACEMENT' && (recvStatus === 'RECEIVED' || hasActiveDraftPR)) {
                             document.getElementById('receiveBtn').style.display = 'none';
                         }
                     }
@@ -1190,6 +1270,8 @@
                         recData.forEach(r => {
                             const key = r.item_id || ('name:' + (r.item_name || ''));
                             receivedByItem[key] = (receivedByItem[key] || 0) + (parseFloat(r.total_received) || 0);
+                            window._inTransitByItem = window._inTransitByItem || {};
+                            window._inTransitByItem[key] = (window._inTransitByItem[key] || 0) + (parseFloat(r.total_in_transit) || 0);
                         });
                     }
                 } catch (e) { console.error(e); }
@@ -1200,11 +1282,30 @@
                     if (retRes.ok) {
                         const retList = await retRes.json();
 
-                        // Transaction Guard: detect draft returns
-                        const draftReturns = retList.filter(r => (r.status || '').toUpperCase() === 'DRAFT');
-                        if (draftReturns.length > 0) {
-                            draftReturn = draftReturns[0];
+                        // Transaction Guard: detect ANY existing return for this PO
+                        if (retList.length > 0) {
+                            draftReturn = retList[0];
                         }
+
+                        // Check for ANY unresolved returns (replacement awaiting, credit pending, etc.)
+                        const hasUnresolvedReturns = retList.some(r => {
+                            const st = (r.status || '').toUpperCase();
+                            if (st === 'CLOSED' || st === 'CANCELLED' || st === 'DRAFT') return false;
+                            // Check by resolution type
+                            if (r.resolution_type === 'replacement') {
+                                return (r.replacement_status || '').toUpperCase() !== 'RECEIVED';
+                            } else if (r.resolution_type === 'credit') {
+                                return (r.credit_status || '').toLowerCase() !== 'credited';
+                            } else if (r.resolution_type === 'cancel_order') {
+                                return false; // cancel_order is resolved immediately
+                            }
+                            return false; // surplus/none — no resolution needed
+                        });
+                        window._hasUnresolvedReturns = hasUnresolvedReturns;
+                        window._hasAwaitingReplacement = retList.some(r => {
+                            const st = (r.status || '').toUpperCase();
+                            return r.resolution_type === 'replacement' && st !== 'CANCELLED' && st !== 'CLOSED' && (r.replacement_status || '').toUpperCase() !== 'RECEIVED';
+                        });
 
                         for (const ret of retList) {
                             historyEvents.push({ date: ret.return_date || ret.created_at, type: 'return', text: `Return <strong>${ret.prn_number || 'PRN-' + ret.id}</strong> — ${(ret.status || 'draft').toUpperCase()}`, icon: '↩️' });
@@ -1228,6 +1329,9 @@
                     if (billRes.ok) {
                         const allBills = await billRes.json();
                         const poBills = allBills.filter(b => b.purchase_order_id == poId);
+                        window._poBillsList = poBills;
+                        // Early check: are ALL bills for this PO paid?
+                        window._allPoBillsPaid = poBills.length > 0 && poBills.every(b => (b.status || '').toUpperCase() === 'PAID');
 
                         // Transaction Guard: detect draft bills
                         const draftBills = poBills.filter(b => (b.status || '').toUpperCase() === 'DRAFT');
@@ -1235,23 +1339,34 @@
                             draftBill = draftBills[0];
                         }
 
+                        // billedByItemAll includes ALL bills (including drafts) for lock checks
+                        const billedByItemAll = {};
                         for (const bill of poBills) {
                             historyEvents.push({ date: bill.bill_date || bill.created_at, type: 'bill', text: `Bill <strong>${bill.bill_number || 'BILL-' + bill.id}</strong> — ${(bill.status || 'draft').toUpperCase()}`, icon: '📝' });
+                            const billStatus = (bill.status || '').toUpperCase();
                             try {
                                 const bRes = await fetch('/api/bills/' + bill.id);
                                 if (bRes.ok) {
                                     const bDet = await bRes.json();
                                     (bDet.items || []).forEach(item => {
                                         const key = item.item_id || ('name:' + (item.item_name || ''));
-                                        billedByItem[key] = (billedByItem[key] || 0) + (parseFloat(item.quantity) || 0);
+                                        // All bills (including drafts) count towards lock check
+                                        billedByItemAll[key] = (billedByItemAll[key] || 0) + (parseFloat(item.quantity) || 0);
+                                        // Only non-draft bills count towards display quantities
+                                        if (billStatus !== 'DRAFT') {
+                                            billedByItem[key] = (billedByItem[key] || 0) + (parseFloat(item.quantity) || 0);
+                                        }
                                     });
                                 }
                             } catch (e) { }
                         }
+                        // Store for banner logic
+                        window._billedByItemAll = billedByItemAll;
                     }
                 } catch (e) { console.error(e); }
 
                 // Items table with color coding
+                const currSymbol = (po.currency_code || 'PHP');
                 const tbody = document.getElementById('detailItemsBody');
                 let itemsHtml = '', subtotal = 0, totalQty = 0;
                 let hasMismatch = false;
@@ -1259,34 +1374,46 @@
                     po.items.forEach(item => {
                         const qty = parseFloat(item.quantity) || 0;
                         const rate = parseFloat(item.unit_price) || 0;
-                        const amount = qty * rate;
+                        const itemDiscPct = parseFloat(item.discount_percent || item.item_discount_percent) || 0;
+                        const itemDiscType = item.discount_type || item.item_discount_type || '%';
+                        const amount = itemDiscType === '%' ? qty * rate * (1 - itemDiscPct / 100) : qty * rate - itemDiscPct;
                         subtotal += amount; totalQty += qty;
                         const itemKey = item.item_id || ('name:' + (item.item_name || ''));
                         const itemReceived = receivedByItem[itemKey] || 0;
                         const itemReturned = returnedByItem[itemKey] || 0;
                         const itemBilled = billedByItem[itemKey] || 0;
 
-                        // Color coding
-                        const overReceived = itemReceived > qty;
+                        // Color coding — use net received (received minus returned) for over-receive check
                         const netReceived = itemReceived - itemReturned;
+                        const overReceived = netReceived > qty;
                         const underBilled = itemBilled < netReceived && itemBilled > 0;
                         const unbilledSurplus = netReceived > 0 && itemBilled > 0 && itemBilled < netReceived;
                         if (unbilledSurplus) hasMismatch = true;
 
-                        const recvColor = overReceived ? 'color:#e65100;font-weight:600;' : '';
+                        // If surplus is fully resolved (all bills paid), show green instead of orange
+                        const surplusSettled = overReceived && window._allPoBillsPaid && (window._billedByItemAll || {})[itemKey] >= netReceived;
+                        const recvColor = overReceived ? (surplusSettled ? 'color:#16a34a;font-weight:600;' : 'color:#e65100;font-weight:600;') : '';
                         const billColor = underBilled ? 'color:#dc2626;font-weight:600;' : '';
+                        let discBadge = '';
+                        if (itemDiscPct > 0) {
+                            if (itemDiscType === '%') {
+                                discBadge = '<br><span style="font-size:10px;color:#e67700;font-weight:600;">-' + itemDiscPct + '% off</span>';
+                            } else {
+                                discBadge = '<br><span style="font-size:10px;color:#e67700;font-weight:600;">-' + currSymbol + itemDiscPct.toLocaleString('en-PH', { minimumFractionDigits: 2 }) + ' off</span>';
+                            }
+                        }
 
                         itemsHtml += `<tr>
                             <td><div style="width:36px;height:36px;background:#f0f0f0;border-radius:4px;display:flex;align-items:center;justify-content:center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div></td>
                             <td><div class="item-name-link">${item.item_name || '-'}</div>${item.sku ? '<div class="item-sku">SKU: ' + item.sku + '</div>' : ''}</td>
                             <td>${qty}<br><span style="font-size:11px;color:#999;">${item.unit || 'pcs'}</span></td>
                             <td style="font-size:12px;">
-                                <span style="${recvColor}">${itemReceived} Received</span>${overReceived ? ' <span style="background:#fff3e0;color:#e65100;padding:1px 5px;border-radius:8px;font-size:10px;font-weight:600;">OVER</span>' : ''}<br>
+                                <span style="${recvColor}">${netReceived} Received</span>${overReceived ? (surplusSettled ? ' <span style="background:#e8f5e9;color:#16a34a;padding:1px 5px;border-radius:8px;font-size:10px;font-weight:600;">✓ SETTLED</span>' : ' <span style="background:#fff3e0;color:#e65100;padding:1px 5px;border-radius:8px;font-size:10px;font-weight:600;">OVER</span>') : ''}${itemReturned > 0 ? ' <span title="' + itemReceived + ' total receives minus ' + itemReturned + ' returned" style="font-size:10px;color:#888;cursor:help;">(' + itemReceived + '-' + itemReturned + ')</span>' : ''}<br>
                                 <span style="color:#888;">${itemReturned} Returned</span><br>
-                                <span style="font-weight:600;color:${netReceived === qty ? '#16a34a' : netReceived < qty ? '#ea580c' : '#e65100'};">${netReceived} On Hand</span>${netReceived > qty ? ' <span style="background:#fff3e0;color:#e65100;padding:1px 5px;border-radius:8px;font-size:10px;font-weight:600;">OVER</span>' : ''}<br>
+                                <span style="font-weight:600;color:${netReceived === qty ? '#16a34a' : netReceived < qty ? '#ea580c' : (surplusSettled ? '#16a34a' : '#e65100')};">${netReceived} On Hand</span>${netReceived > qty ? (surplusSettled ? ' <span style="background:#e8f5e9;color:#16a34a;padding:1px 5px;border-radius:8px;font-size:10px;font-weight:600;">✓ SETTLED</span>' : ' <span style="background:#fff3e0;color:#e65100;padding:1px 5px;border-radius:8px;font-size:10px;font-weight:600;">OVER</span>') : ''}<br>
                                 <span style="${billColor}">${itemBilled} Billed</span>${underBilled ? ' <span style="background:#fef2f2;color:#dc2626;padding:1px 5px;border-radius:8px;font-size:10px;font-weight:600;">LOW</span>' : ''}
                             </td>
-                            <td style="text-align:right;">PHP${rate.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+                            <td style="text-align:right;">${currSymbol}${rate.toLocaleString('en-PH', { minimumFractionDigits: 2 })}${discBadge}</td>
                             <td style="text-align:right;">${amount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
                         </tr>`;
                     });
@@ -1294,14 +1421,24 @@
                 tbody.innerHTML = itemsHtml;
 
                 // Smart "What's Next?" banner logic
-                let totalOrdered = 0, totalReceived = 0, totalBilled = 0, totalReturned = 0;
+                let totalOrdered = 0, totalReceived = 0, totalBilled = 0, totalReturned = 0, totalBilledAll = 0;
+                const _billedAll = window._billedByItemAll || {};
                 if (po.items && po.items.length > 0) {
                     po.items.forEach(item => {
                         const itemKey = item.item_id || ('name:' + (item.item_name || ''));
                         totalOrdered += parseFloat(item.quantity) || 0;
                         totalReceived += (receivedByItem[itemKey] || 0);
                         totalBilled += (billedByItem[itemKey] || 0);
+                        totalBilledAll += (_billedAll[itemKey] || 0);
                         totalReturned += (returnedByItem[itemKey] || 0);
+                    });
+                }
+                // Calculate in-transit total
+                let totalInTransit = 0;
+                if (window._inTransitByItem && po && po.items) {
+                    po.items.forEach(item => {
+                        const itemKey = item.item_id || ('name:' + (item.item_name || ''));
+                        totalInTransit += (window._inTransitByItem[itemKey] || 0);
                     });
                 }
                 // Return button: smart visibility based on actual quantities
@@ -1309,7 +1446,10 @@
                 const returnBtn = document.getElementById('returnBtn');
                 const returnableQty = totalReceived - totalReturned;
                 const surplusPaidFor = totalBilled >= totalReceived && totalReceived > totalOrdered;
-                if (mainStatus === 'DRAFT' || mainStatus === 'CLOSED' || mainStatus === 'CANCELLED' ||
+                // Final Decision lock: surplus resolved by bills (including drafts) or returns
+                const surplusBilledAll = totalBilledAll >= netReceived && netReceived > totalOrdered;
+                const surplusReturnInitiated = totalReturned > 0 && netReceived <= totalOrdered;
+                if (mainStatus === 'DRAFT' || mainStatus === 'CANCELLED' ||
                     totalReceived === 0 || returnableQty <= 0 || surplusPaidFor ||
                     (po.discrepancy_resolved === true || po.discrepancy_resolved === 'true')) {
                     returnBtn.style.display = 'none';
@@ -1383,17 +1523,52 @@
 
                 const discrepancyResolved = po.discrepancy_resolved === true || po.discrepancy_resolved === 'true';
 
-                // Don't show banner for DRAFT, CLOSED, CANCELLED, or resolved discrepancies
-                if (mainStatus === 'DRAFT' || mainStatus === 'CLOSED' || mainStatus === 'CANCELLED') {
+                // Don't show banner for DRAFT or CANCELLED; CLOSED POs still show surplus banner if over-received
+                if (mainStatus === 'DRAFT' || mainStatus === 'CANCELLED') {
                     whatsNextBanner.style.display = 'none';
                 } else if (hasReceives && netReceived > totalOrdered && !discrepancyResolved) {
-                    // Scenario A: Over-shipment — received more than ordered (MUST check before allBillsPaid)
+                    // Banner Sunset: if surplus is fully resolved (all billed + all bills PAID), hide entirely
+                    if (surplusBilledAll && allBillsPaid) {
+                        whatsNextBanner.style.display = 'none';
+                    } else {
+                    // Scenario A: Over-shipment — received more than ordered
                     whatsNextBanner.style.display = '';
                     whatsNextBanner.style.background = 'linear-gradient(135deg, #fffaf0 0%, #fff3e0 100%)';
                     whatsNextBanner.style.border = '1px solid #ffcc80';
                     whatsNextBanner.style.color = '#5d4037';
-                    if (allBillsPaid && hasBills) {
-                        // Bills are paid but surplus exists — show return option
+
+                    // === FINAL DECISION LOCK ===
+                    // Find the supplemental bill (the bill that covers the surplus)
+                    const allPoBillsForLock = (window._poBillsList || []);
+                    const supplementalBill = allPoBillsForLock.length > 1 ? allPoBillsForLock.reduce((a, b) => (a.id > b.id ? a : b)) : null;
+                    const suppBillLabel = supplementalBill ? (supplementalBill.bill_number || 'BILL-' + supplementalBill.id) : '';
+                    const suppBillLink = supplementalBill ? `<a href="/bill-detail.html?id=${supplementalBill.id}" style="color:#1a73e8;font-weight:600;text-decoration:underline;">${suppBillLabel}</a>` : '';
+
+                    // Check returns for this PO
+                    const hasReturnForSurplus = totalReturned > 0;
+
+                    // Bill status badge for tracking
+                    const suppStatus = supplementalBill ? (supplementalBill.status || 'draft').toUpperCase() : '';
+                    const suppBadge = supplementalBill ? (() => {
+                        const colors = { 'DRAFT': '#9e9e9e', 'OPEN': '#1a73e8', 'PAID': '#2e7d32', 'OVERDUE': '#c62828' };
+                        const bg = { 'DRAFT': '#f5f5f5', 'OPEN': '#e8f0fe', 'PAID': '#e8f5e9', 'OVERDUE': '#ffebee' };
+                        return `<span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;color:${colors[suppStatus] || '#5d4037'};background:${bg[suppStatus] || '#fff3e0'};margin-left:4px;">${suppStatus}</span>`;
+                    })() : '';
+
+                    if (surplusBilledAll && hasReturnForSurplus) {
+                        // Both paths taken (edge case) — lock everything
+                        whatsNextText.innerHTML = `<strong>✅ SURPLUS RESOLVED</strong> The <strong>${surplusQty} extra unit${surplusQty !== 1 ? 's' : ''}</strong> ha${surplusQty !== 1 ? 've' : 's'} been handled. Supplemental bill ${suppBillLink} ${suppBadge} was created and a return has been initiated.`;
+                        whatsNextButtons.innerHTML = '';
+                    } else if (surplusBilledAll) {
+                        // Decision: PAY — supplemental bill covers the surplus (DRAFT, OPEN, or PAID)
+                        whatsNextText.innerHTML = `<strong>✅ SURPLUS HANDLED</strong> You chose to <strong>pay for the extras</strong>. Supplemental bill ${suppBillLink} ${suppBadge} has been created for the <strong>${surplusQty} surplus unit${surplusQty !== 1 ? 's' : ''}</strong>.`;
+                        whatsNextButtons.innerHTML = '';
+                    } else if (hasReturnForSurplus) {
+                        // Decision: RETURN — a return has been initiated for surplus units
+                        whatsNextText.innerHTML = `<strong>✅ SURPLUS HANDLED</strong> A return has been initiated for the <strong>${surplusQty} surplus unit${surplusQty !== 1 ? 's' : ''}</strong>. No further action is needed.`;
+                        whatsNextButtons.innerHTML = '';
+                    } else if (allBillsPaid && hasBills) {
+                        // Bills are paid but surplus not yet handled — show both options
                         whatsNextText.innerHTML = `<strong>✨ WHAT'S NEXT?</strong> You received <strong>${surplusQty} extra unit${surplusQty !== 1 ? 's' : ''}</strong> beyond what was ordered and billed. Would you like to <strong>return the surplus</strong> or <strong>pay for the extras</strong>?`;
                         whatsNextButtons.innerHTML = `
                             <button onclick="createSupplementalBill()" style="padding:7px 16px;background:#e65100;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-weight:600;">💰 Pay for Extras</button>
@@ -1407,10 +1582,72 @@
                     }
                     document.getElementById('convertBillBtn').style.display = 'none';
                     document.getElementById('returnBtn').style.display = 'none';
+                    } // end of banner sunset else block
+                } else if (allBillsPaid && hasReceives && netReceived < totalOrdered && netReceived > 0 && !discrepancyResolved) {
+                    // BILLED + PAID but PARTIALLY RECEIVED — show Accept Current Quantities
+                    const remainingQty = Math.round(totalOrdered - netReceived);
+                    whatsNextBanner.style.display = '';
+                    whatsNextBanner.style.background = 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)';
+                    whatsNextBanner.style.border = '1px solid #f59e0b';
+                    whatsNextBanner.style.color = '#78350f';
+                    whatsNextText.innerHTML = `<strong>⚠️ SHORTAGE ON PAID PO</strong> All items have been <strong>billed and paid</strong>, but only <strong>${Math.round(netReceived)}</strong> of <strong>${Math.round(totalOrdered)}</strong> units were received. <strong>${remainingQty} unit${remainingQty !== 1 ? 's' : ''}</strong> are missing. Would you like to <strong>accept the current quantities</strong> and generate a Vendor Credit for the overpayment?`;
+                    whatsNextButtons.innerHTML = `
+                        <div class="btn-tooltip-wrap">
+                            <button onclick="receivePO()" style="padding:7px 16px;background:#1a73e8;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:4px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                                Receive Remaining
+                            </button>
+                            <span class="btn-tooltip-icon">?</span>
+                            <span class="btn-tooltip-text">Log the arrival of the missing items to increase your physical inventory.</span>
+                        </div>
+                        <div class="btn-tooltip-wrap">
+                            <button onclick="acceptCurrentQuantities(${remainingQty}, true)" style="padding:7px 16px;background:#f59e0b;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:4px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                Accept Current Quantities
+                            </button>
+                            <span class="btn-tooltip-icon">?</span>
+                            <span class="btn-tooltip-text">Accept the received stock, adjust the order, and auto-generate a Vendor Credit for the overpaid amount.</span>
+                        </div>`;
+                    document.getElementById('convertBillBtn').style.display = 'none';
                 } else if (allBillsPaid && recvStatus === 'RECEIVED' && netReceived <= totalOrdered) {
-                    // Fully paid and fully received with NO surplus — nothing left to do
+                    // Fully paid and fully received with NO surplus
+                    if (!window._hasUnresolvedReturns) {
+                        // All done — auto-close the PO (no reload needed)
+                        whatsNextBanner.style.display = 'none';
+                        if (mainStatus !== 'CLOSED') {
+                            try {
+                                await fetch('/api/purchases/' + poId, {
+                                    method: 'PUT',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ status: 'CLOSED', discrepancy_resolved: true })
+                                });
+                                // Update DOM inline instead of reloading
+                                document.getElementById('docOrderStatus').innerHTML = '<span class="status-badge status-closed">CLOSED</span>';
+                                document.getElementById('convertBillBtn').style.display = 'none';
+                                document.getElementById('receiveBtn').style.display = 'none';
+                                document.getElementById('returnBtn').style.display = 'none';
+                            } catch (e) { console.error('Auto-close error:', e); }
+                        }
+                    } else if (window._hasAwaitingReplacement) {
+                        // Pending replacement — show banner with Receive button
+                        whatsNextBanner.style.display = '';
+                        whatsNextBanner.style.background = 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)';
+                        whatsNextBanner.style.border = '1px solid #ffcc80';
+                        whatsNextBanner.style.color = '#5d4037';
+                        whatsNextText.innerHTML = `<strong>🔄 AWAITING REPLACEMENT</strong> A replacement shipment is expected for the returned items. Use <strong>Receive Items</strong> to log the arrival.`;
+                        whatsNextButtons.innerHTML = `
+                            <button onclick="receivePO()" style="padding:7px 16px;background:#e65100;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:4px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                                Receive Replacement
+                            </button>`;
+                    } else {
+                        // Other unresolved return (credit pending, etc.) — hide banner, resolution happens on the return page
+                        whatsNextBanner.style.display = 'none';
+                    }
+                } else if (mainStatus === 'CLOSED') {
+                    // CLOSED PO — nothing to show
                     whatsNextBanner.style.display = 'none';
-                } else if (hasReceives && netReceived < totalOrdered) {
+                } else if (hasReceives && netReceived < totalOrdered && (netReceived + totalInTransit) < totalOrdered && !discrepancyResolved) {
                     // Partially received — some items still remaining
                     const remainingQty = Math.round(totalOrdered - netReceived);
                     whatsNextBanner.style.display = '';
@@ -1467,65 +1704,172 @@
                     whatsNextBanner.style.background = 'linear-gradient(135deg, #f3e8ff 0%, #ede9fe 100%)';
                     whatsNextBanner.style.border = '1px solid #c4b5fd';
                     whatsNextBanner.style.color = '#5b21b6';
-                    whatsNextText.innerHTML = `<strong>✨ WHAT'S NEXT?</strong> Ready to receive items. Would you like to <strong>log a new receipt</strong>?`;
+                    whatsNextText.innerHTML = `<strong>✨ WHAT'S NEXT?</strong> Ready to receive items. Would you like to <strong>log a new receipt</strong> or <strong>convert to bill</strong>?`;
                     whatsNextButtons.innerHTML = `
-                        <button onclick="receivePO()" style="padding:7px 16px;background:#7c3aed;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-weight:600;">📦 Receive Items</button>`;
+                        <button onclick="receivePO()" style="padding:7px 16px;background:#7c3aed;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-weight:600;">📦 Receive Items</button>
+                        <button onclick="convertToBill()" style="padding:7px 16px;background:white;color:#7c3aed;border:1px solid #7c3aed;border-radius:6px;font-size:12px;cursor:pointer;font-weight:500;">📝 Convert to Bill</button>`;
                 } else {
                     whatsNextBanner.style.display = 'none';
                 }
 
-                // ===== TRANSACTION GUARD: Override buttons when drafts exist =====
-                if (draftBill) {
-                    // Hide all bill-related buttons in the toolbar
+                // ===== TRANSACTION GUARD: Override buttons when bills exist =====
+                // Hide Convert to Bill if ANY bill (draft or non-draft) exists for this PO
+                const allPoBills = (window._poBillsList || []);
+                if (allPoBills.length > 0) {
                     document.getElementById('convertBillBtn').style.display = 'none';
 
-                    // Add draft bill message to the banner
-                    const draftBillMsg = document.createElement('div');
-                    draftBillMsg.style.cssText = 'padding:10px 16px;background:#fff8e1;border:1px solid #ffe082;border-radius:8px;margin:8px 16px;font-size:13px;color:#5d4037;';
-                    draftBillMsg.innerHTML = `📝 A draft bill <strong>${draftBill.bill_number || 'BILL-' + draftBill.id}</strong> already exists for this order. <a href="/bill-detail.html?id=${draftBill.id}" style="color:#1a73e8;font-weight:600;text-decoration:underline;">View/Edit Draft →</a>`;
-                    whatsNextBanner.parentNode.insertBefore(draftBillMsg, whatsNextBanner.nextSibling);
-
-                    // Remove bill buttons from the What's Next banner if it's visible
+                    // Remove bill-related buttons from the What's Next banner
                     const billBtns = whatsNextButtons.querySelectorAll('button');
                     billBtns.forEach(btn => {
                         if (btn.textContent.includes('Bill') || btn.textContent.includes('Pay for Extras')) {
                             btn.style.display = 'none';
                         }
                     });
+
+                    // Update the banner text to remove bill references
+                    const whatsNextTextEl = document.getElementById('whatsNextText');
+                    // Skip Transaction Guard override if the paid+partially-received banner is active
+                    const isPaidShortBanner = allBillsPaid && hasReceives && netReceived < totalOrdered && netReceived > 0;
+                    if (whatsNextTextEl && whatsNextBanner.style.display !== 'none' && !isPaidShortBanner) {
+                        const hasReceivedAll = hasReceives && netReceived >= totalOrdered;
+                        const latestBill = allPoBills[allPoBills.length - 1];
+                        const billLabel = latestBill.bill_number || ('BILL-' + latestBill.id);
+                        const billLink = `<a href="/bill-detail.html?id=${latestBill.id}" style="color:inherit;font-weight:600;text-decoration:underline;">${billLabel}</a>`;
+
+                        if (netReceived > totalOrdered && !discrepancyResolved) {
+                            // === FINAL DECISION LOCK (Transaction Guard) ===
+                            const suppBill2 = allPoBills.length > 1 ? allPoBills.reduce((a, b) => (a.id > b.id ? a : b)) : null;
+                            const suppLink2 = suppBill2 ? `<a href="/bill-detail.html?id=${suppBill2.id}" style="color:#1a73e8;font-weight:600;text-decoration:underline;">${suppBill2.bill_number || 'BILL-' + suppBill2.id}</a>` : '';
+                            const hasReturnForSurplus2 = totalReturned > 0;
+
+                            // Bill status badge
+                            const suppSt2 = suppBill2 ? (suppBill2.status || 'draft').toUpperCase() : '';
+                            const suppBadge2 = suppBill2 ? (() => {
+                                const colors = { 'DRAFT': '#9e9e9e', 'OPEN': '#1a73e8', 'PAID': '#2e7d32', 'OVERDUE': '#c62828' };
+                                const bg = { 'DRAFT': '#f5f5f5', 'OPEN': '#e8f0fe', 'PAID': '#e8f5e9', 'OVERDUE': '#ffebee' };
+                                return `<span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;color:${colors[suppSt2] || '#5d4037'};background:${bg[suppSt2] || '#fff3e0'};margin-left:4px;">${suppSt2}</span>`;
+                            })() : '';
+
+                            if (surplusBilledAll && hasReturnForSurplus2) {
+                                whatsNextTextEl.innerHTML = `<strong>✅ SURPLUS RESOLVED</strong> The <strong>${surplusQty} extra unit${surplusQty !== 1 ? 's' : ''}</strong> ha${surplusQty !== 1 ? 've' : 's'} been handled. Supplemental bill ${suppLink2} ${suppBadge2} was created and a return has been initiated.`;
+                                whatsNextButtons.innerHTML = '';
+                            } else if (surplusBilledAll) {
+                                whatsNextTextEl.innerHTML = `<strong>✅ SURPLUS HANDLED</strong> You chose to <strong>pay for the extras</strong>. Supplemental bill ${suppLink2} ${suppBadge2} has been created for the <strong>${surplusQty} surplus unit${surplusQty !== 1 ? 's' : ''}</strong>.`;
+                                whatsNextButtons.innerHTML = '';
+                            } else if (hasReturnForSurplus2) {
+                                whatsNextTextEl.innerHTML = `<strong>✅ SURPLUS HANDLED</strong> A return has been initiated for the <strong>${surplusQty} surplus unit${surplusQty !== 1 ? 's' : ''}</strong>. No further action is needed.`;
+                                whatsNextButtons.innerHTML = '';
+                            } else {
+                                // Surplus not yet handled — show both options
+                                whatsNextButtons.innerHTML = `
+                                    <button onclick="createSupplementalBill()" style="padding:7px 16px;background:#e65100;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-weight:600;">💰 Pay for Extras</button>
+                                    <button onclick="returnPO()" style="padding:7px 16px;background:white;color:#e65100;border:1px solid #e65100;border-radius:6px;font-size:12px;cursor:pointer;font-weight:500;">↩ Create Return</button>`;
+                            }
+                        } else if (hasReceivedAll && netReceived <= totalOrdered) {
+                            // Fully received and billed with NO surplus — nothing left to do
+                            whatsNextBanner.style.display = 'none';
+                        } else if (!hasReceives || netReceived === 0) {
+                            // Not received but billed — prompt to receive
+                            whatsNextTextEl.innerHTML = `<strong>✨ WHAT'S NEXT?</strong> A bill ${billLink} has been created. Would you like to <strong>receive items</strong>?`;
+                            whatsNextButtons.innerHTML = `
+                                <button onclick="receivePO()" style="padding:7px 16px;background:#7c3aed;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-weight:600;">📦 Receive Items</button>`;
+                        } else {
+                            // Partially received and billed
+                            whatsNextTextEl.innerHTML = `<strong>✨ WHAT'S NEXT?</strong> A bill ${billLink} exists. Would you like to <strong>receive remaining items</strong>?`;
+                            whatsNextButtons.innerHTML = `
+                                <button onclick="receivePO()" style="padding:7px 16px;background:#7c3aed;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-weight:600;">📦 Receive Items</button>`;
+                        }
+                    }
+                }
+                if (draftBill) {
+                    // Add draft bill message to the banner
+                    const draftBillMsg = document.createElement('div');
+                    draftBillMsg.className = 'guard-msg';
+                    draftBillMsg.style.cssText = 'padding:10px 16px;background:#fff8e1;border:1px solid #ffe082;border-radius:8px;margin:8px 16px;font-size:13px;color:#5d4037;';
+                    draftBillMsg.innerHTML = `📝 A draft bill <strong>${draftBill.bill_number || 'BILL-' + draftBill.id}</strong> already exists for this order. <a href="/bill-detail.html?id=${draftBill.id}" style="color:#1a73e8;font-weight:600;text-decoration:underline;">View/Edit Draft →</a>`;
+                    whatsNextBanner.parentNode.insertBefore(draftBillMsg, whatsNextBanner.nextSibling);
                 }
 
-                if (draftReturn) {
-                    // Hide return button in the toolbar
-                    document.getElementById('returnBtn').style.display = 'none';
-
-                    // Add draft return message
-                    const draftReturnMsg = document.createElement('div');
-                    draftReturnMsg.style.cssText = 'padding:10px 16px;background:#fce4ec;border:1px solid #f48fb1;border-radius:8px;margin:8px 16px;font-size:13px;color:#880e4f;';
-                    draftReturnMsg.innerHTML = `↩ A draft return <strong>${draftReturn.prn_number || 'PRN-' + draftReturn.id}</strong> already exists for this order. <a href="/purchase-returns.html?id=${draftReturn.id}" style="color:#1a73e8;font-weight:600;text-decoration:underline;">View/Edit Draft →</a>`;
-                    const insertAfter = whatsNextBanner.parentNode.querySelector('[style*="background:#fff8e1"]') || whatsNextBanner;
-                    insertAfter.parentNode.insertBefore(draftReturnMsg, insertAfter.nextSibling);
-
-                    // Remove return buttons from the What's Next banner
-                    const retBtns = whatsNextButtons.querySelectorAll('button');
-                    retBtns.forEach(btn => {
-                        if (btn.textContent.includes('Return')) {
+                if (draftReceive) {
+                    const recStatus = (draftReceive.status || 'draft').toLowerCase();
+                    const recStatusLabel = recStatus === 'in_transit' ? 'in-transit' : 'draft';
+                    // Hide Receive Items buttons in the What's Next banner
+                    const recBtns = whatsNextButtons.querySelectorAll('button');
+                    recBtns.forEach(btn => {
+                        if (btn.textContent.includes('Receive')) {
                             btn.style.display = 'none';
                         }
                     });
+
+                    // Update banner text
+                    const whatsNextTextForReceive = document.getElementById('whatsNextText');
+                    if (whatsNextTextForReceive && whatsNextBanner.style.display !== 'none') {
+                        // Check if there's remaining banner content, otherwise hide banner
+                        const visibleBtns = whatsNextButtons.querySelectorAll('button');
+                        const anyVisible = Array.from(visibleBtns).some(b => b.style.display !== 'none');
+                        if (!anyVisible) {
+                            whatsNextBanner.style.display = 'none';
+                        }
+                    }
+
+                    // Add pending receive message
+                    const draftReceiveMsg = document.createElement('div');
+                    draftReceiveMsg.className = 'guard-msg';
+                    draftReceiveMsg.style.cssText = 'padding:10px 16px;background:#e3f2fd;border:1px solid #90caf9;border-radius:8px;margin:8px 16px;font-size:13px;color:#0d47a1;';
+                    draftReceiveMsg.innerHTML = `📦 A ${recStatusLabel} receive <strong>${draftReceive.receive_number || 'PR-' + draftReceive.id}</strong> already exists for this order. <a href="/purchase-receive-detail.html?id=${draftReceive.id}" style="color:#1a73e8;font-weight:600;text-decoration:underline;">View/Edit →</a>`;
+                    const recInsertAfter = whatsNextBanner.parentNode.querySelector('[style*="background:#fff8e1"]') || whatsNextBanner;
+                    recInsertAfter.parentNode.insertBefore(draftReceiveMsg, recInsertAfter.nextSibling);
+                }
+
+                if (draftReturn) {
+                    const retStatus = (draftReturn.status || 'draft').toLowerCase();
+                    // Don't show the banner if the return is already closed or cancelled
+                    if (retStatus !== 'closed' && retStatus !== 'cancelled') {
+                        // Hide return button in the toolbar
+                        document.getElementById('returnBtn').style.display = 'none';
+
+                        // Add existing return message — neutral style for confirmed, pink for draft
+                        const draftReturnMsg = document.createElement('div');
+                        draftReturnMsg.className = 'guard-msg';
+                        if (retStatus === 'confirmed') {
+                            // Neutral info style for confirmed returns
+                            draftReturnMsg.style.cssText = 'padding:10px 16px;background:#f0f4f8;border:1px solid #cbd5e1;border-radius:8px;margin:8px 16px;font-size:13px;color:#475569;';
+                            draftReturnMsg.innerHTML = `ℹ️ Return <strong>${draftReturn.prn_number || 'PRN-' + draftReturn.id}</strong> (confirmed) is linked to this order. <a href="/purchase-returns.html?id=${draftReturn.id}" style="color:#1a73e8;font-weight:600;text-decoration:underline;">View →</a>`;
+                        } else {
+                            // Pink warning for draft returns
+                            draftReturnMsg.style.cssText = 'padding:10px 16px;background:#fce4ec;border:1px solid #f48fb1;border-radius:8px;margin:8px 16px;font-size:13px;color:#880e4f;';
+                            draftReturnMsg.innerHTML = `↩ A purchase return <strong>${draftReturn.prn_number || 'PRN-' + draftReturn.id}</strong> (${retStatus}) already exists for this order. <a href="/purchase-returns.html?id=${draftReturn.id}" style="color:#1a73e8;font-weight:600;text-decoration:underline;">View →</a>`;
+                        }
+                        const insertAfter = whatsNextBanner.parentNode.querySelector('[style*="background:#fff8e1"]') || whatsNextBanner;
+                        insertAfter.parentNode.insertBefore(draftReturnMsg, insertAfter.nextSibling);
+
+                        // Remove return buttons from the What's Next banner
+                        const retBtns = whatsNextButtons.querySelectorAll('button');
+                        retBtns.forEach(btn => {
+                            if (btn.textContent.includes('Return')) {
+                                btn.style.display = 'none';
+                            }
+                        });
+                    }
                 }
 
                 // Totals
-                document.getElementById('detailSubTotal').textContent = 'PHP' + subtotal.toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                const exRate = parseFloat(po.exchange_rate) || 1;
+                const isForeign = currSymbol !== 'PHP';
+                const phpEquiv = (val) => isForeign ? '<br><span style="font-size:11px;color:#888;">PHP' + (val * exRate).toLocaleString('en-PH', { minimumFractionDigits: 2 }) + '</span>' : '';
+
+                document.getElementById('detailSubTotal').innerHTML = currSymbol + subtotal.toLocaleString('en-PH', { minimumFractionDigits: 2 }) + phpEquiv(subtotal);
                 document.getElementById('detailTotalQty').textContent = totalQty;
                 const discPct = parseFloat(po.discount_percent) || 0;
-                const discAmt = subtotal * (discPct / 100);
+                const tblDiscType = po.discount_type || '%';
+                const discAmt = tblDiscType === '%' ? subtotal * (discPct / 100) : discPct;
                 document.getElementById('discountRow').style.display = discPct > 0 ? 'flex' : 'none';
-                if (discPct > 0) document.getElementById('detailDiscountAmt').textContent = 'PHP' + discAmt.toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                if (discPct > 0) document.getElementById('detailDiscountAmt').innerHTML = currSymbol + discAmt.toLocaleString('en-PH', { minimumFractionDigits: 2 }) + phpEquiv(discAmt);
                 const adj = parseFloat(po.adjustment) || 0;
                 document.getElementById('adjustmentRow').style.display = adj !== 0 ? 'flex' : 'none';
-                if (adj !== 0) document.getElementById('detailAdjustmentAmt').textContent = 'PHP' + adj.toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                if (adj !== 0) document.getElementById('detailAdjustmentAmt').innerHTML = currSymbol + adj.toLocaleString('en-PH', { minimumFractionDigits: 2 }) + phpEquiv(adj);
                 const total = subtotal - discAmt + adj;
-                document.getElementById('detailTotal').textContent = 'PHP' + total.toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                document.getElementById('detailTotal').innerHTML = currSymbol + total.toLocaleString('en-PH', { minimumFractionDigits: 2 }) + phpEquiv(total);
 
                 // Load associated records
                 await loadAssocReceives(poId);
@@ -1658,10 +2002,10 @@
                         const st = (b.status || 'draft').toUpperCase();
                         const stClass = st === 'PAID' ? 'status-text-green' : 'status-text-orange';
                         html += `<tr>
-                            <td><a class="assoc-link" href="#">${b.bill_number || '-'}</a></td>
+                            <td><a class="assoc-link" href="/bill-detail.html?id=${b.id}">${b.bill_number || '-'}</a></td>
                             <td>${fmtDate(b.bill_date)}</td>
                             <td><span class="${stClass}">${st}</span></td>
-                            <td style="text-align:right;">PHP${parseFloat(b.total_amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+                            <td style="text-align:right;">${b.currency_code || 'PHP'}${parseFloat(b.total_amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
                         </tr>`;
                     });
                     document.getElementById('assocBillsBody').innerHTML = html;
@@ -1810,9 +2154,32 @@
             } catch (e) { console.error(e); }
         }
 
-        async function acceptCurrentQuantities(missingQty) {
+        async function acceptCurrentQuantities(missingQty, isPaidPO) {
             if (!currentPOId) return;
-            if (!confirm(`Accept current quantities? This will adjust the ordered amount to match your net received (${missingQty} item${missingQty !== 1 ? 's' : ''} will be dropped from the order). The PO will remain open for billing.`)) return;
+
+            if (isPaidPO) {
+                // Fetch PO detail for quantities
+                let orderedQty = 0, receivedQty = 0;
+                try {
+                    const poRes = await fetch('/api/purchases/' + currentPOId);
+                    if (poRes.ok) {
+                        const po = await poRes.json();
+                        orderedQty = (po.items || []).reduce((s, i) => s + (parseFloat(i.quantity) || 0), 0);
+                    }
+                    // Get net received
+                    const recByPO = await fetch('/api/purchase-receives/by-po/' + currentPOId);
+                    if (recByPO.ok) {
+                        const recData = await recByPO.json();
+                        receivedQty = recData.reduce((s, r) => s + (parseFloat(r.total_received) || 0), 0);
+                    }
+                } catch (e) { }
+
+                const confirmMsg = `You have paid for ${Math.round(orderedQty)} units but received only ${Math.round(receivedQty)}. By accepting this, GiHon will generate a Vendor Credit for the overpayment of ${missingQty} unit(s) to be used for future purchases.\n\nProceed?`;
+                if (!confirm(confirmMsg)) return;
+            } else {
+                if (!confirm(`Accept current quantities? This will adjust the ordered amount to match your net received (${missingQty} item${missingQty !== 1 ? 's' : ''} will be dropped from the order). The PO will remain open for billing.`)) return;
+            }
+
             try {
                 const res = await fetch('/api/purchases/' + currentPOId + '/accept-quantities', {
                     method: 'POST',
@@ -1822,6 +2189,12 @@
                     const err = await res.json();
                     alert(err.error || 'Failed to accept quantities');
                     return;
+                }
+                const result = await res.json();
+                if (result.vendor_credit) {
+                    showToast(`Quantities accepted. Vendor Credit ${result.vendor_credit.credit_number} generated for the overpayment.`, 'success');
+                } else {
+                    showToast('Quantities accepted and order adjusted.', 'success');
                 }
                 loadPODetail(currentPOId);
                 loadPOList();
@@ -1893,11 +2266,11 @@
                     itemsRows += `<tr><td style="padding:12px 10px;text-align:center;font-size:13px;border-bottom:1px solid #eee;">${index + 1}</td><td style="padding:12px 10px;font-size:13px;border-bottom:1px solid #eee;"><strong>${item.item_name || '-'}</strong>${desc ? '<br><span style="color:#888;font-size:12px;">' + desc + '</span>' : ''}</td><td style="padding:12px 10px;text-align:right;font-size:13px;border-bottom:1px solid #eee;">${qty.toLocaleString('en-PH', { maximumFractionDigits: 6 })}<br><span style="color:#888;font-size:11px;">${unit}</span></td><td style="padding:12px 10px;text-align:right;font-size:13px;border-bottom:1px solid #eee;">${rate.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td><td style="padding:12px 10px;text-align:right;font-size:13px;border-bottom:1px solid #eee;">${amount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td></tr>`;
                 });
             }
-            const discPct = parseFloat(po.discount_percent) || 0, discAmt = subtotal * (discPct / 100), adj = parseFloat(po.adjustment) || 0, total = subtotal - discAmt + adj;
+            const discPct = parseFloat(po.discount_percent) || 0, tblDT = po.discount_type || '%', discAmt = tblDT === '%' ? subtotal * (discPct / 100) : discPct, adj = parseFloat(po.adjustment) || 0, total = subtotal - discAmt + adj;
             let totalsHtml = `<tr><td colspan="3"></td><td style="padding:8px 10px;text-align:right;font-weight:600;font-size:13px;color:#555;">Sub Total</td><td style="padding:8px 10px;text-align:right;font-size:13px;">${subtotal.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td></tr>`;
-            if (discPct > 0) totalsHtml += `<tr><td colspan="3"></td><td style="padding:6px 10px;text-align:right;font-size:13px;color:#555;">Discount (${discPct}%)</td><td style="padding:6px 10px;text-align:right;font-size:13px;">${discAmt.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td></tr>`;
+            if (discPct > 0) totalsHtml += `<tr><td colspan="3"></td><td style="padding:6px 10px;text-align:right;font-size:13px;color:#555;">Discount${tblDT === '%' ? ' (' + discPct + '%)' : ''}</td><td style="padding:6px 10px;text-align:right;font-size:13px;">${discAmt.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td></tr>`;
             if (adj !== 0) totalsHtml += `<tr><td colspan="3"></td><td style="padding:6px 10px;text-align:right;font-size:13px;color:#555;">Adjustment</td><td style="padding:6px 10px;text-align:right;font-size:13px;">${adj.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td></tr>`;
-            totalsHtml += `<tr><td colspan="3"></td><td style="padding:12px 10px;text-align:right;font-weight:700;font-size:14px;border-top:2px solid #333;">Total</td><td style="padding:12px 10px;text-align:right;font-weight:700;font-size:14px;border-top:2px solid #333;">PHP${total.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td></tr>`;
+            totalsHtml += `<tr><td colspan="3"></td><td style="padding:12px 10px;text-align:right;font-weight:700;font-size:14px;border-top:2px solid #333;">Total</td><td style="padding:12px 10px;text-align:right;font-weight:700;font-size:14px;border-top:2px solid #333;">${po.currency_code || 'PHP'}${total.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td></tr>`;
             return `<div id="pdfContent" style="font-family:'Inter','Helvetica Neue',Arial,sans-serif;max-width:750px;margin:0 auto;padding:40px;color:#333;background:white;">
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:30px;"><div><div style="font-size:20px;font-weight:800;color:#1a1a1a;">GIHON</div><div style="font-size:12px;color:#888;margin-top:2px;">Philippines</div><div style="font-size:12px;color:#888;">btambling413@gmail.com</div></div><div style="text-align:right;"><div style="font-size:28px;font-weight:800;color:#1a1a1a;letter-spacing:1px;">PURCHASE ORDER</div><div style="font-size:13px;color:#555;margin-top:4px;"># ${poNumber}</div></div></div>
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:30px;"><div style="max-width:55%;"><div style="font-size:11px;color:#999;margin-bottom:4px;">Vendor Address</div><div style="font-size:14px;font-weight:600;color:#1a1a1a;margin-bottom:16px;">${vendorName}</div><div style="font-size:11px;color:#999;margin-bottom:4px;">Deliver To</div><div style="font-size:13px;color:#333;">${deliveryAddr}</div></div><div style="text-align:right;"><table style="border-collapse:collapse;margin-left:auto;"><tr><td style="padding:4px 16px 4px 0;font-size:12px;color:#888;text-align:right;">Date :</td><td style="padding:4px 0;font-size:13px;font-weight:500;text-align:right;">${orderDate}</td></tr><tr><td style="padding:4px 16px 4px 0;font-size:12px;color:#888;text-align:right;">Delivery Date :</td><td style="padding:4px 0;font-size:13px;font-weight:500;text-align:right;">${deliveryDate}</td></tr><tr><td style="padding:4px 16px 4px 0;font-size:12px;color:#888;text-align:right;">Ref# :</td><td style="padding:4px 0;font-size:13px;font-weight:500;text-align:right;">${refNumber}</td></tr><tr><td style="padding:4px 16px 4px 0;font-size:12px;color:#888;text-align:right;">Payment Terms :</td><td style="padding:4px 0;font-size:13px;font-weight:500;text-align:right;">${paymentTerms}</td></tr></table></div></div>

@@ -1294,65 +1294,6 @@
         }
 
         /* Toast Notification */
-        .toast-container {
-            position: fixed;
-            top: 24px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            align-items: center;
-            pointer-events: none;
-        }
-
-        .toast {
-            pointer-events: auto;
-            padding: 14px 28px;
-            border-radius: 8px;
-            color: #333;
-            font-weight: 500;
-            font-size: 14px;
-            background: #fff;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            border: 1px solid #e5e7eb;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            animation: toastSlideDown 0.3s ease;
-            min-width: 300px;
-            transition: opacity 0.3s ease;
-        }
-
-        .toast.success {
-            border-left: 4px solid #10b981;
-        }
-
-        .toast.info {
-            border-left: 4px solid #3b82f6;
-        }
-
-        .toast-icon {
-            font-size: 18px;
-        }
-
-        .toast-message {
-            flex: 1;
-        }
-
-        .toast-close {
-            background: none;
-            border: none;
-            color: #999;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .toast-close:hover {
-            color: #333;
-        }
-
         @keyframes toastSlideDown {
             from {
                 opacity: 0;
@@ -1704,7 +1645,6 @@
     </div>
 
     <!-- Toast Container -->
-    <div class="toast-container" id="toastContainer"></div>
 
     <!-- Customize Columns Modal -->
     <div class="inv-cc-overlay" id="invCCOverlay" onclick="if(event.target===this)closeInvCustomizeCols()">
@@ -2517,17 +2457,6 @@
                 dirLabel = dir === 'asc' ? 'A → Z' : 'Z → A';
             }
             showToast((labels[field] || field) + ': ' + dirLabel, 'info');
-        }
-
-        function showToast(message, type) {
-            type = type || 'info';
-            var container = document.getElementById('toastContainer');
-            if (!container) return;
-            var toast = document.createElement('div');
-            toast.className = 'toast ' + type;
-            toast.innerHTML = '<span class="toast-icon">' + (type === 'success' ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>') + '</span><span class="toast-message">' + message + '</span><button class="toast-close" onclick="this.parentElement.remove()">✕</button>';
-            container.appendChild(toast);
-            setTimeout(function () { toast.style.opacity = '0'; setTimeout(function () { toast.remove(); }, 300); }, 3000);
         }
 
         function exportInvoicesCSV() {

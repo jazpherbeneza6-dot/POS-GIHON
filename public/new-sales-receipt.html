@@ -1973,10 +1973,20 @@
                 // Salesperson (try to select after salespersons list is loaded)
                 if (r.salesperson_name) {
                     const waitForSp = setInterval(() => {
-                        if (salespersonsList.length > 0 || document.getElementById('salesperson')) {
+                        if (salespersonsList.length > 0) {
                             clearInterval(waitForSp);
                             const spInput = document.getElementById('salesperson');
                             if (spInput) spInput.value = r.salesperson_name;
+                            // Restore selectedSalesperson variable for password verification
+                            const matchedSp = salespersonsList.find(s => s.name === r.salesperson_name);
+                            if (matchedSp) {
+                                selectedSalesperson = matchedSp.id;
+                                const label = document.getElementById('spDdLabel');
+                                if (label) {
+                                    label.textContent = matchedSp.name;
+                                    label.style.color = '#333';
+                                }
+                            }
                         }
                     }, 200);
                     setTimeout(() => clearInterval(waitForSp), 3000);
@@ -2770,14 +2780,14 @@
         }
 
         function verifySalespersonPassword() {
+            // Salesperson is optional — only verify password if one is selected
             if (!selectedSalesperson) {
-                alert('Please select a salesperson.');
-                return false;
+                return true;
             }
             const sp = salespersonsList.find(s => s.id == selectedSalesperson);
             if (!sp) {
-                alert('Selected salesperson not found.');
-                return false;
+                // Salesperson ID was set but not found in list — still allow save
+                return true;
             }
             if (sp.password) {
                 const enteredPw = prompt(`Enter password for "${sp.name}" to proceed:`);

@@ -527,7 +527,7 @@
                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                         </svg></span>
-                    <h1 class="page-title">New Vendor Credit</h1>
+                    <h1 class="page-title" id="pageTitle">New Vendor Credit</h1>
                 </div>
                 <button class="close-btn" onclick="goBack()">×</button>
             </div>
@@ -578,24 +578,7 @@
                             <input type="date" id="creditDate">
                         </div>
                     </div>
-                    <div class="form-row">
-                        <div class="form-label">Reference</div>
-                        <div class="form-value">
-                            <div class="dropdown-wrap" id="billDropdownWrap">
-                                <div class="dropdown-input" id="billInput" onclick="toggleBillDropdown()">
-                                    <span id="billDisplay" class="placeholder">Select a Bill</span>
-                                    <button class="clear-btn" id="billClear" style="display:none;"
-                                        onclick="event.stopPropagation();clearBillSelection()">×</button>
-                                    <span class="dropdown-arrow">▼</span>
-                                </div>
-                                <div class="dropdown-menu" id="billMenu">
-                                    <input type="text" class="dropdown-search" id="billSearch"
-                                        placeholder="Search bills..." oninput="filterBills()">
-                                    <div id="billOptions"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+
                     <div class="form-row">
                         <div class="form-label">Reason for Credit</div>
                         <div class="form-value">
@@ -618,7 +601,8 @@
                                     <th>ITEM DETAILS</th>
                                     <th>ACCOUNT</th>
                                     <th class="center" style="width:80px;">QTY</th>
-                                    <th class="center" style="width:90px;">RATE ₱</th>
+                                    <th class="center" style="width:90px;">RATE <span id="rateHeaderSymbol">₱</span>
+                                    </th>
                                     <th class="center" style="width:100px;">AMOUNT</th>
                                     <th style="width:30px;"></th>
                                 </tr>
@@ -633,7 +617,10 @@
                         <div class="totals-box">
                             <div class="totals-row">
                                 <span class="totals-label">Sub Total</span>
-                                <span class="totals-value" id="subTotal">0.00</span>
+                                <span class="totals-value">
+                                    <span id="subTotal">0.00</span>
+                                    <div id="subTotalPhp" style="font-size:11px;color:#888;display:none;"></div>
+                                </span>
                             </div>
                             <div class="totals-row">
                                 <span class="totals-label">Discount</span>
@@ -651,8 +638,11 @@
                                 </div>
                             </div>
                             <div class="totals-row total">
-                                <span class="totals-label">Total ( PHP )</span>
-                                <span class="totals-value" id="total">0.00</span>
+                                <span class="totals-label" id="totalLabel">Total ( PHP )</span>
+                                <span class="totals-value">
+                                    <span id="total">0.00</span>
+                                    <div id="totalPhp" style="font-size:11px;color:#888;display:none;"></div>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -662,12 +652,15 @@
             <!-- Footer -->
             <div class="form-footer">
                 <div class="footer-left">
-                    <button class="btn-draft" onclick="saveCredit('draft')">Save as Draft</button>
-                    <button class="btn-save" onclick="saveCredit('open')">Save as Open</button>
+                    <button class="btn-draft" id="btnSaveDraft" onclick="saveCredit('draft')">Save as Draft</button>
+                    <button class="btn-save" id="btnSaveOpen" onclick="saveCredit('open')">Save as Open</button>
+                    <button class="btn-save" id="btnSaveEdit" style="display:none;" onclick="saveCredit()">Save</button>
                     <button class="btn-cancel" onclick="goBack()">Cancel</button>
                 </div>
                 <div class="footer-right">
-                    <div><span>Total:</span> <span class="amount" id="footerTotal">PHP 0.00</span></div>
+                    <div><span>Total:</span> <span class="amount" id="footerTotal">PHP 0.00</span>
+                        <div id="footerTotalPhp" style="font-size:11px;color:#888;display:none;"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -678,12 +671,16 @@
         const urlParams = new URLSearchParams(window.location.search);
         const sourceBillId = urlParams.get('billId');
         const sourcePrnId = urlParams.get('from_prn');
+        const editId = urlParams.get('editId');
         let billData = null;
         let prnData = null;
         let allVendors = [];
         let allBills = [];
         let selectedVendor = null;
         let selectedBill = null;
+        let creditCurrency = 'PHP';
+        let creditCurrencySymbol = '₱';
+        let creditExchangeRate = 1;
 
         document.addEventListener('DOMContentLoaded', async function () {
             // Set today's date
@@ -737,11 +734,117 @@
                 if (!document.getElementById('vendorDropdownWrap').contains(e.target)) {
                     document.getElementById('vendorMenu').classList.remove('show');
                 }
-                if (!document.getElementById('billDropdownWrap').contains(e.target)) {
-                    document.getElementById('billMenu').classList.remove('show');
+                const billWrap = document.getElementById('billDropdownWrap');
+                if (billWrap && !billWrap.contains(e.target)) {
+                    const bm = document.getElementById('billMenu');
+                    if (bm) bm.classList.remove('show');
                 }
             });
+
+            // ===== EDIT MODE: Load existing vendor credit =====
+            if (editId) {
+                document.getElementById('pageTitle').textContent = 'Edit Vendor Credit';
+                document.title = 'Edit Vendor Credit';
+                await loadEditData(editId);
+            }
         });
+
+        // ===== LOAD EXISTING CREDIT FOR EDITING =====
+        async function loadEditData(id) {
+            try {
+                const res = await fetch('/api/vendor-credits/' + id);
+                if (!res.ok) { alert('Failed to load vendor credit'); return; }
+                const data = await res.json();
+
+                // Pre-fill credit number and date
+                document.getElementById('creditNumber').value = data.credit_number || '';
+                if (data.credit_date) {
+                    const d = new Date(data.credit_date);
+                    document.getElementById('creditDate').value = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+                }
+
+                // Pre-fill reason
+                document.getElementById('reason').value = data.reason || '';
+
+                // Pre-fill discount and adjustment
+                document.getElementById('discountValue').value = parseFloat(data.discount_percent) || 0;
+                document.getElementById('adjustmentValue').value = parseFloat(data.adjustment) || 0;
+
+                // Pre-fill currency if foreign
+                if (data.currency_code && data.currency_code !== 'PHP') {
+                    creditCurrency = data.currency_code;
+                    creditExchangeRate = parseFloat(data.exchange_rate) || 1;
+                    const symbolMap = { 'USD': '$', 'EUR': '€', 'GBP': '£', 'JPY': '¥' };
+                    creditCurrencySymbol = symbolMap[creditCurrency] || creditCurrency + ' ';
+                }
+
+                // Pre-fill vendor
+                if (data.supplier_id) {
+                    const vendor = allVendors.find(v => v.id == data.supplier_id);
+                    if (vendor) {
+                        selectVendor(vendor);
+                    } else {
+                        // Vendor not in list, set manually
+                        selectedVendor = { id: data.supplier_id, display_name: data.supplier_name, name: data.supplier_name };
+                        document.getElementById('vendorDisplay').textContent = data.supplier_name || 'Unknown';
+                        document.getElementById('vendorDisplay').className = 'selected-text';
+                        document.getElementById('vendorClear').style.display = 'block';
+                        document.getElementById('vendorMenu').classList.remove('show');
+                    }
+                }
+
+                // Pre-fill items
+                const items = data.items || [];
+                if (items.length > 0) {
+                    const tbody = document.getElementById('itemTableBody');
+                    tbody.innerHTML = '';
+                    items.forEach(item => {
+                        const qty = parseFloat(item.quantity) || 0;
+                        const rate = parseFloat(item.rate) || 0;
+                        const amount = (qty * rate).toFixed(3);
+                        const acct = item.account || 'inventory';
+                        const acctType = item.account_type || 'inventory';
+                        const isExpense = acctType !== 'inventory';
+                        const acctLabel = getAccountLabel(acct);
+
+                        const tr = document.createElement('tr');
+                        tr.setAttribute('data-item-id', item.item_id || '');
+                        tr.setAttribute('data-account', acct);
+                        tr.setAttribute('data-account-type', acctType);
+                        tr.setAttribute('data-rate', rate);
+                        tr.innerHTML = `
+                            <td><div class="item-image">${isExpense ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>' : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>'}</div></td>
+                            <td>
+                                <div class="item-name">${item.item_name || '—'}</div>
+                                <div class="item-account">${acctLabel}</div>
+                            </td>
+                            <td style="font-size:12px;color:#666;">${acctLabel}</td>
+                            <td class="center">
+                                <input type="number" value="${qty}" min="0" step="1" class="qty-input" onchange="updateRowAmount(this)">
+                            </td>
+                            <td class="center" style="font-weight:500;">${creditCurrencySymbol}${rate.toFixed(3)}</td>
+                            <td class="center row-amount" style="font-weight:500;">${amount}</td>
+                            <td class="center"><button class="delete-row-btn" onclick="deleteRow(this)">×</button></td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                    recalculateTotals();
+                }
+
+                // If open/closed, swap footer buttons to just Save/Cancel
+                const st = (data.status || '').toLowerCase();
+                if (st === 'open' || st === 'closed') {
+                    document.getElementById('btnSaveDraft').style.display = 'none';
+                    document.getElementById('btnSaveOpen').style.display = 'none';
+                    document.getElementById('btnSaveEdit').style.display = '';
+                    document.getElementById('btnSaveEdit').setAttribute('data-status', data.status);
+                }
+
+            } catch (e) {
+                console.error('Error loading credit for edit:', e);
+                alert('Error loading vendor credit data');
+            }
+        }
 
         // ===== VENDOR DROPDOWN =====
         function toggleVendorDropdown() {
@@ -804,14 +907,18 @@
                 alert('Please select a vendor first');
                 return;
             }
-            document.getElementById('billMenu').classList.toggle('show');
-            document.getElementById('billSearch').value = '';
+            const bm = document.getElementById('billMenu');
+            if (!bm) return;
+            bm.classList.toggle('show');
+            const bs = document.getElementById('billSearch');
+            if (bs) { bs.value = ''; }
             renderBillOptions();
-            setTimeout(() => document.getElementById('billSearch').focus(), 50);
+            if (bs) setTimeout(() => bs.focus(), 50);
         }
 
         function renderBillOptions(query) {
             const container = document.getElementById('billOptions');
+            if (!container) return;
             if (!selectedVendor) {
                 container.innerHTML = '<div class="dropdown-empty">Select a vendor first</div>';
                 return;
@@ -842,16 +949,19 @@
         }
 
         function filterBills() {
-            renderBillOptions(document.getElementById('billSearch').value);
+            const bs = document.getElementById('billSearch');
+            renderBillOptions(bs ? bs.value : '');
         }
 
         async function selectBill(bill) {
             selectedBill = bill;
             billData = bill;
-            document.getElementById('billDisplay').textContent = bill.bill_number || 'BILL-' + bill.id;
-            document.getElementById('billDisplay').className = 'selected-text';
-            document.getElementById('billClear').style.display = 'block';
-            document.getElementById('billMenu').classList.remove('show');
+            const bd = document.getElementById('billDisplay');
+            if (bd) { bd.textContent = bill.bill_number || 'BILL-' + bill.id; bd.className = 'selected-text'; }
+            const bc = document.getElementById('billClear');
+            if (bc) bc.style.display = 'block';
+            const bm = document.getElementById('billMenu');
+            if (bm) bm.classList.remove('show');
 
             // Fetch bill details with items
             try {
@@ -870,9 +980,10 @@
         function clearBillSelection() {
             selectedBill = null;
             if (!sourceBillId) billData = null;
-            document.getElementById('billDisplay').textContent = 'Select a Bill';
-            document.getElementById('billDisplay').className = 'placeholder';
-            document.getElementById('billClear').style.display = 'none';
+            const bd = document.getElementById('billDisplay');
+            if (bd) { bd.textContent = 'Select a Bill'; bd.className = 'placeholder'; }
+            const bc = document.getElementById('billClear');
+            if (bc) bc.style.display = 'none';
         }
 
         // ===== POPULATE ITEMS FROM BILL =====
@@ -884,7 +995,7 @@
             items.forEach(item => {
                 const qty = parseFloat(item.quantity) || 1;
                 const rate = parseFloat(item.rate) || parseFloat(item.unit_price) || 0;
-                const amount = (qty * rate).toFixed(2);
+                const amount = (qty * rate).toFixed(3);
                 const acct = item.account || 'inventory';
                 const acctType = item.account_type || 'inventory';
                 const isExpense = acctType !== 'inventory';
@@ -905,7 +1016,7 @@
                     <td class="center">
                         <input type="number" value="${qty}" min="0" step="1" class="qty-input" onchange="updateRowAmount(this)">
                     </td>
-                    <td class="center" style="font-weight:500;">₱${rate.toFixed(2)}</td>
+                    <td class="center" style="font-weight:500;">${creditCurrencySymbol}${rate.toFixed(3)}</td>
                     <td class="center row-amount" style="font-weight:500;">${amount}</td>
                     <td class="center"><button class="delete-row-btn" onclick="deleteRow(this)">×</button></td>
                 `;
@@ -940,11 +1051,12 @@
                     document.getElementById('vendorClear').style.display = 'block';
                 }
 
-                // Auto-select this bill in the reference dropdown
+                // Auto-select this bill reference
                 selectedBill = billData;
-                document.getElementById('billDisplay').textContent = billData.bill_number || 'BILL-' + billData.id;
-                document.getElementById('billDisplay').className = 'selected-text';
-                document.getElementById('billClear').style.display = 'block';
+                const bd = document.getElementById('billDisplay');
+                if (bd) { bd.textContent = billData.bill_number || 'BILL-' + billData.id; bd.className = 'selected-text'; }
+                const bc = document.getElementById('billClear');
+                if (bc) bc.style.display = 'block';
 
                 // Fill item table from bill items
                 populateItemsFromBill(billData);
@@ -985,20 +1097,143 @@
                 // Set reason
                 document.getElementById('reason').value = 'Credit for ' + (prnData.prn_number || 'PRN-' + prnData.id);
 
-                // Populate items from PRN — with financial guardrail
+                // ── EFFECTIVE NET RATE APPROACH ──
+                // Instead of re-applying PO discounts (which causes double-counting),
+                // fetch the linked BILL to get the actual paid amount. The bill's
+                // total_amount already has ALL discounts (line + total) baked in.
+                // Effective rate = bill_total / bill_qty per item.
+
+                let linkedBill = null;
+                let billItemMap = {}; // item_id → { effective_rate, qty, amount }
+
+                if (prnData.purchase_order_id) {
+                    try {
+                        // Fetch PO for currency info
+                        const poRes = await fetch('/api/purchases/' + prnData.purchase_order_id);
+                        if (poRes.ok) {
+                            const poData = await poRes.json();
+                            if (poData.currency_code && poData.currency_code !== 'PHP') {
+                                creditCurrency = poData.currency_code;
+                                const symbolMap = { 'CNY': '¥', 'RMB': '¥', 'USD': '$', 'EUR': '€', 'GBP': '£', 'JPY': '¥' };
+                                creditCurrencySymbol = symbolMap[creditCurrency] || creditCurrency + ' ';
+                                document.getElementById('rateHeaderSymbol').textContent = creditCurrencySymbol;
+                                creditExchangeRate = parseFloat(poData.exchange_rate) || 1;
+                            }
+                        }
+
+                        // Find the bill linked to this PO
+                        const billsRes = await fetch('/api/bills');
+                        if (billsRes.ok) {
+                            const allBillsData = await billsRes.json();
+                            // Find bills for this PO (exclude drafts), take the most recent
+                            const poBills = allBillsData.filter(b =>
+                                b.purchase_order_id == prnData.purchase_order_id &&
+                                (b.status || '').toUpperCase() !== 'DRAFT'
+                            ).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+                            if (poBills.length > 0) {
+                                // Fetch full bill with items
+                                const billDetailRes = await fetch('/api/bills/' + poBills[0].id);
+                                if (billDetailRes.ok) {
+                                    linkedBill = await billDetailRes.json();
+
+                                    // Build per-item effective rate from the bill.
+                                    // The bill's total_amount has ALL discounts baked in
+                                    // (line discounts + total/document discount + adjustment).
+                                    // We distribute billTotal proportionally across items
+                                    // based on each line's post-line-discount contribution.
+                                    const billItems = linkedBill.items || [];
+                                    const billTotal = parseFloat(linkedBill.total_amount) || 0;
+
+                                    // Step 1: Compute each line's contribution AFTER its own line discount
+                                    const lineContributions = billItems.map(bi => {
+                                        const biQty = parseFloat(bi.quantity) || 1;
+                                        const biRate = parseFloat(bi.rate) || parseFloat(bi.unit_price) || 0;
+                                        const biLineDisc = parseFloat(bi.discount_percent) || 0;
+                                        const biDiscType = (bi.discount_type || '%').trim();
+                                        let lineNet;
+                                        if (biLineDisc > 0) {
+                                            if (biDiscType === '%') {
+                                                lineNet = biQty * biRate * (1 - biLineDisc / 100);
+                                            } else {
+                                                lineNet = biQty * biRate - biLineDisc;
+                                            }
+                                        } else {
+                                            lineNet = biQty * biRate;
+                                        }
+                                        return { bi, lineNet, biQty, biRate, biLineDisc, biDiscType };
+                                    });
+
+                                    // Step 2: Sum contributions = effective subtotal (after line discounts)
+                                    const effectiveSubtotal = lineContributions.reduce((s, c) => s + c.lineNet, 0);
+
+                                    // Step 3: Distribute billTotal proportionally
+                                    lineContributions.forEach(({ bi, lineNet, biQty, biRate, biLineDisc, biDiscType }) => {
+                                        const key = bi.item_id || ('name:' + (bi.item_name || ''));
+                                        // This line's share of the final bill total
+                                        const lineShare = effectiveSubtotal > 0
+                                            ? (lineNet / effectiveSubtotal) * billTotal
+                                            : billTotal / billItems.length;
+                                        // Effective rate per unit (all discounts baked in)
+                                        const effectiveRate = lineShare / biQty;
+
+                                        billItemMap[key] = {
+                                            effective_rate: effectiveRate,
+                                            qty: biQty,
+                                            total_net: lineShare,
+                                            original_rate: biRate,
+                                            line_discount: biLineDisc,
+                                            line_discount_type: biDiscType
+                                        };
+                                    });
+                                }
+                            }
+                        }
+                    } catch (e) { console.error('Error fetching bill/PO data for effective rate:', e); }
+                }
+
+                // DO NOT set document-level discount — it's already baked into
+                // the effective rate. Setting it again would double-count.
+                document.getElementById('discountValue').value = 0;
+                document.getElementById('adjustmentValue').value = 0;
+
+                // Populate items from PRN using effective rates from the bill
                 const tbody = document.getElementById('itemTableBody');
                 tbody.innerHTML = '';
                 const items = prnData.items || [];
                 let hasOverShipment = false;
+
                 items.forEach(item => {
                     const qty = parseFloat(item.return_quantity) || 0;
                     const originalRate = parseFloat(item.rate) || 0;
                     const isOverShipment = (item.return_reason || '').toLowerCase() === 'over-shipment';
+                    const itemKey = item.item_id || ('name:' + (item.item_name || ''));
 
-                    // Over-shipment items get ₱0 credit — they were never billed
-                    const creditRate = isOverShipment ? 0 : originalRate;
-                    const amount = (qty * creditRate).toFixed(2);
-                    if (isOverShipment) hasOverShipment = true;
+                    let creditRate = originalRate;
+                    let discountNote = '';
+
+                    if (isOverShipment) {
+                        // Over-shipment items get 0 credit — they were never billed
+                        creditRate = 0;
+                        hasOverShipment = true;
+                    } else if (billItemMap[itemKey]) {
+                        // Use the effective rate from the bill (all discounts baked in)
+                        const info = billItemMap[itemKey];
+
+                        // Keep full precision — e.g. 45.125 for 90.25 / 2
+                        // No premature rounding; the exact value is the credit rate
+                        creditRate = info.effective_rate;
+
+                        // Build discount note showing the derivation
+                        const hasDiscount = info.line_discount > 0 || info.effective_rate !== info.original_rate;
+                        if (hasDiscount) {
+                            const rateDisplay = creditRate % 1 !== 0 ? creditRate.toFixed(3).replace(/0+$/, '') : creditRate.toFixed(3);
+                            discountNote = `<div style="font-size:10px;color:#888;margin-top:2px;"><s>${creditCurrencySymbol}${info.original_rate.toFixed(3)}</s> → net ${creditCurrencySymbol}${rateDisplay}/unit</div>`;
+                        }
+                    }
+
+                    const rawAmount = qty * creditRate;
+                    const amount = rawAmount % 1 !== 0 ? rawAmount.toFixed(3).replace(/0+$/, '') : rawAmount.toFixed(3);
 
                     const tr = document.createElement('tr');
                     tr.setAttribute('data-item-id', item.item_id || '');
@@ -1009,14 +1244,14 @@
                         <td><div class="item-image"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div></td>
                         <td>
                             <div class="item-name">${item.item_name || '—'}</div>
-                            <div class="item-account">${isOverShipment ? '<span style="color:#e65100;font-size:11px;">⚠ Over-shipment — ₱0 credit</span>' : 'Inventory Asset'}</div>
+                            <div class="item-account">${isOverShipment ? '<span style="color:#e65100;font-size:11px;">⚠ Over-shipment — ' + creditCurrencySymbol + '0 credit</span>' : 'Inventory Asset'}</div>
                         </td>
                         <td style="font-size:12px;color:#666;">${isOverShipment ? '<span style="color:#e65100;">Over-shipment</span>' : 'Inventory Asset'}</td>
                         <td class="center">
                             <input type="number" value="${qty}" min="0" step="1" class="qty-input" onchange="updateRowAmount(this)"${isOverShipment ? ' readonly style="background:#fafafa;color:#999;"' : ''}>
                         </td>
-                        <td class="center" style="font-weight:500;${isOverShipment ? 'color:#999;text-decoration:line-through;' : ''}">₱${isOverShipment ? '0.00' : creditRate.toFixed(2)}</td>
-                        <td class="center row-amount" style="font-weight:500;${isOverShipment ? 'color:#999;' : ''}">${amount}</td>
+                        <td class="center" style="font-weight:500;${isOverShipment ? 'color:#999;text-decoration:line-through;' : ''}">${creditCurrencySymbol}${isOverShipment ? '0.00' : (creditRate % 1 !== 0 ? creditRate.toFixed(3).replace(/0+$/, '') : creditRate.toFixed(3))}${discountNote}</td>
+                        <td class="center row-amount" style="font-weight:500;${isOverShipment ? 'color:#999;' : ''}">${amount}${(creditCurrency !== 'PHP' && creditExchangeRate > 0) ? '<div style="font-size:10px;color:#888;">₱' + (parseFloat(amount) * creditExchangeRate).toFixed(3) + '</div>' : ''}</td>
                         <td class="center"><button class="delete-row-btn" onclick="deleteRow(this)">×</button></td>
                     `;
                     tbody.appendChild(tr);
@@ -1024,7 +1259,7 @@
 
                 // Show info about over-shipment guardrail
                 if (hasOverShipment) {
-                    document.getElementById('reason').value += '\nNote: Over-shipment items have ₱0 credit value as they were not part of the original billed amount.';
+                    document.getElementById('reason').value += '\nNote: Over-shipment items have ' + creditCurrencySymbol + '0 credit value as they were not part of the original billed amount.';
                 }
 
                 recalculateTotals();
@@ -1054,7 +1289,10 @@
             const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
             const rate = parseFloat(row.getAttribute('data-rate')) || 0;
             const amountCell = row.querySelector('.row-amount');
-            if (amountCell) amountCell.textContent = (qty * rate).toFixed(2);
+            if (amountCell) {
+                const amt = qty * rate;
+                amountCell.textContent = amt % 1 !== 0 ? amt.toFixed(3).replace(/0+$/, '') : amt.toFixed(3);
+            }
             recalculateTotals();
         }
 
@@ -1067,26 +1305,55 @@
         }
 
         function recalculateTotals() {
+            const fmtAmt = v => v % 1 !== 0 && (v * 1000) % 1 < 0.001 && String(v).split('.')[1]?.length > 2
+                ? v.toFixed(3).replace(/0+$/, '') : v.toFixed(3);
+
             const rows = document.getElementById('itemTableBody').rows;
             let sub = 0;
             for (let i = 0; i < rows.length; i++) {
                 const a = rows[i].querySelector('.row-amount');
                 if (a) sub += parseFloat(a.textContent) || 0;
             }
-            document.getElementById('subTotal').textContent = sub.toFixed(2);
+            document.getElementById('subTotal').textContent = fmtAmt(sub);
 
             const dp = parseFloat(document.getElementById('discountValue').value) || 0;
             const da = sub * (dp / 100);
-            document.getElementById('discountAmount').textContent = da.toFixed(2);
+            document.getElementById('discountAmount').textContent = fmtAmt(da);
 
             const adj = parseFloat(document.getElementById('adjustmentValue').value) || 0;
             const total = sub - da + adj;
-            document.getElementById('total').textContent = total.toFixed(2);
-            document.getElementById('footerTotal').textContent = 'PHP ' + total.toFixed(2);
+            document.getElementById('total').textContent = fmtAmt(total);
+            document.getElementById('footerTotal').textContent = creditCurrency + ' ' + fmtAmt(total);
+            document.getElementById('totalLabel').textContent = 'Total ( ' + creditCurrency + ' )';
+
+            // Show PHP equivalents if foreign currency
+            const isFC = creditCurrency !== 'PHP' && creditExchangeRate > 0;
+            const subPhp = document.getElementById('subTotalPhp');
+            const totalPhp = document.getElementById('totalPhp');
+            const footerPhp = document.getElementById('footerTotalPhp');
+            if (isFC) {
+                const phpSub = (sub * creditExchangeRate).toFixed(3);
+                const phpTotal = (total * creditExchangeRate).toFixed(3);
+                subPhp.textContent = '₱' + phpSub;
+                subPhp.style.display = 'block';
+                totalPhp.textContent = '₱' + phpTotal;
+                totalPhp.style.display = 'block';
+                footerPhp.textContent = '₱' + phpTotal;
+                footerPhp.style.display = 'block';
+            } else {
+                subPhp.style.display = 'none';
+                totalPhp.style.display = 'none';
+                footerPhp.style.display = 'none';
+            }
         }
 
-        // Save vendor credit
+        // Save vendor credit (create or update)
         async function saveCredit(status) {
+            // In edit mode, preserve original status if not explicitly changed
+            if (!status && editId) {
+                const editBtn = document.getElementById('btnSaveEdit');
+                status = editBtn ? editBtn.getAttribute('data-status') : 'open';
+            }
             if (!selectedVendor) { alert('Please select a vendor'); return; }
             const creditNumber = document.getElementById('creditNumber').value.trim();
             if (!creditNumber) { alert('Please enter a vendor credit number'); return; }
@@ -1122,27 +1389,33 @@
                 supplier_id: selectedVendor.id || null,
                 supplier_name: selectedVendor.display_name || selectedVendor.name || null,
                 credit_date: document.getElementById('creditDate').value || null,
-                reference: selectedBill ? (selectedBill.bill_number || '') : null,
+                reference: sourcePrnId && prnData ? (prnData.prn_number || '') : null,
                 reason: document.getElementById('reason').value.trim() || null,
                 discount_percent: parseFloat(document.getElementById('discountValue').value) || 0,
                 adjustment: parseFloat(document.getElementById('adjustmentValue').value) || 0,
                 items: items,
-                status: status
+                status: status,
+                currency_code: creditCurrency,
+                exchange_rate: creditExchangeRate
             };
 
             try {
-                const res = await fetch('/api/vendor-credits', {
-                    method: 'POST',
+                const isEdit = !!editId;
+                const url = isEdit ? '/api/vendor-credits/' + editId : '/api/vendor-credits';
+                const method = isEdit ? 'PUT' : 'POST';
+
+                const res = await fetch(url, {
+                    method: method,
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
                 const result = await res.json();
                 if (!res.ok) { alert('Error: ' + (result.error || 'Failed to save')); return; }
 
-                showToast('Vendor Credit has been created');
+                showToast(isEdit ? 'Vendor Credit has been updated' : 'Vendor Credit has been created');
 
                 // If from PRN, update the PRN's credit_status to 'Credited'
-                if (sourcePrnId) {
+                if (sourcePrnId && !isEdit) {
                     try {
                         await fetch('/api/purchase-returns/' + sourcePrnId, {
                             method: 'PUT',
@@ -1152,12 +1425,9 @@
                     } catch (e) { console.error('Error updating PRN credit status:', e); }
                 }
 
+                const targetId = isEdit ? editId : result.id;
                 setTimeout(() => {
-                    if (sourcePrnId) {
-                        window.location.href = '/purchase-returns.html?id=' + sourcePrnId;
-                    } else {
-                        window.location.href = '/vendor-credits.html';
-                    }
+                    window.location.href = '/vendor-credit-detail.html?id=' + targetId;
                 }, 1200);
             } catch (e) {
                 console.error(e);
@@ -1165,24 +1435,20 @@
             }
         }
 
-        function showToast(msg) {
-            const t = document.createElement('div');
-            t.textContent = msg;
-            t.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#16a34a;color:white;padding:12px 28px;border-radius:8px;font-size:14px;font-weight:500;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.15);';
-            document.body.appendChild(t);
-            setTimeout(() => t.remove(), 3000);
-        }
-
         function goBack() {
-            const fromVendor = urlParams.get('vendor_id');
-            if (sourcePrnId) {
+            if (editId) {
+                window.location.href = '/vendor-credit-detail.html?id=' + editId;
+            } else if (sourcePrnId) {
                 window.location.href = '/purchase-returns.html?id=' + sourcePrnId;
             } else if (sourceBillId) {
                 window.location.href = '/bill-detail.html?id=' + sourceBillId;
-            } else if (fromVendor) {
-                window.location.href = '/vendors.html#vendor=' + fromVendor;
             } else {
-                window.location.href = '/vendor-credits.html';
+                const fromVendor = urlParams.get('vendor_id');
+                if (fromVendor) {
+                    window.location.href = '/vendors.html#vendor=' + fromVendor;
+                } else {
+                    window.location.href = '/vendor-credits.html';
+                }
             }
         }
     </script>

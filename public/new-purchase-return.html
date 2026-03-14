@@ -372,6 +372,25 @@
 
                     <label class="sr-label">Reason</label>
                     <textarea class="sr-textarea" id="returnReason" placeholder="Enter reason for return..."></textarea>
+
+                    <div id="resolutionRow">
+                    <label class="sr-label">Resolution</label>
+                    <div style="display:flex;gap:24px;padding:6px 0;flex-wrap:wrap;">
+                        <label id="creditLabel" style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;" title="">
+                            <input type="radio" name="resolutionType" value="credit" checked
+                                style="accent-color:#1a73e8;">
+                            <span>💳 Vendor Credit</span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;">
+                            <input type="radio" name="resolutionType" value="replacement" style="accent-color:#e65100;">
+                            <span>🔄 Wait for Replacement</span>
+                        </label>
+                        <label id="cancelOrderLabel" style="display:none;align-items:center;gap:6px;cursor:pointer;font-size:13px;" title="Reduces the PO ordered quantity so you only pay for the items you keep. No credit is issued since the items were never billed.">
+                            <input type="radio" name="resolutionType" value="cancel_order" style="accent-color:#7c3aed;">
+                            <span>📋 Cancel Order Requirement</span>
+                        </label>
+                    </div>
+                    </div>
                 </div>
 
                 <!-- Items Table -->
@@ -431,7 +450,7 @@
             <div class="sr-footer">
                 <button class="sr-btn primary" id="btnSaveDraft" onclick="savePurchaseReturn('DRAFT')">Save as
                     Draft</button>
-                <button class="sr-btn" onclick="savePurchaseReturn('APPROVED')">Save and Approve</button>
+                <button class="sr-btn" onclick="savePurchaseReturn('CONFIRMED')">Save and Confirm</button>
                 <button class="sr-btn cancel" onclick="goBack()">Cancel</button>
                 <span class="sr-total-items" id="totalItemsLabel">Total Items : 0</span>
             </div>
@@ -448,6 +467,7 @@
         let returnItems = [];
         let allItems = [];
         let sourcePOId = null; // Track linked PO
+        let isPOBilled = false; // Track whether the PO has any non-draft bills
 
         function goBack() {
             if (editId) {
@@ -518,6 +538,10 @@
                         document.getElementById('warehouseLocation').value = editReturnData.warehouse_location || 'Head Office';
                         document.getElementById('poNumber').value = editReturnData.purchase_order_number || '';
                         document.getElementById('returnReason').value = editReturnData.reason || '';
+                        // Restore resolution type radio
+                        const resType = editReturnData.resolution_type || 'credit';
+                        const radio = document.querySelector(`input[name="resolutionType"][value="${resType}"]`);
+                        if (radio) radio.checked = true;
                         sourcePOId = editReturnData.purchase_order_id;
 
                         returnItems = (editReturnData.items || []).map(item => ({
@@ -666,6 +690,16 @@
                     }
                 });
 
+                // Detect billing status for this PO
+                try {
+                    const billsRes = await fetch('/api/bills');
+                    if (billsRes.ok) {
+                        const allBills = await billsRes.json();
+                        const poBills = allBills.filter(b => b.purchase_order_id == poId && (b.status || '').toUpperCase() !== 'DRAFT');
+                        isPOBilled = poBills.length > 0;
+                    }
+                } catch (e) { console.error('Error checking bill status:', e); }
+
                 renderItems();
                 generateAutoNote();
             } catch (e) { console.error('Error loading PO:', e); }
@@ -790,6 +824,18 @@
                     }
                 });
 
+                // Detect billing status for the linked PO
+                if (sourcePOId) {
+                    try {
+                        const billsRes2 = await fetch('/api/bills');
+                        if (billsRes2.ok) {
+                            const allBills2 = await billsRes2.json();
+                            const poBills2 = allBills2.filter(b => b.purchase_order_id == sourcePOId && (b.status || '').toUpperCase() !== 'DRAFT');
+                            isPOBilled = poBills2.length > 0;
+                        }
+                    } catch (e) { console.error('Error checking bill status:', e); }
+                }
+
                 renderItems();
                 generateAutoNote();
             } catch (e) { console.error('Error loading Receive:', e); }
@@ -884,6 +930,7 @@
             if (helpPanel) helpPanel.style.display = hasSurplus ? 'block' : 'none';
 
             updateTotalItems();
+            checkResolutionVisibility();
         }
 
         function updateReturnQty(idx, val, inputEl) {
@@ -900,6 +947,7 @@
             }
             updateTotalItems();
             generateAutoNote();
+            checkResolutionVisibility();
         }
 
         function updateReturnReason(idx, reason) {
@@ -913,6 +961,7 @@
             }
             returnItems[idx].return_reason = reason;
             generateAutoNote();
+            checkResolutionVisibility();
         }
 
         function generateAutoNote() {
@@ -957,6 +1006,77 @@
             document.getElementById('totalItemsLabel').textContent = 'Total Items : ' + total;
         }
 
+        function checkResolutionVisibility() {
+            const activeItems = returnItems.filter(item => (item.return_quantity || 0) > 0);
+            const hasOriginalItem = activeItems.some(item => {
+                // An item is "original" if it is NOT a surplus/over-shipment row
+                return !(item.is_split && (item.return_reason || '').toLowerCase() === 'over-shipment');
+            });
+            const onlySurplus = activeItems.length > 0 && !hasOriginalItem;
+
+            const resolutionRow = document.getElementById('resolutionRow');
+            const helpPanel = document.getElementById('surplusHelpPanel');
+            const creditLabel = document.getElementById('creditLabel');
+            const creditRadio = creditLabel ? creditLabel.querySelector('input[type="radio"]') : null;
+            const cancelOrderLabel = document.getElementById('cancelOrderLabel');
+            const cancelOrderRadio = cancelOrderLabel ? cancelOrderLabel.querySelector('input[type="radio"]') : null;
+
+            // Help panel content (shared for surplus and non-surplus with splits)
+            const helpPanelContent = `<div style="font-weight:600;margin-bottom:6px;">ℹ️ How to handle Return Rows:</div>
+                <div style="margin-bottom:4px;">
+                    <span style="background:#e8f0fe;color:#1a73e8;padding:1px 6px;border-radius:8px;font-size:10px;font-weight:600;">ORIGINAL</span>
+                    <strong>Original Row:</strong> Use for returning items from your official order.
+                </div>
+                <div>
+                    <span style="background:#fff3e0;color:#e65100;padding:1px 6px;border-radius:8px;font-size:10px;font-weight:600;">SURPLUS</span>
+                    <strong>Surplus Row:</strong> Use for extra items you received but were not billed for. This only fixes your <strong>Stock Count</strong>.
+                </div>`;
+
+            if (onlySurplus) {
+                // Hide resolution radios entirely for surplus-only
+                resolutionRow.style.display = 'none';
+                if (helpPanel) {
+                    helpPanel.style.display = 'block';
+                    helpPanel.innerHTML = helpPanelContent;
+                }
+            } else {
+                // Show resolution radios
+                resolutionRow.style.display = '';
+
+                // ── Billing-aware resolution options ──
+                if (isPOBilled) {
+                    // BILLED: Vendor Credit enabled, Cancel Order hidden
+                    if (creditRadio) { creditRadio.disabled = false; }
+                    if (creditLabel) { creditLabel.style.opacity = ''; creditLabel.style.cursor = 'pointer'; creditLabel.title = ''; }
+                    if (cancelOrderLabel) { cancelOrderLabel.style.display = 'none'; }
+                    // If cancel_order was selected, switch to credit
+                    if (cancelOrderRadio && cancelOrderRadio.checked) {
+                        if (creditRadio) creditRadio.checked = true;
+                    }
+                } else if (sourcePOId) {
+                    // UNBILLED: Vendor Credit disabled, Cancel Order shown
+                    if (creditRadio) { creditRadio.disabled = true; }
+                    if (creditLabel) { creditLabel.style.opacity = '0.45'; creditLabel.style.cursor = 'not-allowed'; creditLabel.title = 'Cannot issue credit for unbilled items'; }
+                    if (cancelOrderLabel) { cancelOrderLabel.style.display = 'flex'; }
+                    // If credit was selected, auto-switch to cancel_order
+                    if (creditRadio && creditRadio.checked) {
+                        if (cancelOrderRadio) cancelOrderRadio.checked = true;
+                    }
+                }
+
+                // Show help panel if splits exist
+                const hasSurplus = returnItems.some(item => item.is_split);
+                if (helpPanel) {
+                    if (hasSurplus) {
+                        helpPanel.style.display = 'block';
+                        helpPanel.innerHTML = helpPanelContent;
+                    } else {
+                        helpPanel.style.display = 'none';
+                    }
+                }
+            }
+        }
+
         async function savePurchaseReturn(status) {
             const prnNumber = document.getElementById('prnNumber').value;
             // Use the actual value even if select is disabled
@@ -987,6 +1107,14 @@
                 return;
             }
 
+            // Determine if this is a surplus-only return
+            const activeItems = returnItems.filter(item => (item.return_quantity || 0) > 0);
+            const hasOriginalItem = activeItems.some(item => {
+                return !(item.is_split && (item.return_reason || '').toLowerCase() === 'over-shipment');
+            });
+            const isSurplusOnly = activeItems.length > 0 && !hasOriginalItem;
+            const selectedResolution = document.querySelector('input[name="resolutionType"]:checked')?.value || 'credit';
+
             const body = {
                 prn_number: prnNumber,
                 return_date: new Date().toISOString(),
@@ -997,7 +1125,8 @@
                 vendor_name: vendorName,
                 status: status,
                 return_status: 'Pending',
-                credit_status: 'Pending',
+                credit_status: isSurplusOnly ? 'N/A' : (selectedResolution === 'cancel_order' ? 'N/A' : 'Pending'),
+                resolution_type: isSurplusOnly ? null : selectedResolution,
                 items: items
             };
 

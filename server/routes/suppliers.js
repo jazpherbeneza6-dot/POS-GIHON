@@ -59,7 +59,7 @@ router.get('/', async (req, res) => {
       agg AS (
         SELECT LOWER(COALESCE(s.name, p.supplier_name)) AS norm_name,
                SUM(pi.quantity)::int AS total_quantity,
-               SUM(p.total_amount)::numeric(12,2) AS total_spent
+               SUM(p.total_amount)::numeric(12,3) AS total_spent
         FROM purchases p
         LEFT JOIN suppliers s ON s.id = p.supplier_id
         LEFT JOIN purchase_items pi ON pi.purchase_id = p.id
@@ -86,21 +86,38 @@ router.get('/', async (req, res) => {
         sd.created_at,
         sd.updated_at,
         COALESCE(a.total_quantity, 0) AS total_quantity,
-        COALESCE(a.total_spent, 0)::numeric(12,2) AS total_spent,
-        COALESCE(ob.outstanding, 0)::numeric(12,2) AS payables_bcy,
-        COALESCE(uc.unused_credits, 0)::numeric(12,2) AS unused_credits_bcy
+        COALESCE(a.total_spent, 0)::numeric(12,3) AS total_spent,
+        COALESCE(ob.outstanding_fcy, 0)::numeric(12,3) AS payables,
+        COALESCE(ob.outstanding_bcy, 0)::numeric(12,3) AS payables_bcy,
+        COALESCE(uc.unused_credits_fcy, 0)::numeric(12,3) AS unused_credits,
+        COALESCE(uc.unused_credits_bcy, 0)::numeric(12,3) AS unused_credits_bcy
       FROM supplier_details sd
       LEFT JOIN agg a ON a.norm_name = sd.norm_name
       LEFT JOIN (
-        SELECT supplier_id, SUM(
-          total_amount - COALESCE((SELECT SUM(pm.amount_paid) FROM payments_made pm WHERE pm.bill_id = b.id AND UPPER(pm.status) = 'PAID'), 0)
-        )::numeric(12,2) AS outstanding
+        SELECT b.supplier_id,
+          CASE WHEN ABS(SUM(b.total_amount) - COALESCE(SUM(tp.paid_fcy), 0)) < 0.001 THEN 0
+               ELSE GREATEST(0, ROUND(SUM(b.total_amount) - COALESCE(SUM(tp.paid_fcy), 0), 3))
+          END::numeric(12,3) AS outstanding_fcy,
+          CASE WHEN ABS(SUM(b.total_amount * COALESCE(b.exchange_rate, 1)) - COALESCE(SUM(tp.paid_bcy), 0)) < 0.001 THEN 0
+               ELSE GREATEST(0, ROUND(SUM(b.total_amount * COALESCE(b.exchange_rate, 1)) - COALESCE(SUM(tp.paid_bcy), 0), 3))
+          END::numeric(12,3) AS outstanding_bcy
         FROM bills b
-        WHERE UPPER(COALESCE(status,'')) NOT IN ('DRAFT', 'PAID')
-        GROUP BY supplier_id
+        LEFT JOIN (
+          SELECT pm.bill_id,
+            SUM(pm.amount_paid)::numeric(12,3) AS paid_fcy,
+            SUM(ROUND(pm.amount_paid * COALESCE(bi.exchange_rate, 1), 3))::numeric(12,3) AS paid_bcy
+          FROM payments_made pm
+          JOIN bills bi ON pm.bill_id = bi.id
+          WHERE UPPER(pm.status) = 'PAID'
+          GROUP BY pm.bill_id
+        ) tp ON tp.bill_id = b.id
+        WHERE UPPER(COALESCE(b.status,'')) != 'DRAFT'
+        GROUP BY b.supplier_id
       ) ob ON sd.id = ob.supplier_id
       LEFT JOIN (
-        SELECT supplier_id, SUM(total_amount)::numeric(12,2) AS unused_credits
+        SELECT supplier_id,
+          SUM(total_amount - COALESCE(refunded_amount, 0))::numeric(12,3) AS unused_credits_fcy,
+          SUM((total_amount - COALESCE(refunded_amount, 0)) * COALESCE(exchange_rate, 1))::numeric(12,3) AS unused_credits_bcy
         FROM vendor_credits
         WHERE LOWER(status) = 'open'
         GROUP BY supplier_id
@@ -121,9 +138,9 @@ router.get('/:id', async (req, res) => {
     const result = await db.query(`
       SELECT s.*,
              COALESCE(q.total_quantity, 0) AS total_quantity,
-             COALESCE(ps.total_spent, 0)::numeric(12,2) AS total_spent,
-             COALESCE(vc.unused_credits, 0)::numeric(12,2) AS unused_credits,
-             COALESCE(ob.outstanding, 0)::numeric(12,2) AS outstanding_payables
+             COALESCE(ps.total_spent, 0)::numeric(12,3) AS total_spent,
+             COALESCE(vc.unused_credits, 0)::numeric(12,3) AS unused_credits,
+             COALESCE(ob.outstanding, 0)::numeric(12,3) AS outstanding_payables
       FROM suppliers s
       LEFT JOIN (
         SELECT p.supplier_id, SUM(pi.quantity)::int AS total_quantity
@@ -132,24 +149,31 @@ router.get('/:id', async (req, res) => {
         GROUP BY p.supplier_id
       ) q ON s.id = q.supplier_id
       LEFT JOIN (
-        SELECT supplier_id, SUM(total_amount)::numeric(12,2) AS total_spent
+        SELECT supplier_id, SUM(total_amount)::numeric(12,3) AS total_spent
         FROM purchases
         WHERE LOWER(COALESCE(status, 'ordered')) = 'received'
         GROUP BY supplier_id
       ) ps ON s.id = ps.supplier_id
       LEFT JOIN (
-        SELECT supplier_id, SUM(total_amount)::numeric(12,2) AS unused_credits
+        SELECT supplier_id, SUM(total_amount - COALESCE(refunded_amount, 0))::numeric(12,3) AS unused_credits
         FROM vendor_credits
         WHERE LOWER(status) = 'open'
         GROUP BY supplier_id
       ) vc ON s.id = vc.supplier_id
       LEFT JOIN (
-        SELECT supplier_id, SUM(
-          total_amount - COALESCE((SELECT SUM(pm.amount_paid) FROM payments_made pm WHERE pm.bill_id = b.id AND UPPER(pm.status) = 'PAID'), 0)
-        )::numeric(12,2) AS outstanding
+        SELECT b.supplier_id,
+          CASE WHEN ABS(SUM(b.total_amount) - COALESCE(SUM(tp.paid), 0)) < 0.001 THEN 0
+               ELSE GREATEST(0, ROUND(SUM(b.total_amount) - COALESCE(SUM(tp.paid), 0), 3))
+          END::numeric(12,3) AS outstanding
         FROM bills b
-        WHERE UPPER(COALESCE(status,'')) NOT IN ('DRAFT', 'PAID')
-        GROUP BY supplier_id
+        LEFT JOIN (
+          SELECT pm.bill_id, SUM(pm.amount_paid)::numeric(12,3) AS paid
+          FROM payments_made pm
+          WHERE UPPER(pm.status) = 'PAID'
+          GROUP BY pm.bill_id
+        ) tp ON tp.bill_id = b.id
+        WHERE UPPER(COALESCE(b.status,'')) != 'DRAFT'
+        GROUP BY b.supplier_id
       ) ob ON s.id = ob.supplier_id
       WHERE s.id = $1
     `, [req.params.id]);
@@ -209,6 +233,16 @@ router.get('/:id', async (req, res) => {
       [req.params.id]
     );
     vendor.payments_made = paymentsResult.rows;
+
+    // Get vendor refunds for this vendor (for statement)
+    const refundsResult = await db.query(
+      `SELECT id, refund_number, refund_date, refund_amount, credit_number, payment_mode, deposit_to, status
+       FROM vendor_refunds
+       WHERE supplier_id = $1 AND UPPER(COALESCE(status,'')) = 'PAID'
+       ORDER BY refund_date ASC`,
+      [req.params.id]
+    );
+    vendor.refunds = refundsResult.rows;
 
     res.json(vendor);
   } catch (error) {

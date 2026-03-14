@@ -530,7 +530,6 @@
                     <h1 class="page-title" id="pageTitle">New Purchase Receive</h1>
                 </div>
                 <div class="header-actions">
-                    <button class="header-icon-btn">⚙</button>
                     <button class="close-btn" onclick="goBack()">×</button>
                 </div>
             </div>
@@ -622,13 +621,12 @@
             </div>
 
             <!-- Footer -->
-            <div class="page-footer">
+            <div class="page-footer" id="pageFooter">
                 <button class="btn" onclick="saveAsDraft()">Save as Draft</button>
                 <button class="btn" onclick="saveAsInTransit()"
                     style="background:#fff3e0;color:#e65100;border-color:#ffcc80;font-weight:600;">Save as In
                     Transit</button>
-                <button class="btn btn-primary" onclick="saveAsReceived()">Save as Received <span
-                        class="split">▾</span></button>
+                <button class="btn btn-primary" onclick="saveAsReceived()">Save as Received</button>
                 <button class="btn btn-cancel" onclick="goBack()">Cancel</button>
             </div>
         </div>
@@ -653,6 +651,9 @@
         let poData = null;
         let receivedByItem = {};
         let inTransitByItem = {};
+        let returnedByItem = {};
+        let replacementByItem = {}; // Items returned for replacement (awaiting re-receipt)
+        let poIdsWithReceives = new Set();
 
         document.addEventListener('DOMContentLoaded', async function () {
             const _d = new Date(); document.getElementById('receiveDate').value = _d.getFullYear() + '-' + String(_d.getMonth() + 1).padStart(2, '0') + '-' + String(_d.getDate()).padStart(2, '0');
@@ -670,6 +671,17 @@
                         }
                     });
                     allVendors = Object.values(vendorMap);
+                }
+            } catch (e) { }
+
+            // Load all purchase receives to know which POs already have PRs
+            try {
+                const prRes = await fetch('/api/purchase-receives');
+                if (prRes.ok) {
+                    const allReceives = await prRes.json();
+                    allReceives.forEach(pr => {
+                        if (pr.purchase_id) poIdsWithReceives.add(pr.purchase_id);
+                    });
                 }
             } catch (e) { }
 
@@ -787,6 +799,24 @@
                 document.getElementById('poInput').style.pointerEvents = 'none';
                 document.getElementById('poInput').style.opacity = '0.7';
 
+                // Update footer buttons based on status
+                const prStatus = (editPRData.status || 'draft').toLowerCase();
+                const footer = document.getElementById('pageFooter');
+                if (prStatus === 'draft') {
+                    footer.innerHTML = `
+                        <button class="btn" onclick="saveAsDraft()">Save</button>
+                        <button class="btn btn-primary" onclick="saveAsReceived()">Save as Received</button>
+                        <button class="btn" onclick="saveAsInTransit()" style="background:#fff3e0;color:#e65100;border-color:#ffcc80;font-weight:600;">Save as In Transit</button>
+                        <button class="btn btn-cancel" onclick="goBack()">Cancel</button>
+                    `;
+                } else if (prStatus === 'in_transit') {
+                    footer.innerHTML = `
+                        <button class="btn" onclick="saveAsInTransit()">Save</button>
+                        <button class="btn btn-primary" onclick="saveAsReceived()">Save as Received</button>
+                        <button class="btn btn-cancel" onclick="goBack()">Cancel</button>
+                    `;
+                }
+
             } catch (e) {
                 console.error('Error loading PR for edit:', e);
                 alert('Error loading purchase receive data');
@@ -877,7 +907,8 @@
                 const searchMatch = !q || (p.po_number || '').toLowerCase().includes(q);
                 const mainStatus = (p.status || '').toUpperCase();
                 const notCancelled = mainStatus !== 'CANCELLED';
-                return nameMatch && notCancelled && searchMatch;
+                const hasNoPR = !poIdsWithReceives.has(p.id);
+                return nameMatch && notCancelled && searchMatch && hasNoPR;
             });
 
             if (vendorPOs.length === 0) {
@@ -905,9 +936,10 @@
             document.getElementById('poMenu').classList.remove('show');
 
             try {
-                const [poRes, receivedRes] = await Promise.all([
+                const [poRes, receivedRes, returnsRes] = await Promise.all([
                     fetch('/api/purchases/' + po.id),
-                    fetch('/api/purchase-receives/by-po/' + po.id)
+                    fetch('/api/purchase-receives/by-po/' + po.id),
+                    fetch('/api/purchase-returns/by-po/' + po.id)
                 ]);
 
                 if (!poRes.ok) return;
@@ -921,6 +953,36 @@
                     receivedByItem[key] = (receivedByItem[key] || 0) + (parseFloat(r.total_received) || 0);
                     inTransitByItem[key] = (inTransitByItem[key] || 0) + (parseFloat(r.total_in_transit) || 0);
                 });
+
+                // Fetch returned quantities (only shipped returns count)
+                returnedByItem = {};
+                replacementByItem = {};
+                if (returnsRes.ok) {
+                    const returnsData = await returnsRes.json();
+                    // Track returned items for stock adjustment (shipped/received by vendor)
+                    const shippedReturns = returnsData.filter(r => (r.return_status || '').toLowerCase() === 'shipped' || (r.return_status || '').toLowerCase() === 'received by vendor');
+                    for (const ret of shippedReturns) {
+                        try {
+                            const retDetailRes = await fetch('/api/purchase-returns/' + ret.id);
+                            if (retDetailRes.ok) {
+                                const retDetail = await retDetailRes.json();
+                                if (retDetail.items && retDetail.items.length > 0) {
+                                    retDetail.items.forEach(ri => {
+                                        const key = ri.item_id || ('name:' + (ri.item_name || ''));
+                                        returnedByItem[key] = (returnedByItem[key] || 0) + (parseFloat(ri.return_quantity) || 0);
+                                    });
+                                }
+                                // Track replacement returns (awaiting re-receipt)
+                                if (retDetail.resolution_type === 'replacement' && (retDetail.replacement_status || '').toUpperCase() !== 'RECEIVED') {
+                                    (retDetail.items || []).forEach(ri => {
+                                        const key = ri.item_id || ('name:' + (ri.item_name || ''));
+                                        replacementByItem[key] = (replacementByItem[key] || 0) + (parseFloat(ri.return_quantity) || 0);
+                                    });
+                                }
+                            }
+                        } catch (e) { console.error('Error fetching return detail:', e); }
+                    }
+                }
 
                 renderItemsTable();
             } catch (e) {
@@ -942,7 +1004,9 @@
                 const itemKey = item.item_id || ('name:' + (item.item_name || ''));
                 const received = receivedByItem[itemKey] || 0;
                 const inTransit = inTransitByItem[itemKey] || 0;
-                const quantityToReceive = Math.max(0, ordered - received - inTransit);
+                const returned = returnedByItem[itemKey] || 0;
+                const effectiveReceived = Math.max(0, received - returned);
+                const quantityToReceive = Math.max(0, ordered - effectiveReceived - inTransit);
 
                 html += `<tr data-item-id="${item.item_id || ''}" data-index="${index}">
                     <td>
@@ -952,13 +1016,13 @@
                         </div>
                     </td>
                     <td class="center"><span class="ordered-badge">${ordered}</span></td>
-                    <td class="center"><span class="received-badge">${received}</span></td>
+                    <td class="center"><span class="received-badge">${effectiveReceived}${returned > 0 ? ' <span title="' + received + ' received minus ' + returned + ' returned" style="font-size:10px;color:#e65100;cursor:help;">('+received+'-'+returned+')</span>' : ''}</span></td>
                     <td class="center"><span class="intransit-badge">${inTransit}</span></td>
                     <td class="center">
                         <input type="number" class="qty-input"
                                value="${quantityToReceive}" min="0"
                                data-ordered="${ordered}"
-                               data-received="${received}"
+                               data-received="${effectiveReceived}"
                                data-intransit="${inTransit}"
                                oninput="checkOverReceive(this)">
                         <div class="over-receive-warn" style="display:none;font-size:10px;color:#e65100;margin-top:2px;">⚠ Over-receiving</div>
@@ -1089,12 +1153,17 @@
                 // Signal sales orders page to auto-refresh
                 localStorage.setItem('so_refresh_needed', Date.now().toString());
                 setTimeout(() => {
-                    // Navigate back to PO detail if we know the PO
-                    const poId = isEditMode && editPRData ? editPRData.purchase_id : (selectedPO ? selectedPO.id : null);
-                    if (poId) {
-                        window.location.href = '/purchase-order-detail.html?id=' + poId;
+                    if (isEditMode) {
+                        // In edit mode, go back to the purchase receive detail
+                        window.location.href = '/purchase-receive-detail.html?id=' + editId;
                     } else {
-                        window.location.href = '/purchase-receives.html';
+                        // For new creates, navigate to PO detail if we know the PO
+                        const poId = selectedPO ? selectedPO.id : null;
+                        if (poId) {
+                            window.location.href = '/purchase-order-detail.html?id=' + poId;
+                        } else {
+                            window.location.href = '/purchase-receives.html';
+                        }
                     }
                 }, 1200);
             } catch (e) {
@@ -1102,17 +1171,6 @@
                 alert('Failed to save purchase receive');
                 loading.classList.remove('active');
             }
-        }
-
-        function showToast(msg) {
-            const t = document.createElement('div');
-            t.textContent = msg;
-            t.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#16a34a;color:white;padding:12px 28px;border-radius:8px;font-size:14px;font-weight:500;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.15);animation:toastIn 0.3s ease;';
-            document.body.appendChild(t);
-            const style = document.createElement('style');
-            style.textContent = '@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(-20px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}';
-            document.head.appendChild(style);
-            setTimeout(() => t.remove(), 3000);
         }
 
         function goBack() {

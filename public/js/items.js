@@ -105,9 +105,10 @@ function onPurchaseCurrencyChange() {
     if (preview) preview.style.display = 'block';
     if (rateLabel) rateLabel.textContent = `1 ${currency} = ₱`;
 
-    // Load manual rate or fetch from API
+    // Load manual rate or fetch from API (check both key patterns for cross-module sync)
     const manualKey = `manual_rate_${currency}_PHP`;
-    const savedRate = localStorage.getItem(manualKey);
+    const gihonKey = `gihon_exrate_${currency}`;
+    const savedRate = localStorage.getItem(manualKey) || localStorage.getItem(gihonKey);
     const rateInput = document.getElementById('manualExchangeRate');
 
     if (savedRate && rateInput) {
@@ -157,8 +158,9 @@ function onManualRateChange() {
   const rate = parseFloat(rateInput?.value) || 0;
 
   if (rate > 0 && currency !== 'PHP') {
-    // Save manual rate to localStorage
+    // Save manual rate to localStorage (both key patterns for cross-module sync)
     localStorage.setItem(`manual_rate_${currency}_PHP`, rate.toString());
+    localStorage.setItem(`gihon_exrate_${currency}`, rate.toString());
     // Update cached rate for CNY (legacy compatibility)
     if (currency === 'CNY') cachedExchangeRate = rate;
   }
@@ -171,8 +173,9 @@ async function resetExchangeRate() {
   const currency = document.getElementById('itemPurchaseCurrency')?.value || 'PHP';
   if (currency === 'PHP') return;
 
-  // Remove manual override
+  // Remove manual override (both key patterns for cross-module sync)
   localStorage.removeItem(`manual_rate_${currency}_PHP`);
+  localStorage.removeItem(`gihon_exrate_${currency}`);
   // Clear memory cache to force refetch
   if (currency === 'CNY') { cachedExchangeRate = null; exchangeRateTimestamp = null; }
 

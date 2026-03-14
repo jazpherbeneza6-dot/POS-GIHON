@@ -37,7 +37,6 @@
             background: white;
         }
 
-        /* Page Header */
         .page-header {
             display: flex;
             align-items: center;
@@ -167,6 +166,184 @@
             background: #f5f5f5;
         }
 
+        /* Kebab Dropdown */
+        .kebab-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .kebab-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            min-width: 190px;
+            z-index: 200;
+            padding: 4px 0;
+        }
+
+        .kebab-dropdown.show {
+            display: block;
+        }
+
+        .kebab-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 16px;
+            font-size: 12px;
+            color: #333;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .kebab-item:hover {
+            background: #f5f8ff;
+        }
+
+        .kebab-item svg {
+            flex-shrink: 0;
+        }
+
+        .kebab-sep {
+            height: 1px;
+            background: #eee;
+            margin: 4px 0;
+        }
+
+        /* Bulk Actions Bar */
+        .bulk-actions-bar {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            background: #eef2ff;
+            border-bottom: 1px solid #c7d2fe;
+        }
+
+        .bulk-actions-bar.show {
+            display: flex;
+        }
+
+        .bulk-count {
+            font-size: 12px;
+            font-weight: 600;
+            color: #4338ca;
+            margin-right: 8px;
+        }
+
+        .bulk-btn {
+            padding: 6px 14px;
+            border: 1px solid #c7d2fe;
+            border-radius: 4px;
+            background: white;
+            color: #333;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.15s;
+        }
+
+        .bulk-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .bulk-btn.danger {
+            color: #dc2626;
+            border-color: #fca5a5;
+        }
+
+        .bulk-btn.danger:hover {
+            background: #fef2f2;
+        }
+
+        .bulk-btn-deselect {
+            margin-left: auto;
+            padding: 6px 12px;
+            border: none;
+            background: none;
+            color: #6366f1;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .bulk-btn-deselect:hover {
+            text-decoration: underline;
+        }
+
+        /* Hamburger Dropdown */
+        .hamburger-wrap {
+            position: relative;
+            display: inline-block;
+        }
+
+        .hamburger-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hamburger-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            min-width: 170px;
+            z-index: 100;
+            padding: 4px 0;
+        }
+
+        .hamburger-dropdown.show {
+            display: block;
+        }
+
+        .hamburger-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            padding: 8px 14px;
+            background: none;
+            border: none;
+            text-align: left;
+            font-size: 12px;
+            color: #333;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .hamburger-dropdown-item:hover {
+            background: #f5f8ff;
+        }
+
+        .hamburger-dropdown-item svg {
+            flex-shrink: 0;
+        }
+
+        /* Clip Text */
+        .bills-table.clip-text td {
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
         /* Empty State */
         .empty-state {
             display: flex;
@@ -248,12 +425,258 @@
             border-bottom: 1px solid #f0f0f0;
             font-size: 13px;
             color: #333;
+            white-space: nowrap;
         }
+
+        .bills-table th:first-child,
+        .bills-table td:first-child {
+            width: 36px;
+            text-align: center;
+            padding: 14px 8px 14px 16px;
+        }
+
+        .bills-table th:nth-child(2),
+        .bills-table td:nth-child(2) {
+            width: 36px;
+            text-align: center;
+            padding: 14px 8px;
+        }
+
+        .row-checkbox {
+            width: 15px;
+            height: 15px;
+            cursor: pointer;
+            accent-color: #4285f4;
+        }
+
+        /* Customize Columns Modal */
+        .cc-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 5000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .cc-overlay.show {
+            display: flex;
+        }
+
+        .cc-panel {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+            width: 420px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .cc-search {
+            padding: 14px 16px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cc-search input {
+            width: 100%;
+            padding: 10px 12px 10px 36px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            background: #f9fafb url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") 10px center no-repeat;
+            box-sizing: border-box;
+        }
+
+        .cc-search input:focus {
+            border-color: #4285f4;
+        }
+
+        .cc-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 4px 0;
+        }
+
+        .cc-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 16px;
+            border-bottom: 1px solid #f5f5f5;
+            cursor: default;
+            transition: background 0.1s;
+        }
+
+        .cc-row:hover {
+            background: #f9fafb;
+        }
+
+        .cc-row.alt {
+            background: #f9fafb;
+        }
+
+        .cc-row.alt:hover {
+            background: #f3f4f6;
+        }
+
+        .cc-drag {
+            color: #bbb;
+            font-size: 16px;
+            cursor: grab;
+            user-select: none;
+            flex-shrink: 0;
+            letter-spacing: 1px;
+        }
+
+        .cc-drag:active {
+            cursor: grabbing;
+        }
+
+        .cc-lock {
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cc-lock svg {
+            color: #a0a0c0;
+        }
+
+        .cc-check {
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+            accent-color: #4285f4;
+            cursor: pointer;
+        }
+
+        .cc-label {
+            font-size: 15px;
+            font-weight: 500;
+            color: #333;
+            flex: 1;
+        }
+
+        .cc-footer {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px;
+            border-top: 1px solid #eee;
+        }
+
+        .cc-save {
+            padding: 8px 22px;
+            background: #4285f4;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .cc-save:hover {
+            background: #3367d6;
+        }
+
+        .cc-cancel {
+            padding: 8px 18px;
+            background: #f0f0f0;
+            color: #333;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .cc-cancel:hover {
+            background: #e0e0e0;
+        }
+
+        /* Sort Submenu */
+        .kebab-item .ki-arrow {
+            margin-left: auto;
+            font-size: 11px;
+            color: #aaa;
+        }
+
+        .kebab-item.ki-sort {
+            position: relative;
+        }
+
+        .kebab-item.ki-sort:hover {
+            background: #f5f7fa;
+        }
+
+        .sort-submenu {
+            display: none;
+            position: absolute;
+            right: 100%;
+            top: -6px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.14);
+            min-width: 190px;
+            padding: 6px 0;
+            z-index: 1001;
+        }
+
+        .kebab-item.ki-sort:hover .sort-submenu,
+        .kebab-item:hover>.sort-submenu {
+            display: block;
+        }
+
+        .sort-submenu::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 100%;
+            width: 20px;
+            height: 100%;
+        }
+
+        .sort-sub-item {
+            padding: 9px 16px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .sort-sub-item:hover {
+            background: #f5f7fa;
+        }
+
+        .sort-sub-item.active {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .sort-sub-item .sort-dir {
+            margin-left: auto;
+            font-size: 14px;
+        }
+
+        /* Toast */
     </style>
 </head>
 
 <body>
-    <!-- Sidebar Container -->
     <div id="sidebarContainer"></div>
 
     <div class="main-layout">
@@ -277,8 +700,100 @@
                         </button>
                         <button class="btn-new-dropdown">▼</button>
                     </div>
-                    <button class="btn-more">⋯</button>
+                    <div class="kebab-wrapper">
+                        <button class="btn-more" onclick="toggleKebabMenu(event)">⋯</button>
+                        <div class="kebab-dropdown" id="kebabDropdown">
+                            <div class="kebab-item" onclick="exportCSV()">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                    <polyline points="7 10 12 15 17 10" />
+                                    <line x1="12" y1="15" x2="12" y2="3" />
+                                </svg>
+                                Export CSV
+                            </div>
+                            <div class="kebab-item" onclick="importItems()">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                    <polyline points="17 8 12 3 7 8" />
+                                    <line x1="12" y1="3" x2="12" y2="15" />
+                                </svg>
+                                Import Bills
+                            </div>
+                            <div class="kebab-sep"></div>
+                            <div class="kebab-item ki-sort">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M11 5h10" />
+                                    <path d="M11 9h7" />
+                                    <path d="M11 13h4" />
+                                    <path d="M3 17l3 3 3-3" />
+                                    <path d="M6 18V4" />
+                                </svg>
+                                Sort by
+                                <span class="ki-arrow">›</span>
+                                <div class="sort-submenu">
+                                    <div class="sort-sub-item"
+                                        onclick="event.stopPropagation(); sortItemsBy('date', this)">Date</div>
+                                    <div class="sort-sub-item"
+                                        onclick="event.stopPropagation(); sortItemsBy('bill_number', this)">Bill#</div>
+                                    <div class="sort-sub-item"
+                                        onclick="event.stopPropagation(); sortItemsBy('vendor_name', this)">Vendor Name
+                                    </div>
+                                    <div class="sort-sub-item"
+                                        onclick="event.stopPropagation(); sortItemsBy('amount', this)">Amount</div>
+                                    <div class="sort-sub-item"
+                                        onclick="event.stopPropagation(); sortItemsBy('due_date', this)">Due Date</div>
+                                    <div class="sort-sub-item"
+                                        onclick="event.stopPropagation(); sortItemsBy('created_at', this)">Created Time
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="kebab-sep"></div>
+                            <div class="kebab-item" onclick="refreshList()">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="23 4 23 10 17 10" />
+                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                                </svg>
+                                Refresh List
+                            </div>
+                            <div class="kebab-item" onclick="openPreferences()">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="3" />
+                                    <path
+                                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                                </svg>
+                                Preferences
+                            </div>
+                        </div>
+                    </div>
                 </div>
+            </div>
+
+            <!-- Bulk Actions Bar -->
+            <div class="bulk-actions-bar" id="bulkActionsBar">
+                <span class="bulk-count" id="bulkCount">0 Selected</span>
+                <button class="bulk-btn" onclick="bulkPrint()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9V2h12v7" />
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                        <rect x="6" y="14" width="12" height="8" />
+                    </svg>
+                    Print
+                </button>
+                <button class="bulk-btn danger" onclick="bulkDelete()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                    </svg>
+                    Delete
+                </button>
+                <button class="bulk-btn-deselect" onclick="deselectAll()">Deselect All</button>
             </div>
 
             <!-- Empty State -->
@@ -290,11 +805,48 @@
                 <a href="/import-bills.html" class="import-link">Import Bills</a>
             </div>
 
-            <!-- Bills Container (hidden when empty) -->
+            <!-- Bills Container -->
             <div class="bills-container" id="billsContainer" style="display: none;">
-                <table class="bills-table">
+                <table class="bills-table" id="billsTable">
                     <thead>
                         <tr>
+                            <th>
+                                <div class="hamburger-wrap">
+                                    <button class="hamburger-btn" onclick="toggleHamburgerMenu(event)">
+                                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#7baaf7"
+                                            stroke-width="1.8" stroke-linecap="round">
+                                            <line x1="3" y1="4" x2="15" y2="4" />
+                                            <circle cx="6" cy="4" r="1.5" fill="#7baaf7" />
+                                            <line x1="3" y1="9" x2="15" y2="9" />
+                                            <circle cx="11" cy="9" r="1.5" fill="#7baaf7" />
+                                            <line x1="3" y1="14" x2="15" y2="14" />
+                                            <circle cx="8" cy="14" r="1.5" fill="#7baaf7" />
+                                        </svg>
+                                    </button>
+                                    <div class="hamburger-dropdown" id="hamburgerDropdown">
+                                        <button class="hamburger-dropdown-item" onclick="openCustomizeColumns()">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                stroke-linejoin="round">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                                            </svg>
+                                            Customize Columns
+                                        </button>
+                                        <button class="hamburger-dropdown-item" onclick="toggleClipText()">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                stroke-linejoin="round">
+                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                            </svg>
+                                            <span id="clipTextLabel">Clip Text</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </th>
+                            <th><input type="checkbox" class="row-checkbox" id="selectAllBills"
+                                    onclick="toggleSelectAll(this)"></th>
                             <th>DATE</th>
                             <th>BILL#</th>
                             <th>ORDER NUMBER</th>
@@ -303,77 +855,241 @@
                             <th>DUE DATE</th>
                             <th>AMOUNT</th>
                             <th>BALANCE DUE</th>
+                            <th>CREATED TIME</th>
+                            <th>LAST MODIFIED</th>
+                            <th>CREATED BY</th>
+                            <th>LAST MODIFIED BY</th>
                         </tr>
                     </thead>
-                    <tbody id="billsBody">
-                        <!-- Bills will be added here -->
-                    </tbody>
+                    <tbody id="billsBody"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- Layout Script -->
+
+    <!-- Customize Columns Modal -->
+    <div class="cc-overlay" id="ccOverlay" onclick="if(event.target===this)closeCCModal()">
+        <div class="cc-panel">
+            <div class="cc-search">
+                <input type="text" id="ccSearch" placeholder="Search" oninput="filterCCList(this.value)">
+            </div>
+            <div class="cc-list" id="ccList"></div>
+            <div class="cc-footer">
+                <button class="cc-save" onclick="saveCCColumns()">Save</button>
+                <button class="cc-cancel" onclick="closeCCModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <script src="/js/layout.js"></script>
     <script>
-        function createBill() {
-            window.location.href = '/new-bill.html';
-        }
+        let allItems = [];
+        let selectedIds = new Set();
+        let currentSort = 'date';
+        let currentSortDir = 'desc';
+
+        // Column configuration: key, label, locked (always shown), visible (default)
+        const billColumns = [
+            { key: 'date', label: 'Date', locked: true, visible: true },
+            { key: 'bill_num', label: 'Bill#', locked: true, visible: true },
+            { key: 'ref_num', label: 'Reference Number', locked: false, visible: true },
+            { key: 'vendor', label: 'Vendor Name', locked: true, visible: true },
+            { key: 'status', label: 'Status', locked: true, visible: true },
+            { key: 'due_date', label: 'Due Date', locked: false, visible: true },
+            { key: 'amount', label: 'Amount', locked: true, visible: true },
+            { key: 'balance', label: 'Balance Due', locked: false, visible: true },
+            { key: 'created',    label: 'Created Time',      locked: false, visible: false },
+            { key: 'modified',   label: 'Last Modified Time',locked: false, visible: false },
+            { key: 'created_by', label: 'Created By',        locked: false, visible: false },
+            { key: 'modified_by',label: 'Last Modified By',  locked: false, visible: false }
+        ];
+        // Load saved prefs
+        try { const saved = JSON.parse(localStorage.getItem('billColumnPrefs')); if (saved) billColumns.forEach(c => { const s = saved.find(x => x.key === c.key); if (s && !c.locked) c.visible = s.visible; }); } catch (e) { }
+
+        function createBill() { window.location.href = '/new-bill.html'; }
 
         document.addEventListener('DOMContentLoaded', loadBills);
+        document.addEventListener('click', () => {
+            document.getElementById('hamburgerDropdown').classList.remove('show');
+            document.getElementById('kebabDropdown').classList.remove('show');
+        });
 
         async function loadBills() {
             try {
                 const res = await fetch('/api/bills');
                 if (!res.ok) return;
-                const bills = await res.json();
-
-                if (bills.length === 0) {
+                allItems = await res.json();
+                if (allItems.length === 0) {
                     document.getElementById('emptyState').style.display = 'flex';
                     document.getElementById('billsContainer').style.display = 'none';
                     return;
                 }
-
                 document.getElementById('emptyState').style.display = 'none';
                 document.getElementById('billsContainer').style.display = 'block';
-
-                const tbody = document.getElementById('billsBody');
-                tbody.innerHTML = '';
-
-                bills.forEach(bill => {
-                    const tr = document.createElement('tr');
-                    tr.style.cursor = 'pointer';
-
-                    const billDate = bill.bill_date ? new Date(bill.bill_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
-                    const dueDate = bill.due_date ? new Date(bill.due_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
-                    const amount = parseFloat(bill.total_amount) || 0;
-                    const status = (bill.status || 'draft').toUpperCase();
-
-                    let statusColor = '#6b7280';
-                    let statusBg = '#f3f4f6';
-                    if (status === 'OPEN') { statusColor = '#16a34a'; statusBg = '#dcfce7'; }
-                    else if (status === 'PAID') { statusColor = '#2563eb'; statusBg = '#dbeafe'; }
-                    else if (status === 'OVERDUE') { statusColor = '#dc2626'; statusBg = '#fef2f2'; }
-
-                    tr.innerHTML = `
-                        <td>${billDate}</td>
-                        <td style="color:#4285f4;font-weight:500;">${bill.bill_number || '-'}</td>
-                        <td>${bill.order_number || '-'}</td>
-                        <td>${bill.supplier_name || '-'}</td>
-                        <td><span style="padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;color:${statusColor};background:${statusBg};">${status}</span></td>
-                        <td>${dueDate}</td>
-                        <td style="font-weight:500;">₱${amount.toFixed(2)}</td>
-                        <td style="font-weight:500;">₱${amount.toFixed(2)}</td>
-                    `;
-                    tr.addEventListener('click', () => { window.location.href = '/bill-detail.html?id=' + bill.id; });
-                    tr.addEventListener('mouseenter', () => { tr.style.background = '#f5f8ff'; });
-                    tr.addEventListener('mouseleave', () => { tr.style.background = ''; });
-                    tbody.appendChild(tr);
-                });
-            } catch (e) {
-                console.error('Error loading bills:', e);
-            }
+                applyColumnVisibility();
+                renderTable();
+            } catch (e) { console.error('Error loading bills:', e); }
         }
+
+        function renderTable() {
+            const tbody = document.getElementById('billsBody');
+            tbody.innerHTML = '';
+            allItems.forEach(bill => {
+                const tr = document.createElement('tr');
+                tr.style.cursor = 'pointer';
+                const billDate = bill.bill_date ? new Date(bill.bill_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+                const dueDate = bill.due_date ? new Date(bill.due_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+                const amount = parseFloat(bill.total_amount) || 0;
+                const balanceDue = parseFloat(bill.balance_due != null ? bill.balance_due : bill.total_amount) || 0;
+                const curr = (bill.currency_code || 'PHP').toUpperCase();
+                const exchRate = parseFloat(bill.exchange_rate) || 1;
+                const isMulti = curr !== 'PHP';
+                const status = (bill.status || 'draft').toUpperCase();
+                const fmtAmt = curr + ' ' + amount.toLocaleString('en-PH', { minimumFractionDigits: 3 });
+                const phpAmt = isMulti ? '<br><span style="font-size:10px;color:#888;font-weight:400;">₱' + (amount * exchRate).toLocaleString('en-PH', { minimumFractionDigits: 3 }) + '</span>' : '';
+                const fmtBal = curr + ' ' + balanceDue.toLocaleString('en-PH', { minimumFractionDigits: 3 });
+                const phpBal = isMulti ? '<br><span style="font-size:10px;color:#888;font-weight:400;">₱' + (balanceDue * exchRate).toLocaleString('en-PH', { minimumFractionDigits: 3 }) + '</span>' : '';
+                let statusColor = '#6b7280', statusBg = '#f3f4f6';
+                if (status === 'OPEN') { statusColor = '#16a34a'; statusBg = '#dcfce7'; }
+                else if (status === 'PAID') { statusColor = '#2563eb'; statusBg = '#dbeafe'; }
+                else if (status === 'OVERDUE') { statusColor = '#dc2626'; statusBg = '#fef2f2'; }
+                const isChecked = selectedIds.has(bill.id) ? 'checked' : '';
+                tr.innerHTML = `
+                    <td></td>
+                    <td><input type="checkbox" class="row-checkbox item-row-check" data-id="${bill.id}" ${isChecked} onclick="event.stopPropagation(); toggleRowCheck(${bill.id}, this)"></td>
+                    <td>${billDate}</td>
+                    <td style="color:#4285f4;font-weight:500;">${bill.bill_number || '-'}</td>
+                    <td>${bill.order_number || '-'}</td>
+                    <td>${bill.supplier_name || '-'}</td>
+                    <td><span style="padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;color:${statusColor};background:${statusBg};">${status}</span></td>
+                    <td>${dueDate}</td>
+                    <td style="font-weight:500;">${fmtAmt}${phpAmt}</td>
+                    <td style="font-weight:500;">${fmtBal}${phpBal}</td>
+                    <td>${bill.created_at ? new Date(bill.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'}</td>
+                    <td>${bill.updated_at ? new Date(bill.updated_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'}</td>
+                    <td>${bill.created_by || '-'}</td>
+                    <td>${bill.modified_by || '-'}</td>
+                `;
+                tr.addEventListener('click', (e) => { if (e.target.type !== 'checkbox') window.location.href = '/bill-detail.html?id=' + bill.id; });
+                tr.addEventListener('mouseenter', () => { tr.style.background = '#f5f8ff'; });
+                tr.addEventListener('mouseleave', () => { tr.style.background = ''; });
+                tbody.appendChild(tr);
+            });
+            applyColumnVisibility();
+        }
+
+        // ===== Checkbox =====
+        function toggleRowCheck(id, el) { if (el.checked) selectedIds.add(id); else selectedIds.delete(id); updateBulkBar(); updateSelectAllState(); }
+        function toggleSelectAll(el) { if (el.checked) allItems.forEach(i => selectedIds.add(i.id)); else selectedIds.clear(); document.querySelectorAll('.item-row-check').forEach(cb => cb.checked = el.checked); updateBulkBar(); }
+        function updateSelectAllState() { const sa = document.getElementById('selectAllBills'); const t = document.querySelectorAll('.item-row-check').length; if (sa) sa.checked = selectedIds.size > 0 && selectedIds.size === t; }
+        function updateBulkBar() { const bar = document.getElementById('bulkActionsBar'); const c = document.getElementById('bulkCount'); if (selectedIds.size > 0) { bar.classList.add('show'); c.textContent = selectedIds.size + ' Selected'; } else { bar.classList.remove('show'); } }
+        function deselectAll() { selectedIds.clear(); document.querySelectorAll('.item-row-check').forEach(cb => cb.checked = false); document.getElementById('selectAllBills').checked = false; updateBulkBar(); }
+
+        // ===== Bulk Actions =====
+        async function bulkDelete() { if (selectedIds.size === 0) return; if (!confirm('Delete ' + selectedIds.size + ' bill(s)? This cannot be undone.')) return; let d = 0, f = 0; for (const id of selectedIds) { try { const r = await fetch('/api/bills/' + id, { method: 'DELETE' }); if (r.ok) d++; else f++; } catch (e) { f++; } } selectedIds.clear(); updateBulkBar(); await loadBills(); showToast(f === 0 ? d + ' bill(s) deleted' : 'Deleted:' + d + ', Failed:' + f); }
+        function bulkPrint() { if (selectedIds.size === 0) return; const sel = allItems.filter(i => selectedIds.has(i.id)); const fD = d => d ? new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-'; const rows = sel.map(b => `<tr><td>${fD(b.bill_date)}</td><td>${b.bill_number || '-'}</td><td>${b.supplier_name || '-'}</td><td>${(b.status || 'DRAFT').toUpperCase()}</td><td style="text-align:right">${(b.currency_code || 'PHP')} ${parseFloat(b.total_amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 3 })}</td></tr>`).join(''); const w = window.open('', '_blank', 'width=800,height=600'); w.document.write(`<html><head><title>Bills</title><style>body{font-family:Inter,sans-serif;padding:20px}table{width:100%;border-collapse:collapse}th{background:#4285f4;color:#fff;padding:8px 12px;font-size:11px;text-align:left}td{padding:8px 12px;font-size:12px;border-bottom:1px solid #eee}h2{font-size:16px;margin-bottom:12px}</style></head><body><h2>Bills</h2><table><thead><tr><th>Date</th><th>Bill#</th><th>Vendor</th><th>Status</th><th style="text-align:right">Amount</th></tr></thead><tbody>${rows}</tbody></table></body></html>`); w.document.close(); w.focus(); setTimeout(() => w.print(), 500); }
+
+        // ===== Hamburger =====
+        function toggleHamburgerMenu(e) { e.stopPropagation(); document.getElementById('kebabDropdown').classList.remove('show'); document.getElementById('hamburgerDropdown').classList.toggle('show'); }
+        let isClipMode = false;
+        function toggleClipText() { const t = document.getElementById('billsTable'); isClipMode = !isClipMode; if (isClipMode) { t.classList.add('clip-text'); document.getElementById('clipTextLabel').textContent = 'Wrap Text'; showToast('Clip Text enabled'); } else { t.classList.remove('clip-text'); document.getElementById('clipTextLabel').textContent = 'Clip Text'; showToast('Wrap Text enabled'); } document.getElementById('hamburgerDropdown').classList.remove('show'); }
+
+        // ===== Customize Columns =====
+        let ccTempState = [];
+        function openCustomizeColumns() {
+            document.getElementById('hamburgerDropdown').classList.remove('show');
+            ccTempState = billColumns.map(c => ({ ...c }));
+            renderCCList();
+            document.getElementById('ccOverlay').classList.add('show');
+        }
+
+        function closeCCModal() { document.getElementById('ccOverlay').classList.remove('show'); document.getElementById('ccSearch').value = ''; }
+
+        function renderCCList(filter) {
+            const list = document.getElementById('ccList');
+            const f = (filter || '').toLowerCase();
+            let html = '';
+            ccTempState.forEach((col, i) => {
+                if (f && !col.label.toLowerCase().includes(f)) return;
+                const alt = i % 2 !== 0 ? ' alt' : '';
+                const lockOrCheck = col.locked
+                    ? `<span class="cc-lock"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a0a0c0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>`
+                    : `<input type="checkbox" class="cc-check" ${col.visible ? 'checked' : ''} onchange="ccToggle('${col.key}', this.checked)">`;
+                html += `<div class="cc-row${alt}" data-key="${col.key}">
+                    <span class="cc-drag">⠿</span>
+                    ${lockOrCheck}
+                    <span class="cc-label">${col.label}</span>
+                </div>`;
+            });
+            list.innerHTML = html;
+        }
+
+        function filterCCList(v) { renderCCList(v); }
+        function ccToggle(key, checked) { const c = ccTempState.find(x => x.key === key); if (c) c.visible = checked; }
+
+        function saveCCColumns() {
+            ccTempState.forEach(t => { const c = billColumns.find(x => x.key === t.key); if (c && !c.locked) c.visible = t.visible; });
+            localStorage.setItem('billColumnPrefs', JSON.stringify(billColumns.map(c => ({ key: c.key, visible: c.visible }))));
+            applyColumnVisibility();
+            renderTable();
+            closeCCModal();
+            showToast('Column preferences saved');
+        }
+
+        function applyColumnVisibility() {
+            // Column indices (0-based): 0=hamburger, 1=checkbox, 2=date, 3=bill#, 4=ref, 5=vendor, 6=status, 7=due_date, 8=amount, 9=balance, 10=created, 11=modified, 12=created_by, 13=modified_by
+            const colMap = { 'date': 2, 'bill_num': 3, 'ref_num': 4, 'vendor': 5, 'status': 6, 'due_date': 7, 'amount': 8, 'balance': 9, 'created': 10, 'modified': 11, 'created_by': 12, 'modified_by': 13 };
+            const table = document.getElementById('billsTable');
+            if (!table) return;
+            // First ensure all th exist (add if needed for created/modified)
+            const thead = table.querySelector('thead tr');
+            while (thead.children.length < 14) {
+                const th = document.createElement('th');
+                if (thead.children.length === 10) th.textContent = 'CREATED TIME';
+                if (thead.children.length === 11) th.textContent = 'LAST MODIFIED';
+                if (thead.children.length === 12) th.textContent = 'CREATED BY';
+                if (thead.children.length === 13) th.textContent = 'LAST MODIFIED BY';
+                thead.appendChild(th);
+            }
+            billColumns.forEach(col => {
+                const idx = colMap[col.key];
+                if (idx === undefined) return;
+                const display = col.visible ? '' : 'none';
+                // Header
+                if (thead.children[idx]) thead.children[idx].style.display = display;
+                // Body rows
+                table.querySelectorAll('tbody tr').forEach(tr => { if (tr.children[idx]) tr.children[idx].style.display = display; });
+            });
+        }
+
+        // ===== Kebab =====
+        function toggleKebabMenu(e) { e.stopPropagation(); document.getElementById('hamburgerDropdown').classList.remove('show'); document.getElementById('kebabDropdown').classList.toggle('show'); }
+        function exportCSV() { document.getElementById('kebabDropdown').classList.remove('show'); if (allItems.length === 0) { showToast('No bills to export'); return; } const h = ['Date', 'Bill Number', 'Order Number', 'Vendor', 'Status', 'Currency', 'Amount', 'Balance Due']; const rows = [h.join(',')]; allItems.forEach(b => { rows.push([b.bill_date ? new Date(b.bill_date).toISOString().split('T')[0] : '', b.bill_number || '', b.order_number || '', '"' + (b.supplier_name || '').replace(/"/g, '""') + '"', (b.status || 'draft').toUpperCase(), b.currency_code || 'PHP', parseFloat(b.total_amount || 0).toFixed(3), parseFloat(b.balance_due != null ? b.balance_due : b.total_amount || 0).toFixed(3)].join(',')); }); const blob = new Blob([rows.join('\n')], { type: 'text/csv' }); const u = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = u; a.download = 'bills.csv'; a.click(); URL.revokeObjectURL(u); showToast('CSV exported'); }
+        function importItems() { document.getElementById('kebabDropdown').classList.remove('show'); window.location.href = '/import-bills.html'; }
+        function refreshList() { document.getElementById('kebabDropdown').classList.remove('show'); selectedIds.clear(); updateBulkBar(); loadBills(); showToast('List refreshed'); }
+        function openPreferences() { document.getElementById('kebabDropdown').classList.remove('show'); showToast('Preferences coming soon'); }
+
+        // ===== Sort =====
+        function sortItemsBy(field, el) {
+            if (currentSort === field) { currentSortDir = currentSortDir === 'desc' ? 'asc' : 'desc'; } else { currentSort = field; currentSortDir = 'desc'; }
+            document.querySelectorAll('.sort-sub-item').forEach(i => { i.classList.remove('active'); const a = i.querySelector('.sort-dir'); if (a) a.remove(); });
+            if (el) { el.classList.add('active'); el.innerHTML = el.textContent.trim() + ` <span class="sort-dir">${currentSortDir === 'desc' ? '↓' : '↑'}</span>`; }
+            const fm = { 'date': 'bill_date', 'bill_number': 'bill_number', 'vendor_name': 'supplier_name', 'amount': 'total_amount', 'due_date': 'due_date', 'created_at': 'created_at' };
+            const sk = fm[field] || field;
+            allItems.sort((a, b) => {
+                let aV = a[sk], bV = b[sk]; if (aV == null) aV = ''; if (bV == null) bV = '';
+                if (field === 'amount') { aV = parseFloat(aV) || 0; bV = parseFloat(bV) || 0; return currentSortDir === 'asc' ? aV - bV : bV - aV; }
+                if (['date', 'due_date', 'created_at'].includes(field)) { return currentSortDir === 'asc' ? new Date(aV || 0).getTime() - new Date(bV || 0).getTime() : new Date(bV || 0).getTime() - new Date(aV || 0).getTime(); }
+                aV = String(aV).toLowerCase(); bV = String(bV).toLowerCase(); return currentSortDir === 'asc' ? aV.localeCompare(bV) : bV.localeCompare(aV);
+            });
+            renderTable();
+            let dl; if (field === 'amount') { dl = currentSortDir === 'desc' ? 'highest' : 'lowest'; } else if (['date', 'due_date', 'created_at'].includes(field)) { dl = currentSortDir === 'desc' ? 'newest first' : 'oldest first'; } else { dl = currentSortDir === 'desc' ? 'Z-A' : 'A-Z'; }
+            showToast(`Sorted by ${field.replace(/_/g, ' ')} (${dl})`);
+            document.getElementById('kebabDropdown').classList.remove('show');
+        }
+
+        // ===== Toast =====
     </script>
 </body>
 

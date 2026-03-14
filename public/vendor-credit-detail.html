@@ -717,12 +717,13 @@
                             <rect x="6" y="14" width="12" height="8" />
                         </svg> PDF/Print ▾</button>
                     <div class="toolbar-sep"></div>
-                    <button class="toolbar-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            style="vertical-align:middle;margin-right:3px;">
+                    <button class="toolbar-btn" id="btnApplyBills"><svg width="14" height="14" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" style="vertical-align:middle;margin-right:3px;">
                             <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
                             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
                         </svg> Apply to Bills</button>
+                    <div class="toolbar-sep" id="applyBillsSep"></div>
                     <div class="toolbar-sep" id="convertSep" style="display:none;"></div>
                     <button class="btn-convert-open" id="btnConvertOpen" style="display:none;"
                         onclick="convertToOpen()">Convert to Open</button>
@@ -758,6 +759,7 @@
 
                 <!-- Detail Body -->
                 <div class="detail-body" id="detailBody">
+                    <div id="refundHistorySection" style="max-width:800px;margin:0 auto 16px;"></div>
                     <div class="document-card" id="documentCard">
                         <div class="ribbon ribbon-draft" id="statusRibbon">Draft</div>
                         <button class="customize-btn">⚙ Customize</button>
@@ -824,6 +826,11 @@
                                 <span class="cr-label">Credits Remaining</span>
                                 <span class="cr-value" id="creditsRemainingBar">PHP0.00</span>
                             </div>
+                            <div id="closureReasonBanner"
+                                style="display:none;margin-top:12px;padding:10px 16px;border-radius:6px;background:#f0fdf4;border:1px solid #bbf7d0;">
+                                <span style="font-size:12px;font-weight:600;color:#16a34a;">🔒 Closed — </span>
+                                <span id="closureReasonText" style="font-size:12px;color:#15803d;"></span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -875,7 +882,8 @@
 
             container.innerHTML = credits.map(c => {
                 const amount = parseFloat(c.total_amount || 0);
-                const fmtAmt = 'PHP' + amount.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                const cc = c.currency_code || 'PHP';
+                const fmtAmt = cc + amount.toLocaleString('en-PH', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
                 const cDate = c.credit_date ? new Date(c.credit_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
                 const status = (c.status || 'draft').toLowerCase();
                 let statusClass = 'credit-status-draft';
@@ -947,15 +955,73 @@
                     convertSep.style.display = 'none';
                 }
 
+                // Show/hide Refund button based on status and remaining balance
+                const refundBtn = document.querySelector('.kebab-dropdown-item[onclick="handleRefund()"]');
+                if (refundBtn) {
+                    const refundedAmt2 = parseFloat(creditData.refunded_amount || 0);
+                    const totalAmt2 = parseFloat(creditData.total_amount || 0);
+                    const hasRemaining = (totalAmt2 - refundedAmt2) > 0.001;
+                    if (status === 'open' && hasRemaining) {
+                        refundBtn.style.display = '';
+                    } else {
+                        refundBtn.style.display = 'none';
+                    }
+                }
+
+                // ===== CLOSED / DRAFT STATE GUARDS =====
+                // Hide "Apply to Bills" button when CLOSED or DRAFT (only available for OPEN)
+                const applyBillsBtn = document.getElementById('btnApplyBills');
+                const applyBillsSep = document.getElementById('applyBillsSep');
+                if (status === 'closed' || status === 'draft') {
+                    if (applyBillsBtn) applyBillsBtn.style.display = 'none';
+                    if (applyBillsSep) applyBillsSep.style.display = 'none';
+                    if (refundBtn) refundBtn.style.display = 'none';
+                } else {
+                    if (applyBillsBtn) applyBillsBtn.style.display = '';
+                    if (applyBillsSep) applyBillsSep.style.display = '';
+                }
+
+                // ===== CLOSURE REASON DISPLAY =====
+                const closureBanner = document.getElementById('closureReasonBanner');
+                const closureText = document.getElementById('closureReasonText');
+                if (status === 'closed' && closureBanner && closureText) {
+                    const refAmt = parseFloat(creditData.refunded_amount || 0);
+                    const totAmt = parseFloat(creditData.total_amount || 0);
+                    const appliedAmt = totAmt - refAmt; // amount used for bill applications
+
+                    let reason = '';
+                    if (refAmt > 0.001 && appliedAmt > 0.001) {
+                        reason = 'Applied to Bills & Refunded';
+                    } else if (refAmt > 0.001) {
+                        reason = 'Fully Refunded';
+                    } else {
+                        reason = 'Applied to Bills';
+                    }
+                    closureText.textContent = reason;
+                    closureBanner.style.display = 'block';
+                } else if (closureBanner) {
+                    closureBanner.style.display = 'none';
+                }
+
                 // Credit Number
                 document.getElementById('docCreditNumber').textContent = creditData.credit_number || 'VC-' + creditData.id;
 
-                // Amount
+                // Amount — use stored currency
                 const total = parseFloat(creditData.total_amount || 0);
-                const fmtTotal = 'PHP' + total.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                document.getElementById('docCreditsRemaining').textContent = fmtTotal;
-                document.getElementById('creditsRemainingBar').textContent = fmtTotal;
-                document.getElementById('totalAmount').textContent = fmtTotal;
+                const refundedAmt = parseFloat(creditData.refunded_amount || 0);
+                const remaining = total - refundedAmt;
+                const cc = creditData.currency_code || 'PHP';
+                const exRate = parseFloat(creditData.exchange_rate) || 1;
+                const symbolMap = { 'CNY': '¥', 'RMB': '¥', 'USD': '$', 'EUR': '€', 'GBP': '£', 'JPY': '¥', 'PHP': '₱' };
+                const ccSymbol = symbolMap[cc] || cc + ' ';
+                const isFC = cc !== 'PHP' && exRate > 0;
+                const fmtTotal = cc + total.toLocaleString('en-PH', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+                const fmtRemaining = cc + remaining.toLocaleString('en-PH', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+                const phpEquiv = isFC ? '<div style="font-size:11px;color:#888;">₱' + (total * exRate).toFixed(3) + '</div>' : '';
+                const phpRemaining = isFC ? '<div style="font-size:11px;color:#888;">₱' + (remaining * exRate).toFixed(3) + '</div>' : '';
+                document.getElementById('docCreditsRemaining').innerHTML = fmtRemaining + phpRemaining;
+                document.getElementById('creditsRemainingBar').innerHTML = fmtRemaining + phpRemaining;
+                document.getElementById('totalAmount').innerHTML = fmtTotal + phpEquiv;
 
                 // Sub total
                 const items = creditData.items || [];
@@ -963,7 +1029,9 @@
                 items.forEach(item => {
                     sub += (parseFloat(item.quantity) || 0) * (parseFloat(item.rate) || 0);
                 });
-                document.getElementById('subTotal').textContent = sub.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                const subStr = sub.toLocaleString('en-PH', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+                const phpSubEquiv = isFC ? '<div style="font-size:11px;color:#888;">₱' + (sub * exRate).toFixed(3) + '</div>' : '';
+                document.getElementById('subTotal').innerHTML = subStr + phpSubEquiv;
 
                 // Vendor
                 const vendorLink = document.getElementById('vendorNameLink');
@@ -988,22 +1056,74 @@
                         const rate = parseFloat(item.rate) || 0;
                         const amount = qty * rate;
                         const unit = item.unit || 'pcs';
+                        const phpRateNote = isFC ? '<div style="font-size:10px;color:#888;">₱' + (rate * exRate).toFixed(3) + '</div>' : '';
+                        const phpAmtNote = isFC ? '<div style="font-size:10px;color:#888;">₱' + (amount * exRate).toFixed(3) + '</div>' : '';
                         return `<tr>
                             <td>${i + 1}</td>
                             <td>
                                 <div>${item.item_name || '—'}</div>
                                 ${item.description ? '<div class="item-desc">' + item.description + '</div>' : ''}
                             </td>
-                            <td class="right">${qty.toFixed(2)}<div class="item-unit">${unit}</div></td>
-                            <td class="right">${rate.toFixed(2)}</td>
-                            <td class="right">${amount.toFixed(2)}</td>
+                            <td class="right">${qty.toFixed(3)}<div class="item-unit">${unit}</div></td>
+                            <td class="right">${ccSymbol}${rate.toFixed(3)}${phpRateNote}</td>
+                            <td class="right">${ccSymbol}${amount.toFixed(3)}${phpAmtNote}</td>
                         </tr>`;
                     }).join('');
                 }
 
+                // Load refund history
+                await loadRefundHistory(id, ccSymbol, isFC, exRate);
+
+                // Refresh left panel list to show updated statuses
+                await loadCreditsList();
+                highlightActive();
+
             } catch (e) {
                 console.error('Error loading vendor credit:', e);
             }
+        }
+
+        async function loadRefundHistory(creditId, ccSymbol, isFC, exRate) {
+            try {
+                const res = await fetch('/api/vendor-refunds/by-credit/' + creditId);
+                if (!res.ok) return;
+                const refunds = await res.json();
+                const container = document.getElementById('refundHistorySection');
+                if (refunds.length === 0) {
+                    container.innerHTML = '';
+                    return;
+                }
+                container.innerHTML = `
+                    <div style="background:#fff;border:1px solid #e0e0e0;border-radius:6px;box-shadow:0 2px 12px rgba(0,0,0,0.06);padding:20px 24px;">
+                        <div style="font-size:13px;font-weight:700;color:#333;margin-bottom:12px;">Refund History</div>
+                        <table style="width:100%;border-collapse:collapse;font-size:12px;">
+                            <thead>
+                                <tr style="background:#f5f6fa;">
+                                    <th style="padding:8px 10px;text-align:left;font-weight:600;color:#555;">Refund #</th>
+                                    <th style="padding:8px 10px;text-align:left;font-weight:600;color:#555;">Date</th>
+                                    <th style="padding:8px 10px;text-align:left;font-weight:600;color:#555;">Mode</th>
+                                    <th style="padding:8px 10px;text-align:left;font-weight:600;color:#555;">Deposit To</th>
+                                    <th style="padding:8px 10px;text-align:right;font-weight:600;color:#555;">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${refunds.map(r => {
+                    const amt = parseFloat(r.refund_amount) || 0;
+                    const d = r.refund_date ? new Date(r.refund_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+                    const phpAmt = isFC ? '<div style="font-size:10px;color:#888;">₱' + (amt * exRate).toLocaleString('en-PH', { minimumFractionDigits: 3 }) + '</div>' : '';
+                    return `<tr style="border-bottom:1px solid #f0f0f0;">
+                                        <td style="padding:8px 10px;color:#1a73e8;font-weight:500;">${r.refund_number || '—'}</td>
+                                        <td style="padding:8px 10px;">${d}</td>
+                                        <td style="padding:8px 10px;">${r.payment_mode || '—'}</td>
+                                        <td style="padding:8px 10px;">${r.deposit_to || '—'}</td>
+                                        <td style="padding:8px 10px;text-align:right;font-weight:600;">${ccSymbol}${amt.toLocaleString('en-PH', { minimumFractionDigits: 3, maximumFractionDigits: 3 })}${phpAmt}</td>
+                                    </tr>`;
+                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } catch (e) { console.error('Error loading refund history:', e); }
         }
 
         function editCredit() {
@@ -1054,7 +1174,21 @@
         // ===== REFUND =====
         function handleRefund() {
             document.getElementById('kebabDropdown').classList.remove('show');
-            alert('Refund functionality coming soon.');
+            if (!currentId) return;
+            // Only allow refund on open credits with remaining balance
+            if (creditData) {
+                const status = (creditData.status || '').toLowerCase();
+                if (status !== 'open') {
+                    alert('Only open vendor credits can be refunded. Current status: ' + status.toUpperCase());
+                    return;
+                }
+                const remaining = (parseFloat(creditData.total_amount) || 0) - (parseFloat(creditData.refunded_amount) || 0);
+                if (remaining <= 0) {
+                    alert('This vendor credit has no remaining balance to refund.');
+                    return;
+                }
+            }
+            window.location.href = '/new-vendor-refund.html?creditId=' + currentId;
         }
 
         // ===== VOID =====

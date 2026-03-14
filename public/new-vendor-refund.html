@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Record Refund - Inventory Management</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Sans+Pro:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', 'Source Sans Pro', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 28px;
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .page-header h1 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .btn-save {
+            background: #4285f4;
+            color: #fff;
+        }
+
+        .btn-save:hover {
+            background: #3367d6;
+        }
+
+        .btn-cancel {
+            background: #f5f5f5;
+            color: #555;
+            border: 1px solid #ddd;
+        }
+
+        .btn-cancel:hover {
+            background: #eee;
+        }
+
+        .form-body {
+            padding: 30px 40px;
+            background: #f5f6fa;
+            min-height: calc(100vh - 56px);
+        }
+
+        .form-card {
+            max-width: 700px;
+            margin: 0 auto;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            padding: 32px 36px;
+        }
+
+        .form-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .form-group {
+            display: grid;
+            grid-template-columns: 160px 1fr;
+            align-items: center;
+            margin-bottom: 16px;
+            gap: 12px;
+        }
+
+        .form-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+            text-align: right;
+        }
+
+        .form-label.required::after {
+            content: ' *';
+            color: #e53935;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #333;
+            background: #fff;
+            box-sizing: border-box;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #4285f4;
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.15);
+        }
+
+        .form-input[readonly] {
+            background: #f9f9f9;
+            color: #888;
+            cursor: not-allowed;
+        }
+
+        .form-textarea {
+            min-height: 70px;
+            resize: vertical;
+        }
+
+        .credit-info-box {
+            background: #f0f7ff;
+            border: 1px solid #d0e3ff;
+            border-radius: 6px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+        }
+
+        .credit-info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+        }
+
+        .credit-info-label {
+            font-size: 12px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .credit-info-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .credit-info-value.highlight {
+            font-size: 16px;
+            color: #1a73e8;
+        }
+
+        .php-equiv {
+            font-size: 11px;
+            color: #888;
+            margin-left: 6px;
+        }
+
+        .amount-hint {
+            font-size: 11px;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid #eee;
+            margin: 20px 0;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #333;
+            color: #fff;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-size: 13px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 9999;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="sidebarContainer"></div>
+
+    <div class="main-layout">
+        <div class="content">
+            <div class="page-header">
+                <h1>Record Refund</h1>
+                <div class="header-actions">
+                    <button class="btn btn-cancel" onclick="goBack()">Cancel</button>
+                    <button class="btn btn-save" id="btnSave" onclick="saveRefund()">Save Refund</button>
+                </div>
+            </div>
+
+            <div class="form-body">
+                <div class="form-card">
+                    <div class="form-title">Refund Details</div>
+
+                    <!-- Credit info summary -->
+                    <div class="credit-info-box" id="creditInfoBox">
+                        <div class="credit-info-row">
+                            <span class="credit-info-label">Credit Reference</span>
+                            <span class="credit-info-value" id="infoCreditNumber">—</span>
+                        </div>
+                        <div class="credit-info-row">
+                            <span class="credit-info-label">Credit Total</span>
+                            <span class="credit-info-value" id="infoCreditTotal">—</span>
+                        </div>
+                        <div class="credit-info-row">
+                            <span class="credit-info-label">Already Refunded</span>
+                            <span class="credit-info-value" id="infoRefunded">—</span>
+                        </div>
+                        <div class="credit-info-row">
+                            <span class="credit-info-label">Remaining Balance</span>
+                            <span class="credit-info-value highlight" id="infoRemaining">—</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Vendor</label>
+                        <input type="text" class="form-input" id="vendorName" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Currency</label>
+                        <input type="text" class="form-input" id="currencyCode" readonly>
+                    </div>
+
+                    <hr class="divider">
+
+                    <div class="form-group">
+                        <label class="form-label">Refund #</label>
+                        <input type="text" class="form-input" id="refundNumber" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label required">Refund Amount</label>
+                        <div>
+                            <input type="number" class="form-input" id="refundAmount" min="0" step="0.01">
+                            <div class="amount-hint" id="amountHint"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Refund Date</label>
+                        <input type="date" class="form-input" id="refundDate">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Payment Mode</label>
+                        <select class="form-select" id="paymentMode">
+                            <option value="Cash">Cash</option>
+                            <option value="Bank Transfer">Bank Transfer</option>
+                            <option value="Check">Check</option>
+                            <option value="Credit Card">Credit Card</option>
+                            <option value="GCash">GCash</option>
+                            <option value="PayMaya">PayMaya</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Deposit To</label>
+                        <select class="form-select" id="depositTo">
+                            <option value="Petty Cash">Petty Cash</option>
+                            <option value="Bank">Bank</option>
+                            <option value="Undeposited Funds">Undeposited Funds</option>
+                        </select>
+                    </div>
+
+                    <hr class="divider">
+
+                    <div class="form-group">
+                        <label class="form-label">Reference #</label>
+                        <input type="text" class="form-input" id="referenceNumber"
+                            placeholder="e.g., Check No., Transfer Ref">
+                    </div>
+
+                    <div class="form-group" style="align-items:flex-start;">
+                        <label class="form-label" style="margin-top:8px;">Notes</label>
+                        <textarea class="form-textarea" id="notes"
+                            placeholder="Add any notes about this refund..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="/js/layout.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const creditId = urlParams.get('creditId');
+        let creditData = null;
+        let creditCurrencySymbol = '₱';
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Set today's date
+            document.getElementById('refundDate').value = new Date().toISOString().split('T')[0];
+
+            // Generate refund number
+            try {
+                const numRes = await fetch('/api/vendor-refunds/next-number');
+                if (numRes.ok) {
+                    const numData = await numRes.json();
+                    document.getElementById('refundNumber').value = numData.refund_number;
+                }
+            } catch (e) { console.error(e); }
+
+            // Load credit data
+            if (creditId) {
+                await loadCreditData(creditId);
+            }
+        });
+
+        async function loadCreditData(id) {
+            try {
+                const res = await fetch('/api/vendor-credits/' + id);
+                if (!res.ok) { alert('Failed to load vendor credit'); return; }
+                creditData = await res.json();
+
+                const cc = creditData.currency_code || 'PHP';
+                const exRate = parseFloat(creditData.exchange_rate) || 1;
+                const symbolMap = { 'CNY': '¥', 'RMB': '¥', 'USD': '$', 'EUR': '€', 'GBP': '£', 'JPY': '¥', 'PHP': '₱' };
+                creditCurrencySymbol = symbolMap[cc] || cc + ' ';
+                const isFC = cc !== 'PHP' && exRate > 0;
+                const phpNote = (val) => isFC ? `<span class="php-equiv">₱${(val * exRate).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span>` : '';
+
+                const total = parseFloat(creditData.total_amount) || 0;
+                const refunded = parseFloat(creditData.refunded_amount) || 0;
+                const remaining = total - refunded;
+
+                // Populate info box
+                document.getElementById('infoCreditNumber').textContent = creditData.credit_number || 'VC-' + creditData.id;
+                document.getElementById('infoCreditTotal').innerHTML = creditCurrencySymbol + total.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 3 }) + phpNote(total);
+                document.getElementById('infoRefunded').innerHTML = creditCurrencySymbol + refunded.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 3 }) + phpNote(refunded);
+                document.getElementById('infoRemaining').innerHTML = creditCurrencySymbol + remaining.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 3 }) + phpNote(remaining);
+
+                // Populate form fields
+                document.getElementById('vendorName').value = creditData.supplier_name || '—';
+                document.getElementById('currencyCode').value = cc;
+                document.getElementById('refundAmount').value = remaining > 0 ? parseFloat(remaining.toFixed(3)) : 0;
+                document.getElementById('refundAmount').max = remaining;
+                document.getElementById('amountHint').textContent = 'Max refundable: ' + creditCurrencySymbol + remaining.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 3 });
+
+            } catch (e) {
+                console.error('Error loading credit data:', e);
+                alert('Error loading vendor credit');
+            }
+        }
+
+        async function saveRefund() {
+            if (!creditData) { alert('No vendor credit loaded'); return; }
+
+            const amt = parseFloat(document.getElementById('refundAmount').value);
+            if (!amt || amt <= 0) { alert('Please enter a valid refund amount'); return; }
+
+            const total = parseFloat(creditData.total_amount) || 0;
+            const refunded = parseFloat(creditData.refunded_amount) || 0;
+            const remaining = total - refunded;
+            if (amt > remaining + 0.001) {
+                alert(`Refund amount (${amt}) exceeds remaining balance (${remaining.toFixed(3)})`);
+                return;
+            }
+
+            document.getElementById('btnSave').disabled = true;
+            document.getElementById('btnSave').textContent = 'Saving...';
+
+            try {
+                const payload = {
+                    refund_number: document.getElementById('refundNumber').value,
+                    vendor_credit_id: creditData.id,
+                    credit_number: creditData.credit_number,
+                    supplier_id: creditData.supplier_id,
+                    supplier_name: creditData.supplier_name,
+                    refund_amount: amt,
+                    refund_date: document.getElementById('refundDate').value,
+                    payment_mode: document.getElementById('paymentMode').value,
+                    deposit_to: document.getElementById('depositTo').value,
+                    reference_number: document.getElementById('referenceNumber').value || null,
+                    notes: document.getElementById('notes').value || null,
+                    currency_code: creditData.currency_code || 'PHP',
+                    exchange_rate: creditData.exchange_rate || 1
+                };
+
+                const res = await fetch('/api/vendor-refunds', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await res.json();
+                if (!res.ok) {
+                    alert('Error: ' + (result.error || 'Failed to save'));
+                    document.getElementById('btnSave').disabled = false;
+                    document.getElementById('btnSave').textContent = 'Save Refund';
+                    return;
+                }
+
+                showToast('Refund recorded successfully');
+                setTimeout(() => {
+                    window.location.href = '/vendor-credit-detail.html?id=' + creditData.id;
+                }, 1200);
+
+            } catch (e) {
+                console.error(e);
+                alert('Error saving refund');
+                document.getElementById('btnSave').disabled = false;
+                document.getElementById('btnSave').textContent = 'Save Refund';
+            }
+        }
+
+        function goBack() {
+            if (creditId) {
+                window.location.href = '/vendor-credit-detail.html?id=' + creditId;
+            } else {
+                window.location.href = '/vendor-credits.html';
+            }
+        }
+
+    </script>
+</body>
+
+</html>

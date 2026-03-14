@@ -397,65 +397,6 @@
             color: #ef4444;
         }
 
-        .toast-container {
-            position: fixed;
-            top: 24px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            align-items: center;
-            pointer-events: none;
-        }
-
-        .toast {
-            pointer-events: auto;
-            padding: 14px 28px;
-            border-radius: 8px;
-            color: #333;
-            font-weight: 500;
-            font-size: 14px;
-            background: #fff;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            border: 1px solid #e5e7eb;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            animation: toastSlideDown 0.3s ease;
-            min-width: 300px;
-            transition: opacity 0.3s ease;
-        }
-
-        .toast.success {
-            border-left: 4px solid #10b981;
-        }
-
-        .toast.info {
-            border-left: 4px solid #3b82f6;
-        }
-
-        .toast-icon {
-            font-size: 18px;
-        }
-
-        .toast-message {
-            flex: 1;
-        }
-
-        .toast-close {
-            background: none;
-            border: none;
-            color: #999;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .toast-close:hover {
-            color: #333;
-        }
-
         @keyframes toastSlideDown {
             from {
                 opacity: 0;
@@ -947,6 +888,83 @@
 
         .kebab-dropdown-item.danger:hover {
             background: #fef2f2;
+        }
+
+        /* PDF/Print Dropdown */
+        .sr-pdf-dropdown-wrap {
+            position: relative;
+            display: inline-block;
+        }
+
+        .sr-pdf-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.13);
+            min-width: 180px;
+            padding: 4px 0;
+            z-index: 500;
+            margin-top: 2px;
+        }
+
+        .sr-pdf-dropdown.open {
+            display: block;
+        }
+
+        .sr-pdf-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            padding: 9px 16px;
+            font-size: 13px;
+            color: #333;
+            background: none;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .sr-pdf-dropdown-item:hover {
+            background: #f0f5ff;
+        }
+
+        .sr-pdf-dropdown-item .pdf-icon {
+            display: flex;
+            align-items: center;
+        }
+
+        /* Toast Notification */
+        .sr-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: white;
+            z-index: 99999;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            animation: toastSlideDown 0.3s ease;
+        }
+
+        .sr-toast.success {
+            background: #16a34a;
+        }
+
+        .sr-toast.info {
+            background: #4285f4;
+        }
+
+        .sr-toast.error {
+            background: #dc2626;
         }
 
         /* Detail Content */
@@ -1705,15 +1723,25 @@
                             </svg>
                             Edit</button>
                         <div id="editSeparator" class="detail-action-separator"></div>
-                        <button class="detail-action-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                style="vertical-align:-2px;margin-right:4px;">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                <polyline points="14 2 14 8 20 8" />
-                                <line x1="16" y1="13" x2="8" y2="13" />
-                                <line x1="16" y1="17" x2="8" y2="17" />
-                                <polyline points="10 9 9 9 8 9" />
-                            </svg>PDF/Print ▾</button>
+                        <div class="sr-pdf-dropdown-wrap">
+                            <button class="detail-action-btn" onclick="toggleSrPdfDropdown(event)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    style="vertical-align:-2px;margin-right:4px;">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                    <polyline points="14 2 14 8 20 8" />
+                                    <line x1="16" y1="13" x2="8" y2="13" />
+                                    <line x1="16" y1="17" x2="8" y2="17" />
+                                    <polyline points="10 9 9 9 8 9" />
+                                </svg>PDF/Print ▾</button>
+                            <div class="sr-pdf-dropdown" id="srPdfDropdown">
+                                <button class="sr-pdf-dropdown-item" onclick="downloadSalesReceiptPdf()">
+                                    <span class="pdf-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span> Download as PDF
+                                </button>
+                                <button class="sr-pdf-dropdown-item" onclick="printSalesReceipt()">
+                                    <span class="pdf-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg></span> Print
+                                </button>
+                            </div>
+                        </div>
                         <div class="detail-action-separator"></div>
                         <div class="kebab-wrap">
                             <button class="detail-action-btn" onclick="toggleKebabMenu(event)">⋯</button>
@@ -1911,17 +1939,6 @@
                 dirLabel = sortDir === 'asc' ? 'A → Z' : 'Z → A';
             }
             showToast((labels[field] || field) + ': ' + dirLabel, 'info');
-        }
-
-        function showToast(message, type) {
-            type = type || 'info';
-            const container = document.getElementById('toastContainer');
-            if (!container) return;
-            const toast = document.createElement('div');
-            toast.className = 'toast ' + type;
-            toast.innerHTML = '<span class="toast-icon">' + (type === 'success' ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>') + '</span><span class="toast-message">' + message + '</span><button class="toast-close" onclick="this.parentElement.remove()">✕</button>';
-            container.appendChild(toast);
-            setTimeout(function () { toast.style.opacity = '0'; setTimeout(function () { toast.remove(); }, 300); }, 3000);
         }
 
         function exportReceipts() {
@@ -2356,6 +2373,8 @@
             if (hb) { hb.classList.remove('open'); }
             const kb = document.getElementById('kebabDropdown');
             if (kb) { kb.classList.remove('open'); }
+            const pdfDd = document.getElementById('srPdfDropdown');
+            if (pdfDd) { pdfDd.classList.remove('open'); }
         });
 
         function toggleKebabMenu(e) {
@@ -2727,8 +2746,174 @@
                 </div>
             `;
         }
+
+        // ===== Show Toast =====
+        function showToast(message, type) {
+            type = type || 'info';
+            const toast = document.createElement('div');
+            toast.className = 'sr-toast ' + type;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(function () {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(function () { toast.remove(); }, 300);
+            }, 3000);
+        }
+
+        // ===== PDF/Print Dropdown =====
+        function toggleSrPdfDropdown(e) {
+            e.stopPropagation();
+            const dd = document.getElementById('srPdfDropdown');
+            dd.classList.toggle('open');
+        }
+
+        async function printSalesReceipt() {
+            document.getElementById('srPdfDropdown').classList.remove('open');
+            if (!selectedReceiptId) { showToast('No receipt selected.', 'info'); return; }
+
+            let receipt;
+            try {
+                const res = await fetch('/api/sales-receipts/' + selectedReceiptId);
+                if (!res.ok) throw new Error('Failed');
+                receipt = await res.json();
+            } catch (e) {
+                showToast('Could not load receipt data.', 'error');
+                return;
+            }
+
+            const printWin = window.open('', '_blank', 'width=900,height=700');
+            printWin.document.write(buildReceiptPrintHTML(receipt));
+            printWin.document.close();
+            printWin.focus();
+            setTimeout(function () { printWin.print(); }, 500);
+        }
+
+        async function downloadSalesReceiptPdf() {
+            document.getElementById('srPdfDropdown').classList.remove('open');
+            if (!selectedReceiptId) { showToast('No receipt selected.', 'info'); return; }
+
+            let receipt;
+            try {
+                const res = await fetch('/api/sales-receipts/' + selectedReceiptId);
+                if (!res.ok) throw new Error('Failed');
+                receipt = await res.json();
+            } catch (e) {
+                showToast('Could not load receipt data.', 'error');
+                return;
+            }
+
+            const printWin = window.open('', '_blank', 'width=900,height=700');
+            printWin.document.write(buildReceiptPrintHTML(receipt));
+            printWin.document.close();
+            printWin.focus();
+            setTimeout(function () { printWin.print(); }, 500);
+        }
+
+        function buildReceiptPrintHTML(r) {
+            const items = r.items || [];
+            const srNum = r.receipt_number || 'SR-' + r.id;
+            const receiptDate = r.receipt_date ? new Date(r.receipt_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+            const now = new Date();
+            const printTime = now.toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
+            const custName = r.customer_name || '';
+            const refNum = r.reference_number || '';
+            const paymentMode = r.payment_mode || 'Cash';
+            const depositTo = r.deposit_to || '';
+            const salesperson = r.salesperson_name || '';
+            const status = (r.status || 'PAID').toUpperCase();
+
+            let subTotal = 0;
+            const itemRows = items.map(function (item, i) {
+                const qty = parseFloat(item.quantity) || 0;
+                const rate = parseFloat(item.rate) || 0;
+                const amount = parseFloat(item.amount) || (rate * qty);
+                subTotal += amount;
+                return '<tr>' +
+                    '<td style="padding:8px 10px;border-bottom:1px solid #eee;text-align:center;color:#888;">' + (i + 1) + '</td>' +
+                    '<td style="padding:8px 10px;border-bottom:1px solid #eee;">' + (item.item_name || '') + '</td>' +
+                    '<td style="padding:8px 10px;border-bottom:1px solid #eee;text-align:center;">' + qty.toFixed(2) + '</td>' +
+                    '<td style="padding:8px 10px;border-bottom:1px solid #eee;text-align:right;">PHP' + fmtNum(rate) + '</td>' +
+                    '<td style="padding:8px 10px;border-bottom:1px solid #eee;text-align:right;">PHP' + fmtNum(amount) + '</td>' +
+                    '</tr>';
+            }).join('');
+
+            if (items.length === 0) {
+                subTotal = parseFloat(r.sub_total) || 0;
+            }
+
+            const discount = parseFloat(r.discount || 0);
+            const shipping = parseFloat(r.shipping_charges || 0);
+            const adjustment = parseFloat(r.adjustment || 0);
+            const total = parseFloat(r.total || subTotal);
+
+            let extraTotals = '';
+            if (discount > 0) extraTotals += '<tr><td style="padding:6px 10px;text-align:right;color:#666;">Discount</td><td style="padding:6px 10px;text-align:right;color:#dc2626;">-PHP' + fmtNum(discount) + '</td></tr>';
+            if (shipping > 0) extraTotals += '<tr><td style="padding:6px 10px;text-align:right;color:#666;">Shipping</td><td style="padding:6px 10px;text-align:right;">PHP' + fmtNum(shipping) + '</td></tr>';
+            if (adjustment !== 0) extraTotals += '<tr><td style="padding:6px 10px;text-align:right;color:#666;">Adjustment</td><td style="padding:6px 10px;text-align:right;">PHP' + fmtNum(adjustment) + '</td></tr>';
+
+            return '<!DOCTYPE html><html><head><title>' + srNum + ' | ' + printTime + '</title>' +
+                '<style>' +
+                '@page { size: A4; margin: 15mm; }' +
+                '* { margin: 0; padding: 0; box-sizing: border-box; }' +
+                'body { font-family: Arial, Helvetica, sans-serif; color: #333; font-size: 13px; line-height: 1.5; padding: 40px; max-width: 800px; margin: 0 auto; }' +
+                '.header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; }' +
+                '.company { }' +
+                '.company h1 { font-size: 22px; margin: 0 0 4px; color: #1a1a1a; }' +
+                '.company p { font-size: 12px; color: #666; margin: 2px 0; }' +
+                '.sr-title { font-size: 22px; font-weight: 700; color: #333; margin: 0 0 4px; }' +
+                '.sr-num { font-size: 13px; color: #666; margin-bottom: 20px; }' +
+                '.info-grid { display: flex; justify-content: space-between; margin-bottom: 24px; }' +
+                '.info-left .label { font-size: 11px; color: #888; font-weight: 600; text-transform: uppercase; margin-bottom: 4px; }' +
+                '.info-left .value { font-size: 14px; color: #333; font-weight: 600; }' +
+                '.info-right { text-align: right; font-size: 13px; }' +
+                '.info-right div { margin-bottom: 4px; }' +
+                '.info-right .lbl { color: #888; display: inline-block; min-width: 100px; text-align: right; }' +
+                '.info-right .val { color: #333; font-weight: 500; }' +
+                '.items-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }' +
+                '.items-table thead th { text-align: left; padding: 10px; font-size: 11px; font-weight: 600; color: #555; background: #f5f7fa; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; }' +
+                '.items-table thead th.r { text-align: right; }' +
+                '.items-table thead th.c { text-align: center; }' +
+                '.payment-box { border: 1px solid #e0e0e0; border-radius: 4px; padding: 14px 18px; margin: 20px 0; max-width: 300px; }' +
+                '.payment-box h4 { font-size: 13px; margin: 0 0 8px; color: #333; }' +
+                '.payment-row { display: flex; gap: 16px; font-size: 12px; margin-bottom: 4px; }' +
+                '.payment-row .plbl { color: #666; min-width: 100px; }' +
+                '.payment-row .pval { color: #333; font-weight: 500; }' +
+                '.status-badge { display: inline-block; padding: 3px 10px; border-radius: 3px; font-size: 10px; font-weight: 700; text-transform: uppercase; }' +
+                '.status-paid { background: #dcfce7; color: #16a34a; }' +
+                '.status-void { background: #fee2e2; color: #dc2626; }' +
+                '.notes { margin-top: 20px; padding-top: 16px; border-top: 1px solid #eee; }' +
+                '.notes h4 { font-size: 13px; font-weight: 700; color: #333; margin: 0 0 4px; }' +
+                '.notes p { font-size: 12px; color: #555; line-height: 1.5; }' +
+                '@media print { body { padding: 0; } }' +
+                '</style></head><body>' +
+                '<div class="header"><div class="company"><h1>SOLO</h1><p>Philippines</p><p>projectfinal357@gmail.com</p></div>' +
+                '<div><span class="status-badge ' + (status === 'VOID' ? 'status-void' : 'status-paid') + '">' + status + '</span></div></div>' +
+                '<hr style="border:none;border-top:1px solid #e0e0e0;margin:0 0 24px;">' +
+                '<h2 class="sr-title">SALES RECEIPT</h2>' +
+                '<p class="sr-num">Sales Receipt# ' + srNum + '</p>' +
+                '<div class="info-grid"><div class="info-left"><div class="label">Bill To</div><div class="value">' + custName + '</div></div>' +
+                '<div class="info-right"><div><span class="lbl">Receipt Date</span> <span class="val">' + receiptDate + '</span></div>' +
+                '<div><span class="lbl">Reference</span> <span class="val">' + (refNum || '—') + '</span></div>' +
+                '<div><span class="lbl">Payment Mode</span> <span class="val">' + paymentMode + '</span></div>' +
+                (salesperson ? '<div><span class="lbl">Salesperson</span> <span class="val">' + salesperson + '</span></div>' : '') +
+                '</div></div>' +
+                '<table class="items-table"><thead><tr><th class="c" style="width:40px;">#</th><th>Item & Description</th><th class="c">Qty</th><th class="r">Rate</th><th class="r">Amount</th></tr></thead>' +
+                '<tbody>' + (itemRows || '<tr><td colspan="5" style="padding:16px;text-align:center;color:#aaa;">No items</td></tr>') + '</tbody></table>' +
+                '<table style="width:300px;margin-left:auto;font-size:13px;border-collapse:collapse;">' +
+                '<tr><td style="padding:6px 10px;text-align:right;color:#666;">Sub Total</td><td style="padding:6px 10px;text-align:right;">PHP' + fmtNum(subTotal) + '</td></tr>' +
+                extraTotals +
+                '<tr style="border-top:2px solid #333;font-weight:700;font-size:14px;"><td style="padding:8px 10px;text-align:right;">Total (PHP)</td><td style="padding:8px 10px;text-align:right;">PHP' + fmtNum(total) + '</td></tr></table>' +
+                '<div class="payment-box"><h4>Payment Details</h4>' +
+                '<div class="payment-row"><span class="plbl">Payment Mode</span><span class="pval">' + paymentMode + '</span></div>' +
+                (refNum ? '<div class="payment-row"><span class="plbl">Reference</span><span class="pval">' + refNum + '</span></div>' : '') +
+                (depositTo ? '<div class="payment-row"><span class="plbl">Deposit To</span><span class="pval">' + depositTo + '</span></div>' : '') +
+                '</div>' +
+                (r.notes ? '<div class="notes"><h4>Notes</h4><p>' + r.notes + '</p></div>' : '') +
+                (r.terms_conditions ? '<div class="notes"><h4>Terms & Conditions</h4><p>' + r.terms_conditions + '</p></div>' : '') +
+                '</body></html>';
+        }
     </script>
-    <div class="toast-container" id="toastContainer"></div>
 </body>
 
 </html>

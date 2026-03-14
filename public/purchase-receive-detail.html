@@ -226,6 +226,8 @@
             background: white;
             border-bottom: 1px solid #e9ecef;
             font-size: 12px;
+            overflow: visible;
+            position: relative;
         }
 
         .toolbar-btn {
@@ -256,41 +258,126 @@
             color: white;
         }
 
-        /* Tabs */
-        .detail-tabs {
+        /* Associated Tabs (matching PO detail view) */
+        .assoc-tabs {
             display: flex;
-            gap: 20px;
+            gap: 0;
             padding: 0 20px;
             background: white;
             border-bottom: 1px solid #e9ecef;
         }
 
-        .detail-tab {
-            padding: 10px 0;
-            font-size: 12px;
-            color: #666;
+        .assoc-tab {
+            padding: 10px 16px;
+            font-size: 13px;
+            color: #555;
             cursor: pointer;
-            border-bottom: 2px solid transparent;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+            transition: all 0.15s;
         }
 
-        .detail-tab:hover {
+        .assoc-tab:hover {
             color: #333;
         }
 
-        .detail-tab.active {
-            color: #4285f4;
-            border-bottom-color: #4285f4;
-            font-weight: 500;
+        .assoc-tab.active {
+            color: #1a73e8;
+            border-bottom-color: #1a73e8;
         }
 
-        .detail-tab .count {
+        .assoc-tab .tab-count {
             display: inline-block;
             background: #e8f0fe;
-            color: #4285f4;
-            padding: 1px 6px;
+            color: #1a73e8;
+            padding: 1px 7px;
             border-radius: 10px;
             font-size: 10px;
             margin-left: 4px;
+            font-weight: 600;
+        }
+
+        /* Associated Records Table (inline above doc card) */
+        .assoc-record-area {
+            background: white;
+            padding: 0 20px;
+        }
+
+        .assoc-record-area table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .assoc-record-area th {
+            text-align: left;
+            font-size: 11px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            padding: 10px 8px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .assoc-record-area td {
+            padding: 10px 8px;
+            font-size: 13px;
+            color: #333;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .assoc-record-area tr:hover {
+            background: #f8f9fa;
+        }
+
+        .assoc-record-area a {
+            color: #1a73e8;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .assoc-record-area a:hover {
+            text-decoration: underline;
+        }
+
+        /* History Timeline */
+        .history-timeline {
+            padding: 8px 0;
+        }
+
+        .history-entry {
+            display: flex;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .history-entry:last-child {
+            border-bottom: none;
+        }
+
+        .history-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4285f4;
+            margin-top: 5px;
+            flex-shrink: 0;
+        }
+
+        .history-content {
+            flex: 1;
+        }
+
+        .history-text {
+            font-size: 13px;
+            color: #333;
+        }
+
+        .history-date {
+            font-size: 11px;
+            color: #999;
+            margin-top: 2px;
         }
 
         /* PDF View toggle */
@@ -543,6 +630,94 @@
             align-items: center;
             gap: 10px;
         }
+        /* Kebab dropdown */
+        .kebab-wrap {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+        .kebab-dropdown {
+            display: none;
+            position: fixed;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            z-index: 9999;
+            min-width: 160px;
+            overflow: hidden;
+        }
+        .kebab-dropdown.open { display: block; }
+        .kebab-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            font-size: 12px;
+            color: #333;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+        .kebab-dropdown-item:hover { background: #f5f5f5; }
+        .kebab-dropdown-item.danger { color: #dc2626; }
+        .kebab-dropdown-item.danger:hover { background: #fef2f2; }
+
+        /* Delete confirmation modal */
+        .delete-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .delete-modal-overlay.open { display: flex; }
+        .delete-modal {
+            background: white;
+            border-radius: 10px;
+            padding: 28px 32px;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+        }
+        .delete-modal h3 {
+            margin: 0 0 12px;
+            font-size: 16px;
+            color: #1a1a1a;
+        }
+        .delete-modal p {
+            margin: 0 0 20px;
+            font-size: 13px;
+            color: #555;
+            line-height: 1.6;
+        }
+        .delete-modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+        .delete-modal-actions button {
+            padding: 8px 18px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+        .delete-modal-actions .cancel-btn {
+            background: #f0f0f0;
+            color: #555;
+        }
+        .delete-modal-actions .cancel-btn:hover { background: #e0e0e0; }
+        .delete-modal-actions .delete-btn {
+            background: #dc2626;
+            color: white;
+        }
+        .delete-modal-actions .delete-btn:hover { background: #b91c1c; }
     </style>
 </head>
 
@@ -573,12 +748,6 @@
                 <div class="detail-header">
                     <span class="detail-pr-number" id="headerPRNumber">—</span>
                     <div class="detail-header-actions">
-                        <button class="detail-header-icon" title="Attachment">📎</button>
-                        <button class="detail-header-icon" title="Comment"><svg width="14" height="14"
-                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                            </svg></button>
                         <button class="detail-header-icon close"
                             onclick="window.location.href='/purchase-receives.html'" title="Close">×</button>
                     </div>
@@ -593,14 +762,14 @@
                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                         </svg> Edit</button>
-                    <button class="toolbar-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    <button class="toolbar-btn" onclick="printReceive()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                             style="vertical-align:middle;margin-right:3px;">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                             <polyline points="14 2 14 8 20 8" />
                             <line x1="16" y1="13" x2="8" y2="13" />
                             <line x1="16" y1="17" x2="8" y2="17" />
-                        </svg> PDF/Print ▾</button>
+                        </svg> PDF/Print</button>
                     <button class="toolbar-btn mark-received" id="markReceivedBtn" style="display:none;"
                         onclick="markAsReceived()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -609,7 +778,17 @@
                         </svg> Mark as Received</button>
                     <button class="toolbar-btn" id="markTransitBtn" onclick="markAsTransit()">⏱ Mark as In
                         Transit</button>
-                    <button class="toolbar-btn">⋯</button>
+                    <div class="kebab-wrap">
+                        <button class="toolbar-btn" id="kebabBtn" onclick="toggleKebab(event)">⋯</button>
+                        <div class="kebab-dropdown" id="kebabDropdown">
+                            <button class="kebab-dropdown-item danger" onclick="showDeleteModal()">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                </svg>
+                                Delete
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- View-only redirect to linked PO -->
@@ -619,21 +798,60 @@
                         href="#" style="color:#1a73e8;font-weight:600;text-decoration:none;"></a>
                 </div>
 
-                <!-- Tabs -->
-                <div class="detail-tabs">
-                    <div class="detail-tab active">Bills <span class="count" id="billsCount">0</span></div>
-                    <div class="detail-tab">Purchase Orders <span class="count" id="poCount">1</span></div>
+                <!-- Associated Record Tabs (PO-style, at top) -->
+                <div class="assoc-tabs" id="assocTabs" style="display:none;">
+                    <div class="assoc-tab" id="billsTab" style="display:none;"
+                        onclick="toggleAssocTab('bills', this)">Bills <span class="tab-count"
+                            id="billsTabCount">0</span></div>
+                    <div class="assoc-tab" id="poTab" style="display:none;"
+                        onclick="toggleAssocTab('po', this)">Purchase Orders <span class="tab-count"
+                            id="poTabCount">0</span></div>
+                    <div class="assoc-tab" id="historyTab" style="display:none;"
+                        onclick="toggleAssocTab('history', this)">History <span class="tab-count"
+                            id="historyTabCount">0</span></div>
                 </div>
 
-                <!-- PDF Toggle -->
-                <div class="pdf-toggle-row">
-                    <label class="pdf-toggle">
-                        <span>Show PDF View</span>
-                        <input type="checkbox">
-                    </label>
+                <!-- Associated Records Inline Areas -->
+                <div class="assoc-record-area" id="assocBillsArea" style="display:none;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>BILL#</th>
+                                <th>DATE</th>
+                                <th>STATUS</th>
+                                <th>PAYMENT</th>
+                                <th style="text-align:right;">AMOUNT</th>
+                            </tr>
+                        </thead>
+                        <tbody id="assocBillsBody"></tbody>
+                    </table>
                 </div>
 
-                <!-- Document Card -->
+                <div class="assoc-record-area" id="assocPOArea" style="display:none;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>PO#</th>
+                                <th>DATE</th>
+                                <th>VENDOR</th>
+                                <th>STATUS</th>
+                                <th>ITEMS</th>
+                                <th style="text-align:right;">TOTAL</th>
+                            </tr>
+                        </thead>
+                        <tbody id="assocPOBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="assoc-record-area" id="assocHistoryArea" style="display:none;">
+                    <div style="padding:16px;">
+                        <div class="history-timeline" id="prHistoryTimeline">
+                            <div style="text-align:center;color:#999;padding:20px;">No history available.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Always-visible Document Card -->
                 <div class="document-card" id="documentCard">
                     <div class="doc-header">
                         <div>
@@ -700,6 +918,18 @@
                         <strong>⚠ Partially Received:</strong> <span id="remainingText"></span>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="delete-modal-overlay" id="deleteModalOverlay" onclick="if(event.target===this)closeDeleteModal()">
+        <div class="delete-modal">
+            <h3>🗑️ Delete Purchase Receive</h3>
+            <p>Are you sure you want to delete this Purchase Receive? This action cannot be undone and may affect your inventory stock counts.</p>
+            <div class="delete-modal-actions">
+                <button class="cancel-btn" onclick="closeDeleteModal()">Cancel</button>
+                <button class="delete-btn" onclick="confirmDelete()">Delete</button>
             </div>
         </div>
     </div>
@@ -781,6 +1011,9 @@
                 if (!res.ok) return;
                 const pr = await res.json();
 
+                // Touch last-opened timestamp for this specific receive
+                fetch('/api/purchase-receives/' + id + '/touch', { method: 'PATCH' }).catch(() => {});
+
                 // Header
                 document.getElementById('headerPRNumber').textContent = pr.receive_number || 'PR-' + pr.id;
 
@@ -821,7 +1054,7 @@
                     billStatusEl.innerHTML = '<span class="badge-unbilled">Unbilled</span>';
                 }
 
-                document.getElementById('billsCount').textContent = billsCount;
+
 
                 // PO number
                 const poNum = linkedPO ? linkedPO.po_number : (pr.po_number || '—');
@@ -855,15 +1088,24 @@
                     } catch (e) { console.error(e); }
                 }
 
-                // Show PO Receive Status
+                // Show PO Order Status (the actual status: ISSUED, CLOSED, AWAITING REPLACEMENT, etc.)
                 const poStatusRow = document.getElementById('poReceiveStatusRow');
                 const poStatusEl = document.getElementById('docPOReceiveStatus');
-                if (poReceiveStatus && poReceiveStatus !== 'NOT RECEIVED') {
+                const poOrderStatus = linkedPO ? (linkedPO.status || '').toUpperCase() : '';
+                if (poOrderStatus) {
                     poStatusRow.style.display = 'flex';
-                    if (poReceiveStatus === 'RECEIVED') {
-                        poStatusEl.innerHTML = '<span class="badge-received">Fully Received</span>';
-                    } else if (poReceiveStatus === 'PARTIALLY RECEIVED') {
-                        poStatusEl.innerHTML = '<span style="background:#f59e0b;color:white;padding:2px 10px;border-radius:3px;font-size:11px;font-weight:600;">Partially Received</span>';
+                    if (poOrderStatus === 'CLOSED') {
+                        poStatusEl.innerHTML = '<span style="background:#16a34a;color:white;padding:2px 10px;border-radius:3px;font-size:11px;font-weight:600;">CLOSED</span>';
+                    } else if (poOrderStatus === 'ISSUED') {
+                        poStatusEl.innerHTML = '<span style="background:#3b82f6;color:white;padding:2px 10px;border-radius:3px;font-size:11px;font-weight:600;">ISSUED</span>';
+                    } else if (poOrderStatus === 'AWAITING REPLACEMENT') {
+                        poStatusEl.innerHTML = '<span style="background:#e65100;color:white;padding:2px 10px;border-radius:3px;font-size:11px;font-weight:600;">AWAITING REPLACEMENT</span>';
+                    } else if (poOrderStatus === 'DRAFT') {
+                        poStatusEl.innerHTML = '<span style="background:#f59e0b;color:white;padding:2px 10px;border-radius:3px;font-size:11px;font-weight:600;">DRAFT</span>';
+                    } else if (poOrderStatus === 'CANCELLED') {
+                        poStatusEl.innerHTML = '<span style="background:#dc2626;color:white;padding:2px 10px;border-radius:3px;font-size:11px;font-weight:600;">CANCELLED</span>';
+                    } else {
+                        poStatusEl.innerHTML = '<span style="background:#6b7280;color:white;padding:2px 10px;border-radius:3px;font-size:11px;font-weight:600;">' + poOrderStatus + '</span>';
                     }
                 } else {
                     poStatusRow.style.display = 'none';
@@ -975,6 +1217,110 @@
                     link.textContent = linkedPO.po_number || 'PO-' + pr.purchase_id;
                     link.href = '/purchase-order-detail.html?id=' + pr.purchase_id;
                 }
+
+                // ═══ Populate Associated Tabs (PO-style) ═══
+                const fmtD = d => d ? new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+                const fmtDT = d => d ? new Date(d).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—';
+                let hasAnyTab = false;
+
+                // ── Bills Tab ──
+                const billsBody = document.getElementById('assocBillsBody');
+                let poBillsList = [];
+                if (pr.purchase_id) {
+                    try {
+                        const bRes = await fetch('/api/bills');
+                        if (bRes.ok) {
+                            const allB = await bRes.json();
+                            poBillsList = allB.filter(b => b.purchase_order_id === pr.purchase_id);
+                        }
+                    } catch (e) { console.error(e); }
+                }
+                if (poBillsList.length > 0) {
+                    document.getElementById('billsTab').style.display = '';
+                    document.getElementById('billsTabCount').textContent = poBillsList.length;
+                    hasAnyTab = true;
+                    billsBody.innerHTML = poBillsList.map(b => {
+                        const st = (b.status || 'Draft').toUpperCase();
+                        const stColor = st === 'PAID' ? '#16a34a' : st === 'OPEN' ? '#1a73e8' : st === 'OVERDUE' ? '#dc2626' : st === 'DRAFT' ? '#f59e0b' : '#666';
+                        const payStatus = (b.payment_status || 'Unpaid');
+                        const payColor = payStatus === 'Paid' ? '#16a34a' : payStatus === 'Partially Paid' ? '#d97706' : '#888';
+                        const amt = parseFloat(b.total_amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                        return `<tr style="cursor:pointer;" onclick="window.location.href='/bill-detail.html?id=${b.id}'">
+                            <td><a href="/bill-detail.html?id=${b.id}">${b.bill_number || 'BILL-' + b.id}</a></td>
+                            <td>${fmtD(b.bill_date || b.created_at)}</td>
+                            <td><span style="background:${stColor}15;color:${stColor};padding:2px 10px;border-radius:3px;font-size:11px;font-weight:600;">${st}</span></td>
+                            <td><span style="color:${payColor};font-weight:500;font-size:12px;">${payStatus}</span></td>
+                            <td style="text-align:right;font-weight:500;">${amt}</td>
+                        </tr>`;
+                    }).join('');
+                }
+
+                // ── Purchase Orders Tab ──
+                const poBody = document.getElementById('assocPOBody');
+                if (linkedPO) {
+                    document.getElementById('poTab').style.display = '';
+                    document.getElementById('poTabCount').textContent = '1';
+                    hasAnyTab = true;
+                    const poSt = (linkedPO.status || 'DRAFT').toUpperCase();
+                    const poStColor = poSt === 'CLOSED' ? '#16a34a' : poSt === 'ISSUED' ? '#3b82f6' : poSt === 'DRAFT' ? '#f59e0b' : poSt === 'CANCELLED' ? '#dc2626' : '#666';
+                    const poDate = fmtD(linkedPO.order_date);
+                    const poItemCount = (linkedPO.items || []).length || '—';
+                    const poTotal = parseFloat(linkedPO.total_amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                    poBody.innerHTML = `<tr style="cursor:pointer;" onclick="window.location.href='/purchase-order-detail.html?id=${linkedPO.id}'">
+                        <td><a href="/purchase-order-detail.html?id=${linkedPO.id}">${linkedPO.po_number || 'PO-' + linkedPO.id}</a></td>
+                        <td>${poDate}</td>
+                        <td>${linkedPO.supplier_name || pr.supplier_name || '—'}</td>
+                        <td><span style="background:${poStColor}15;color:${poStColor};padding:2px 10px;border-radius:3px;font-size:11px;font-weight:600;">${poSt}</span></td>
+                        <td>${poItemCount} item(s)</td>
+                        <td style="text-align:right;font-weight:500;">${poTotal}</td>
+                    </tr>`;
+                }
+
+                // ── History Tab ──
+                const historyEl = document.getElementById('prHistoryTimeline');
+                let histEntries = [];
+                // Created
+                histEntries.push({ text: `Purchase Receive <strong>${pr.receive_number || 'PR-' + pr.id}</strong> was created`, date: pr.created_at, color: '#4285f4' });
+                // Status transitions
+                if (pr.status === 'in_transit' || pr.status === 'received') {
+                    histEntries.push({ text: 'Marked as <strong>In Transit</strong>', date: pr.updated_at, color: '#3b82f6' });
+                }
+                if (pr.status === 'received') {
+                    histEntries.push({ text: 'Marked as <strong>Received</strong> — inventory updated', date: pr.updated_at, color: '#16a34a' });
+                }
+                // Bills created
+                poBillsList.forEach(b => {
+                    histEntries.push({ text: `Bill <strong>${b.bill_number || 'BILL-' + b.id}</strong> created (${(b.status || 'Draft').toUpperCase()})`, date: b.created_at, color: '#e65100' });
+                });
+                // Sort by date
+                histEntries.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+                document.getElementById('historyTab').style.display = '';
+                document.getElementById('historyTabCount').textContent = histEntries.length;
+                hasAnyTab = true;
+                historyEl.innerHTML = histEntries.map(e => `
+                    <div class="history-entry">
+                        <div class="history-dot" style="background:${e.color}"></div>
+                        <div class="history-content">
+                            <div class="history-text">${e.text}</div>
+                            <div class="history-date">${fmtDT(e.date)}</div>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Show the tabs container if any tabs exist
+                if (hasAnyTab) {
+                    document.getElementById('assocTabs').style.display = 'flex';
+                    // Auto-open first visible tab
+                    const allTabs = document.querySelectorAll('.assoc-tab');
+                    for (const t of allTabs) {
+                        if (t.style.display !== 'none') {
+                            toggleAssocTab(t.id.replace('Tab', ''), t);
+                            break;
+                        }
+                    }
+                }
+
             } catch (e) {
                 console.error('Error loading detail:', e);
             }
@@ -985,6 +1331,27 @@
             if (currentId) {
                 window.location.href = '/new-purchase-receive.html?editId=' + currentId;
             }
+        }
+
+        // ── Associated Tab Toggle (PO-style) ──
+        let activeAssocTab = null;
+        function toggleAssocTab(tabId, tabEl) {
+            const areas = ['assocBillsArea', 'assocPOArea', 'assocHistoryArea'];
+            // If clicking already active tab, deselect
+            if (activeAssocTab === tabId) {
+                tabEl.classList.remove('active');
+                areas.forEach(a => document.getElementById(a).style.display = 'none');
+                activeAssocTab = null;
+                return;
+            }
+            // Deactivate all
+            document.querySelectorAll('.assoc-tab').forEach(t => t.classList.remove('active'));
+            areas.forEach(a => document.getElementById(a).style.display = 'none');
+            // Activate selected
+            tabEl.classList.add('active');
+            activeAssocTab = tabId;
+            const areaMap = { 'bills': 'assocBillsArea', 'po': 'assocPOArea', 'history': 'assocHistoryArea' };
+            document.getElementById(areaMap[tabId]).style.display = '';
         }
 
         // Billing and returns are now centralized on the PO detail view
@@ -1046,15 +1413,82 @@
             }
         }
 
-        function showToast(msg) {
-            const t = document.createElement('div');
-            t.textContent = msg;
-            t.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#16a34a;color:white;padding:12px 28px;border-radius:8px;font-size:14px;font-weight:500;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.15);';
-            document.body.appendChild(t);
-            setTimeout(() => t.remove(), 3000);
+        // convertToBill removed - centralized on PO detail
+
+        // ── PDF / Print ──
+        function printReceive() {
+            const card = document.getElementById('documentCard');
+            const printWin = window.open('', '_blank');
+            printWin.document.write(`<html><head><title>Print Purchase Receive</title>
+                <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+                <style>
+                    * { font-family: 'Inter', sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                    body { margin: 24px; font-size: 13px; color: #333; }
+                    table { width: 100%; border-collapse: collapse; }
+                    th { text-align: left; padding: 8px 12px; font-size: 11px; font-weight: 600; color: #999; text-transform: uppercase; border-bottom: 2px solid #e9ecef; background: #f9fafb; }
+                    td { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
+                    .badge-received { background: #16a34a; color: white; padding: 2px 10px; border-radius: 3px; font-size: 11px; font-weight: 600; }
+                    .badge-draft { background: #f59e0b; color: white; padding: 2px 10px; border-radius: 3px; font-size: 11px; font-weight: 600; }
+                    .badge-in-transit { background: #3b82f6; color: white; padding: 2px 10px; border-radius: 3px; font-size: 11px; font-weight: 600; }
+                    @media print { body { margin: 0; } }
+                </style>
+            </head><body>${card.innerHTML}</body></html>`);
+            printWin.document.close();
+            printWin.onload = () => { printWin.print(); };
         }
 
-        // convertToBill removed - centralized on PO detail
+        // ── Kebab Menu ──
+        function toggleKebab(e) {
+            e.stopPropagation();
+            const dd = document.getElementById('kebabDropdown');
+            const isOpen = dd.classList.contains('open');
+            dd.classList.toggle('open');
+            if (!isOpen) {
+                const btn = document.getElementById('kebabBtn');
+                const rect = btn.getBoundingClientRect();
+                dd.style.top = (rect.bottom + 4) + 'px';
+                dd.style.left = (rect.right - dd.offsetWidth) + 'px';
+            }
+        }
+        document.addEventListener('click', () => {
+            document.getElementById('kebabDropdown').classList.remove('open');
+        });
+
+        // ── Delete Workflow ──
+        function showDeleteModal() {
+            document.getElementById('kebabDropdown').classList.remove('open');
+            document.getElementById('deleteModalOverlay').classList.add('open');
+        }
+        function closeDeleteModal() {
+            document.getElementById('deleteModalOverlay').classList.remove('open');
+        }
+        async function confirmDelete() {
+            const id = new URLSearchParams(window.location.search).get('id');
+            if (!id) return;
+            const btn = document.querySelector('.delete-modal .delete-btn');
+            btn.disabled = true;
+            btn.textContent = 'Deleting...';
+            try {
+                const res = await fetch('/api/purchase-receives/' + id, { method: 'DELETE' });
+                if (!res.ok) {
+                    const err = await res.json();
+                    alert('Error: ' + (err.error || 'Failed to delete'));
+                    btn.disabled = false;
+                    btn.textContent = 'Delete';
+                    return;
+                }
+                closeDeleteModal();
+                showToast('Purchase Receive deleted successfully');
+                setTimeout(() => {
+                    window.location.href = '/purchase-receives.html';
+                }, 1200);
+            } catch (e) {
+                console.error('Delete error:', e);
+                alert('Failed to delete purchase receive');
+                btn.disabled = false;
+                btn.textContent = 'Delete';
+            }
+        }
     </script>
 </body>
 

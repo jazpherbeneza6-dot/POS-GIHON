@@ -1234,6 +1234,209 @@
             color: #999;
             font-size: 12px;
         }
+
+        /* Shipment Preference Dropdown */
+        .sp-pref-wrap {
+            position: relative;
+            max-width: 200px;
+        }
+
+        .sp-pref-panel {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 200;
+            margin-top: 2px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .sp-pref-panel.open {
+            display: block;
+        }
+
+        .sp-pref-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .sp-pref-option:hover {
+            background: #f0f4ff;
+        }
+
+        .sp-pref-option-name {
+            flex: 1;
+        }
+
+        .sp-pref-delete-btn {
+            background: none;
+            border: none;
+            color: #dc2626;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 0 4px;
+            line-height: 1;
+            opacity: 0.6;
+        }
+
+        .sp-pref-delete-btn:hover {
+            opacity: 1;
+        }
+
+        .sp-pref-empty {
+            padding: 10px 12px;
+            color: #999;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        .sp-pref-hint {
+            padding: 6px 12px;
+            font-size: 10px;
+            color: #999;
+            border-top: 1px solid #f0f0f0;
+            text-align: center;
+        }
+
+        /* Discount Column */
+        .disc-cell {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .disc-cell input {
+            width: 50px !important;
+            text-align: right;
+            padding: 5px 4px !important;
+        }
+
+        .disc-deduct {
+            font-size: 9px;
+            color: #dc2626;
+            font-weight: 600;
+            white-space: nowrap;
+            min-width: 30px;
+        }
+
+        .disc-toggle {
+            background: #f0f0f0;
+            border: 1px solid #d0d5dd;
+            border-radius: 3px;
+            font-size: 9px;
+            padding: 4px 4px;
+            cursor: pointer;
+            color: #555;
+            font-weight: 600;
+            min-width: 22px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .disc-toggle:hover {
+            background: #e0e0e0;
+        }
+
+        .disc-th {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            justify-content: center;
+        }
+
+        .add-disc-btn {
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            font-size: 10px;
+            cursor: pointer;
+            padding: 1px 5px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .add-disc-btn:hover {
+            background: #3367d6;
+        }
+
+        .disc-remove-btn {
+            background: none;
+            border: none;
+            color: #dc2626;
+            cursor: pointer;
+            font-size: 12px;
+            padding: 0 2px;
+            line-height: 1;
+            opacity: 0.5;
+            font-weight: 600;
+        }
+
+        .disc-remove-btn:hover {
+            opacity: 1;
+        }
+
+        /* Totals Discount Toggle */
+        .totals-disc-cell {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .totals-disc-cell input {
+            width: 60px;
+            padding: 4px 8px;
+            border: 1px solid #e0e0e0;
+            border-radius: 3px;
+            font-size: 11px;
+            text-align: right;
+        }
+
+        .totals-disc-cell input[type="number"]::-webkit-inner-spin-button,
+        .totals-disc-cell input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            appearance: none;
+            margin: 0;
+        }
+
+        .totals-disc-cell input[type="number"] {
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+
+        .totals-disc-toggle {
+            background: #f0f0f0;
+            border: 1px solid #d0d5dd;
+            border-radius: 3px;
+            font-size: 10px;
+            padding: 3px 6px;
+            cursor: pointer;
+            color: #555;
+            font-weight: 600;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        .totals-disc-toggle:hover {
+            background: #e0e0e0;
+        }
+
+        .totals-disc-value {
+            font-size: 11px;
+            color: #333;
+            min-width: 40px;
+            text-align: right;
+        }
     </style>
 </head>
 
@@ -1254,7 +1457,6 @@
                     <h1 class="page-title" id="pageTitle">New Purchase Order</h1>
                 </div>
                 <div class="header-actions">
-                    <button class="header-icon-btn">⚙</button>
                     <button class="close-btn" onclick="goBack()">×</button>
                 </div>
             </div>
@@ -1355,17 +1557,8 @@
                     <div class="form-section">
                         <div class="form-row">
                             <label class="form-label required">Purchase Order#*</label>
-                            <div class="input-with-icon">
-                                <input type="text" class="form-input" id="purchaseOrderNumber" value="PO-00001" readonly
-                                    style="background: #f5f5f5; color: #555;">
-                                <span class="input-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round">
-                                        <circle cx="12" cy="12" r="3" />
-                                        <path
-                                            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-                                    </svg></span>
-                            </div>
+                            <input type="text" class="form-input" id="purchaseOrderNumber" value="PO-00001" readonly
+                                style="background: #f5f5f5; color: #555;">
                         </div>
                         <div class="form-row">
                             <label class="form-label">Reference#</label>
@@ -1381,8 +1574,15 @@
                         </div>
                         <div class="form-row">
                             <label class="form-label">Shipment Preference</label>
-                            <input type="text" class="form-input" id="shipmentPreference"
-                                placeholder="Enter shipment preference">
+                            <div class="sp-pref-wrap" id="spPrefWrap">
+                                <input type="text" class="form-input" id="shipmentPreference"
+                                    placeholder="Type or select shipment preference" onfocus="openSpPrefPanel()"
+                                    oninput="filterSpPrefPanel()">
+                                <div class="sp-pref-panel" id="spPrefPanel">
+                                    <div id="spPrefOptions"></div>
+                                    <div class="sp-pref-hint">Press Enter to save a new method</div>
+                                </div>
+                            </div>
                         </div>
                         <div class="form-row">
                             <label class="form-label">Payment Terms</label>
@@ -1453,8 +1653,6 @@
                     <div class="item-table-section">
                         <div class="item-table-header">
                             <span class="item-table-title">Item Table</span>
-                            <a href="#" class="bulk-actions-link"
-                                onclick="event.preventDefault(); openBulkItemsModal();">⚡ Bulk Actions</a>
                         </div>
                         <table class="item-table">
                             <thead>
@@ -1463,7 +1661,12 @@
                                     <th>ITEM DETAILS</th>
                                     <th>ACCOUNT</th>
                                     <th class="center" style="width: 70px;">QTY</th>
-                                    <th class="center" style="width: 80px;" id="rateHeader">RATE ₱</th>
+                                    <th class="center" style="width: 80px;" id="rateHeader">COST ₱</th>
+                                    <th class="center disc-col-th" style="width: 100px;">
+                                        <div class="disc-th">DISCOUNT <button class="add-disc-btn"
+                                                onclick="addDiscountColumn()" title="Add another discount">+</button>
+                                        </div>
+                                    </th>
                                     <th style="width: 80px;">TAX</th>
                                     <th class="center" style="width: 80px;" id="amountHeader">AMOUNT</th>
                                     <th class="center amt-php-col"
@@ -1499,6 +1702,12 @@
                                             class="qty-input" onchange="updateRowAmount(this)"></td>
                                     <td class="center"><input type="number" value="0" style="text-align: right;"
                                             class="rate-input" onchange="updateRowAmount(this)"></td>
+                                    <td class="disc-col-td">
+                                        <div class="disc-cell"><input type="number" value="0" class="disc-input"
+                                                onchange="updateRowAmount(this)"><button class="disc-toggle"
+                                                onclick="poToggleDiscType(this)" data-type="%">%</button><span
+                                                class="disc-deduct"></span></div>
+                                    </td>
                                     <td><select>
                                             <option value="">Select Tax</option>
                                             <option value="12">VAT 12%</option>
@@ -1526,11 +1735,13 @@
                             <span class="totals-value" id="subTotal">0.00</span>
                         </div>
                         <div class="totals-row">
-                            <span class="totals-label">Discount</span>
-                            <div class="totals-input">
-                                <input type="number" id="discountValue" value="0" oninput="recalculateTotals()">
-                                <span>%</span>
-                                <span class="totals-value" id="discountAmount">0.00</span>
+                            <span class="totals-label">Discount <span id="totalDiscDisplay"
+                                    style="color:#dc2626; font-weight:600;"></span></span>
+                            <div class="totals-disc-cell">
+                                <input type="number" value="0" id="discountValue" oninput="recalculateTotals()">
+                                <button class="totals-disc-toggle" id="totalDiscToggle"
+                                    onclick="poToggleTotalsDiscType()" data-type="%">%</button>
+                                <span class="totals-disc-value" id="discountAmount">0.00</span>
                             </div>
                         </div>
                         <div class="totals-row">
@@ -1556,7 +1767,7 @@
 
             <!-- Footer -->
             <div class="form-footer">
-                <div class="footer-left">
+                <div class="footer-left" id="footerButtons">
                     <button class="btn-draft" onclick="saveAsDraft()">Save as Draft</button>
                     <div class="btn-save-group">
                         <button class="btn-save" onclick="saveAndPrint()">Save and Print</button>
@@ -1757,6 +1968,11 @@
                     const amt = currRound(item.qty * displayRate);
                     const phpAmt = currRound(item.qty * phpRate);
 
+                    let discCells = '';
+                    for (let dc = 0; dc < poDiscountColumnCount; dc++) {
+                        discCells += '<td class="disc-col-td"><div class="disc-cell"><input type="number" value="0" class="disc-input" onchange="updateRowAmount(this)"><button class="disc-toggle" onclick="poToggleDiscType(this)" data-type="%">%</button><span class="disc-deduct"></span></div></td>';
+                    }
+
                     const tr = document.createElement('tr');
                     if (item.itemId) tr.setAttribute('data-item-id', item.itemId);
                     tr.setAttribute('data-php-rate', phpRate);
@@ -1766,10 +1982,11 @@
                         + '<td><div class="item-autocomplete-wrap"><input type="text" value="' + item.name + '" placeholder="Type or click to select an item." class="item-name-input" onfocus="openItemDropdown(this)" oninput="filterItemDropdown(this)"><div class="item-autocomplete-dropdown"></div></div></td>'
                         + '<td><select><option value="">Select account</option><option value="inventory"' + (item.account === 'inventory' ? ' selected' : '') + '>Inventory Asset</option><option value="expense"' + (item.account === 'expense' ? ' selected' : '') + '>Expense</option></select></td>'
                         + '<td class="center"><input type="number" value="' + item.qty + '" style="text-align:center;" class="qty-input" onchange="updateRowAmount(this)"></td>'
-                        + '<td class="center"><input type="number" value="' + displayRate.toFixed(2) + '" style="text-align:right;" class="rate-input" onchange="updateRowAmount(this)"></td>'
+                        + '<td class="center"><input type="number" value="' + displayRate.toFixed(3) + '" style="text-align:right;" class="rate-input" onchange="updateRowAmount(this)"></td>'
+                        + discCells
                         + '<td><select><option value="">Select Tax</option><option value="12"' + (item.tax === '12' ? ' selected' : '') + '>VAT 12%</option><option value="0"' + (item.tax === '0' ? ' selected' : '') + '>Exempt</option></select></td>'
-                        + '<td class="center row-amount" style="font-weight:500;">' + amt.toFixed(2) + '</td>'
-                        + '<td class="center row-amount-php amt-php-col" style="font-weight:500;background:#f9f9f9;color:#888;' + phpColDisplay + '">' + phpAmt.toFixed(2) + '</td>'
+                        + '<td class="center row-amount" style="font-weight:500;">' + amt.toFixed(3) + '</td>'
+                        + '<td class="center row-amount-php amt-php-col" style="font-weight:500;background:#f9f9f9;color:#888;' + phpColDisplay + '">' + phpAmt.toFixed(3) + '</td>'
                         + '<td class="center"><button class="delete-row-btn" onclick="deleteRow(this)">×</button></td>';
                     tbody.appendChild(tr);
                 });
@@ -1799,6 +2016,7 @@
             loadVendors();
             loadAllItems();
             loadCustomers();
+            loadSpPrefs();
             // Only restore draft items on page REFRESH (F5), not on fresh navigation
             const editId = urlParams.get('id');
             if (!editId) {
@@ -1868,8 +2086,8 @@
             // Update exchange rate label and default value
             if (isMulti) {
                 document.getElementById('exRateCurrLabel').textContent = currCode;
-                // Load from localStorage first, fall back to defaults
-                const savedRate = localStorage.getItem('gihon_exrate_' + currCode);
+                // Load from localStorage first (check both key patterns for cross-module sync)
+                const savedRate = localStorage.getItem('gihon_exrate_' + currCode) || localStorage.getItem('manual_rate_' + currCode + '_PHP');
                 const rate = savedRate ? parseFloat(savedRate) : (defaultExchangeRates[currCode] || 1);
                 setExchangeRate(rate);
             } else {
@@ -1880,10 +2098,24 @@
                 el.style.display = isMulti ? '' : 'none';
             });
             // Update rate header
-            document.getElementById('rateHeader').textContent = isMulti ? 'RATE (' + currCode + ')' : 'RATE ₱';
+            document.getElementById('rateHeader').textContent = isMulti ? 'COST (' + currCode + ')' : 'COST ₱';
             // Update totals label
             document.getElementById('totalCurrLabel').textContent = isMulti ? 'Total ( ' + currCode + ' )' : 'Total ( PHP )';
             document.getElementById('totalPhpRow').style.display = isMulti ? 'flex' : 'none';
+            // Update per-item discount toggles to show vendor currency symbol
+            const currSymbol = getCurrencySymbol(currCode);
+            document.querySelectorAll('.disc-toggle').forEach(btn => {
+                if (btn.dataset.type !== '%') {
+                    btn.dataset.type = currSymbol;
+                    btn.textContent = currSymbol;
+                }
+            });
+            // Update totals discount toggle
+            const totalDiscToggle = document.getElementById('totalDiscToggle');
+            if (totalDiscToggle && totalDiscToggle.dataset.type !== '%') {
+                totalDiscToggle.dataset.type = currSymbol;
+                totalDiscToggle.textContent = currSymbol;
+            }
             // Recalculate everything
             recalculateAllRows();
             recalculateTotals();
@@ -1893,9 +2125,12 @@
         function setExchangeRate(rate) {
             currentExchangeRate = rate;
             document.getElementById('exchangeRateInput').value = rate;
-            // Persist to localStorage (per currency)
+            // Persist to localStorage (both key patterns for cross-module sync)
             if (currentCurrencyCode !== 'PHP') {
-                try { localStorage.setItem('gihon_exrate_' + currentCurrencyCode, rate); } catch (e) { }
+                try {
+                    localStorage.setItem('gihon_exrate_' + currentCurrencyCode, rate);
+                    localStorage.setItem('manual_rate_' + currentCurrencyCode + '_PHP', rate.toString());
+                } catch (e) { }
             }
         }
 
@@ -1903,9 +2138,12 @@
             const val = parseFloat(document.getElementById('exchangeRateInput').value);
             if (!val || val <= 0) return; // Don't update on empty/invalid
             currentExchangeRate = val;
-            // Save to localStorage immediately
+            // Save to localStorage immediately (both key patterns for cross-module sync)
             if (currentCurrencyCode !== 'PHP') {
-                try { localStorage.setItem('gihon_exrate_' + currentCurrencyCode, val); } catch (e) { }
+                try {
+                    localStorage.setItem('gihon_exrate_' + currentCurrencyCode, val);
+                    localStorage.setItem('manual_rate_' + currentCurrencyCode + '_PHP', val.toString());
+                } catch (e) { }
             }
             recalculateAllRows();
             recalculateTotals();
@@ -1913,7 +2151,7 @@
 
         // Banker's rounding helper
         function currRound(val, decimals) {
-            if (decimals === undefined) decimals = 2;
+            if (decimals === undefined) decimals = 3;
             const factor = Math.pow(10, decimals);
             return Math.round((val + Number.EPSILON) * factor) / factor;
         }
@@ -1940,13 +2178,13 @@
                         // Samgyup Rule: PHP items — vendor rate recalculates, PHP amount stays fixed
                         if (phpRate > 0) {
                             const vendorRate = currRound(phpRate / currentExchangeRate);
-                            if (rateInput) rateInput.value = vendorRate.toFixed(2);
+                            if (rateInput) rateInput.value = vendorRate.toFixed(3);
                             const vendorAmt = currRound(qty * vendorRate);
                             const amtEl = row.querySelector('.row-amount');
-                            if (amtEl) amtEl.textContent = vendorAmt.toFixed(2);
+                            if (amtEl) amtEl.textContent = vendorAmt.toFixed(3);
                             // PHP amount = qty × original PHP rate (NEVER changes)
                             const phpEl = row.querySelector('.row-amount-php');
-                            if (phpEl) phpEl.textContent = currRound(qty * phpRate).toFixed(2);
+                            if (phpEl) phpEl.textContent = currRound(qty * phpRate).toFixed(3);
                         }
                     } else {
                         // Non-PHP items — need to determine if same-currency or cross-currency
@@ -1965,24 +2203,24 @@
                             vendorRate = currentExchangeRate > 0 ? currRound(phpValue / currentExchangeRate) : originalCost;
                         }
 
-                        if (rateInput) rateInput.value = vendorRate.toFixed(2);
+                        if (rateInput) rateInput.value = vendorRate.toFixed(3);
                         const vendorAmt = currRound(qty * vendorRate);
                         const amtEl = row.querySelector('.row-amount');
-                        if (amtEl) amtEl.textContent = vendorAmt.toFixed(2);
+                        if (amtEl) amtEl.textContent = vendorAmt.toFixed(3);
                         // PHP amount = vendor_rate × exchange_rate × qty (FLUCTUATES with rate)
                         const newPhpRate = itemCurrency === vendorCurrency
                             ? currRound(vendorRate * currentExchangeRate)
                             : phpRate;
                         row.setAttribute('data-php-rate', newPhpRate);
                         const phpEl = row.querySelector('.row-amount-php');
-                        if (phpEl) phpEl.textContent = currRound(qty * newPhpRate).toFixed(2);
+                        if (phpEl) phpEl.textContent = currRound(qty * newPhpRate).toFixed(3);
                     }
                 } else {
                     // PHP mode or no stored PHP rate: use rate input as-is
                     const rate = parseFloat(rateInput?.value) || 0;
                     const amt = currRound(qty * rate);
                     const amtEl = row.querySelector('.row-amount');
-                    if (amtEl) amtEl.textContent = amt.toFixed(2);
+                    if (amtEl) amtEl.textContent = amt.toFixed(3);
                 }
             }
         }
@@ -2047,11 +2285,17 @@
         function filterPtOptions() { renderPtOptions(document.getElementById('ptSearch').value); }
         document.addEventListener('click', function (e) { if (!e.target.closest('.pt-dropdown-wrap')) { document.getElementById('ptDropdown').classList.remove('open'); document.getElementById('ptTrigger').classList.remove('open'); } });
 
+        let poDiscountColumnCount = 1;
+
         function addNewRow() {
             const isMulti = currentCurrencyCode !== 'PHP';
             const phpColDisplay = isMulti ? '' : 'display:none;';
+            let discCells = '';
+            for (let i = 0; i < poDiscountColumnCount; i++) {
+                discCells += '<td class="disc-col-td"><div class="disc-cell"><input type="number" value="0" class="disc-input" onchange="updateRowAmount(this)"><button class="disc-toggle" onclick="poToggleDiscType(this)" data-type="%">%</button><span class="disc-deduct"></span></div></td>';
+            }
             const tr = document.createElement('tr');
-            tr.innerHTML = '<td><div class="item-image"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div></td><td><div class="item-autocomplete-wrap"><input type="text" placeholder="Type or click to select an item." class="item-name-input" onfocus="openItemDropdown(this)" oninput="filterItemDropdown(this)"><div class="item-autocomplete-dropdown"></div></div></td><td><select><option value="">Select account</option><option value="inventory">Inventory Asset</option><option value="expense">Expense</option></select></td><td class="center"><input type="number" value="1" style="text-align:center;" class="qty-input" onchange="updateRowAmount(this)"></td><td class="center"><input type="number" value="0" style="text-align:right;" class="rate-input" onchange="updateRowAmount(this)"></td><td><select><option value="">Select Tax</option><option value="12">VAT 12%</option><option value="0">Exempt</option></select></td><td class="center row-amount" style="font-weight:500;">0.00</td><td class="center row-amount-php amt-php-col" style="font-weight:500;background:#f9f9f9;color:#888;' + phpColDisplay + '">0.00</td><td class="center"><button class="delete-row-btn" onclick="deleteRow(this)">×</button></td>';
+            tr.innerHTML = '<td><div class="item-image"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div></td><td><div class="item-autocomplete-wrap"><input type="text" placeholder="Type or click to select an item." class="item-name-input" onfocus="openItemDropdown(this)" oninput="filterItemDropdown(this)"><div class="item-autocomplete-dropdown"></div></div></td><td><select><option value="">Select account</option><option value="inventory">Inventory Asset</option><option value="expense">Expense</option></select></td><td class="center"><input type="number" value="1" style="text-align:center;" class="qty-input" onchange="updateRowAmount(this)"></td><td class="center"><input type="number" value="0" style="text-align:right;" class="rate-input" onchange="updateRowAmount(this)"></td>' + discCells + '<td><select><option value="">Select Tax</option><option value="12">VAT 12%</option><option value="0">Exempt</option></select></td><td class="center row-amount" style="font-weight:500;">0.00</td><td class="center row-amount-php amt-php-col" style="font-weight:500;background:#f9f9f9;color:#888;' + phpColDisplay + '">0.00</td><td class="center"><button class="delete-row-btn" onclick="deleteRow(this)">×</button></td>';
             document.getElementById('itemTableBody').appendChild(tr);
             saveItemsToStorage();
         }
@@ -2061,27 +2305,50 @@
             const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
             const rate = parseFloat(row.querySelector('.rate-input').value) || 0;
             const isMulti = currentCurrencyCode !== 'PHP';
-            const amt = currRound(qty * rate);
-            const ac = row.querySelector('.row-amount'); if (ac) ac.textContent = amt.toFixed(2);
+            let amt = currRound(qty * rate);
+
+            // Apply all discount columns sequentially
+            row.querySelectorAll('.disc-input').forEach(discInput => {
+                const discVal = parseFloat(discInput.value) || 0;
+                const toggleBtn = discInput.parentElement.querySelector('.disc-toggle');
+                const deductSpan = discInput.parentElement.querySelector('.disc-deduct');
+                const discType = toggleBtn ? toggleBtn.dataset.type : '%';
+                let deduction = 0;
+                if (discType === '%') {
+                    deduction = amt * (discVal / 100);
+                } else {
+                    deduction = discVal;
+                }
+                amt -= deduction;
+                if (deductSpan) {
+                    const sym = getCurrencySymbol(currentCurrencyCode);
+                    deductSpan.textContent = deduction > 0 ? '-' + sym + currRound(deduction).toFixed(3) : '';
+                }
+            });
+            if (amt < 0) amt = 0;
+
+            const ac = row.querySelector('.row-amount'); if (ac) ac.textContent = currRound(amt).toFixed(3);
+
+            // Calculate discount ratio to apply to PHP amount
+            const grossAmt = currRound(qty * rate);
+            const discountRatio = grossAmt > 0 ? (amt / grossAmt) : 1;
 
             if (isMulti && currentExchangeRate > 0) {
                 const itemCurrency = (row.getAttribute('data-purchase-currency') || 'PHP').toUpperCase();
 
                 if (itemCurrency === 'PHP') {
-                    // Samgyup Rule: PHP items — use stored PHP rate, never recalculate
                     let phpRate = parseFloat(row.getAttribute('data-php-rate')) || 0;
                     if (phpRate <= 0) {
                         phpRate = currRound(rate * currentExchangeRate);
                         row.setAttribute('data-php-rate', phpRate);
                     }
                     const phpEl = row.querySelector('.row-amount-php');
-                    if (phpEl) phpEl.textContent = currRound(qty * phpRate).toFixed(2);
+                    if (phpEl) phpEl.textContent = currRound(qty * phpRate * discountRatio).toFixed(3);
                 } else {
-                    // Non-PHP items — PHP amount = vendor_rate × exchange_rate × qty (fluctuates)
                     const phpRate = currRound(rate * currentExchangeRate);
                     row.setAttribute('data-php-rate', phpRate);
                     const phpEl = row.querySelector('.row-amount-php');
-                    if (phpEl) phpEl.textContent = currRound(qty * phpRate).toFixed(2);
+                    if (phpEl) phpEl.textContent = currRound(qty * phpRate * discountRatio).toFixed(3);
                 }
             } else {
                 row.setAttribute('data-php-rate', rate);
@@ -2089,6 +2356,64 @@
             recalculateTotals();
             saveItemsToStorage();
         }
+
+        function poToggleDiscType(btn) {
+            const currSymbol = getCurrencySymbol(currentCurrencyCode);
+            btn.dataset.type = btn.dataset.type === '%' ? currSymbol : '%';
+            btn.textContent = btn.dataset.type;
+            const row = btn.closest('tr');
+            if (row) updateRowAmount(btn);
+        }
+
+        function poGetNextDiscNumber() {
+            const existing = new Set();
+            document.querySelectorAll('.item-table thead th[data-disc-col]').forEach(th => {
+                existing.add(parseInt(th.getAttribute('data-disc-col')));
+            });
+            let num = 2;
+            while (existing.has(num)) num++;
+            return num;
+        }
+
+        function addDiscountColumn() {
+            const colIndex = poGetNextDiscNumber();
+            const label = 'DISC ' + colIndex;
+            const headerRow = document.querySelector('.item-table thead tr');
+            // Insert before the TAX th (3rd from last: TAX, AMOUNT, AMOUNT(PHP), delete)
+            const taxTh = Array.from(headerRow.children).find(th => th.textContent.includes('TAX'));
+            const newTh = document.createElement('th');
+            newTh.className = 'center disc-col-th disc-col-extra';
+            newTh.style.width = '100px';
+            newTh.setAttribute('data-disc-col', colIndex);
+            newTh.innerHTML = `<div class="disc-th">${label} <button class="disc-remove-btn" onclick="removeDiscountColumn(${colIndex})" title="Remove">×</button></div>`;
+            headerRow.insertBefore(newTh, taxTh);
+
+            document.querySelectorAll('#itemTableBody tr').forEach(row => {
+                const taxTd = Array.from(row.children).find(td => td.querySelector('select') && !td.querySelector('.qty-input') && !td.querySelector('.rate-input') && !td.querySelector('.item-name-input'));
+                const newTd = document.createElement('td');
+                newTd.className = 'disc-col-td disc-col-extra';
+                newTd.setAttribute('data-disc-col', colIndex);
+                newTd.innerHTML = '<div class="disc-cell"><input type="number" value="0" class="disc-input" onchange="updateRowAmount(this)"><button class="disc-toggle" onclick="poToggleDiscType(this)" data-type="%">%</button><span class="disc-deduct"></span></div>';
+                row.insertBefore(newTd, taxTd);
+            });
+
+            poDiscountColumnCount = document.querySelectorAll('.item-table thead th.disc-col-th').length;
+        }
+
+        function removeDiscountColumn(colIndex) {
+            const th = document.querySelector(`th[data-disc-col="${colIndex}"]`);
+            if (th) th.remove();
+            document.querySelectorAll(`td[data-disc-col="${colIndex}"]`).forEach(td => td.remove());
+            poDiscountColumnCount = document.querySelectorAll('.item-table thead th.disc-col-th').length;
+            document.querySelectorAll('#itemTableBody tr').forEach(row => {
+                const input = row.querySelector('.qty-input') || row.querySelector('.rate-input');
+                if (input) updateRowAmount(input);
+            });
+        }
+        function getCurrencySymbol(code) {
+            return { 'PHP': '₱', 'CNY': '¥', 'USD': '$', 'EUR': '€', 'JPY': '¥', 'GBP': '£', 'KRW': '₩', 'SGD': 'S$', 'HKD': 'HK$', 'TWD': 'NT$', 'THB': '฿', 'MYR': 'RM', 'IDR': 'Rp', 'VND': '₫', 'AUD': 'A$', 'CAD': 'C$', 'INR': '₹' }[code] || code;
+        }
+
         function recalculateTotals() {
             const rows = document.getElementById('itemTableBody').rows;
             let sub = 0;
@@ -2099,27 +2424,151 @@
                 const ap = rows[i].querySelector('.row-amount-php');
                 if (ap) subPhp += parseFloat(ap.textContent) || 0;
             }
-            document.getElementById('subTotal').textContent = currRound(sub).toFixed(2);
+            document.getElementById('subTotal').textContent = currRound(sub).toFixed(3);
+
+            // Apply totals discount (% or fixed amount)
+            const discToggle = document.getElementById('totalDiscToggle');
             const dp = parseFloat(document.getElementById('discountValue').value) || 0;
-            const da = currRound(sub * (dp / 100));
-            document.getElementById('discountAmount').textContent = da.toFixed(2);
+            const discType = discToggle ? discToggle.dataset.type : '%';
+            let da = 0;
+            if (discType === '%') {
+                da = currRound(sub * (dp / 100));
+            } else {
+                da = currRound(dp);
+            }
+            document.getElementById('discountAmount').textContent = da.toFixed(3);
+
+            // Show deduction on label
+            const discDisplay = document.getElementById('totalDiscDisplay');
+            const currSym = getCurrencySymbol(currentCurrencyCode);
+            if (discDisplay) {
+                discDisplay.textContent = da > 0 ? '(-' + currSym + da.toFixed(3) + ')' : '';
+            }
+
             const adj = parseFloat(document.getElementById('adjustmentValue').value) || 0;
             const total = currRound(sub - da + adj);
-            document.getElementById('total').textContent = total.toFixed(2);
+            document.getElementById('total').textContent = total.toFixed(3);
             const isMulti = currentCurrencyCode !== 'PHP';
             if (isMulti) {
                 // PHP total from direct line-item sums (not back-converted)
-                const daPhp = currRound(subPhp * (dp / 100));
+                let daPhp = 0;
+                if (discType === '%') {
+                    daPhp = currRound(subPhp * (dp / 100));
+                } else {
+                    daPhp = currRound(dp * currentExchangeRate);
+                }
                 const adjPhp = currRound(adj * currentExchangeRate);
                 const phpTotal = currRound(subPhp - daPhp + adjPhp);
-                document.getElementById('totalPhp').textContent = phpTotal.toFixed(2);
-                document.getElementById('footerTotal').textContent = currentCurrencyCode + ' ' + total.toFixed(2) + ' (₱' + phpTotal.toFixed(2) + ')';
+                document.getElementById('totalPhp').textContent = phpTotal.toFixed(3);
+                document.getElementById('footerTotal').textContent = currentCurrencyCode + ' ' + total.toFixed(3) + ' (₱' + phpTotal.toFixed(3) + ')';
             } else {
-                document.getElementById('footerTotal').textContent = 'PHP ' + total.toFixed(2);
+                document.getElementById('footerTotal').textContent = 'PHP ' + total.toFixed(3);
             }
         }
 
+        function poToggleTotalsDiscType() {
+            const btn = document.getElementById('totalDiscToggle');
+            const currSymbol = getCurrencySymbol(currentCurrencyCode);
+            if (btn.dataset.type === '%') {
+                btn.dataset.type = currSymbol;
+                btn.textContent = currSymbol;
+            } else {
+                btn.dataset.type = '%';
+                btn.textContent = '%';
+            }
+            recalculateTotals();
+        }
+
         async function loadAllItems() { try { allItems = await (await fetch('/api/items')).json(); } catch (e) { console.error(e); } }
+
+        // ===== Shipment Preference Dropdown =====
+        let spPrefList = [];
+
+        async function loadSpPrefs() {
+            try {
+                const res = await fetch('/api/shipment-preferences');
+                if (res.ok) {
+                    spPrefList = await res.json();
+                    renderSpPrefOptions();
+                }
+            } catch (e) { console.error('Error loading shipment preferences:', e); }
+        }
+
+        function renderSpPrefOptions(filter = '') {
+            const container = document.getElementById('spPrefOptions');
+            const filtered = spPrefList.filter(sp =>
+                sp.name.toLowerCase().includes(filter.toLowerCase())
+            );
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="sp-pref-empty">No saved preferences</div>';
+                return;
+            }
+            container.innerHTML = filtered.map(sp => {
+                return `<div class="sp-pref-option" onclick="selectSpPref('${sp.name.replace(/'/g, "\\'")}')">
+                    <span class="sp-pref-option-name">${sp.name}</span>
+                    <button class="sp-pref-delete-btn" onclick="event.stopPropagation(); deleteSpPref(${sp.id})" title="Delete">×</button>
+                </div>`;
+            }).join('');
+        }
+
+        function openSpPrefPanel() {
+            renderSpPrefOptions(document.getElementById('shipmentPreference').value);
+            document.getElementById('spPrefPanel').classList.add('open');
+        }
+
+        function closeSpPrefPanel() {
+            document.getElementById('spPrefPanel').classList.remove('open');
+        }
+
+        function selectSpPref(name) {
+            document.getElementById('shipmentPreference').value = name;
+            closeSpPrefPanel();
+        }
+
+        function filterSpPrefPanel() {
+            renderSpPrefOptions(document.getElementById('shipmentPreference').value);
+        }
+
+        async function saveSpPref(name) {
+            if (!name.trim()) return;
+            const exists = spPrefList.some(sp => sp.name.toLowerCase() === name.trim().toLowerCase());
+            if (exists) return;
+            try {
+                const res = await fetch('/api/shipment-preferences', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: name.trim() })
+                });
+                if (res.ok) {
+                    const newSp = await res.json();
+                    spPrefList.push(newSp);
+                    renderSpPrefOptions();
+                }
+            } catch (e) { console.error('Error saving shipment preference:', e); }
+        }
+
+        async function deleteSpPref(id) {
+            try {
+                await fetch('/api/shipment-preferences/' + id, { method: 'DELETE' });
+                spPrefList = spPrefList.filter(sp => sp.id !== id);
+                renderSpPrefOptions(document.getElementById('shipmentPreference').value);
+            } catch (e) { console.error('Error deleting shipment preference:', e); }
+        }
+
+        document.getElementById('shipmentPreference').addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                saveSpPref(this.value);
+                closeSpPrefPanel();
+            }
+        });
+
+        document.addEventListener('click', function (e) {
+            const wrap = document.getElementById('spPrefWrap');
+            if (wrap && !wrap.contains(e.target)) {
+                closeSpPrefPanel();
+            }
+        });
 
         // ===== Item Autocomplete Dropdown =====
         function openItemDropdown(input) {
@@ -2164,7 +2613,7 @@
                         <div class="item-ac-sku">SKU: ${item.sku || '-'}</div>
                     </div>
                     <div class="item-ac-right">
-                        <div class="item-ac-price">${sym}${price.toFixed(2)}</div>
+                        <div class="item-ac-price">${sym}${price.toFixed(3)}</div>
                         <div class="item-ac-stock ${stockClass}">${stock} ${item.unit || 'pcs'}</div>
                     </div>
                 </div>`;
@@ -2223,7 +2672,7 @@
             // Auto-fill rate
             const rateInput = row.querySelector('.rate-input');
             if (rateInput && purchaseCost > 0) {
-                rateInput.value = displayRate.toFixed(2);
+                rateInput.value = displayRate.toFixed(3);
             }
 
             // Recalculate amount
@@ -2250,7 +2699,7 @@
                 if (fl && !item.name.toLowerCase().includes(fl) && !(item.sku && item.sku.toLowerCase().includes(fl))) return;
                 const sel = bulkSelectedItems[item.id] !== undefined; const sq = parseFloat(item.stock_quantity) || 0; const sc = sq > 0 ? 'green' : 'red'; const pr = parseFloat(item.purchase_cost) || 0;
                 const bsym = { 'PHP': '₱', 'CNY': '¥', 'USD': '$', 'EUR': '€', 'JPY': '¥', 'GBP': '£', 'KRW': '₩' }[item.purchase_currency || 'PHP'] || (item.purchase_currency || 'PHP');
-                html += '<div class="bulk-item ' + (sel ? 'selected' : '') + '" onclick="toggleBulkItem(' + item.id + ')"><div class="bulk-item-info"><div class="bulk-item-name">' + item.name + '</div><div class="bulk-item-meta">SKU: ' + (item.sku || '-') + ' | Rate: ' + bsym + pr.toFixed(2) + '</div></div><div class="bulk-item-stock"><div class="stock-label">Stock</div><div class="stock-value ' + sc + '">' + sq.toFixed(2) + ' ' + (item.unit || 'pcs') + '</div></div><div class="bulk-item-check">' + (sel ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#34a853" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' : '') + '</div></div>';
+                html += '<div class="bulk-item ' + (sel ? 'selected' : '') + '" onclick="toggleBulkItem(' + item.id + ')"><div class="bulk-item-info"><div class="bulk-item-name">' + item.name + '</div><div class="bulk-item-meta">SKU: ' + (item.sku || '-') + ' | Rate: ' + bsym + pr.toFixed(3) + '</div></div><div class="bulk-item-stock"><div class="stock-label">Stock</div><div class="stock-value ' + sc + '">' + sq.toFixed(2) + ' ' + (item.unit || 'pcs') + '</div></div><div class="bulk-item-check">' + (sel ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#34a853" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' : '') + '</div></div>';
             });
             c.innerHTML = html || '<div style="padding:20px;text-align:center;color:#999;">No items found</div>';
         }
@@ -2297,13 +2746,17 @@
                     displayRate = currentExchangeRate > 0 ? currRound(phpRate / currentExchangeRate) : purchaseCost;
                 }
 
-                const amt = currRound(qty * displayRate).toFixed(2);
-                const phpAmt = currRound(qty * phpRate).toFixed(2);
+                const amt = currRound(qty * displayRate).toFixed(3);
+                const phpAmt = currRound(qty * phpRate).toFixed(3);
+                let bDiscCells = '';
+                for (let dc = 0; dc < poDiscountColumnCount; dc++) {
+                    bDiscCells += '<td class="disc-col-td"><div class="disc-cell"><input type="number" value="0" class="disc-input" onchange="updateRowAmount(this)"><button class="disc-toggle" onclick="poToggleDiscType(this)" data-type="%">%</button><span class="disc-deduct"></span></div></td>';
+                }
                 const tr = document.createElement('tr'); tr.setAttribute('data-item-id', item.id);
                 tr.setAttribute('data-php-rate', phpRate);
                 tr.setAttribute('data-purchase-currency', itemCurrency);
                 tr.setAttribute('data-original-cost', purchaseCost);
-                tr.innerHTML = '<td><div class="item-image"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div></td><td><input type="text" value="' + item.name + '" readonly style="background:#f9fafb;"></td><td><select><option value="">Select account</option><option value="inventory" selected>Inventory Asset</option><option value="expense">Expense</option></select></td><td class="center"><input type="number" value="' + qty + '" style="text-align:center;" class="qty-input" onchange="updateRowAmount(this)"></td><td class="center"><input type="number" value="' + displayRate.toFixed(2) + '" style="text-align:right;" class="rate-input" onchange="updateRowAmount(this)"></td><td><select><option value="">Select Tax</option><option value="12">VAT 12%</option><option value="0">Exempt</option></select></td><td class="center row-amount" style="font-weight:500;">' + amt + '</td><td class="center row-amount-php amt-php-col" style="font-weight:500;background:#f9f9f9;color:#888;' + phpColDisplay + '">' + phpAmt + '</td><td class="center"><button class="delete-row-btn" onclick="deleteRow(this)">×</button></td>';
+                tr.innerHTML = '<td><div class="item-image"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div></td><td><input type="text" value="' + item.name + '" readonly style="background:#f9fafb;"></td><td><select><option value="">Select account</option><option value="inventory" selected>Inventory Asset</option><option value="expense">Expense</option></select></td><td class="center"><input type="number" value="' + qty + '" style="text-align:center;" class="qty-input" onchange="updateRowAmount(this)"></td><td class="center"><input type="number" value="' + displayRate.toFixed(3) + '" style="text-align:right;" class="rate-input" onchange="updateRowAmount(this)"></td>' + bDiscCells + '<td><select><option value="">Select Tax</option><option value="12">VAT 12%</option><option value="0">Exempt</option></select></td><td class="center row-amount" style="font-weight:500;">' + amt + '</td><td class="center row-amount-php amt-php-col" style="font-weight:500;background:#f9f9f9;color:#888;' + phpColDisplay + '">' + phpAmt + '</td><td class="center"><button class="delete-row-btn" onclick="deleteRow(this)">×</button></td>';
                 tbody.appendChild(tr);
             });
             closeBulkItemsModal(); recalculateTotals(); saveItemsToStorage();
@@ -2311,6 +2764,8 @@
 
         function goBack() {
             clearDraftStorage();
+            const editId = urlParams.get('id');
+            if (editId) { window.location.href = '/purchase-order-detail.html?id=' + editId; return; }
             const fromVendor = urlParams.get('vendor_id');
             if (fromVendor) { window.location.href = '/vendors.html#vendor=' + fromVendor; }
             else { window.location.href = '/purchase-orders.html'; }
@@ -2323,7 +2778,13 @@
             for (let i = 0; i < rows.length; i++) {
                 const r = rows[i]; const nameIn = r.querySelectorAll('input')[0]; if (!nameIn || !nameIn.value.trim()) continue;
                 const qi = r.querySelector('.qty-input'); const ri = r.querySelector('.rate-input');
-                items.push({ item_id: r.getAttribute('data-item-id') ? parseInt(r.getAttribute('data-item-id')) : null, item_name: nameIn.value.trim(), quantity: parseFloat(qi?.value) || 1, unit_price: parseFloat(ri?.value) || 0 });
+                // Collect per-item discount (sum of all discount columns)
+                let totalDiscPct = 0;
+                r.querySelectorAll('.disc-input').forEach(d => { totalDiscPct += parseFloat(d.value) || 0; });
+                // Capture discount type from the first toggle button
+                const firstToggle = r.querySelector('.disc-toggle');
+                const discType = firstToggle ? firstToggle.dataset.type : '%';
+                items.push({ item_id: r.getAttribute('data-item-id') ? parseInt(r.getAttribute('data-item-id')) : null, item_name: nameIn.value.trim(), quantity: parseFloat(qi?.value) || 1, unit_price: parseFloat(ri?.value) || 0, discount_percent: totalDiscPct, discount_type: discType === '%' ? '%' : 'fixed' });
             }
             return {
                 supplier_id: vs.value ? parseInt(vs.value) : null, supplier_name: vs.options[vs.selectedIndex]?.text || '',
@@ -2336,6 +2797,7 @@
                 notes: document.getElementById('notes').value.trim(),
                 terms_conditions: document.getElementById('termsConditions').value.trim(),
                 discount_percent: parseFloat(document.getElementById('discountValue').value) || 0,
+                discount_type: (function() { const btn = document.getElementById('totalDiscToggle'); return (btn && btn.dataset.type !== '%') ? 'fixed' : '%'; })(),
                 adjustment: parseFloat(document.getElementById('adjustmentValue').value) || 0,
                 currency_code: currentCurrencyCode,
                 exchange_rate: currentExchangeRate,
@@ -2403,12 +2865,12 @@
                     po.items.forEach((item, idx) => {
                         const qty = parseFloat(item.quantity) || 0;
                         const rate = parseFloat(item.unit_price) || 0;
-                        const amt = (qty * rate).toFixed(2);
+                        const amt = (qty * rate).toFixed(3);
                         itemsHTML += `<tr>
                             <td style="padding:10px 12px;border-bottom:1px solid #e9ecef;">${idx + 1}</td>
                             <td style="padding:10px 12px;border-bottom:1px solid #e9ecef;">${item.item_name || '-'}</td>
                             <td style="padding:10px 12px;border-bottom:1px solid #e9ecef;text-align:center;">${qty}</td>
-                            <td style="padding:10px 12px;border-bottom:1px solid #e9ecef;text-align:right;">₱${rate.toFixed(2)}</td>
+                            <td style="padding:10px 12px;border-bottom:1px solid #e9ecef;text-align:right;">₱${rate.toFixed(3)}</td>
                             <td style="padding:10px 12px;border-bottom:1px solid #e9ecef;text-align:right;">₱${amt}</td>
                         </tr>`;
                     });
@@ -2477,10 +2939,10 @@
     <tbody>${itemsHTML}</tbody>
 </table>
 <div class="totals">
-    <div class="totals-row"><span>Sub Total:</span><span>₱${subTotal.toFixed(2)}</span></div>
-    ${discountPct > 0 ? '<div class="totals-row"><span>Discount (' + discountPct + '%):</span><span>-₱' + discountAmt.toFixed(2) + '</span></div>' : ''}
-    ${adjustment !== 0 ? '<div class="totals-row"><span>Adjustment:</span><span>₱' + adjustment.toFixed(2) + '</span></div>' : ''}
-    <div class="totals-row grand"><span>Total:</span><span>₱${total.toFixed(2)}</span></div>
+    <div class="totals-row"><span>Sub Total:</span><span>₱${subTotal.toFixed(3)}</span></div>
+    ${discountPct > 0 ? '<div class="totals-row"><span>Discount (' + discountPct + '%):</span><span>-₱' + discountAmt.toFixed(3) + '</span></div>' : ''}
+    ${adjustment !== 0 ? '<div class="totals-row"><span>Adjustment:</span><span>₱' + adjustment.toFixed(3) + '</span></div>' : ''}
+    <div class="totals-row grand"><span>Total:</span><span>₱${total.toFixed(3)}</span></div>
 </div>
 ${po.notes ? '<div style="margin-top:30px;"><div style="font-size:11px;color:#999;text-transform:uppercase;margin-bottom:4px;">Notes</div><div style="font-size:13px;">' + po.notes + '</div></div>' : ''}
 <script>setTimeout(function() { window.print(); }, 800);<\/script>
@@ -2491,7 +2953,7 @@ ${po.notes ? '<div style="margin-top:30px;"><div style="font-size:11px;color:#99
         }
 
         async function saveAndConfirm() {
-            document.getElementById('saveDropdown').classList.remove('show');
+            document.getElementById('saveDropdown')?.classList.remove('show');
             if (!document.getElementById('vendorName').value) { alert('Please select a vendor'); return; }
             const fd = collectFormData(); if (!fd.items.length) { alert('Please add at least one item'); return; }
             fd.status = 'ordered';
@@ -2504,6 +2966,20 @@ ${po.notes ? '<div style="margin-top:30px;"><div style="font-size:11px;color:#99
                 await updateBackorderSOStatus();
                 clearDraftStorage();
                 window.location.href = '/purchase-order-detail.html?id=' + (eid || result.id);
+            } catch (e) { console.error(e); alert('Failed to save purchase order'); }
+        }
+
+        async function saveEdit() {
+            if (!document.getElementById('vendorName').value) { alert('Please select a vendor'); return; }
+            const fd = collectFormData(); if (!fd.items.length) { alert('Please add at least one item'); return; }
+            // Preserve current status (don't change it)
+            try {
+                const eid = urlParams.get('id'); if (!eid) return;
+                const res = await fetch('/api/purchases/' + eid, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(fd) });
+                const result = await res.json();
+                if (!res.ok) { alert('Error: ' + (result.error || 'Failed to save')); return; }
+                clearDraftStorage();
+                window.location.href = '/purchase-order-detail.html?id=' + eid;
             } catch (e) { console.error(e); alert('Failed to save purchase order'); }
         }
 
@@ -2524,13 +3000,67 @@ ${po.notes ? '<div style="margin-top:30px;"><div style="font-size:11px;color:#99
                 document.getElementById('notes').value = po.notes || '';
                 document.getElementById('termsConditions').value = po.terms_conditions || '';
                 document.getElementById('discountValue').value = parseFloat(po.discount_percent) || 0;
+
+                // Apply currency from the PO (must be done BEFORE discount type toggle uses poCurrency)
+                const poCurrency = (po.currency_code || 'PHP').toUpperCase();
+                toggleMultiCurrency(poCurrency);
+                if (poCurrency !== 'PHP') {
+                    const poExRate = parseFloat(po.exchange_rate) || 1;
+                    setExchangeRate(poExRate);
+                }
+
+                // Restore table discount type toggle
+                if (po.discount_type && po.discount_type !== '%') {
+                    const tBtn = document.getElementById('totalDiscToggle');
+                    if (tBtn) {
+                        const currSymbol = getCurrencySymbol(poCurrency);
+                        tBtn.dataset.type = currSymbol;
+                        tBtn.textContent = currSymbol;
+                    }
+                }
                 document.getElementById('adjustmentValue').value = parseFloat(po.adjustment) || 0;
+
+                // Update footer buttons based on edit mode and PO status
+                const footerBtns = document.getElementById('footerButtons');
+                const poStatus = (po.status || '').toUpperCase();
+                if (poStatus === 'DRAFT') {
+                    // Draft PO: Save (keeps draft), Save and Confirm (marks as ISSUED), Cancel
+                    footerBtns.innerHTML = '<button class="btn-draft" onclick="saveAsDraft()">Save</button>' +
+                        '<button class="btn-save" onclick="saveAndConfirm()">Save and Confirm</button>' +
+                        '<button class="btn-cancel" onclick="goBack()">Cancel</button>';
+                } else {
+                    // Non-draft PO: Save (preserves status), Cancel
+                    footerBtns.innerHTML = '<button class="btn-save" onclick="saveEdit()">Save</button>' +
+                        '<button class="btn-cancel" onclick="goBack()">Cancel</button>';
+                }
+
+                const isMulti = poCurrency !== 'PHP';
+                const phpColDisplay = isMulti ? '' : 'display:none;';
+
                 if (po.items && po.items.length > 0) {
                     const tbody = document.getElementById('itemTableBody'); tbody.innerHTML = '';
                     po.items.forEach(item => {
-                        const rate = parseFloat(item.unit_price) || 0; const qty = parseFloat(item.quantity) || 1; const amt = (rate * qty).toFixed(2);
+                        const rate = parseFloat(item.unit_price) || 0; const qty = parseFloat(item.quantity) || 1;
+                        const itemDiscPct = parseFloat(item.discount_percent || item.item_discount_percent) || 0;
+                        const itemDiscType = item.discount_type || item.item_discount_type || '%';
+                        const amt = itemDiscType === '%' ? (rate * qty * (1 - itemDiscPct / 100)).toFixed(3) : (rate * qty - itemDiscPct).toFixed(3);
+                        const phpRate = isMulti ? currRound(rate * currentExchangeRate) : rate;
+                        const phpAmt = isMulti ? (itemDiscType === '%' ? currRound(qty * phpRate * (1 - itemDiscPct / 100)).toFixed(3) : currRound(qty * phpRate - itemDiscPct * currentExchangeRate).toFixed(3)) : amt;
+
+                        let eDiscCells = '';
+                        // First discount column gets the stored value and type
+                        const currSymbolForToggle = getCurrencySymbol(poCurrency);
+                        for (let dc = 0; dc < poDiscountColumnCount; dc++) {
+                            const discVal = dc === 0 ? itemDiscPct : 0;
+                            const toggleType = dc === 0 && itemDiscType === 'fixed' ? currSymbolForToggle : '%';
+                            const toggleLabel = toggleType;
+                            eDiscCells += '<td class="disc-col-td"><div class="disc-cell"><input type="number" value="' + discVal + '" class="disc-input" onchange="updateRowAmount(this)"><button class="disc-toggle" onclick="poToggleDiscType(this)" data-type="' + toggleType + '">' + toggleLabel + '</button><span class="disc-deduct"></span></div></td>';
+                        }
                         const tr = document.createElement('tr'); tr.setAttribute('data-item-id', item.item_id || '');
-                        tr.innerHTML = '<td><div class="item-image"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div></td><td><input type="text" value="' + (item.item_name || '') + '"></td><td><select><option value="">Select account</option><option value="inventory" selected>Inventory Asset</option><option value="expense">Expense</option></select></td><td class="center"><input type="number" value="' + qty + '" style="text-align:center;" class="qty-input" onchange="updateRowAmount(this)"></td><td class="center"><input type="number" value="' + rate.toFixed(2) + '" style="text-align:right;" class="rate-input" onchange="updateRowAmount(this)"></td><td><select><option value="">Select Tax</option><option value="12">VAT 12%</option><option value="0">Exempt</option></select></td><td class="center row-amount" style="font-weight:500;">' + amt + '</td><td class="center"><button class="delete-row-btn" onclick="deleteRow(this)">×</button></td>';
+                        tr.setAttribute('data-php-rate', phpRate);
+                        tr.setAttribute('data-purchase-currency', item.purchase_currency || poCurrency);
+                        tr.setAttribute('data-original-cost', rate);
+                        tr.innerHTML = '<td><div class="item-image"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div></td><td><div class="item-autocomplete-wrap"><input type="text" value="' + (item.item_name || '').replace(/"/g, '&quot;') + '" class="item-name-input" onfocus="openItemDropdown(this)" oninput="filterItemDropdown(this)"><div class="item-autocomplete-dropdown"></div></div></td><td><select><option value="">Select account</option><option value="inventory" selected>Inventory Asset</option><option value="expense">Expense</option></select></td><td class="center"><input type="number" value="' + qty + '" style="text-align:center;" class="qty-input" onchange="updateRowAmount(this)"></td><td class="center"><input type="number" value="' + rate.toFixed(3) + '" style="text-align:right;" class="rate-input" onchange="updateRowAmount(this)"></td>' + eDiscCells + '<td><select><option value="">Select Tax</option><option value="12">VAT 12%</option><option value="0">Exempt</option></select></td><td class="center row-amount" style="font-weight:500;">' + amt + '</td><td class="center row-amount-php amt-php-col" style="font-weight:500;background:#f9f9f9;color:#888;' + phpColDisplay + '">' + phpAmt + '</td><td class="center"><button class="delete-row-btn" onclick="deleteRow(this)">×</button></td>';
                         tbody.appendChild(tr);
                     });
                     recalculateTotals();
@@ -2581,10 +3111,14 @@ ${po.notes ? '<div style="margin-top:30px;"><div style="font-size:11px;color:#99
                     data.items.forEach(item => {
                         const rate = parseFloat(item.rate) || 0;
                         const qty = parseFloat(item.missing_qty) || 1;
-                        const amt = (qty * rate).toFixed(2);
+                        const amt = (qty * rate).toFixed(3);
+                        let boDiscCells = '';
+                        for (let dc = 0; dc < poDiscountColumnCount; dc++) {
+                            boDiscCells += '<td class="disc-col-td"><div class="disc-cell"><input type="number" value="0" class="disc-input" onchange="updateRowAmount(this)"><button class="disc-toggle" onclick="poToggleDiscType(this)" data-type="%">%</button><span class="disc-deduct"></span></div></td>';
+                        }
                         const tr = document.createElement('tr');
                         tr.setAttribute('data-item-id', item.item_id || '');
-                        tr.innerHTML = '<td><div class="item-image"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div></td><td><div class="item-autocomplete-wrap"><input type="text" value="' + (item.item_name || '').replace(/"/g, '&quot;') + '" class="item-name-input" onfocus="openItemDropdown(this)" oninput="filterItemDropdown(this)"><div class="item-autocomplete-dropdown"></div></div></td><td><select><option value="">Select account</option><option value="inventory" selected>Inventory Asset</option><option value="expense">Expense</option></select></td><td class="center"><input type="number" value="' + qty + '" style="text-align:center;" class="qty-input" onchange="updateRowAmount(this)"></td><td class="center"><input type="number" value="' + rate.toFixed(2) + '" style="text-align:right;" class="rate-input" onchange="updateRowAmount(this)"></td><td><select><option value="">Select Tax</option><option value="12">VAT 12%</option><option value="0">Exempt</option></select></td><td class="center row-amount" style="font-weight:500;">' + amt + '</td><td class="center"><button class="delete-row-btn" onclick="deleteRow(this)">×</button></td>';
+                        tr.innerHTML = '<td><div class="item-image"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div></td><td><div class="item-autocomplete-wrap"><input type="text" value="' + (item.item_name || '').replace(/"/g, '&quot;') + '" class="item-name-input" onfocus="openItemDropdown(this)" oninput="filterItemDropdown(this)"><div class="item-autocomplete-dropdown"></div></div></td><td><select><option value="">Select account</option><option value="inventory" selected>Inventory Asset</option><option value="expense">Expense</option></select></td><td class="center"><input type="number" value="' + qty + '" style="text-align:center;" class="qty-input" onchange="updateRowAmount(this)"></td><td class="center"><input type="number" value="' + rate.toFixed(3) + '" style="text-align:right;" class="rate-input" onchange="updateRowAmount(this)"></td>' + boDiscCells + '<td><select><option value="">Select Tax</option><option value="12">VAT 12%</option><option value="0">Exempt</option></select></td><td class="center row-amount" style="font-weight:500;">' + amt + '</td><td class="center"><button class="delete-row-btn" onclick="deleteRow(this)">×</button></td>';
                         tbody.appendChild(tr);
                     });
                     recalculateTotals();

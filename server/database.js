@@ -664,6 +664,12 @@ async function init() {
       await pool.query(`CREATE INDEX IF NOT EXISTS idx_bill_items_bill_id ON bill_items(bill_id);`);
       console.log('Bills tables created');
 
+      // Migration: add created_by and modified_by columns to bills
+      await pool.query(`ALTER TABLE bills ADD COLUMN IF NOT EXISTS created_by VARCHAR(255) DEFAULT 'project final';`);
+      await pool.query(`ALTER TABLE bills ADD COLUMN IF NOT EXISTS modified_by VARCHAR(255) DEFAULT 'project final';`);
+      // Migration: add discount_type column to bills for fixed vs percentage discount
+      await pool.query(`ALTER TABLE bills ADD COLUMN IF NOT EXISTS discount_type VARCHAR(10) DEFAULT '%';`);
+
       // Migration: add account_type column to bill_items if missing
       try {
         await pool.query(`ALTER TABLE bill_items ADD COLUMN IF NOT EXISTS account_type VARCHAR(50) DEFAULT 'inventory'`);
@@ -733,6 +739,33 @@ async function init() {
       `);
       console.log('Vendor Credits tables created');
 
+      // Vendor Refunds table (refunds against vendor credits)
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS vendor_refunds (
+          id SERIAL PRIMARY KEY,
+          refund_number VARCHAR(50),
+          vendor_credit_id INTEGER REFERENCES vendor_credits(id),
+          credit_number VARCHAR(50),
+          supplier_id INTEGER,
+          supplier_name VARCHAR(255),
+          refund_amount NUMERIC(38,10) DEFAULT 0,
+          refund_date DATE DEFAULT CURRENT_DATE,
+          payment_mode VARCHAR(50) DEFAULT 'Cash',
+          deposit_to VARCHAR(255) DEFAULT 'Petty Cash',
+          reference_number VARCHAR(100),
+          notes TEXT,
+          currency_code VARCHAR(10) DEFAULT 'PHP',
+          exchange_rate NUMERIC(18,8) DEFAULT 1,
+          status VARCHAR(50) DEFAULT 'PAID',
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+      await pool.query(`CREATE INDEX IF NOT EXISTS idx_vendor_refunds_credit_id ON vendor_refunds(vendor_credit_id);`);
+      await pool.query(`CREATE INDEX IF NOT EXISTS idx_vendor_refunds_supplier_id ON vendor_refunds(supplier_id);`);
+      // Add refunded_amount tracker to vendor_credits
+      await pool.query(`ALTER TABLE vendor_credits ADD COLUMN IF NOT EXISTS refunded_amount NUMERIC(38,10) DEFAULT 0;`);
+      console.log('Vendor Refunds table created');
+
       // Add description column to sales_order_items
       await pool.query(`ALTER TABLE sales_order_items ADD COLUMN IF NOT EXISTS description TEXT;`);
 
@@ -759,16 +792,42 @@ async function init() {
         AND bill_status = 'UNBILLED';
       `);
 
-      // Auto-close: if both fully received and fully billed
+      // Auto-close: if both fully received and fully billed, AND all bills are PAID,
+      // AND no unsettled surplus (total billed must cover NET received = received - returned)
       await pool.query(`
         UPDATE purchases SET status = 'CLOSED'
-        WHERE receive_status = 'RECEIVED' AND bill_status = 'BILLED' AND status != 'CLOSED' AND status != 'CANCELLED';
+        WHERE receive_status = 'RECEIVED' AND bill_status = 'BILLED'
+        AND status != 'CLOSED' AND status != 'CANCELLED'
+        AND NOT EXISTS (
+          SELECT 1 FROM bills WHERE bills.purchase_order_id = purchases.id
+          AND UPPER(COALESCE(bills.status,'')) NOT IN ('PAID')
+        )
+        AND (
+          COALESCE((SELECT SUM(bi.quantity) FROM bill_items bi JOIN bills b ON bi.bill_id = b.id WHERE b.purchase_order_id = purchases.id AND UPPER(COALESCE(b.status,'')) != 'DRAFT'), 0)
+          >=
+          COALESCE((SELECT SUM(pri.quantity_to_receive) FROM purchase_receive_items pri JOIN purchase_receives pr ON pri.receive_id = pr.id WHERE pr.purchase_id = purchases.id AND pr.status = 'received'), 0)
+          - COALESCE((SELECT SUM(pri2.return_quantity) FROM purchase_return_items pri2 JOIN purchase_returns pr2 ON pri2.purchase_return_id = pr2.id WHERE pr2.purchase_order_id = purchases.id), 0)
+        );
+      `);
+
+      // Corrective: reopen POs that were incorrectly closed while surplus is unsettled
+      // Uses NET received (received - returned) to avoid reopening POs where surplus was handled via return
+      await pool.query(`
+        UPDATE purchases SET status = 'ISSUED'
+        WHERE status = 'CLOSED'
+        AND (
+          COALESCE((SELECT SUM(pri.quantity_to_receive) FROM purchase_receive_items pri JOIN purchase_receives pr ON pri.receive_id = pr.id WHERE pr.purchase_id = purchases.id AND pr.status = 'received'), 0)
+          - COALESCE((SELECT SUM(pri2.return_quantity) FROM purchase_return_items pri2 JOIN purchase_returns pr2 ON pri2.purchase_return_id = pr2.id WHERE pr2.purchase_order_id = purchases.id), 0)
+          >
+          COALESCE((SELECT SUM(bi.quantity) FROM bill_items bi JOIN bills b ON bi.bill_id = b.id WHERE b.purchase_order_id = purchases.id AND UPPER(COALESCE(b.status,'')) != 'DRAFT'), 0)
+        );
       `);
 
       console.log('PO 3-column status migration completed');
 
       // Add discrepancy_resolved flag for over-receipt banner dismissal
       await pool.query(`ALTER TABLE purchases ADD COLUMN IF NOT EXISTS discrepancy_resolved BOOLEAN DEFAULT FALSE;`);
+      await pool.query(`ALTER TABLE purchase_receives ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ;`);
       console.log('Discrepancy resolved flag migration completed');
 
       // ========== Multi-currency support migration ==========
@@ -783,7 +842,11 @@ async function init() {
       await pool.query(`ALTER TABLE vendor_credits ADD COLUMN IF NOT EXISTS exchange_rate NUMERIC(18,8) DEFAULT 1;`);
       // Line item tables: add base_currency_amount (amount in PHP)
       await pool.query(`ALTER TABLE purchase_items ADD COLUMN IF NOT EXISTS base_currency_amount NUMERIC(38,10) DEFAULT 0;`);
+      await pool.query(`ALTER TABLE purchase_items ADD COLUMN IF NOT EXISTS discount_percent NUMERIC(10,4) DEFAULT 0;`);
+      await pool.query(`ALTER TABLE purchase_items ADD COLUMN IF NOT EXISTS discount_type VARCHAR(10) DEFAULT '%';`);
       await pool.query(`ALTER TABLE bill_items ADD COLUMN IF NOT EXISTS base_currency_amount NUMERIC(38,10) DEFAULT 0;`);
+      await pool.query(`ALTER TABLE bill_items ADD COLUMN IF NOT EXISTS discount_percent NUMERIC(10,4) DEFAULT 0;`);
+      await pool.query(`ALTER TABLE bill_items ADD COLUMN IF NOT EXISTS discount_type VARCHAR(10) DEFAULT '%';`);
       await pool.query(`ALTER TABLE vendor_credit_items ADD COLUMN IF NOT EXISTS base_currency_amount NUMERIC(38,10) DEFAULT 0;`);
       console.log('Multi-currency migration completed');
 
@@ -902,6 +965,13 @@ async function init() {
         );
       `);
       await pool.query(`CREATE INDEX IF NOT EXISTS idx_accounting_entries_customer ON accounting_entries(customer_id);`);
+      // Migration: add missing columns used by sales-receipts, invoices, etc.
+      await pool.query(`ALTER TABLE accounting_entries ADD COLUMN IF NOT EXISTS entry_date DATE DEFAULT CURRENT_DATE;`);
+      await pool.query(`ALTER TABLE accounting_entries ADD COLUMN IF NOT EXISTS account_name VARCHAR(255);`);
+      await pool.query(`ALTER TABLE accounting_entries ADD COLUMN IF NOT EXISTS debit DECIMAL(12,2) DEFAULT 0;`);
+      await pool.query(`ALTER TABLE accounting_entries ADD COLUMN IF NOT EXISTS credit DECIMAL(12,2) DEFAULT 0;`);
+      await pool.query(`ALTER TABLE accounting_entries ADD COLUMN IF NOT EXISTS reference_number VARCHAR(100);`);
+      await pool.query(`CREATE INDEX IF NOT EXISTS idx_accounting_entries_type ON accounting_entries(entry_type);`);
       console.log('Accounting entries table created');
     } catch (aeErr) {
       console.log('Accounting entries table note:', aeErr.message);

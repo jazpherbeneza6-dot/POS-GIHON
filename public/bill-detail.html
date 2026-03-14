@@ -842,6 +842,29 @@
                     <div class="detail-tab active">Purchase Orders <span class="count" id="poCount">0</span></div>
                 </div>
 
+                <!-- Associated PO Table -->
+                <div id="billPOTableWrap" style="display:none; padding:0 16px 12px;">
+                    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                        <thead>
+                            <tr style="border-bottom:2px solid #e5e7eb;">
+                                <th
+                                    style="text-align:left;padding:8px 6px;color:#6b7280;font-weight:600;font-size:11px;">
+                                    PURCHASE ORDER#</th>
+                                <th
+                                    style="text-align:left;padding:8px 6px;color:#6b7280;font-weight:600;font-size:11px;">
+                                    DATE</th>
+                                <th
+                                    style="text-align:left;padding:8px 6px;color:#6b7280;font-weight:600;font-size:11px;">
+                                    STATUS</th>
+                                <th
+                                    style="text-align:right;padding:8px 6px;color:#6b7280;font-weight:600;font-size:11px;">
+                                    AMOUNT</th>
+                            </tr>
+                        </thead>
+                        <tbody id="billPOBody"></tbody>
+                    </table>
+                </div>
+
                 <!-- PDF Toggle -->
                 <div class="pdf-toggle-row">
                     <label class="pdf-toggle">
@@ -1002,7 +1025,7 @@
                         <div class="pr-item-numbers">${billNum} · ${billDate}</div>
                         <div class="pr-item-status ${status}">${status.toUpperCase()}</div>
                     </div>
-                    <div class="pr-item-amount">PHP${amount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</div>
+                    <div class="pr-item-amount">${(bill.currency_code || 'PHP')}${amount.toLocaleString('en-PH', { minimumFractionDigits: 3 })}</div>
                 `;
                 list.appendChild(div);
             });
@@ -1052,7 +1075,7 @@
                     const pmRes = await fetch('/api/payments-made');
                     if (pmRes.ok) {
                         const allPayments = await pmRes.json();
-                        hasPayment = allPayments.some(p => p.bill_id === parseInt(id));
+                        hasPayment = allPayments.some(p => p.bill_id === parseInt(id) && (p.status || '').toUpperCase() !== 'VOID');
                     }
                 } catch (e) { }
 
@@ -1090,7 +1113,11 @@
 
                 // Balance Due
                 const total = parseFloat(bill.total_amount || 0);
-                const fmtTotal = 'PHP' + total.toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                const billCurrency = bill.currency_code || 'PHP';
+                const billExchRate = parseFloat(bill.exchange_rate) || 1;
+                const isMultiCurrency = billCurrency !== 'PHP';
+                const phpEquiv = isMultiCurrency ? ` (₱${(total * billExchRate).toLocaleString('en-PH', { minimumFractionDigits: 3 })})` : '';
+                const fmtTotal = billCurrency + ' ' + total.toLocaleString('en-PH', { minimumFractionDigits: 3 }) + phpEquiv;
                 document.getElementById('balanceDue').textContent = fmtTotal;
                 document.getElementById('balanceDue2').textContent = fmtTotal;
 
@@ -1105,6 +1132,27 @@
                         if (poRes.ok) {
                             const po = await poRes.json();
                             orderNum = po.po_number || orderNum;
+
+                            // Populate associated PO table
+                            const poStatus = (po.status || 'DRAFT').toUpperCase();
+                            const statusColors = {
+                                'DRAFT': '#856404; background: #fff3cd',
+                                'ISSUED': '#084298; background: #cfe2ff',
+                                'CLOSED': '#0a3622; background: #d1e7dd',
+                                'CANCELLED': '#842029; background: #f8d7da',
+                                'APPROVED': '#0d6efd; background: #cfe2ff',
+                            };
+                            const stColor = statusColors[poStatus] || '#666; background: #f0f0f0';
+                            const poCur = po.currency_code || 'PHP';
+                            const poAmt = parseFloat(po.total_amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 3 });
+                            const poDate = po.date ? new Date(po.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+                            document.getElementById('billPOBody').innerHTML = `<tr style="border-bottom:1px solid #f0f0f0;">
+                                <td style="padding:10px 6px;"><a href="/purchase-order-detail.html?id=${po.id}" style="color:#1a73e8;font-weight:500;text-decoration:none;">${po.po_number || 'PO-' + po.id}</a></td>
+                                <td style="padding:10px 6px;">${poDate}</td>
+                                <td style="padding:10px 6px;"><span style="padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600;color:${stColor}">${poStatus}</span></td>
+                                <td style="padding:10px 6px;text-align:right;font-weight:500;">${poCur}${poAmt}</td>
+                            </tr>`;
+                            document.getElementById('billPOTableWrap').style.display = '';
                         }
                     } catch (e) { }
                 }
@@ -1133,14 +1181,27 @@
                 items.forEach((item, idx) => {
                     const qty = parseFloat(item.quantity) || 0;
                     const rate = parseFloat(item.rate) || 0;
-                    const amt = parseFloat(item.amount) || (qty * rate);
+                    const rawAmt = qty * rate;
+                    // Apply item-level discount
+                    const discPct = parseFloat(item.discount_percent) || 0;
+                    const discType = item.discount_type || '%';
+                    let discAmt = 0;
+                    if (discPct > 0) {
+                        if (discType === '%') {
+                            discAmt = rawAmt * (discPct / 100);
+                        } else {
+                            discAmt = discPct;
+                        }
+                    }
+                    const amt = rawAmt - discAmt;
                     const tr = document.createElement('tr');
+                    const discBadge = discPct > 0 ? ` <span style="color:#dc2626;font-size:10px;">(-${discType === '%' ? discPct + '%' : discPct.toFixed(3)} off)</span>` : '';
                     tr.innerHTML = `
                         <td>${idx + 1}</td>
-                        <td>${item.item_name || '—'}</td>
+                        <td>${item.item_name || '—'}${discBadge}</td>
                         <td>${qty.toFixed(2)}</td>
-                        <td>${rate.toFixed(2)}</td>
-                        <td>${amt.toFixed(2)}</td>
+                        <td>${rate.toFixed(3)}</td>
+                        <td>${amt.toFixed(3)}</td>
                     `;
                     tbody.appendChild(tr);
                 });
@@ -1149,8 +1210,16 @@
 
                 // Totals
                 const subTotal = parseFloat(bill.sub_total || 0);
-                document.getElementById('subTotal').textContent = subTotal.toFixed(2);
+                const discPercent = parseFloat(bill.discount_percent || 0);
+                const discountAmount = subTotal * (discPercent / 100);
+                document.getElementById('subTotal').textContent = subTotal.toFixed(3);
                 document.getElementById('totalAmount').textContent = fmtTotal;
+
+                // Update RATE and AMOUNT column headers with currency
+                const rateHeader = document.querySelector('#docItemsBody')?.closest('table')?.querySelector('th:nth-child(4)');
+                const amtHeader = document.querySelector('#docItemsBody')?.closest('table')?.querySelector('th:nth-child(5)');
+                if (rateHeader) rateHeader.textContent = isMultiCurrency ? 'RATE (' + billCurrency + ')' : 'RATE';
+                if (amtHeader) amtHeader.textContent = isMultiCurrency ? 'AMOUNT (' + billCurrency + ')' : 'AMOUNT';
 
             } catch (e) {
                 console.error('Error loading bill detail:', e);
@@ -1250,7 +1319,7 @@
                 const totalUnused = vcTotal + overpayment;
 
                 if (totalUnused > 0) {
-                    document.getElementById('creditsAvailableAmt').textContent = 'PHP ' + totalUnused.toFixed(2);
+                    document.getElementById('creditsAvailableAmt').textContent = 'PHP ' + totalUnused.toFixed(3);
                     creditsBanner.style.display = 'flex';
                     const acBtn = document.getElementById('applyCreditsBtn');
                     if (acBtn) acBtn.style.display = 'inline-flex';
@@ -1284,7 +1353,7 @@
                         const thisBill = allBills.find(b => b.id === currentBill.id);
                         if (thisBill) {
                             const balDue = parseFloat(thisBill.balance_due || thisBill.total_amount || 0);
-                            descEl.innerHTML = `Bill Balance Due: <strong>PHP ${balDue.toFixed(2)}</strong>. Select credits to apply (max: bill balance).`;
+                            descEl.innerHTML = `Bill Balance Due: <strong>PHP ${balDue.toFixed(3)}</strong>. Select credits to apply (max: bill balance).`;
                         }
                     }
                 } catch (e) { }
@@ -1299,7 +1368,7 @@
                         <td style="padding:8px 6px;border-bottom:1px solid #f0f0f0;"><input type="checkbox" class="credit-check" data-idx="${i}" data-id="${vc.id}" data-amount="${amt}"></td>
                         <td style="padding:8px 6px;border-bottom:1px solid #f0f0f0;font-size:12px;color:#4285f4;font-weight:500;">${vc.credit_number || 'VC-' + vc.id}</td>
                         <td style="padding:8px 6px;border-bottom:1px solid #f0f0f0;font-size:12px;">${fmtDate(vc.credit_date)}</td>
-                        <td style="padding:8px 6px;border-bottom:1px solid #f0f0f0;font-size:12px;text-align:right;">PHP ${amt.toFixed(2)}</td>
+                        <td style="padding:8px 6px;border-bottom:1px solid #f0f0f0;font-size:12px;text-align:right;">PHP ${amt.toFixed(3)}</td>
                     </tr>`;
                 }).join('');
             }
@@ -1346,8 +1415,8 @@
             const amountToApply = Math.min(totalSelected, balanceDue);
 
             const msg = totalSelected > balanceDue
-                ? `The selected credits (PHP ${totalSelected.toFixed(2)}) exceed the bill balance (PHP ${balanceDue.toFixed(2)}).\n\nOnly PHP ${amountToApply.toFixed(2)} will be applied. The remaining PHP ${(totalSelected - amountToApply).toFixed(2)} will stay as unused credit.\n\nProceed?`
-                : `Apply PHP ${amountToApply.toFixed(2)} in credits to this bill?`;
+                ? `The selected credits (PHP ${totalSelected.toFixed(3)}) exceed the bill balance (PHP ${balanceDue.toFixed(3)}).\n\nOnly PHP ${amountToApply.toFixed(3)} will be applied. The remaining PHP ${(totalSelected - amountToApply).toFixed(3)} will stay as unused credit.\n\nProceed?`
+                : `Apply PHP ${amountToApply.toFixed(3)} in credits to this bill?`;
 
             if (!confirm(msg)) return;
 
@@ -1429,12 +1498,12 @@
 
                 closeApplyCreditsModal();
 
-                const summaryParts = [`PHP ${amountToApply.toFixed(2)} in credits applied to this bill.`];
+                const summaryParts = [`PHP ${amountToApply.toFixed(3)} in credits applied to this bill.`];
                 if (newBalance <= 0.01) {
                     summaryParts.push('Bill has been marked as PAID.');
                 }
                 if (totalSelected > balanceDue) {
-                    summaryParts.push(`PHP ${(totalSelected - amountToApply).toFixed(2)} remains as unused credit.`);
+                    summaryParts.push(`PHP ${(totalSelected - amountToApply).toFixed(3)} remains as unused credit.`);
                 }
                 alert(summaryParts.join('\n'));
 

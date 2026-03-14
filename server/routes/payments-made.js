@@ -85,8 +85,16 @@ router.post('/', async (req, res) => {
                     const netReceived = (parseFloat(receivedRes.rows[0].total) || 0) - (parseFloat(returnedRes.rows[0].total) || 0);
                     const unpaidBillsRes = await pool.query(`SELECT COUNT(*) as cnt FROM bills WHERE purchase_order_id = $1 AND UPPER(COALESCE(status,'')) NOT IN ('PAID','DRAFT')`, [poId]);
                     const hasUnpaidBills = parseInt(unpaidBillsRes.rows[0].cnt) > 0;
-                    if (totalOrdered > 0 && totalBilled >= totalOrdered && netReceived >= totalOrdered && !hasUnpaidBills) {
-                        await pool.query(`UPDATE purchases SET status = 'CLOSED', payment_status = 'PAID' WHERE id = $1`, [poId]);
+                    if (totalOrdered > 0 && !hasUnpaidBills) {
+                        let canClose = false;
+                        if (netReceived > totalOrdered) {
+                            canClose = totalBilled >= netReceived;
+                        } else {
+                            canClose = totalBilled >= totalOrdered && netReceived >= totalOrdered;
+                        }
+                        if (canClose) {
+                            await pool.query(`UPDATE purchases SET status = 'CLOSED', payment_status = 'PAID' WHERE id = $1`, [poId]);
+                        }
                     }
                 }
             }
@@ -134,8 +142,16 @@ router.patch('/:id/mark-paid', async (req, res) => {
                         const netReceived = (parseFloat(receivedRes.rows[0].total) || 0) - (parseFloat(returnedRes.rows[0].total) || 0);
                         const unpaidBillsRes = await pool.query(`SELECT COUNT(*) as cnt FROM bills WHERE purchase_order_id = $1 AND UPPER(COALESCE(status,'')) NOT IN ('PAID','DRAFT')`, [poId]);
                         const hasUnpaidBills = parseInt(unpaidBillsRes.rows[0].cnt) > 0;
-                        if (totalOrdered > 0 && totalBilled >= totalOrdered && netReceived >= totalOrdered && !hasUnpaidBills) {
-                            await pool.query(`UPDATE purchases SET status = 'CLOSED', payment_status = 'PAID' WHERE id = $1`, [poId]);
+                        if (totalOrdered > 0 && !hasUnpaidBills) {
+                            let canClose = false;
+                            if (netReceived > totalOrdered) {
+                                canClose = totalBilled >= netReceived;
+                            } else {
+                                canClose = totalBilled >= totalOrdered && netReceived >= totalOrdered;
+                            }
+                            if (canClose) {
+                                await pool.query(`UPDATE purchases SET status = 'CLOSED', payment_status = 'PAID' WHERE id = $1`, [poId]);
+                            }
                         }
                     }
                 }
@@ -148,6 +164,120 @@ router.patch('/:id/mark-paid', async (req, res) => {
     } catch (err) {
         console.error('Error marking payment as paid:', err);
         res.status(500).json({ error: 'Failed to mark payment as paid' });
+    }
+});
+
+// PUT update existing payment
+router.put('/:id', async (req, res) => {
+    try {
+        const pool = database.getDb();
+        const {
+            payment_number, bill_id, bill_number, supplier_id, supplier_name,
+            amount_paid, bank_charges, tax_deducted, payment_date,
+            payment_mode, paid_through, reference_number, notes, status,
+            currency_code, exchange_rate
+        } = req.body;
+
+        const result = await pool.query(
+            `UPDATE payments_made SET
+                payment_number = $1, bill_id = $2, bill_number = $3,
+                supplier_id = $4, supplier_name = $5, amount_paid = $6,
+                bank_charges = $7, tax_deducted = $8, payment_date = $9,
+                payment_mode = $10, paid_through = $11, reference_number = $12,
+                notes = $13, status = $14, currency_code = $15, exchange_rate = $16,
+                updated_at = CURRENT_TIMESTAMP
+             WHERE id = $17 RETURNING *`,
+            [payment_number, bill_id || null, bill_number || null,
+                supplier_id || null, supplier_name || null, amount_paid || 0,
+                bank_charges || 0, tax_deducted || false, payment_date || new Date(),
+                payment_mode || 'Cash', paid_through || 'Petty Cash',
+                reference_number || '', notes || '', status || 'DRAFT',
+                currency_code || 'PHP', parseFloat(exchange_rate) || 1,
+                req.params.id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Payment not found' });
+        }
+
+        // If status is PAID, update the bill status
+        if (status === 'PAID' && bill_id) {
+            await pool.query('UPDATE bills SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2', ['paid', bill_id]);
+        }
+
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error('Error updating payment:', err);
+        res.status(500).json({ error: 'Failed to update payment' });
+    }
+});
+
+// PATCH void a payment — full reversal
+router.patch('/:id/void', async (req, res) => {
+    const pool = database.getDb();
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+
+        // 1. Fetch the payment
+        const paymentRes = await client.query('SELECT * FROM payments_made WHERE id = $1', [req.params.id]);
+        if (paymentRes.rows.length === 0) {
+            await client.query('ROLLBACK');
+            return res.status(404).json({ error: 'Payment not found' });
+        }
+        const payment = paymentRes.rows[0];
+
+        // 2. Mark payment as VOID
+        await client.query(
+            `UPDATE payments_made SET status = 'VOID', updated_at = CURRENT_TIMESTAMP WHERE id = $1`,
+            [req.params.id]
+        );
+
+        // 3. Revert the linked bill status from PAID → OPEN
+        if (payment.bill_id) {
+            const billRes = await client.query('SELECT * FROM bills WHERE id = $1', [payment.bill_id]);
+            if (billRes.rows.length > 0) {
+                const bill = billRes.rows[0];
+                if ((bill.status || '').toLowerCase() === 'paid') {
+                    await client.query(
+                        `UPDATE bills SET status = 'open', updated_at = CURRENT_TIMESTAMP WHERE id = $1`,
+                        [payment.bill_id]
+                    );
+                }
+
+                // 4. Revert PO auto-close if applicable
+                if (bill.purchase_order_id) {
+                    const poRes = await client.query('SELECT * FROM purchases WHERE id = $1', [bill.purchase_order_id]);
+                    if (poRes.rows.length > 0 && poRes.rows[0].status === 'CLOSED') {
+                        await client.query(
+                            `UPDATE purchases SET status = 'BILLED', updated_at = CURRENT_TIMESTAMP WHERE id = $1`,
+                            [bill.purchase_order_id]
+                        );
+                    }
+                }
+            }
+        }
+
+        // 5. Remove vendor credits created from this payment's overpayment
+        if (payment.payment_number && payment.supplier_id) {
+            const reason = `Overpayment from Payment #${payment.payment_number}`;
+            await client.query(
+                `DELETE FROM vendor_credits WHERE supplier_id = $1 AND reason = $2`,
+                [payment.supplier_id, reason]
+            );
+        }
+
+        await client.query('COMMIT');
+
+        // Re-fetch updated payment
+        const updated = await pool.query('SELECT * FROM payments_made WHERE id = $1', [req.params.id]);
+        res.json(updated.rows[0]);
+    } catch (err) {
+        await client.query('ROLLBACK');
+        console.error('Error voiding payment:', err);
+        res.status(500).json({ error: 'Failed to void payment' });
+    } finally {
+        client.release();
     }
 });
 

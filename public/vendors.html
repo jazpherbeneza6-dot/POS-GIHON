@@ -106,6 +106,10 @@
             display: block;
         }
 
+        .views-dropdown-menu.open {
+            display: block;
+        }
+
         .views-dropdown-item {
             display: flex;
             align-items: center;
@@ -168,7 +172,7 @@
             background: #4285f4;
             color: white;
             border: none;
-            border-radius: 4px 0 0 4px;
+            border-radius: 4px;
             font-size: 13px;
             font-weight: 500;
             cursor: pointer;
@@ -182,18 +186,7 @@
         }
 
         .btn-new-dropdown {
-            padding: 8px 10px;
-            background: #3367d6;
-            color: white;
-            border: none;
-            border-left: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 0 4px 4px 0;
-            cursor: pointer;
-            font-size: 10px;
-        }
-
-        .btn-new-dropdown:hover {
-            background: #2d5bb9;
+            display: none;
         }
 
         .btn-more {
@@ -722,61 +715,6 @@
         }
 
         /* ===== VENDOR TOAST NOTIFICATION ===== */
-        .vendor-toast-container {
-            position: fixed;
-            top: 24px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 999999;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            align-items: center;
-            pointer-events: none;
-        }
-
-        .vendor-toast {
-            pointer-events: auto;
-            padding: 18px 32px;
-            border-radius: 10px;
-            color: #333;
-            font-weight: 500;
-            font-size: 15px;
-            background: white;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            border: 1px solid #e5e7eb;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            animation: toastSlideDown 0.3s ease;
-            min-width: 340px;
-            transition: opacity 0.3s ease, transform 0.3s ease;
-        }
-
-        .vendor-toast.success {
-            background: white;
-            border-left: 4px solid #10b981;
-        }
-
-        .vendor-toast.error {
-            background: white;
-            border-left: 4px solid #ef4444;
-        }
-
-        .vendor-toast.warning {
-            background: white;
-            border-left: 4px solid #f59e0b;
-        }
-
-        .vendor-toast.info {
-            background: white;
-            border-left: 4px solid #3b82f6;
-        }
-
-        .vendor-toast.hide {
-            animation: toastSlideUp 0.3s ease forwards;
-        }
-
         @keyframes toastSlideDown {
             from {
                 transform: translateY(-20px);
@@ -1701,11 +1639,7 @@
         }
 
         .detail-left-item-checkbox {
-            width: 15px;
-            height: 15px;
-            accent-color: #4285f4;
-            cursor: pointer;
-            flex-shrink: 0;
+            display: none;
         }
 
         .detail-left-item-info {
@@ -2849,6 +2783,45 @@
             text-align: right;
         }
 
+        .txn-table-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            font-size: 12px;
+            color: #666;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .txn-pagination {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .txn-pagination button {
+            width: 24px;
+            height: 24px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            font-size: 11px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .txn-pagination button:hover {
+            background: #f5f5f5;
+        }
+
+        .txn-pagination span {
+            font-size: 12px;
+            color: #333;
+        }
+
         .txn-section-body {
             overflow: hidden;
             transition: max-height 0.3s ease;
@@ -3327,9 +3300,8 @@
                 <div class="header-actions">
                     <div class="btn-new-group">
                         <button class="btn-new" onclick="createNewVendor()">
-                            <span>+</span> New
+                            +&nbsp; New
                         </button>
-                        <button class="btn-new-dropdown">▼</button>
                     </div>
                     <div class="vendor-kebab-wrapper">
                         <button class="btn-more" onclick="toggleVendorKebab(event)">⋯</button>
@@ -3455,7 +3427,6 @@
             </div>
 
             <!-- Toast Container -->
-            <div class="vendor-toast-container" id="vendorToastContainer"></div>
 
             <!-- Empty State -->
             <div class="empty-state" id="emptyState">
@@ -3487,7 +3458,12 @@
                 </div>
                 <div class="divider">- or -</div>
                 <div class="import-using">
-                    Import using <a href="#"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></a>
+                    Import using <a href="#"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="20" x2="18" y2="10" />
+                            <line x1="12" y1="20" x2="12" y2="4" />
+                            <line x1="6" y1="20" x2="6" y2="14" />
+                        </svg></a>
                 </div>
             </div>
 
@@ -3509,55 +3485,25 @@
                 <!-- Left sidebar vendor list -->
                 <div class="detail-left">
                     <div class="detail-left-header">
-                        <div class="detail-left-header-title">
+                        <div class="detail-left-header-title" onclick="toggleDetailViewsDropdown()"
+                            style="position:relative;cursor:pointer;">
                             <span id="detailViewTitle">Active Vendors</span>
                             <span style="font-size:10px;color:#666;">▼</span>
+                            <div class="views-dropdown-menu" id="detailViewsDropdownMenu"
+                                style="position:absolute;top:100%;left:0;z-index:100;">
+                                <div class="views-dropdown-item" onclick="detailSelectView('all', event)">
+                                    <span>All Vendors</span>
+                                </div>
+                                <div class="views-dropdown-item active" onclick="detailSelectView('active', event)">
+                                    <span>Active Vendors</span>
+                                </div>
+                                <div class="views-dropdown-item" onclick="detailSelectView('inactive', event)">
+                                    <span>Inactive Vendors</span>
+                                </div>
+                            </div>
                         </div>
                         <div class="detail-left-header-actions">
                             <button class="detail-left-add" onclick="createNewVendor()" title="New Vendor">+</button>
-                            <button class="detail-left-more" title="More" onclick="toggleDetailKebab(event)">⋯</button>
-                            <div class="vendor-kebab-menu" id="detailKebabMenu"
-                                style="left:auto;right:0;min-width:200px;">
-                                <!-- Sort by (flat) -->
-                                <div class="vendor-kebab-item"
-                                    style="font-size:10px;color:#888;padding:6px 14px;cursor:default;">
-                                    <span class="kebab-icon">⇅</span>
-                                    <span class="kebab-label" style="font-weight:600;text-transform:uppercase;">Sort
-                                        by</span>
-                                </div>
-                                <div class="vendor-kebab-item"
-                                    onclick="sortVendors('name', 'Name'); closeDetailKebab();">
-                                    <span class="kebab-icon"> </span><span class="kebab-label">Name</span>
-                                </div>
-                                <div class="vendor-kebab-item"
-                                    onclick="sortVendors('company_name', 'Company Name'); closeDetailKebab();">
-                                    <span class="kebab-icon"> </span><span class="kebab-label">Company Name</span>
-                                </div>
-                                <div class="vendor-kebab-item"
-                                    onclick="sortVendors('payables_bcy', 'Payables'); closeDetailKebab();">
-                                    <span class="kebab-icon"> </span><span class="kebab-label">Payables (BCY)</span>
-                                </div>
-                                <div class="vendor-kebab-item"
-                                    onclick="sortVendors('created_at', 'Created Time'); closeDetailKebab();">
-                                    <span class="kebab-icon"> </span><span class="kebab-label">Created Time</span>
-                                </div>
-                                <div class="vendor-kebab-divider"></div>
-                                <!-- Import -->
-                                <div class="vendor-kebab-item" onclick="importVendors(); closeDetailKebab();">
-                                    <span class="kebab-icon">⬇</span>
-                                    <span class="kebab-label">Import Vendors</span>
-                                </div>
-                                <!-- Export -->
-                                <div class="vendor-kebab-item" onclick="exportAllVendors(); closeDetailKebab();">
-                                    <span class="kebab-icon">⬆</span>
-                                    <span class="kebab-label">Export Vendors</span>
-                                </div>
-                                <!-- Refresh -->
-                                <div class="vendor-kebab-item" onclick="refreshVendorList(); closeDetailKebab();">
-                                    <span class="kebab-icon">🔃</span>
-                                    <span class="kebab-label">Refresh List</span>
-                                </div>
-                            </div>
                         </div>
                     </div>
                     <div class="detail-left-list" id="detailLeftList"></div>
@@ -3772,7 +3718,7 @@
                     <!-- Tab: Transactions -->
                     <div class="tab-content-area" id="dtab-transactions"
                         style="flex-direction:column;padding:20px 24px;">
-                        <div class="txn-goto">Go to transactions <span style="font-size:10px;">▼</span></div>
+
 
                         <!-- Bills -->
                         <div class="txn-section" id="txnBills">
@@ -3815,6 +3761,7 @@
                                         </tr>
                                     </tbody>
                                 </table>
+                                <div id="txnBillsPagination"></div>
                             </div>
                         </div>
 
@@ -3851,9 +3798,9 @@
                                         </tr>
                                     </tbody>
                                 </table>
+                                <div id="txnBillPaymentsPagination"></div>
                             </div>
                         </div>
-
                         <!-- Purchase Orders -->
                         <div class="txn-section" id="txnPurchaseOrders">
                             <div class="txn-section-header" onclick="toggleTxnSection('txnPurchaseOrders')">
@@ -3883,6 +3830,7 @@
                                         </tr>
                                     </tbody>
                                 </table>
+                                <div id="txnPurchaseOrdersPagination"></div>
                             </div>
                         </div>
 
@@ -3914,6 +3862,7 @@
                                         </tr>
                                     </tbody>
                                 </table>
+                                <div id="txnPurchaseReceivesPagination"></div>
                             </div>
                         </div>
 
@@ -3942,10 +3891,46 @@
                                     </thead>
                                     <tbody id="txnVendorCreditsBody">
                                         <tr>
-                                            <td colspan="6" class="txn-empty">No Vendor Credits yet.</td>
+                                            <td colspan="6" class="txn-empty">No Vendor Credits yet.
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
+                                <div id="txnVendorCreditsPagination"></div>
+                            </div>
+                        </div>
+
+                        <!-- Purchase Returns -->
+                        <div class="txn-section" id="txnPurchaseReturns">
+                            <div class="txn-section-header" onclick="toggleTxnSection('txnPurchaseReturns')">
+                                <div class="txn-section-left"><span class="txn-section-toggle">▾</span><span
+                                        class="txn-section-title">Purchase Returns</span></div>
+                                <div class="txn-section-right">
+                                    <button class="txn-new-btn"
+                                        onclick="event.stopPropagation(); window.location.href='/new-purchase-return.html?vendor_id='+currentVendorId">⊕
+                                        New</button>
+                                </div>
+                            </div>
+                            <div class="txn-section-body">
+                                <table class="txn-table">
+                                    <thead>
+                                        <tr>
+                                            <th>DATE ⇅</th>
+                                            <th>RETURN#</th>
+                                            <th>PO#</th>
+                                            <th>REASON</th>
+                                            <th>RESOLUTION</th>
+                                            <th>STATUS</th>
+                                            <th>QTY</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="txnPurchaseReturnsBody">
+                                        <tr>
+                                            <td colspan="7" class="txn-empty">No Purchase Returns yet.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div id="txnPurchaseReturnsPagination"></div>
                             </div>
                         </div>
                     </div>
@@ -4005,7 +3990,8 @@
                         </div>
                         <!-- Statement heading -->
                         <div class="stmt-heading">
-                            <div class="stmt-heading-title" id="vendorStmtTitle">Vendor Statement For</div>
+                            <div class="stmt-heading-title" id="vendorStmtTitle">Vendor Statement For
+                            </div>
                             <div class="stmt-heading-period" id="vendorStmtRange"></div>
                         </div>
                         <!-- Statement document card -->
@@ -4040,9 +4026,11 @@
                                             id="vendorStmtCredits">PHP
                                             0.00</span></div>
                                     <div class="stmt-summary-row" style="color:#2563eb;"><span>Unused
-                                            Credits</span><span id="vendorStmtUnusedCredits">PHP 0.00</span></div>
-                                    <div class="stmt-summary-row stmt-summary-total"><span>Balance Due</span><span
-                                            id="vendorStmtBalanceDue">PHP 0.00</span></div>
+                                            Credits</span><span id="vendorStmtUnusedCredits">PHP
+                                            0.00</span></div>
+                                    <div class="stmt-summary-row stmt-summary-total"><span>Balance
+                                            Due</span><span id="vendorStmtBalanceDue">PHP 0.00</span>
+                                    </div>
                                 </div>
                                 <!-- Transaction table -->
                                 <table class="stmt-table">
@@ -4075,7 +4063,8 @@
                                 <div class="stmt-balance-footer"
                                     style="background:#e8f5e9;border-top:none;margin-top:0;">
                                     <span style="color:#2e7d32;">Available Credit Balance</span>
-                                    <span id="vendorStmtFooterCredits" style="color:#2e7d32;">PHP 0.00</span>
+                                    <span id="vendorStmtFooterCredits" style="color:#2e7d32;">PHP
+                                        0.00</span>
                                 </div>
                             </div>
                         </div>
@@ -4092,7 +4081,8 @@
                         <button class="acp-close" onclick="closeAddressEditModal()">&times;</button>
                     </div>
                     <div style="padding:24px 28px;overflow-y:auto;max-height:70vh;">
-                        <div style="font-size:15px;font-weight:600;color:#333;margin-bottom:14px;">Billing Address</div>
+                        <div style="font-size:15px;font-weight:600;color:#333;margin-bottom:14px;">
+                            Billing Address</div>
                         <div class="addr-field">
                             <label>Street</label>
                             <textarea id="addrBillingStreet" rows="2" class="addr-input"></textarea>
@@ -4116,7 +4106,8 @@
                                 Copy Billing Address to Shipping Address
                             </label>
                         </div>
-                        <div style="font-size:15px;font-weight:600;color:#333;margin-bottom:14px;">Shipping Address
+                        <div style="font-size:15px;font-weight:600;color:#333;margin-bottom:14px;">
+                            Shipping Address
                         </div>
                         <div class="addr-field">
                             <label>Street</label>
@@ -4224,14 +4215,17 @@
                                                     Company
                                                     Name</div>
                                                 <div class="criteria-field-item"
-                                                    onclick="selectCriteriaField(1, 'first_name', 'First Name')">First
+                                                    onclick="selectCriteriaField(1, 'first_name', 'First Name')">
+                                                    First
                                                     Name
                                                 </div>
                                                 <div class="criteria-field-item"
-                                                    onclick="selectCriteriaField(1, 'last_name', 'Last Name')">Last Name
+                                                    onclick="selectCriteriaField(1, 'last_name', 'Last Name')">
+                                                    Last Name
                                                 </div>
                                                 <div class="criteria-field-item"
-                                                    onclick="selectCriteriaField(1, 'address', 'Address')">Address</div>
+                                                    onclick="selectCriteriaField(1, 'address', 'Address')">
+                                                    Address</div>
                                                 <div class="criteria-field-item"
                                                     onclick="selectCriteriaField(1, 'postal_code', 'Postal Code')">
                                                     Postal
@@ -4244,19 +4238,24 @@
                                                     onclick="selectCriteriaField(1, 'shipping_country', 'Shipping Country')">
                                                     Shipping Country</div>
                                                 <div class="criteria-field-item"
-                                                    onclick="selectCriteriaField(1, 'status', 'Status')">Status</div>
+                                                    onclick="selectCriteriaField(1, 'status', 'Status')">
+                                                    Status</div>
                                                 <div class="criteria-field-item"
                                                     onclick="selectCriteriaField(1, 'portal_status', 'Portal Status')">
                                                     Portal
                                                     Status</div>
                                                 <div class="criteria-field-item"
-                                                    onclick="selectCriteriaField(1, 'email', 'Email')">Email</div>
+                                                    onclick="selectCriteriaField(1, 'email', 'Email')">
+                                                    Email</div>
                                                 <div class="criteria-field-item"
-                                                    onclick="selectCriteriaField(1, 'phone', 'Phone')">Phone</div>
+                                                    onclick="selectCriteriaField(1, 'phone', 'Phone')">
+                                                    Phone</div>
                                                 <div class="criteria-field-item"
-                                                    onclick="selectCriteriaField(1, 'notes', 'Notes')">Notes</div>
+                                                    onclick="selectCriteriaField(1, 'notes', 'Notes')">
+                                                    Notes</div>
                                                 <div class="criteria-field-item"
-                                                    onclick="selectCriteriaField(1, 'website', 'Website')">Website</div>
+                                                    onclick="selectCriteriaField(1, 'website', 'Website')">
+                                                    Website</div>
                                                 <div class="criteria-field-item"
                                                     onclick="selectCriteriaField(1, 'payables_bcy', 'Payables (BCY)')">
                                                     Payables
@@ -4308,7 +4307,8 @@
                                         <div class="column-item" data-column="company"><span class="drag-icon">⋮⋮</span>
                                             Company
                                             Name <button class="col-add-btn"
-                                                onclick="addColumn('company', 'Company Name')">+</button></div>
+                                                onclick="addColumn('company', 'Company Name')">+</button>
+                                        </div>
                                         <div class="column-item" data-column="email"><span class="drag-icon">⋮⋮</span>
                                             Email
                                             <button class="col-add-btn" onclick="addColumn('email', 'Email')">+</button>
@@ -4320,15 +4320,18 @@
                                         <div class="column-item" data-column="payables"><span
                                                 class="drag-icon">⋮⋮</span>
                                             Payables <button class="col-add-btn"
-                                                onclick="addColumn('payables', 'Payables')">+</button></div>
+                                                onclick="addColumn('payables', 'Payables')">+</button>
+                                        </div>
                                         <div class="column-item" data-column="payables_bcy"><span
                                                 class="drag-icon">⋮⋮</span>
                                             Payables (BCY) <button class="col-add-btn"
-                                                onclick="addColumn('payables_bcy', 'Payables (BCY)')">+</button></div>
+                                                onclick="addColumn('payables_bcy', 'Payables (BCY)')">+</button>
+                                        </div>
                                         <div class="column-item" data-column="unused_credits"><span
                                                 class="drag-icon">⋮⋮</span>
                                             Unused Credits <button class="col-add-btn"
-                                                onclick="addColumn('unused_credits', 'Unused Credits')">+</button></div>
+                                                onclick="addColumn('unused_credits', 'Unused Credits')">+</button>
+                                        </div>
                                         <div class="column-item" data-column="unused_credits_bcy"><span
                                                 class="drag-icon">⋮⋮</span> Unused Credits (BCY) <button
                                                 class="col-add-btn"
@@ -4342,20 +4345,24 @@
                                         <div class="column-item" data-column="first_name"><span
                                                 class="drag-icon">⋮⋮</span>
                                             First Name <button class="col-add-btn"
-                                                onclick="addColumn('first_name', 'First Name')">+</button></div>
+                                                onclick="addColumn('first_name', 'First Name')">+</button>
+                                        </div>
                                         <div class="column-item" data-column="last_name"><span
                                                 class="drag-icon">⋮⋮</span>
                                             Last
                                             Name <button class="col-add-btn"
-                                                onclick="addColumn('last_name', 'Last Name')">+</button></div>
+                                                onclick="addColumn('last_name', 'Last Name')">+</button>
+                                        </div>
                                         <div class="column-item" data-column="mobile_phone"><span
                                                 class="drag-icon">⋮⋮</span>
                                             Mobile Phone <button class="col-add-btn"
-                                                onclick="addColumn('mobile_phone', 'Mobile Phone')">+</button></div>
+                                                onclick="addColumn('mobile_phone', 'Mobile Phone')">+</button>
+                                        </div>
                                         <div class="column-item" data-column="payment_terms"><span
                                                 class="drag-icon">⋮⋮</span>
                                             Payment Terms <button class="col-add-btn"
-                                                onclick="addColumn('payment_terms', 'Payment Terms')">+</button></div>
+                                                onclick="addColumn('payment_terms', 'Payment Terms')">+</button>
+                                        </div>
                                         <div class="column-item" data-column="status"><span class="drag-icon">⋮⋮</span>
                                             Status
                                             <button class="col-add-btn"
@@ -4369,7 +4376,8 @@
                                     </div>
                                 </div>
                                 <div class="columns-selected">
-                                    <div class="columns-header"><span class="check-icon">✓</span> SELECTED COLUMNS</div>
+                                    <div class="columns-header"><span class="check-icon">✓</span>
+                                        SELECTED COLUMNS</div>
                                     <div class="columns-list" id="selectedColumnsList">
                                         <div class="column-item selected" data-column="name"><span
                                                 class="drag-icon">⋮⋮</span>
@@ -4597,19 +4605,39 @@
                         case 'name':
                             return `<span style="color: #4285f4; font-weight: 500; cursor: pointer;" onclick="viewVendor(${vendor.id})">${vendor.name || ''}</span>`;
                         case 'company_name':
-                            return vendor.contact_person || '';
+                            return vendor.company_name || '';
                         case 'email':
                             return vendor.email || '';
                         case 'phone':
                             return vendor.phone || '';
-                        case 'payables_bcy':
-                            return 'PHP' + parseFloat(vendor.payables_bcy || 0).toFixed(2);
-                        case 'unused_credits_bcy':
-                            return 'PHP' + parseFloat(vendor.unused_credits_bcy || 0).toFixed(2);
-                        case 'payables':
-                            return 'PHP' + parseFloat(vendor.total_spent || 0).toFixed(2);
-                        case 'unused_credits':
-                            return 'PHP0.00';
+                        case 'payables_bcy': {
+                            const cur = (vendor.currency || 'PHP').toUpperCase();
+                            const bcy = parseFloat(vendor.payables_bcy || 0).toFixed(3);
+                            const fcy = parseFloat(vendor.payables || 0).toFixed(3);
+                            if (cur === 'PHP') return 'PHP ' + bcy;
+                            return 'PHP ' + bcy + '<br><span style="font-size:11px;color:#888;">' + cur + ' ' + fcy + '</span>';
+                        }
+                        case 'unused_credits_bcy': {
+                            const cur = (vendor.currency || 'PHP').toUpperCase();
+                            const bcy = parseFloat(vendor.unused_credits_bcy || 0).toFixed(3);
+                            const fcy = parseFloat(vendor.unused_credits || 0).toFixed(3);
+                            if (cur === 'PHP') return 'PHP ' + bcy;
+                            return 'PHP ' + bcy + '<br><span style="font-size:11px;color:#888;">' + cur + ' ' + fcy + '</span>';
+                        }
+                        case 'payables': {
+                            const cur = (vendor.currency || 'PHP').toUpperCase();
+                            const fcy = parseFloat(vendor.payables || 0).toFixed(3);
+                            if (cur === 'PHP') return 'PHP ' + fcy;
+                            const bcy = parseFloat(vendor.payables_bcy || 0).toFixed(3);
+                            return cur + ' ' + fcy + '<br><span style="font-size:11px;color:#888;">PHP ' + bcy + '</span>';
+                        }
+                        case 'unused_credits': {
+                            const cur = (vendor.currency || 'PHP').toUpperCase();
+                            const fcy = parseFloat(vendor.unused_credits || 0).toFixed(3);
+                            if (cur === 'PHP') return 'PHP ' + fcy;
+                            const bcy = parseFloat(vendor.unused_credits_bcy || 0).toFixed(3);
+                            return cur + ' ' + fcy + '<br><span style="font-size:11px;color:#888;">PHP ' + bcy + '</span>';
+                        }
                         case 'source':
                             return vendor.source || '';
                         case 'first_name':
@@ -4799,7 +4827,7 @@
                             const div = document.createElement('div');
                             div.className = 'detail-left-item' + (v.id == currentVendorId ? ' active' : '');
                             div.onclick = () => openDetailView(v.id);
-                            const amt = 'PHP' + parseFloat(v.total_spent || 0).toFixed(2);
+                            const amt = 'PHP' + parseFloat(v.total_spent || 0).toFixed(3);
                             div.innerHTML = `
                                 <input type="checkbox" class="detail-left-item-checkbox" onclick="event.stopPropagation();">
                                 <div class="detail-left-item-info">
@@ -4810,7 +4838,7 @@
                             leftList.appendChild(div);
                         });
                     }
-                    showVendorToast(`Sorted by ${label} (${dirLabel}).`, 'info');
+                    showToast(`Sorted by ${label} (${dirLabel}).`, 'info');
                 }
 
                 // ===== EXPORT VENDORS =====
@@ -4834,7 +4862,7 @@
 
                 function exportAllVendors() {
                     if (allVendors.length === 0) {
-                        showVendorToast('No vendors to export.', 'warning');
+                        showToast('No vendors to export.', 'warning');
                         return;
                     }
                     const headers = ['Name', 'Company Name', 'Email', 'Phone', 'Payables (BCY)', 'Unused Credits (BCY)', 'Status', 'Created At', 'Updated At'];
@@ -4845,7 +4873,7 @@
                         csv += keys.map(k => escapeVendorCSV(v[k] || '')).join(',') + '\n';
                     });
                     downloadVendorCSV('GiHon_All_Vendors.csv', csv);
-                    showVendorToast(`Exported ${allVendors.length} vendor(s) successfully.`, 'success');
+                    showToast(`Exported ${allVendors.length} vendor(s) successfully.`, 'success');
                 }
 
                 function exportCurrentVendorView() {
@@ -4858,7 +4886,7 @@
                     }
 
                     if (filtered.length === 0) {
-                        showVendorToast('No vendors in current view to export.', 'warning');
+                        showToast('No vendors in current view to export.', 'warning');
                         return;
                     }
 
@@ -4871,13 +4899,13 @@
                         csv += keys.map(k => escapeVendorCSV(v[k] || '')).join(',') + '\n';
                     });
                     downloadVendorCSV('GiHon_Filtered_Vendors.csv', csv);
-                    showVendorToast(`Exported ${filtered.length} vendor(s) from current view.`, 'success');
+                    showToast(`Exported ${filtered.length} vendor(s) from current view.`, 'success');
                 }
 
                 // ===== REFRESH LIST =====
                 async function refreshVendorList() {
                     await loadVendors();
-                    showVendorToast('Vendor list refreshed!', 'success');
+                    showToast('Vendor list refreshed!', 'success');
                 }
 
                 // ===== RESET COLUMN WIDTHS =====
@@ -4904,7 +4932,7 @@
                     }
                     // Re-render the table with default columns
                     renderVendors();
-                    showVendorToast('Column widths reset to default.', 'success');
+                    showToast('Column widths reset to default.', 'success');
                 }
 
                 function importVendors() {
@@ -5139,12 +5167,12 @@
 
                 // ===== Bulk Update =====
                 function bulkUpdate() {
-                    showVendorToast(`Bulk Update for ${selectedVendorIds.size} vendor(s) — coming soon`, 'info');
+                    showToast(`Bulk Update for ${selectedVendorIds.size} vendor(s) — coming soon`, 'info');
                 }
 
                 // ===== Print Selected =====
                 function printSelected() {
-                    showVendorToast(`Printing ${selectedVendorIds.size} vendor(s)...`, 'info');
+                    showToast(`Printing ${selectedVendorIds.size} vendor(s)...`, 'info');
                     // Open print dialog with selected vendor rows
                     const selectedRows = [];
                     selectedVendorIds.forEach(id => {
@@ -5190,9 +5218,9 @@
                     updateSelectionUI();
 
                     if (failed === 0) {
-                        showVendorToast(`${updated} vendor(s) marked as ${label}`, 'success');
+                        showToast(`${updated} vendor(s) marked as ${label}`, 'success');
                     } else {
-                        showVendorToast(`Updated: ${updated}, Failed: ${failed}`, 'warning');
+                        showToast(`Updated: ${updated}, Failed: ${failed}`, 'warning');
                     }
                 }
 
@@ -5235,25 +5263,13 @@
                     updateSelectionUI();
 
                     if (failed === 0) {
-                        showVendorToast(`${deleted} vendor(s) deleted successfully!`, 'success');
+                        showToast(`${deleted} vendor(s) deleted successfully!`, 'success');
                     } else {
-                        showVendorToast(`Deleted: ${deleted}, Failed: ${failed}`, 'warning');
+                        showToast(`Deleted: ${deleted}, Failed: ${failed}`, 'warning');
                     }
                 }
 
                 // ===== Toast Notification =====
-                function showVendorToast(message, type = 'info') {
-                    const container = document.getElementById('vendorToastContainer');
-                    const toast = document.createElement('div');
-                    toast.className = `vendor-toast ${type}`;
-                    toast.textContent = message;
-                    container.appendChild(toast);
-                    setTimeout(() => {
-                        toast.classList.add('hide');
-                        setTimeout(() => toast.remove(), 300);
-                    }, 3000);
-                }
-
                 // Close confirm on overlay click
                 document.getElementById('vendorConfirmOverlay').addEventListener('click', function (e) {
                     if (e.target === this) closeVendorConfirm();
@@ -5300,7 +5316,7 @@
                         const div = document.createElement('div');
                         div.className = 'detail-left-item' + (v.id === vendorId ? ' active' : '');
                         div.onclick = () => openDetailView(v.id);
-                        const amt = 'PHP' + parseFloat(v.total_spent || 0).toFixed(2);
+                        const amt = 'PHP' + parseFloat(v.total_spent || 0).toFixed(3);
                         div.innerHTML = `
                     <input type="checkbox" class="detail-left-item-checkbox" onclick="event.stopPropagation();">
                     <div class="detail-left-item-info">
@@ -5400,8 +5416,8 @@
                     const exRate = phpExchangeRates[currKey] || 1;
                     function convertFromPHP(phpAmount) { return phpAmount * exRate; }
                     document.getElementById('dPayCurrency').textContent = currencyMap[currKey] || cp + ' - ' + cp;
-                    document.getElementById('dPayCredits').textContent = cp + convertFromPHP(parseFloat(v.unused_credits || 0)).toFixed(2);
                     // Calculate outstanding: total billed minus only PAID payments
+                    // bill.total_amount is already in the bill's currency (same as vendor currency)
                     (async () => {
                         try {
                             const vName = (v.display_name || v.name || '').trim().toLowerCase();
@@ -5421,12 +5437,12 @@
                             const rawOutstanding = totalBilled - totalPaid;
                             const outstanding = Math.max(0, rawOutstanding);
                             const overpayment = rawOutstanding < 0 ? Math.abs(rawOutstanding) : 0;
-                            document.getElementById('dPayOutstanding').textContent = cp + convertFromPHP(outstanding).toFixed(2);
-                            // Add overpayment to unused credits
+                            // Amounts are already in vendor currency, no conversion needed
+                            document.getElementById('dPayOutstanding').textContent = cp + outstanding.toFixed(3);
                             const existingCredits = parseFloat(v.unused_credits || 0);
-                            document.getElementById('dPayCredits').textContent = cp + convertFromPHP(existingCredits + overpayment).toFixed(2);
+                            document.getElementById('dPayCredits').textContent = cp + (existingCredits + overpayment).toFixed(3);
                         } catch (e) {
-                            document.getElementById('dPayOutstanding').textContent = cp + convertFromPHP(parseFloat(v.total_spent || 0)).toFixed(2);
+                            document.getElementById('dPayOutstanding').textContent = cp + '0.00';
                         }
                     })();
 
@@ -5489,11 +5505,13 @@
 
                     // Fetch transactions in parallel
                     try {
-                        const [posRes, billsRes, paysRes, creditsRes] = await Promise.all([
+                        const [posRes, billsRes, paysRes, creditsRes, returnsRes, refundsRes] = await Promise.all([
                             fetch('/api/purchases').then(r => r.ok ? r.json() : []).catch(() => []),
                             fetch('/api/bills').then(r => r.ok ? r.json() : []).catch(() => []),
                             fetch('/api/payments-made').then(r => r.ok ? r.json() : []).catch(() => []),
-                            fetch('/api/vendor-credits').then(r => r.ok ? r.json() : []).catch(() => [])
+                            fetch('/api/vendor-credits').then(r => r.ok ? r.json() : []).catch(() => []),
+                            fetch('/api/purchase-returns').then(r => r.ok ? r.json() : []).catch(() => []),
+                            fetch('/api/vendor-refunds').then(r => r.ok ? r.json() : []).catch(() => [])
                         ]);
 
                         // Purchase Orders
@@ -5502,7 +5520,7 @@
                                 events.push({
                                     date: p.created_at ? new Date(p.created_at) : (p.date ? new Date(p.date) : createdAt),
                                     title: 'Purchase Order created',
-                                    desc: `<a href="/purchase-order-detail.html?id=${p.id}" style="color:#1a73e8;text-decoration:none;font-weight:500;">${p.po_number || 'PO-' + p.id}</a> — PHP${parseFloat(p.total_amount || 0).toFixed(2)}`,
+                                    desc: `<a href="/purchase-order-detail.html?id=${p.id}" style="color:#1a73e8;text-decoration:none;font-weight:500;">${p.po_number || 'PO-' + p.id}</a> — ${(p.currency_code || 'PHP')}${parseFloat(p.total_amount || 0).toFixed(3)}${(p.currency_code && p.currency_code !== 'PHP') ? ' (₱' + (parseFloat(p.total_amount || 0) * (parseFloat(p.exchange_rate) || 1)).toFixed(3) + ')' : ''}`,
                                     user: p.status || '',
                                     icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>'
                                 });
@@ -5514,7 +5532,7 @@
                                 events.push({
                                     date: b.created_at ? new Date(b.created_at) : (b.bill_date ? new Date(b.bill_date) : createdAt),
                                     title: 'Bill created',
-                                    desc: `<a href="/bill-detail.html?id=${b.id}" style="color:#1a73e8;text-decoration:none;font-weight:500;">${b.bill_number || 'BILL-' + b.id}</a> — PHP${parseFloat(b.total_amount || 0).toFixed(2)}`,
+                                    desc: `<a href="/bill-detail.html?id=${b.id}" style="color:#1a73e8;text-decoration:none;font-weight:500;">${b.bill_number || 'BILL-' + b.id}</a> — ${(b.currency_code || 'PHP')}${parseFloat(b.total_amount || 0).toFixed(3)}${(b.currency_code && b.currency_code !== 'PHP') ? ' (₱' + (parseFloat(b.total_amount || 0) * (parseFloat(b.exchange_rate) || 1)).toFixed(3) + ')' : ''}`,
                                     user: b.status || '',
                                     icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>'
                                 });
@@ -5526,7 +5544,7 @@
                                 events.push({
                                     date: p.created_at ? new Date(p.created_at) : (p.payment_date ? new Date(p.payment_date) : createdAt),
                                     title: 'Payment recorded',
-                                    desc: `${p.payment_number || 'PAY-' + p.id} — PHP${parseFloat(p.amount_paid || 0).toFixed(2)}`,
+                                    desc: `${p.payment_number || 'PAY-' + p.id} — ${(p.currency_code || 'PHP')}${parseFloat(p.amount_paid || 0).toFixed(3)}${(p.currency_code && p.currency_code !== 'PHP') ? ' (₱' + (parseFloat(p.amount_paid || 0) * (parseFloat(p.exchange_rate) || 1)).toFixed(3) + ')' : ''}`,
                                     user: (p.status || '').toUpperCase(),
                                     icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>'
                                 });
@@ -5538,9 +5556,39 @@
                                 events.push({
                                     date: c.created_at ? new Date(c.created_at) : (c.credit_date ? new Date(c.credit_date) : createdAt),
                                     title: 'Vendor Credit issued',
-                                    desc: `<a href="/vendor-credit-details.html?id=${c.id}" style="color:#1a73e8;text-decoration:none;font-weight:500;">${c.credit_number || 'VC-' + c.id}</a> — PHP${parseFloat(c.total_amount || 0).toFixed(2)}`,
+                                    desc: `<a href="/vendor-credit-details.html?id=${c.id}" style="color:#1a73e8;text-decoration:none;font-weight:500;">${c.credit_number || 'VC-' + c.id}</a> — ${(c.currency_code || 'PHP')}${parseFloat(c.total_amount || 0).toFixed(3)}${(c.currency_code && c.currency_code !== 'PHP') ? ' (₱' + (parseFloat(c.total_amount || 0) * (parseFloat(c.exchange_rate) || 1)).toFixed(3) + ')' : ''}`,
                                     user: c.status || '',
                                     icon: '🏷️'
+                                });
+                            });
+
+                        // Purchase Returns
+                        returnsRes.filter(r => (r.vendor_name || '').trim().toLowerCase() === vName)
+                            .forEach(r => {
+                                const status = (r.status || 'DRAFT').toUpperCase();
+                                const resolution = r.resolution_type === 'replacement' ? '🔄 Replacement' : '💳 Credit';
+                                const qty = parseInt(r.total_return_qty) || 0;
+                                events.push({
+                                    date: r.created_at ? new Date(r.created_at) : (r.return_date ? new Date(r.return_date) : createdAt),
+                                    title: 'Purchase Return created',
+                                    desc: `<a href="/purchase-returns.html?id=${r.id}" style="color:#1a73e8;text-decoration:none;font-weight:500;">${r.prn_number || 'PRN-' + r.id}</a> — ${resolution} · ${qty} unit${qty !== 1 ? 's' : ''}`,
+                                    user: status,
+                                    icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>'
+                                });
+                            });
+
+                        // Vendor Refunds
+                        refundsRes.filter(r => r.supplier_id == v.id || (r.supplier_name || '').trim().toLowerCase() === vName)
+                            .forEach(r => {
+                                const rAmt = parseFloat(r.refund_amount || 0);
+                                const rCc = r.currency_code || 'PHP';
+                                const rEx = parseFloat(r.exchange_rate) || 1;
+                                events.push({
+                                    date: r.created_at ? new Date(r.created_at) : new Date(),
+                                    title: 'Refund recorded',
+                                    desc: `${r.refund_number || 'RF-' + r.id} against ${r.credit_number || '—'} — ${rCc}${rAmt.toFixed(3)}${(rCc !== 'PHP') ? ' (₱' + (rAmt * rEx).toFixed(3) + ')' : ''} via ${r.payment_mode || 'Cash'}`,
+                                    user: (r.status || 'PAID').toUpperCase(),
+                                    icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>'
                                 });
                             });
                     } catch (e) {
@@ -5656,13 +5704,49 @@
                     if (section) section.classList.toggle('collapsed');
                 }
 
-                let vendorTxnCache = { bills: [], payments: [], pos: [], prs: [], credits: [] };
+                let vendorTxnCache = { bills: [], payments: [], pos: [], prs: [], credits: [], returns: [] };
+                const VENDOR_TXN_PAGE_SIZE = 5;
+                let vendorTxnPage = { bills: 1, payments: 1, pos: 1, prs: 1, credits: 1 };
+
+                function vendorTxnPaginationHtml(key, page, total) {
+                    const totalPages = Math.ceil(total / VENDOR_TXN_PAGE_SIZE);
+                    if (total === 0) return '';
+                    const start = (page - 1) * VENDOR_TXN_PAGE_SIZE + 1;
+                    const end = Math.min(page * VENDOR_TXN_PAGE_SIZE, total);
+                    const prevDis = page <= 1 ? 'disabled style="opacity:0.4;cursor:default;"' : '';
+                    const nextDis = page >= totalPages ? 'disabled style="opacity:0.4;cursor:default;"' : '';
+                    return `<div class="txn-table-footer">
+                        <div>Total Count: <a href="#" class="txn-link" style="color:#4285f4;">${total}</a></div>
+                        <div class="txn-pagination">
+                            <button ${prevDis} onclick="vendorTxnGoPage('${key}',${page - 1})">‹</button>
+                            <span>${start} - ${end}</span>
+                            <button ${nextDis} onclick="vendorTxnGoPage('${key}',${page + 1})">›</button>
+                        </div>
+                    </div>`;
+                }
+
+                function vendorTxnGoPage(key, page) {
+                    if (page < 1) return;
+                    const cacheKey = key;
+                    const data = vendorTxnCache[cacheKey];
+                    if (!data) return;
+                    const totalPages = Math.ceil(data.length / VENDOR_TXN_PAGE_SIZE);
+                    if (page > totalPages) return;
+                    vendorTxnPage[key] = page;
+                    if (key === 'bills') renderTxnBills();
+                    else if (key === 'payments') renderTxnBillPayments();
+                    else if (key === 'pos') renderTxnPurchaseOrders();
+                    else if (key === 'prs') renderTxnPurchaseReceives();
+                    else if (key === 'credits') renderTxnVendorCredits();
+                    else if (key === 'returns') renderTxnPurchaseReturns();
+                }
 
                 async function loadVendorTransactions() {
                     if (!currentVendorId || !currentVendorData) return;
+                    vendorTxnPage = { bills: 1, payments: 1, pos: 1, prs: 1, credits: 1, returns: 1 };
                     const vendorName = (currentVendorData.display_name || currentVendorData.name || '').trim();
                     const fmtDate = d => { if (!d) return ''; const dt = new Date(d); return dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); };
-                    const fmtCur = n => 'PHP' + parseFloat(n || 0).toFixed(2);
+                    const fmtCur = n => 'PHP' + parseFloat(n || 0).toFixed(3);
 
                     // Bills
                     try {
@@ -5713,121 +5797,203 @@
                             renderTxnVendorCredits();
                         }
                     } catch (e) { console.error(e); }
+
+                    // Purchase Returns
+                    try {
+                        const res = await fetch('/api/purchase-returns');
+                        if (res.ok) {
+                            const all = await res.json();
+                            vendorTxnCache.returns = all.filter(pr => (pr.vendor_name || '').trim().toLowerCase() === vendorName.toLowerCase());
+                            renderTxnPurchaseReturns();
+                        }
+                    } catch (e) { console.error(e); }
                 }
 
                 function renderTxnBills(statusFilter) {
                     const tbody = document.getElementById('txnBillsBody');
+                    const pagDiv = document.getElementById('txnBillsPagination');
                     if (!tbody) return;
                     let bills = vendorTxnCache.bills;
                     if (statusFilter && statusFilter !== 'all') bills = bills.filter(b => (b.status || '').toUpperCase() === statusFilter);
                     const fmtDate = d => { if (!d) return ''; const dt = new Date(d); return dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); };
-                    const fmtCur = n => 'PHP' + parseFloat(n || 0).toFixed(2);
+                    const vendorCur = (currentVendorData.currency || 'PHP').toUpperCase();
+                    const fmtCurItem = (n, item) => { const c = (item && item.currency_code) || vendorCur; const a = parseFloat(n || 0); const php = (c !== 'PHP' && item && item.exchange_rate) ? ' (₱' + (a * parseFloat(item.exchange_rate)).toFixed(3) + ')' : ''; return c + a.toFixed(3) + php; };
                     if (bills.length === 0) {
                         tbody.innerHTML = '<tr><td colspan="8" class="txn-empty">There are no Bills &nbsp; - <a href="#" onclick="window.location.href=\'/new-bill.html?vendor_id=\'+currentVendorId">Add New</a></td></tr>';
+                        if (pagDiv) pagDiv.innerHTML = '';
                         return;
                     }
-                    tbody.innerHTML = bills.map(b => `<tr>
+                    const page = vendorTxnPage.bills;
+                    const slice = bills.slice((page - 1) * VENDOR_TXN_PAGE_SIZE, page * VENDOR_TXN_PAGE_SIZE);
+                    tbody.innerHTML = slice.map(b => `<tr>
                         <td>${fmtDate(b.bill_date)}</td>
                         <td>Head Office</td>
                         <td>${b.bill_number || ''}</td>
                         <td>${b.order_number || ''}</td>
                         <td>${b.supplier_name || ''}</td>
-                        <td>${fmtCur(b.total_amount)}</td>
-                        <td>${fmtCur(b.balance_due || b.total_amount)}</td>
+                        <td>${fmtCurItem(b.total_amount, b)}</td>
+                        <td>${fmtCurItem(b.balance_due || b.total_amount, b)}</td>
                         <td>${(b.status || 'DRAFT').toUpperCase()}</td>
                     </tr>`).join('');
+                    if (pagDiv) pagDiv.innerHTML = vendorTxnPaginationHtml('bills', page, bills.length);
                 }
 
                 function filterTxnBills() {
                     const val = document.getElementById('txnBillsStatusFilter').value;
+                    vendorTxnPage.bills = 1;
                     renderTxnBills(val);
                 }
 
                 function renderTxnBillPayments() {
                     const tbody = document.getElementById('txnBillPaymentsBody');
+                    const pagDiv = document.getElementById('txnBillPaymentsPagination');
                     if (!tbody) return;
                     const payments = vendorTxnCache.payments;
                     const fmtDate = d => { if (!d) return ''; const dt = new Date(d); return dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); };
-                    const fmtCur = n => 'PHP' + parseFloat(n || 0).toFixed(2);
+                    const vendorCur2 = (currentVendorData.currency || 'PHP').toUpperCase();
+                    const fmtCurPay = (n, item) => { const c = (item && item.currency_code) || vendorCur2; const a = parseFloat(n || 0); const php = (c !== 'PHP' && item && item.exchange_rate) ? ' (₱' + (a * parseFloat(item.exchange_rate)).toFixed(3) + ')' : ''; return c + a.toFixed(3) + php; };
                     if (payments.length === 0) {
                         tbody.innerHTML = '<tr><td colspan="8" class="txn-empty">No Payments Made yet. &nbsp; - <a href="#" onclick="window.location.href=\'/record-payment.html?vendor_id=\'+currentVendorId">Add New</a></td></tr>';
+                        if (pagDiv) pagDiv.innerHTML = '';
                         return;
                     }
-                    tbody.innerHTML = payments.map(p => `<tr>
+                    const page = vendorTxnPage.payments;
+                    const slice = payments.slice((page - 1) * VENDOR_TXN_PAGE_SIZE, page * VENDOR_TXN_PAGE_SIZE);
+                    tbody.innerHTML = slice.map(p => `<tr>
                         <td>${fmtDate(p.payment_date || p.payment_made_on)}</td>
                         <td>${p.location || 'Head Office'}</td>
                         <td>${p.payment_number || ''}</td>
                         <td>${p.reference_number || ''}</td>
                         <td>${p.payment_mode || 'Cash'}</td>
-                        <td>${fmtCur(p.amount_paid)}</td>
-                        <td>${fmtCur(p.unused_amount || 0)}</td>
+                        <td>${fmtCurPay(p.amount_paid, p)}</td>
+                        <td>${fmtCurPay(p.unused_amount || 0, p)}</td>
                         <td>${(p.status || 'DRAFT').toUpperCase()}</td>
                     </tr>`).join('');
+                    if (pagDiv) pagDiv.innerHTML = vendorTxnPaginationHtml('payments', page, payments.length);
                 }
 
                 function renderTxnPurchaseOrders() {
                     const tbody = document.getElementById('txnPurchaseOrdersBody');
+                    const pagDiv = document.getElementById('txnPurchaseOrdersPagination');
                     if (!tbody) return;
                     const pos = vendorTxnCache.pos;
                     const fmtDate = d => { if (!d) return ''; const dt = new Date(d); return dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); };
-                    const fmtCur = n => 'PHP' + parseFloat(n || 0).toFixed(2);
+                    const vendorCur3 = (currentVendorData.currency || 'PHP').toUpperCase();
+                    const fmtCurPO = (n, item) => { const c = (item && item.currency_code) || vendorCur3; const a = parseFloat(n || 0); const php = (c !== 'PHP' && item && item.exchange_rate) ? ' (₱' + (a * parseFloat(item.exchange_rate)).toFixed(3) + ')' : ''; return c + a.toFixed(3) + php; };
                     if (pos.length === 0) {
                         tbody.innerHTML = '<tr><td colspan="6" class="txn-empty">No Purchase Orders yet.</td></tr>';
+                        if (pagDiv) pagDiv.innerHTML = '';
                         return;
                     }
-                    tbody.innerHTML = pos.map(po => `<tr>
+                    const page = vendorTxnPage.pos;
+                    const slice = pos.slice((page - 1) * VENDOR_TXN_PAGE_SIZE, page * VENDOR_TXN_PAGE_SIZE);
+                    tbody.innerHTML = slice.map(po => `<tr>
                         <td>${fmtDate(po.date || po.created_at)}</td>
                         <td>${po.po_number || ''}</td>
                         <td>${po.supplier_name || ''}</td>
                         <td>${(po.status || 'ISSUED').toUpperCase()}</td>
                         <td>${(po.bill_status || 'UNBILLED').toUpperCase()}</td>
-                        <td>${fmtCur(po.total_amount)}</td>
+                        <td>${fmtCurPO(po.total_amount, po)}</td>
                     </tr>`).join('');
+                    if (pagDiv) pagDiv.innerHTML = vendorTxnPaginationHtml('pos', page, pos.length);
                 }
 
                 function renderTxnPurchaseReceives() {
                     const tbody = document.getElementById('txnPurchaseReceivesBody');
+                    const pagDiv = document.getElementById('txnPurchaseReceivesPagination');
                     if (!tbody) return;
                     const prs = vendorTxnCache.prs;
                     const fmtDate = d => { if (!d) return ''; const dt = new Date(d); return dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); };
                     if (prs.length === 0) {
                         tbody.innerHTML = '<tr><td colspan="5" class="txn-empty">No Purchase Receives yet.</td></tr>';
+                        if (pagDiv) pagDiv.innerHTML = '';
                         return;
                     }
-                    tbody.innerHTML = prs.map(pr => `<tr>
+                    const page = vendorTxnPage.prs;
+                    const slice = prs.slice((page - 1) * VENDOR_TXN_PAGE_SIZE, page * VENDOR_TXN_PAGE_SIZE);
+                    tbody.innerHTML = slice.map(pr => `<tr>
                         <td>${fmtDate(pr.receive_date || pr.created_at)}</td>
                         <td>${pr.receive_number || ''}</td>
                         <td>${pr.po_number || ''}</td>
                         <td>${pr.supplier_name || ''}</td>
                         <td>${(pr.status || 'RECEIVED').toUpperCase()}</td>
                     </tr>`).join('');
+                    if (pagDiv) pagDiv.innerHTML = vendorTxnPaginationHtml('prs', page, prs.length);
                 }
 
                 function renderTxnVendorCredits() {
                     const tbody = document.getElementById('txnVendorCreditsBody');
+                    const pagDiv = document.getElementById('txnVendorCreditsPagination');
                     if (!tbody) return;
                     const credits = vendorTxnCache.credits;
                     const fmtDate = d => { if (!d) return ''; const dt = new Date(d); return dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); };
-                    const fmtCur = n => 'PHP' + parseFloat(n || 0).toFixed(2);
+                    const vendorCur4 = (currentVendorData.currency || 'PHP').toUpperCase();
+                    const fmtCurVC = (n, item) => { const c = (item && item.currency_code) || vendorCur4; const a = parseFloat(n || 0); const php = (c !== 'PHP' && item && item.exchange_rate) ? ' (₱' + (a * parseFloat(item.exchange_rate)).toFixed(3) + ')' : ''; return c + a.toFixed(3) + php; };
                     if (credits.length === 0) {
                         tbody.innerHTML = '<tr><td colspan="6" class="txn-empty">No Vendor Credits yet.</td></tr>';
+                        if (pagDiv) pagDiv.innerHTML = '';
                         return;
                     }
-                    tbody.innerHTML = credits.map(vc => `<tr>
+                    const page = vendorTxnPage.credits;
+                    const slice = credits.slice((page - 1) * VENDOR_TXN_PAGE_SIZE, page * VENDOR_TXN_PAGE_SIZE);
+                    tbody.innerHTML = slice.map(vc => `<tr>
                         <td>${fmtDate(vc.credit_date || vc.created_at)}</td>
                         <td>${vc.credit_number || ''}</td>
                         <td>${vc.supplier_name || ''}</td>
                         <td>${(vc.status || 'DRAFT').toUpperCase()}</td>
-                        <td>${fmtCur(vc.total_amount)}</td>
-                        <td>${fmtCur(vc.balance || vc.total_amount)}</td>
+                        <td>${fmtCurVC(vc.total_amount, vc)}</td>
+                        <td>${fmtCurVC(vc.balance || vc.total_amount, vc)}</td>
                     </tr>`).join('');
+                    if (pagDiv) pagDiv.innerHTML = vendorTxnPaginationHtml('credits', page, credits.length);
+                }
+
+                function renderTxnPurchaseReturns() {
+                    const tbody = document.getElementById('txnPurchaseReturnsBody');
+                    const pagDiv = document.getElementById('txnPurchaseReturnsPagination');
+                    if (!tbody) return;
+                    const returns = vendorTxnCache.returns;
+                    const fmtDate = d => { if (!d) return ''; const dt = new Date(d); return dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); };
+                    if (returns.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="7" class="txn-empty">No Purchase Returns yet.</td></tr>';
+                        if (pagDiv) pagDiv.innerHTML = '';
+                        return;
+                    }
+                    const page = vendorTxnPage.returns;
+                    const slice = returns.slice((page - 1) * VENDOR_TXN_PAGE_SIZE, page * VENDOR_TXN_PAGE_SIZE);
+                    const statusColors = {
+                        'SHIPPED': 'color:#0d6efd;background:#cfe2ff',
+                        'DRAFT': 'color:#856404;background:#fff3cd',
+                        'RECEIVED': 'color:#0a3622;background:#d1e7dd',
+                        'CANCELLED': 'color:#842029;background:#f8d7da'
+                    };
+                    tbody.innerHTML = slice.map(r => {
+                        const status = (r.status || 'DRAFT').toUpperCase();
+                        const stColor = statusColors[status] || 'color:#666;background:#f0f0f0';
+                        const resBadge = r.resolution_type === 'replacement'
+                            ? '<span style="padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;color:#7c3aed;background:#ede9fe;">Replacement</span>'
+                            : '<span style="padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;color:#0369a1;background:#e0f2fe;">Vendor Credit</span>';
+                        const reasonShort = (r.reason || '-').length > 30 ? (r.reason || '').substring(0, 30) + '...' : (r.reason || '-');
+                        const qty = parseInt(r.total_return_qty) || 0;
+                        return `<tr style="cursor:pointer;" onclick="window.location.href='/purchase-returns.html?id=${r.id}'">
+                            <td>${fmtDate(r.return_date)}</td>
+                            <td style="color:#4285f4;font-weight:500;">${r.prn_number || '-'}</td>
+                            <td>${r.purchase_order_number || '-'}</td>
+                            <td style="font-size:12px;color:#555;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${(r.reason || '').replace(/"/g, '&quot;')}">${reasonShort}</td>
+                            <td>${resBadge}</td>
+                            <td><span style="padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;${stColor}">${status}</span></td>
+                            <td style="font-weight:500;">${qty}</td>
+                        </tr>`;
+                    }).join('');
+                    if (pagDiv) pagDiv.innerHTML = vendorTxnPaginationHtml('returns', page, returns.length);
                 }
 
                 // ===== Vendor Statement of Accounts =====
                 async function loadVendorStatement() {
                     if (!currentVendorId || !currentVendorData) return;
                     const vendorName = (currentVendorData.display_name || currentVendorData.name || '').trim();
-                    const fmtCur = n => 'PHP ' + parseFloat(n || 0).toFixed(2);
+                    const stmtCur = (currentVendorData.currency || 'PHP').toUpperCase();
+                    const isMultiCur = stmtCur !== 'PHP';
+                    const fmtCur = n => { const a = parseFloat(n || 0); return stmtCur + ' ' + a.toFixed(3); };
                     const fmtDate = d => { if (!d) return ''; const dt = new Date(d); return dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); };
 
                     // Compute date range from period selector
@@ -5867,7 +6033,7 @@
                                 payments = all.filter(p => (p.supplier_id == currentVendorId || (p.supplier_name || '').trim().toLowerCase() === vendorName.toLowerCase()) && (p.status || '').toUpperCase() === 'PAID');
                             }
                         }
-                        // Fetch open vendor credits for this vendor
+                        // Fetch open vendor credits for this vendor (subtract refunded amounts)
                         const vcRes = await fetch('/api/vendor-credits');
                         if (vcRes.ok) {
                             const allVC = await vcRes.json();
@@ -5875,7 +6041,7 @@
                                 const matches = (vc.supplier_id == currentVendorId) || (vc.supplier_name || '').trim().toLowerCase() === vendorName.toLowerCase();
                                 const st = (vc.status || '').toLowerCase();
                                 return matches && (st === 'open' || st === 'active');
-                            }).forEach(vc => { vendorCreditTotal += parseFloat(vc.total_amount || 0); });
+                            }).forEach(vc => { vendorCreditTotal += parseFloat(vc.total_amount || 0) - parseFloat(vc.refunded_amount || 0); });
                         }
                     } catch (e) { console.error(e); }
 
@@ -5911,19 +6077,40 @@
                     const txns = [];
                     rangeBills.forEach(b => txns.push({ date: b.bill_date, type: 'Bill', ref: b.bill_number || '', amount: parseFloat(b.total_amount || 0), payment: 0 }));
                     rangePayments.forEach(p => txns.push({ date: p.payment_date || p.payment_made_on, type: p.bill_number ? 'Payment for ' + p.bill_number : 'Payment', ref: p.payment_number || '', amount: 0, payment: parseFloat(p.amount_paid || 0) }));
+
+                    // Add refunds to SOA transaction rows (display-only — no balance impact)
+                    // A refund is a credit→cash conversion; it does NOT create a new payable
+                    try {
+                        const rfRes = await fetch('/api/vendor-refunds');
+                        if (rfRes.ok) {
+                            const allRefunds = await rfRes.json();
+                            allRefunds.filter(r => (r.supplier_id == currentVendorId || (r.supplier_name || '').trim().toLowerCase() === vendorName.toLowerCase()))
+                                .filter(r => inRange(r.refund_date))
+                                .forEach(r => {
+                                    const rfAmt = parseFloat(r.refund_amount || 0);
+                                    txns.push({ date: r.refund_date, type: 'Cash Refund from ' + (r.credit_number || 'Vendor Credit'), ref: r.refund_number || '', amount: 0, payment: 0, isRefund: true, refundAmount: rfAmt });
+                                });
+                        }
+                    } catch (e) { console.error(e); }
+
                     txns.sort((a, b) => new Date(a.date) - new Date(b.date));
 
                     let running = openingBalance;
-                    let rows = `<tr><td>${fmtDate(startDate)}</td><td></td><td>***Opening Balance***</td><td></td><td></td><td>${openingBalance.toFixed(2)}</td></tr>`;
+                    let rows = `<tr><td>${fmtDate(startDate)}</td><td></td><td>***Opening Balance***</td><td></td><td></td><td>${openingBalance.toFixed(3)}</td></tr>`;
                     txns.forEach(t => {
-                        running += t.amount - t.payment;
-                        rows += `<tr>
+                        if (!t.isRefund) {
+                            running += t.amount - t.payment;
+                        }
+                        const payCell = t.isRefund
+                            ? `<span style="color:#888;font-style:italic;">${t.refundAmount.toFixed(3)}</span>`
+                            : (t.payment ? t.payment.toFixed(3) : '');
+                        rows += `<tr${t.isRefund ? ' style="background:#f9fafb;"' : ''}>
                             <td>${fmtDate(t.date)}</td>
                             <td>${t.ref}</td>
                             <td>${t.type}</td>
-                            <td>${t.amount ? t.amount.toFixed(2) : ''}</td>
-                            <td>${t.payment ? t.payment.toFixed(2) : ''}</td>
-                            <td>${running.toFixed(2)}</td>
+                            <td>${t.amount ? t.amount.toFixed(3) : ''}</td>
+                            <td style="color:#2e7d32;">${payCell}</td>
+                            <td>${running.toFixed(3)}</td>
                         </tr>`;
                     });
                     document.getElementById('vendorStmtBody').innerHTML = rows;
@@ -6109,7 +6296,7 @@
                         });
                         if (res.ok) {
                             closeAddressEditModal();
-                            showVendorToast('Address updated successfully', 'success');
+                            showToast('Address updated successfully', 'success');
                             await openDetailView(currentVendorId);
                         } else {
                             alert('Failed to update address');
@@ -6180,7 +6367,71 @@
                     if (viewsContainer && !viewsContainer.contains(e.target)) {
                         viewsContainer.classList.remove('open');
                     }
+                    // Also close the detail views dropdown
+                    const detailMenu = document.getElementById('detailViewsDropdownMenu');
+                    const detailTitle = detailMenu ? detailMenu.closest('.detail-left-header-title') : null;
+                    if (detailMenu && detailTitle && !detailTitle.contains(e.target)) {
+                        detailMenu.classList.remove('open');
+                    }
                 });
+
+                function toggleDetailViewsDropdown() {
+                    const menu = document.getElementById('detailViewsDropdownMenu');
+                    if (menu) menu.classList.toggle('open');
+                }
+
+                function detailSelectView(viewType, e) {
+                    if (e) { e.stopPropagation(); }
+                    currentView = viewType;
+
+                    // Update active state in detail dropdown
+                    const menu = document.getElementById('detailViewsDropdownMenu');
+                    if (menu) {
+                        menu.querySelectorAll('.views-dropdown-item').forEach(item => item.classList.remove('active'));
+                        const items = menu.querySelectorAll('.views-dropdown-item');
+                        const map = { 'all': 0, 'active': 1, 'inactive': 2 };
+                        if (items[map[viewType]]) items[map[viewType]].classList.add('active');
+                    }
+
+                    // Update title
+                    const viewNames = { 'all': 'All Vendors', 'active': 'Active Vendors', 'inactive': 'Inactive Vendors' };
+                    document.getElementById('detailViewTitle').textContent = viewNames[viewType] || viewType;
+
+                    // Close dropdown
+                    if (menu) menu.classList.remove('open');
+
+                    // Also sync main page view title
+                    const mainTitle = document.getElementById('currentViewName');
+                    if (mainTitle) mainTitle.textContent = viewNames[viewType] || viewType;
+
+                    // Re-render detail sidebar list with filter
+                    refreshDetailSidebarList();
+                }
+
+                function refreshDetailSidebarList() {
+                    const leftList = document.getElementById('detailLeftList');
+                    if (!leftList) return;
+                    leftList.innerHTML = '';
+                    let filtered = allVendors;
+                    if (currentView === 'active') {
+                        filtered = allVendors.filter(v => v.status !== 'inactive');
+                    } else if (currentView === 'inactive') {
+                        filtered = allVendors.filter(v => v.status === 'inactive');
+                    }
+                    filtered.forEach(v => {
+                        const div = document.createElement('div');
+                        div.className = 'detail-left-item' + (v.id == currentVendorId ? ' active' : '');
+                        div.onclick = () => openDetailView(v.id);
+                        const amt = 'PHP' + parseFloat(v.total_spent || 0).toFixed(3);
+                        div.innerHTML = `
+                            <div class="detail-left-item-info">
+                                <div class="detail-left-item-name">${v.display_name || v.name || 'Unnamed'}</div>
+                                <div class="detail-left-item-sub">${amt}</div>
+                            </div>
+                        `;
+                        leftList.appendChild(div);
+                    });
+                }
 
                 // ========== CUSTOM VIEW MODAL FUNCTIONS ==========
                 function openNewCustomViewModal() {
@@ -6455,7 +6706,7 @@
                     try {
                         const res = await fetch('/api/suppliers/' + currentVendorId, { method: 'DELETE' });
                         if (res.ok) {
-                            showVendorToast('Vendor deleted successfully', 'success');
+                            showToast('Vendor deleted successfully', 'success');
                             closeDetailView();
                             await loadVendors();
                         } else {
@@ -6526,7 +6777,7 @@
                         });
                         if (res.ok) {
                             closeAddContactModal();
-                            showVendorToast(acpEditingContactId ? 'Contact person updated' : 'Contact person added successfully', 'success');
+                            showToast(acpEditingContactId ? 'Contact person updated' : 'Contact person added successfully', 'success');
                             await openDetailView(currentVendorId);
                         } else {
                             const err = await res.json();
@@ -6683,7 +6934,7 @@
                             document.getElementById('dCurrency').textContent = curSelectedCurrency;
                             currentVendorData.currency = curSelectedCurrency;
                             cancelCurrencyEdit();
-                            showVendorToast('Currency updated to ' + curSelectedCurrency, 'success');
+                            showToast('Currency updated to ' + curSelectedCurrency, 'success');
                         } else {
                             alert('Failed to update currency');
                         }
@@ -6760,7 +7011,7 @@
                     try {
                         const res = await fetch('/api/suppliers/' + currentVendorId + '/contacts/' + cpId, { method: 'DELETE' });
                         if (res.ok) {
-                            showVendorToast('Contact person deleted', 'success');
+                            showToast('Contact person deleted', 'success');
                             await openDetailView(currentVendorId);
                         } else {
                             alert('Error deleting contact');
@@ -6855,7 +7106,8 @@
                                         </svg>
                                     </div>
                                     <div class="acp-upload-title">Drag & Drop Profile Image</div>
-                                    <div class="acp-upload-hint">Supported Files: jpg, jpeg, png, gif, bmp</div>
+                                    <div class="acp-upload-hint">Supported Files: jpg, jpeg, png, gif,
+                                        bmp</div>
                                     <div class="acp-upload-hint">Maximum File Size: 5MB</div>
                                     <a class="acp-upload-link" href="#" onclick="acpTriggerFileInput(event)">Upload
                                         File</a>

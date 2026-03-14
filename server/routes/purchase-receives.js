@@ -5,7 +5,7 @@ const database = require('../database');
 // Create purchase receive
 router.post('/', async (req, res) => {
     try {
-        const { purchase_id, supplier_id, supplier_name, receive_date, notes, status, items } = req.body;
+        const { purchase_id, supplier_id, supplier_name, receive_date, notes, status, items, purchase_return_id } = req.body;
 
         if (!purchase_id) {
             return res.status(400).json({ error: 'purchase_id is required' });
@@ -18,8 +18,16 @@ router.post('/', async (req, res) => {
         const finalStatus = status || 'draft';
 
         const poCheck = await db.query('SELECT status, receive_status FROM purchases WHERE id = $1', [purchase_id]);
-        if (poCheck.rows.length > 0 && (poCheck.rows[0].receive_status || '').toUpperCase() === 'RECEIVED') {
-            return res.status(400).json({ error: 'This Purchase Order has already been fully received.' });
+        if (poCheck.rows.length > 0 && (poCheck.rows[0].receive_status || '').toUpperCase() === 'RECEIVED'
+            && (poCheck.rows[0].status || '').toUpperCase() !== 'AWAITING REPLACEMENT') {
+            // Check if there are pending replacement returns — allow receiving if so
+            const pendingRepl = await db.query(
+                `SELECT id FROM purchase_returns WHERE purchase_order_id = $1 AND resolution_type = 'replacement' AND (replacement_status IS NULL OR replacement_status NOT IN ('RECEIVED'))`,
+                [purchase_id]
+            );
+            if (pendingRepl.rows.length === 0) {
+                return res.status(400).json({ error: 'This Purchase Order has already been fully received.' });
+            }
         }
 
         // Generate receive number
@@ -107,6 +115,41 @@ router.post('/', async (req, res) => {
 
                 if (newReceiveStatus) {
                     await client.query('UPDATE purchases SET receive_status = $1 WHERE id = $2', [newReceiveStatus, purchase_id]);
+
+                    // Auto-close: if fully received AND fully billed → CLOSED
+                    if (newReceiveStatus === 'RECEIVED') {
+                        const billCheck = await client.query('SELECT bill_status, status FROM purchases WHERE id = $1', [purchase_id]);
+                        if (billCheck.rows.length > 0 && (billCheck.rows[0].bill_status || '').toUpperCase() === 'BILLED'
+                            && (billCheck.rows[0].status || '').toUpperCase() !== 'CLOSED'
+                            && (billCheck.rows[0].status || '').toUpperCase() !== 'CANCELLED') {
+                            // Check for ANY unresolved returns before closing
+                            const unresolvedReturns = await client.query(
+                                `SELECT id FROM purchase_returns WHERE purchase_order_id = $1 AND UPPER(COALESCE(status,'')) = 'CONFIRMED' AND (
+                                    (resolution_type = 'replacement' AND (replacement_status IS NULL OR UPPER(replacement_status) != 'RECEIVED'))
+                                    OR (resolution_type = 'credit' AND (credit_status IS NULL OR LOWER(credit_status) != 'credited'))
+                                )`,
+                                [purchase_id]
+                            );
+                            if (unresolvedReturns.rows.length === 0) {
+                                // Surplus-aware auto-close
+                                const billedRes = await client.query(`SELECT COALESCE(SUM(bi.quantity),0) as total FROM bill_items bi JOIN bills b ON bi.bill_id = b.id WHERE b.purchase_order_id = $1 AND UPPER(COALESCE(b.status,'')) != 'DRAFT'`, [purchase_id]);
+                                const returnedRes = await client.query(`SELECT COALESCE(SUM(pri2.return_quantity),0) as total FROM purchase_return_items pri2 JOIN purchase_returns pr2 ON pri2.purchase_return_id = pr2.id WHERE pr2.purchase_order_id = $1`, [purchase_id]);
+                                const unpaidBillsRes = await client.query(`SELECT COUNT(*) as cnt FROM bills WHERE purchase_order_id = $1 AND UPPER(COALESCE(status,'')) NOT IN ('PAID','DRAFT')`, [purchase_id]);
+                                const totalBilled = parseFloat(billedRes.rows[0].total) || 0;
+                                const netRcv = totalReceived - (parseFloat(returnedRes.rows[0].total) || 0);
+                                const hasUnpaidBills = parseInt(unpaidBillsRes.rows[0].cnt) > 0;
+                                let canClose = false;
+                                if (netRcv > totalOrdered) {
+                                    canClose = totalBilled >= netRcv && !hasUnpaidBills;
+                                } else {
+                                    canClose = totalBilled >= totalOrdered && !hasUnpaidBills;
+                                }
+                                if (canClose) {
+                                    await client.query("UPDATE purchases SET status = 'CLOSED' WHERE id = $1", [purchase_id]);
+                                }
+                            }
+                        }
+                    }
                 }
 
                 // Log the receive action for PO history
@@ -145,6 +188,69 @@ router.post('/', async (req, res) => {
                                 await client.query("UPDATE sales_orders SET status = 'CONFIRMED', updated_at = CURRENT_TIMESTAMP WHERE id = $1", [so.id]);
                             }
                         }
+                    }
+                }
+
+                // ── REPLACEMENT WORKFLOW: update PRN and PO if this is a replacement receive ──
+                if (purchase_return_id) {
+                    await client.query(
+                        `UPDATE purchase_returns SET replacement_status = 'RECEIVED', replacement_receive_id = $1 WHERE id = $2`,
+                        [receiveId, purchase_return_id]
+                    );
+                    // AUTO-CLOSE PRN: check if both AND conditions are now met
+                    try {
+                        const { checkAndAutoClose } = require('./purchase-returns');
+                        await checkAndAutoClose(client, purchase_return_id);
+                    } catch (e) { console.error('PRN auto-close check failed:', e.message); }
+                }
+                // If PO has replacement returns awaiting, auto-detect and mark as RECEIVED
+                const poStatusCheck = await client.query('SELECT status, receive_status, bill_status FROM purchases WHERE id = $1', [purchase_id]);
+                const poStatusUpper = (poStatusCheck.rows[0]?.status || '').toUpperCase();
+                if (poStatusCheck.rows.length > 0 && (poStatusUpper === 'AWAITING REPLACEMENT' || poStatusUpper === 'ISSUED')) {
+                    // If no explicit purchase_return_id was provided, auto-link to awaiting replacement returns
+                    if (!purchase_return_id) {
+                        const awaitingReturns = await client.query(
+                            `SELECT id FROM purchase_returns WHERE purchase_order_id = $1 AND resolution_type = 'replacement' AND (replacement_status IS NULL OR replacement_status IN ('AWAITING','PARTIALLY_RECEIVED'))`,
+                            [purchase_id]
+                        );
+                        for (const ret of awaitingReturns.rows) {
+                            await client.query(
+                                `UPDATE purchase_returns SET replacement_status = 'RECEIVED', replacement_receive_id = $1 WHERE id = $2`,
+                                [receiveId, ret.id]
+                            );
+                            // AUTO-CLOSE PRN: check if both AND conditions are now met
+                            try {
+                                const { checkAndAutoClose } = require('./purchase-returns');
+                                await checkAndAutoClose(client, ret.id);
+                            } catch (e) { console.error('PRN auto-close check failed:', e.message); }
+                        }
+                    }
+                    // Check if all replacements are now fulfilled
+                    const pendingRepl = await client.query(
+                        `SELECT id FROM purchase_returns WHERE purchase_order_id = $1 AND resolution_type = 'replacement' AND replacement_status IN ('AWAITING','PARTIALLY_RECEIVED')`,
+                        [purchase_id]
+                    );
+                    if (pendingRepl.rows.length === 0) {
+                        const po = poStatusCheck.rows[0];
+                        // Surplus-aware: only close if billed covers received
+                        let newPOStatus = 'ISSUED';
+                        if ((po.receive_status || '').toUpperCase() === 'RECEIVED' && (po.bill_status || '').toUpperCase() === 'BILLED') {
+                            const ordRes = await client.query('SELECT COALESCE(SUM(quantity),0) as total FROM purchase_items WHERE purchase_id = $1', [purchase_id]);
+                            const blRes = await client.query(`SELECT COALESCE(SUM(bi.quantity),0) as total FROM bill_items bi JOIN bills b ON bi.bill_id = b.id WHERE b.purchase_order_id = $1 AND UPPER(COALESCE(b.status,'')) != 'DRAFT'`, [purchase_id]);
+                            const rcvRes = await client.query(`SELECT COALESCE(SUM(pri.quantity_to_receive),0) as total FROM purchase_receive_items pri JOIN purchase_receives pr ON pri.receive_id = pr.id WHERE pr.purchase_id = $1 AND pr.status = 'received'`, [purchase_id]);
+                            const retRes = await client.query(`SELECT COALESCE(SUM(pri2.return_quantity),0) as total FROM purchase_return_items pri2 JOIN purchase_returns pr2 ON pri2.purchase_return_id = pr2.id WHERE pr2.purchase_order_id = $1`, [purchase_id]);
+                            const unpRes = await client.query(`SELECT COUNT(*) as cnt FROM bills WHERE purchase_order_id = $1 AND UPPER(COALESCE(status,'')) NOT IN ('PAID','DRAFT')`, [purchase_id]);
+                            const tOrd = parseFloat(ordRes.rows[0].total) || 0;
+                            const tBil = parseFloat(blRes.rows[0].total) || 0;
+                            const nRcv = (parseFloat(rcvRes.rows[0].total) || 0) - (parseFloat(retRes.rows[0].total) || 0);
+                            const hasUnp = parseInt(unpRes.rows[0].cnt) > 0;
+                            if (nRcv > tOrd) {
+                                newPOStatus = (tBil >= nRcv && !hasUnp) ? 'CLOSED' : 'ISSUED';
+                            } else {
+                                newPOStatus = (tBil >= tOrd && !hasUnp) ? 'CLOSED' : 'ISSUED';
+                            }
+                        }
+                        await client.query('UPDATE purchases SET status = $1 WHERE id = $2', [newPOStatus, purchase_id]);
                     }
                 }
             }
@@ -217,6 +323,52 @@ router.get('/by-po/:poId', async (req, res) => {
     }
 });
 
+// GET preview info for confirmation modal (must be before /:id)
+router.get('/:id/preview', async (req, res) => {
+    try {
+        const db = database.getDb();
+        const { id } = req.params;
+
+        const prResult = await db.query(`
+            SELECT pr.*, p.po_number
+            FROM purchase_receives pr
+            LEFT JOIN purchases p ON pr.purchase_id = p.id
+            WHERE pr.id = $1
+        `, [id]);
+        if (prResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Purchase receive not found' });
+        }
+
+        const pr = prResult.rows[0];
+
+        // Get total quantity
+        const qtyResult = await db.query(`
+            SELECT COALESCE(SUM(quantity_to_receive), 0) as total_qty
+            FROM purchase_receive_items WHERE receive_id = $1
+        `, [id]);
+
+        // Check linked bills
+        const billResult = await db.query(`
+            SELECT b.id, b.bill_number, b.status
+            FROM bills b
+            WHERE b.purchase_order_id = $1
+        `, [pr.purchase_id]);
+
+        res.json({
+            id: pr.id,
+            receive_number: pr.receive_number,
+            status: pr.status,
+            po_number: pr.po_number,
+            purchase_id: pr.purchase_id,
+            total_qty: parseFloat(qtyResult.rows[0].total_qty) || 0,
+            linked_bills: billResult.rows
+        });
+    } catch (error) {
+        console.error('Error fetching preview:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // Get single purchase receive
 router.get('/:id', async (req, res) => {
     try {
@@ -239,7 +391,16 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// PATCH mark purchase receive as received
+// PATCH touch last-opened timestamp (called only when user views detail)
+router.patch('/:id/touch', async (req, res) => {
+    try {
+        const db = database.getDb();
+        await db.query('UPDATE purchase_receives SET updated_at = CURRENT_TIMESTAMP WHERE id = $1', [req.params.id]);
+        res.json({ ok: true });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 router.patch('/:id/mark-received', async (req, res) => {
     try {
         const db = database.getDb();
@@ -307,6 +468,31 @@ router.patch('/:id/mark-received', async (req, res) => {
 
                 if (newReceiveStatus) {
                     await client.query('UPDATE purchases SET receive_status = $1 WHERE id = $2', [newReceiveStatus, pr.purchase_id]);
+
+                    // Auto-close: if fully received AND fully billed → CLOSED
+                    if (newReceiveStatus === 'RECEIVED') {
+                        const billCheck = await client.query('SELECT bill_status, status FROM purchases WHERE id = $1', [pr.purchase_id]);
+                        if (billCheck.rows.length > 0 && (billCheck.rows[0].bill_status || '').toUpperCase() === 'BILLED'
+                            && (billCheck.rows[0].status || '').toUpperCase() !== 'CLOSED'
+                            && (billCheck.rows[0].status || '').toUpperCase() !== 'CANCELLED') {
+                            // Surplus-aware auto-close
+                            const billedRes = await client.query(`SELECT COALESCE(SUM(bi.quantity),0) as total FROM bill_items bi JOIN bills b ON bi.bill_id = b.id WHERE b.purchase_order_id = $1 AND UPPER(COALESCE(b.status,'')) != 'DRAFT'`, [pr.purchase_id]);
+                            const returnedRes = await client.query(`SELECT COALESCE(SUM(pri2.return_quantity),0) as total FROM purchase_return_items pri2 JOIN purchase_returns pr2 ON pri2.purchase_return_id = pr2.id WHERE pr2.purchase_order_id = $1`, [pr.purchase_id]);
+                            const unpaidBillsRes = await client.query(`SELECT COUNT(*) as cnt FROM bills WHERE purchase_order_id = $1 AND UPPER(COALESCE(status,'')) NOT IN ('PAID','DRAFT')`, [pr.purchase_id]);
+                            const totalBilled = parseFloat(billedRes.rows[0].total) || 0;
+                            const netRcv = totalReceived - (parseFloat(returnedRes.rows[0].total) || 0);
+                            const hasUnpaidBills = parseInt(unpaidBillsRes.rows[0].cnt) > 0;
+                            let canClose = false;
+                            if (netRcv > totalOrdered) {
+                                canClose = totalBilled >= netRcv && !hasUnpaidBills;
+                            } else {
+                                canClose = totalBilled >= totalOrdered && !hasUnpaidBills;
+                            }
+                            if (canClose) {
+                                await client.query("UPDATE purchases SET status = 'CLOSED' WHERE id = $1", [pr.purchase_id]);
+                            }
+                        }
+                    }
                 }
 
                 // Auto-update linked Sales Orders: ON HOLD → CONFIRMED if stock is now sufficient
@@ -347,7 +533,7 @@ router.patch('/:id/mark-received', async (req, res) => {
     }
 });
 
-// Mark as In Transit (no stock update)
+// Mark as In Transit (supports received → in_transit with stock revert)
 router.patch('/:id/mark-transit', async (req, res) => {
     try {
         const db = database.getDb();
@@ -359,14 +545,63 @@ router.patch('/:id/mark-transit', async (req, res) => {
         }
 
         const pr = prResult.rows[0];
-        if (pr.status === 'received') {
-            return res.status(400).json({ error: 'Already marked as received' });
-        }
         if (pr.status === 'in_transit') {
             return res.status(400).json({ error: 'Already in transit' });
         }
 
-        await db.query('UPDATE purchase_receives SET status = $1 WHERE id = $2', ['in_transit', id]);
+        const wasReceived = pr.status === 'received';
+
+        await database.transaction(async (client) => {
+            // Update status
+            await client.query('UPDATE purchase_receives SET status = $1 WHERE id = $2', ['in_transit', id]);
+
+            // If reverting from received, decrease stock
+            if (wasReceived) {
+                const itemsResult = await client.query('SELECT * FROM purchase_receive_items WHERE receive_id = $1', [id]);
+                for (const item of itemsResult.rows) {
+                    const qty = parseFloat(item.quantity_to_receive) || 0;
+                    if (item.item_id && qty > 0) {
+                        await client.query(`
+                            UPDATE items 
+                            SET stock_quantity = stock_quantity - $1, updated_at = CURRENT_TIMESTAMP
+                            WHERE id = $2
+                        `, [qty, item.item_id]);
+
+                        await client.query(`
+                            INSERT INTO inventory_transactions (item_id, type, quantity, reference, notes)
+                            VALUES ($1, 'OUT', $2, $3, $4)
+                        `, [item.item_id, qty, pr.receive_number, `Stock reverted: ${pr.receive_number} moved to In Transit`]);
+                    }
+                }
+
+                // Recalculate PO receive_status
+                if (pr.purchase_id) {
+                    const orderedResult = await client.query(`
+                        SELECT COALESCE(SUM(quantity), 0) as total_ordered
+                        FROM purchase_items WHERE purchase_id = $1
+                    `, [pr.purchase_id]);
+
+                    const receivedResult = await client.query(`
+                        SELECT COALESCE(SUM(pri.quantity_to_receive), 0) as total_received
+                        FROM purchase_receive_items pri
+                        JOIN purchase_receives pr2 ON pri.receive_id = pr2.id
+                        WHERE pr2.purchase_id = $1 AND pr2.status = 'received'
+                    `, [pr.purchase_id]);
+
+                    const totalOrdered = parseFloat(orderedResult.rows[0].total_ordered) || 0;
+                    const totalReceived = parseFloat(receivedResult.rows[0].total_received) || 0;
+
+                    let newReceiveStatus = null;
+                    if (totalReceived >= totalOrdered && totalOrdered > 0) {
+                        newReceiveStatus = 'RECEIVED';
+                    } else if (totalReceived > 0) {
+                        newReceiveStatus = 'PARTIALLY RECEIVED';
+                    }
+
+                    await client.query('UPDATE purchases SET receive_status = $1 WHERE id = $2', [newReceiveStatus, pr.purchase_id]);
+                }
+            }
+        });
 
         const updated = await db.query('SELECT * FROM purchase_receives WHERE id = $1', [id]);
         res.json(updated.rows[0]);
@@ -473,6 +708,31 @@ router.put('/:id', async (req, res) => {
 
                 if (newReceiveStatus) {
                     await client.query('UPDATE purchases SET receive_status = $1 WHERE id = $2', [newReceiveStatus, pr.purchase_id]);
+
+                    // Auto-close: if fully received AND fully billed → CLOSED
+                    if (newReceiveStatus === 'RECEIVED') {
+                        const billCheck = await client.query('SELECT bill_status, status FROM purchases WHERE id = $1', [pr.purchase_id]);
+                        if (billCheck.rows.length > 0 && (billCheck.rows[0].bill_status || '').toUpperCase() === 'BILLED'
+                            && (billCheck.rows[0].status || '').toUpperCase() !== 'CLOSED'
+                            && (billCheck.rows[0].status || '').toUpperCase() !== 'CANCELLED') {
+                            // Surplus-aware auto-close
+                            const billedRes = await client.query(`SELECT COALESCE(SUM(bi.quantity),0) as total FROM bill_items bi JOIN bills b ON bi.bill_id = b.id WHERE b.purchase_order_id = $1 AND UPPER(COALESCE(b.status,'')) != 'DRAFT'`, [pr.purchase_id]);
+                            const returnedRes = await client.query(`SELECT COALESCE(SUM(pri2.return_quantity),0) as total FROM purchase_return_items pri2 JOIN purchase_returns pr2 ON pri2.purchase_return_id = pr2.id WHERE pr2.purchase_order_id = $1`, [pr.purchase_id]);
+                            const unpaidBillsRes = await client.query(`SELECT COUNT(*) as cnt FROM bills WHERE purchase_order_id = $1 AND UPPER(COALESCE(status,'')) NOT IN ('PAID','DRAFT')`, [pr.purchase_id]);
+                            const totalBilled = parseFloat(billedRes.rows[0].total) || 0;
+                            const netRcv = totalReceived - (parseFloat(returnedRes.rows[0].total) || 0);
+                            const hasUnpaidBills = parseInt(unpaidBillsRes.rows[0].cnt) > 0;
+                            let canClose = false;
+                            if (netRcv > totalOrdered) {
+                                canClose = totalBilled >= netRcv && !hasUnpaidBills;
+                            } else {
+                                canClose = totalBilled >= totalOrdered && !hasUnpaidBills;
+                            }
+                            if (canClose) {
+                                await client.query("UPDATE purchases SET status = 'CLOSED' WHERE id = $1", [pr.purchase_id]);
+                            }
+                        }
+                    }
                 }
 
                 // Auto-update linked Sales Orders
@@ -514,6 +774,80 @@ router.put('/:id', async (req, res) => {
     } catch (error) {
         console.error('Error updating purchase receive:', error);
         res.status(500).json({ error: 'Failed to update purchase receive: ' + error.message });
+    }
+});
+
+// DELETE a purchase receive (with stock revert if was received)
+router.delete('/:id', async (req, res) => {
+    try {
+        const db = database.getDb();
+        const { id } = req.params;
+
+        const prResult = await db.query('SELECT * FROM purchase_receives WHERE id = $1', [id]);
+        if (prResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Purchase receive not found' });
+        }
+
+        const pr = prResult.rows[0];
+        const wasReceived = pr.status === 'received';
+
+        await database.transaction(async (client) => {
+            // If was received, revert stock
+            if (wasReceived) {
+                const itemsResult = await client.query('SELECT * FROM purchase_receive_items WHERE receive_id = $1', [id]);
+                for (const item of itemsResult.rows) {
+                    const qty = parseFloat(item.quantity_to_receive) || 0;
+                    if (item.item_id && qty > 0) {
+                        await client.query(`
+                            UPDATE items 
+                            SET stock_quantity = stock_quantity - $1, updated_at = CURRENT_TIMESTAMP
+                            WHERE id = $2
+                        `, [qty, item.item_id]);
+
+                        await client.query(`
+                            INSERT INTO inventory_transactions (item_id, type, quantity, reference, notes)
+                            VALUES ($1, 'OUT', $2, $3, $4)
+                        `, [item.item_id, qty, pr.receive_number, `Stock reverted: ${pr.receive_number} deleted`]);
+                    }
+                }
+            }
+
+            // Delete items and the PR itself
+            await client.query('DELETE FROM purchase_receive_items WHERE receive_id = $1', [id]);
+            await client.query('DELETE FROM purchase_receives WHERE id = $1', [id]);
+
+            // Recalculate PO receive_status
+            if (pr.purchase_id) {
+                const orderedResult = await client.query(`
+                    SELECT COALESCE(SUM(quantity), 0) as total_ordered
+                    FROM purchase_items WHERE purchase_id = $1
+                `, [pr.purchase_id]);
+
+                const receivedResult = await client.query(`
+                    SELECT COALESCE(SUM(pri.quantity_to_receive), 0) as total_received
+                    FROM purchase_receive_items pri
+                    JOIN purchase_receives pr2 ON pri.receive_id = pr2.id
+                    WHERE pr2.purchase_id = $1 AND pr2.status = 'received'
+                `, [pr.purchase_id]);
+
+                const totalOrdered = parseFloat(orderedResult.rows[0].total_ordered) || 0;
+                const totalReceived = parseFloat(receivedResult.rows[0].total_received) || 0;
+
+                let newReceiveStatus = null;
+                if (totalReceived >= totalOrdered && totalOrdered > 0) {
+                    newReceiveStatus = 'RECEIVED';
+                } else if (totalReceived > 0) {
+                    newReceiveStatus = 'PARTIALLY RECEIVED';
+                }
+
+                await client.query('UPDATE purchases SET receive_status = $1 WHERE id = $2', [newReceiveStatus, pr.purchase_id]);
+            }
+        });
+
+        res.json({ message: 'Purchase receive deleted successfully', stock_reverted: wasReceived });
+    } catch (error) {
+        console.error('Error deleting purchase receive:', error);
+        res.status(500).json({ error: 'Failed to delete purchase receive: ' + error.message });
     }
 });
 

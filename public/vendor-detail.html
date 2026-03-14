@@ -1827,6 +1827,39 @@
                                 <div class="txn-empty">No data to display -<a href="#">Add New</a></div>
                             </div>
                         </div>
+
+                        <!-- Purchase Returns Section -->
+                        <div class="txn-section">
+                            <div class="txn-section-header" onclick="toggleTxnSection('purchaseReturns')">
+                                <div class="txn-section-left">
+                                    <span class="txn-section-toggle" id="purchaseReturnsToggle">▼</span>
+                                    <span class="txn-section-title">Purchase Returns</span>
+                                </div>
+                                <div class="txn-section-actions">
+                                    <button class="txn-new-btn"
+                                        onclick="event.stopPropagation(); window.location.href='/new-purchase-return.html'">+
+                                        New</button>
+                                </div>
+                            </div>
+                            <div class="txn-section-body" id="purchaseReturnsBody">
+                                <table class="txn-table">
+                                    <thead>
+                                        <tr>
+                                            <th>DATE ⇅</th>
+                                            <th>RETURN#</th>
+                                            <th>PURCHASE ORDER#</th>
+                                            <th>REASON</th>
+                                            <th>RESOLUTION</th>
+                                            <th>STATUS</th>
+                                            <th>AMOUNT</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="purchaseReturnsTbody"></tbody>
+                                </table>
+                                <div class="txn-empty" id="purchaseReturnsEmpty">There are no Purchase Returns -<a
+                                        href="/new-purchase-return.html">Add New</a></div>
+                            </div>
+                        </div>
                     </div>
 
 
@@ -2120,8 +2153,8 @@
             const currencyLabel = v.currency === 'usd' || v.currency === 'USD' ? 'USD- US Dollar' : 'PHP- Philippine Peso';
             const currencyPrefix = v.currency === 'usd' || v.currency === 'USD' ? 'USD' : 'PHP';
             document.getElementById('payableCurrency').textContent = currencyLabel;
-            document.getElementById('payableOutstanding').textContent = currencyPrefix + parseFloat(v.outstanding_payables || 0).toFixed(2);
-            document.getElementById('payableCredits').textContent = currencyPrefix + parseFloat(v.unused_credits || 0).toFixed(2);
+            document.getElementById('payableOutstanding').textContent = currencyPrefix + parseFloat(v.outstanding_payables || 0).toFixed(3);
+            document.getElementById('payableCredits').textContent = currencyPrefix + parseFloat(v.unused_credits || 0).toFixed(3);
 
             // Items
             document.getElementById('itemsToReceive').textContent = v.total_quantity || 0;
@@ -2139,6 +2172,9 @@
 
             // Statement
             renderStatement();
+
+            // Load Purchase Returns for Transactions tab
+            loadPurchaseReturns();
         }
 
         function renderContactPersons() {
@@ -2169,7 +2205,7 @@
             }).join('');
         }
 
-        function renderTimeline() {
+        async function renderTimeline() {
             const container = document.getElementById('timelineContainer');
             const createdAt = vendorData.created_at ? new Date(vendorData.created_at) : new Date();
             const vendorName = vendorData.display_name || vendorData.name || 'vendor';
@@ -2182,7 +2218,7 @@
             if (vendorData.all_bills && vendorData.all_bills.length > 0) {
                 vendorData.all_bills.forEach(b => {
                     const billDate = b.bill_date ? new Date(b.bill_date) : new Date();
-                    const amount = parseFloat(b.total_amount || 0).toFixed(2);
+                    const amount = parseFloat(b.total_amount || 0).toFixed(3);
                     const isDraft = (b.status || '').toUpperCase() === 'DRAFT';
                     const draftTag = isDraft ? ' <span class="draft-badge">DRAFT</span>' : '';
                     events.push({
@@ -2193,6 +2229,33 @@
                     });
                 });
             }
+
+            // Purchase Return events
+            try {
+                const retRes = await fetch('/api/purchase-returns');
+                if (retRes.ok) {
+                    const allReturns = await retRes.json();
+                    const vName = (vendorData.display_name || vendorData.name || '').trim().toLowerCase();
+                    const vendorReturns = allReturns.filter(r => (r.vendor_name || '').trim().toLowerCase() === vName);
+                    vendorReturns.forEach(r => {
+                        const retDate = r.return_date ? new Date(r.return_date) : (r.created_at ? new Date(r.created_at) : new Date());
+                        const status = (r.status || 'DRAFT').toUpperCase();
+                        const resolution = r.resolution_type === 'replacement' ? '🔄 Replacement' : '💳 Vendor Credit';
+                        const qty = parseInt(r.total_return_qty) || 0;
+                        const statusBadge = status === 'CLOSED'
+                            ? '<span style="color:#16a34a;font-weight:600;">CLOSED</span>'
+                            : status === 'CANCELLED'
+                                ? '<span style="color:#dc2626;font-weight:600;">CANCELLED</span>'
+                                : `<span style="color:#1a73e8;font-weight:600;">${status}</span>`;
+                        events.push({
+                            date: retDate,
+                            title: `Purchase Return — ${r.prn_number || 'PRN-' + r.id}`,
+                            desc: `${resolution} · ${qty} unit${qty !== 1 ? 's' : ''} · ${statusBadge}`,
+                            user: r.purchase_order_number ? `PO: ${r.purchase_order_number}` : 'by System'
+                        });
+                    });
+                }
+            } catch (e) { console.error('Error loading returns for timeline:', e); }
 
             // Contact persons added events
             if (vendorData.contact_persons && vendorData.contact_persons.length > 0) {
@@ -2408,14 +2471,16 @@
                 'billPayments': 'billPaymentsBody',
                 'purchaseOrders': 'purchaseOrdersBody',
                 'purchaseReceives': 'purchaseReceivesBody',
-                'vendorCredits': 'vendorCreditsBody'
+                'vendorCredits': 'vendorCreditsBody',
+                'purchaseReturns': 'purchaseReturnsBody'
             };
             const toggleMap = {
                 'bills': 'billsToggle',
                 'billPayments': 'billPaymentsToggle',
                 'purchaseOrders': 'purchaseOrdersToggle',
                 'purchaseReceives': 'purchaseReceivesToggle',
-                'vendorCredits': 'vendorCreditsToggle'
+                'vendorCredits': 'vendorCreditsToggle',
+                'purchaseReturns': 'purchaseReturnsToggle'
             };
 
             const body = document.getElementById(bodyMap[sectionId]);
@@ -2509,8 +2574,81 @@
             }
         }
 
+        // ====== Load Purchase Returns for Transactions Tab ======
+        async function loadPurchaseReturns() {
+            if (!vendorData) return;
+            const tbody = document.getElementById('purchaseReturnsTbody');
+            const emptyMsg = document.getElementById('purchaseReturnsEmpty');
+            const vendorName = (vendorData.display_name || vendorData.name || '').trim().toLowerCase();
+
+            try {
+                const res = await fetch('/api/purchase-returns');
+                if (!res.ok) return;
+                const allReturns = await res.json();
+
+                // Filter by vendor name match
+                const vendorReturns = allReturns.filter(r => {
+                    const rName = (r.vendor_name || '').trim().toLowerCase();
+                    return rName === vendorName;
+                });
+
+                if (vendorReturns.length === 0) {
+                    tbody.innerHTML = '';
+                    emptyMsg.style.display = '';
+                    return;
+                }
+
+                emptyMsg.style.display = 'none';
+
+                const fmtDate = d => d ? new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+
+                const statusColors = {
+                    'SHIPPED': 'color:#0d6efd;background:#cfe2ff',
+                    'DRAFT': 'color:#856404;background:#fff3cd',
+                    'RECEIVED': 'color:#0a3622;background:#d1e7dd',
+                    'CANCELLED': 'color:#842029;background:#f8d7da'
+                };
+
+                tbody.innerHTML = vendorReturns.map(r => {
+                    const date = fmtDate(r.return_date);
+                    const status = (r.status || 'DRAFT').toUpperCase();
+                    const stColor = statusColors[status] || 'color:#666;background:#f0f0f0';
+                    const resolution = r.resolution_type === 'replacement' ? 'Replacement' : 'Vendor Credit';
+                    const resBadge = r.resolution_type === 'replacement'
+                        ? '<span style="padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;color:#7c3aed;background:#ede9fe;">Replacement</span>'
+                        : '<span style="padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;color:#0369a1;background:#e0f2fe;">Vendor Credit</span>';
+                    const qty = parseInt(r.total_return_qty) || 0;
+                    const reasonShort = (r.reason || '-').length > 30 ? (r.reason || '').substring(0, 30) + '...' : (r.reason || '-');
+
+                    return `<tr style="cursor:pointer;" onclick="window.location.href='/purchase-returns.html?id=${r.id}'">
+                        <td>${date}</td>
+                        <td style="color:#4285f4;font-weight:500;">${r.prn_number || '-'}</td>
+                        <td><a href="/purchase-order-detail.html?id=${r.purchase_order_id}" style="color:#1a73e8;text-decoration:none;font-weight:500;" onclick="event.stopPropagation()">${r.purchase_order_number || '-'}</a></td>
+                        <td style="font-size:12px;color:#555;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${(r.reason || '').replace(/"/g, '&quot;')}">${reasonShort}</td>
+                        <td>${resBadge}</td>
+                        <td><span style="padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;${stColor}">${status}</span></td>
+                        <td style="font-weight:500;">${qty} unit${qty !== 1 ? 's' : ''}</td>
+                    </tr>`;
+                }).join('');
+
+                // Add total count row
+                const countRow = document.createElement('div');
+                countRow.style.cssText = 'padding:8px 16px;font-size:11px;color:#888;border-top:1px solid #f0f0f0;';
+                countRow.textContent = `Total Count: ${vendorReturns.length}`;
+                const sectionBody = document.getElementById('purchaseReturnsBody');
+                // Remove old count row if exists
+                const oldCount = sectionBody.querySelector('.txn-count-row');
+                if (oldCount) oldCount.remove();
+                countRow.className = 'txn-count-row';
+                sectionBody.appendChild(countRow);
+
+            } catch (err) {
+                console.error('Error loading purchase returns:', err);
+            }
+        }
+
         // ====== Statement Rendering ======
-        function renderStatement() {
+        async function renderStatement() {
             if (!vendorData) return;
             const v = vendorData;
             const vendorName = v.display_name || v.name || 'Vendor';
@@ -2590,6 +2728,31 @@
                 });
             });
 
+            // Fetch vendor refunds — display-only, no balance impact
+            // A refund converts unused credit → cash; it doesn't change what we owe
+            try {
+                const rfRes = await fetch('/api/vendor-refunds');
+                if (rfRes.ok) {
+                    const allRefunds = await rfRes.json();
+                    const vendorName = (v.display_name || v.name || '').trim().toLowerCase();
+                    allRefunds
+                        .filter(r => r.supplier_id == vendorId || (r.supplier_name || '').trim().toLowerCase() === vendorName)
+                        .forEach(r => {
+                            const rfAmt = parseFloat(r.refund_amount || 0);
+                            transactions.push({
+                                date: r.refund_date ? new Date(r.refund_date) : new Date(),
+                                type: 'Cash Refund from ' + (r.credit_number || 'Vendor Credit'),
+                                ref: r.refund_number || '',
+                                amount: 0,
+                                payment: 0,
+                                credit: 0,
+                                isRefund: true,
+                                refundAmount: rfAmt
+                            });
+                        });
+                }
+            } catch (e) { console.error('Error loading refunds for SOA:', e); }
+
             // Sort by date
             transactions.sort((a, b) => a.date - b.date);
 
@@ -2609,19 +2772,25 @@
             </tr>`;
 
             transactions.forEach(txn => {
-                const deduction = txn.payment + txn.credit;
-                runningBalance += txn.amount - deduction;
-                totalBilled += txn.amount;
-                totalPayments += txn.payment;
-                totalCredits += txn.credit;
+                if (!txn.isRefund) {
+                    const deduction = txn.payment + txn.credit;
+                    runningBalance += txn.amount - deduction;
+                    totalBilled += txn.amount;
+                    totalPayments += txn.payment;
+                    totalCredits += txn.credit;
+                }
+                const deduction = txn.isRefund ? 0 : (txn.payment + txn.credit);
+                const payCell = txn.isRefund
+                    ? `<span style="color:#888;font-style:italic;">${txn.refundAmount.toFixed(3)}</span>`
+                    : (deduction > 0 ? deduction.toFixed(3) : '');
 
-                rowsHtml += `<tr>
+                rowsHtml += `<tr${txn.isRefund ? ' style="background:#f9fafb;"' : ''}>
                     <td>${fmtDate(txn.date)}</td>
                     <td>${txn.ref}</td>
                     <td>${txn.type}</td>
-                    <td>${txn.amount > 0 ? txn.amount.toFixed(2) : ''}</td>
-                    <td style="color:#2e7d32;">${deduction > 0 ? deduction.toFixed(2) : ''}</td>
-                    <td>${runningBalance.toFixed(2)}</td>
+                    <td>${txn.amount > 0 ? txn.amount.toFixed(3) : ''}</td>
+                    <td style="color:#2e7d32;">${payCell}</td>
+                    <td>${runningBalance.toFixed(3)}</td>
                 </tr>`;
             });
 
@@ -2629,11 +2798,11 @@
 
             // Update account summary
             document.getElementById('stmtOpeningBalance').textContent = `${currencyPrefix} 0.00`;
-            document.getElementById('stmtBilledAmount').textContent = `${currencyPrefix} ${totalBilled.toFixed(2)}`;
-            document.getElementById('stmtAmountPaid').textContent = `${currencyPrefix} ${totalPayments.toFixed(2)}`;
-            document.getElementById('stmtCreditsApplied').textContent = `${currencyPrefix} ${totalCredits.toFixed(2)}`;
-            document.getElementById('stmtBalanceDue').textContent = `${currencyPrefix} ${runningBalance.toFixed(2)}`;
-            document.getElementById('stmtFinalBalance').textContent = `${currencyPrefix} ${runningBalance.toFixed(2)}`;
+            document.getElementById('stmtBilledAmount').textContent = `${currencyPrefix} ${totalBilled.toFixed(3)}`;
+            document.getElementById('stmtAmountPaid').textContent = `${currencyPrefix} ${totalPayments.toFixed(3)}`;
+            document.getElementById('stmtCreditsApplied').textContent = `${currencyPrefix} ${totalCredits.toFixed(3)}`;
+            document.getElementById('stmtBalanceDue').textContent = `${currencyPrefix} ${runningBalance.toFixed(3)}`;
+            document.getElementById('stmtFinalBalance').textContent = `${currencyPrefix} ${runningBalance.toFixed(3)}`;
         }
     </script>
 </body>
