@@ -192,16 +192,14 @@
         }
 
         .btn-new-return {
-            padding: 12px 28px;
+            padding: 8px 18px;
             background: #4285f4;
             color: white;
             border: none;
             border-radius: 4px;
             font-size: 13px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         .btn-new-return:hover {
@@ -1238,11 +1236,22 @@
             <div id="listView">
                 <div class="page-header">
                     <div style="display:flex;align-items:center;gap:12px;">
-                        <span class="page-title">All Purchase Returns</span>
+                        <div class="sr-filter-wrap">
+                            <button class="sr-filter-btn" onclick="toggleFilter()">
+                                <span id="filterTitle">All Purchase Returns</span>
+                                <span class="sr-filter-arrow" id="filterArrow">▾</span>
+                            </button>
+                            <div class="sr-filter-dropdown" id="filterDropdown">
+                                <div class="sr-filter-option active" onclick="setFilter('all')">All Purchase Returns</div>
+                                <div class="sr-filter-option" onclick="setFilter('draft')">Draft</div>
+                                <div class="sr-filter-option" onclick="setFilter('confirmed')">Confirmed</div>
+                                <div class="sr-filter-option" onclick="setFilter('closed')">Closed</div>
+                                <div class="sr-filter-option" onclick="setFilter('cancelled')">Cancelled</div>
+                            </div>
+                        </div>
                     </div>
                     <div style="display:flex;align-items:center;gap:8px;">
-                        <button class="btn-new-return" onclick="window.location.href='/new-purchase-return.html'">+ New
-                            Purchase Return</button>
+                        <button class="btn-new-return" onclick="window.location.href='/new-purchase-return.html'">+ New</button>
                         <div class="kebab-wrapper">
                             <button class="btn-more" onclick="toggleKebabMenu(event)">⋯</button>
                             <div class="kebab-dropdown" id="kebabDropdown">
@@ -1255,7 +1264,7 @@
                                     </svg>
                                     Export CSV
                                 </div>
-                                <div class="kebab-item" onclick="importItems()">
+                                <div class="kebab-item" onclick="triggerImportFileDialog()">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -1302,34 +1311,8 @@
                                     </svg>
                                     Refresh List
                                 </div>
-                                <div class="kebab-item" onclick="openPreferences()">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <circle cx="12" cy="12" r="3" />
-                                        <path
-                                            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-                                    </svg>
-                                    Preferences
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Filter -->
-                <div
-                    style="padding: 10px 24px; border-bottom: 1px solid #e9ecef; display:flex; align-items:center; gap: 12px;">
-                    <div class="sr-filter-wrap">
-                        <button class="sr-filter-btn" onclick="toggleFilter()">
-                            <span id="filterTitle">All Purchase Returns</span>
-                            <span class="sr-filter-arrow" id="filterArrow">▾</span>
-                        </button>
-                        <div class="sr-filter-dropdown" id="filterDropdown">
-                            <div class="sr-filter-option active" onclick="setFilter('all')">All Purchase Returns</div>
-                            <div class="sr-filter-option" onclick="setFilter('draft')">Draft</div>
-                            <div class="sr-filter-option" onclick="setFilter('confirmed')">Confirmed</div>
-                            <div class="sr-filter-option" onclick="setFilter('closed')">Closed</div>
-                            <div class="sr-filter-option" onclick="setFilter('cancelled')">Cancelled</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1734,7 +1717,33 @@
         // ===== Kebab =====
         function toggleKebabMenu(e) { e.stopPropagation(); document.getElementById('hamburgerDropdown').classList.remove('show'); document.getElementById('kebabDropdown').classList.toggle('show'); }
         function exportCSV() { document.getElementById('kebabDropdown').classList.remove('show'); if (allReturns.length === 0) { showToast('No returns to export'); return; } const h = ['Date', 'PRN Number', 'PO Number', 'Vendor', 'Status', 'Return Status', 'Resolution']; const rows = [h.join(',')]; allReturns.forEach(r => { rows.push([r.return_date ? new Date(r.return_date).toISOString().split('T')[0] : '', r.prn_number || '', r.purchase_order_number || '', '"' + (r.vendor_name || '').replace(/"/g, '""') + '"', (r.status || 'draft').toUpperCase(), r.return_status || '', r.resolution_type || ''].join(',')); }); const blob = new Blob([rows.join('\n')], { type: 'text/csv' }); const u = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = u; a.download = 'purchase-returns.csv'; a.click(); URL.revokeObjectURL(u); showToast('CSV exported'); }
-        function importItems() { document.getElementById('kebabDropdown').classList.remove('show'); showToast('Import feature coming soon'); }
+        // ===== Import Returns — file picker =====
+        function triggerImportFileDialog() {
+            document.getElementById('kebabDropdown').classList.remove('show');
+            // Create a hidden file input and trigger it
+            let fileInput = document.getElementById('importFileInput');
+            if (!fileInput) {
+                fileInput = document.createElement('input');
+                fileInput.type = 'file';
+                fileInput.id = 'importFileInput';
+                fileInput.accept = '.csv,.xlsx,.xls';
+                fileInput.style.display = 'none';
+                fileInput.addEventListener('change', function () {
+                    if (this.files && this.files[0]) {
+                        handleImport(this.files[0]);
+                    }
+                    this.value = ''; // Reset so same file can be re-selected
+                });
+                document.body.appendChild(fileInput);
+            }
+            fileInput.click();
+        }
+
+        function handleImport(file) {
+            // Placeholder for backend integration
+            console.log('Import file selected:', file.name, 'Size:', file.size, 'Type:', file.type);
+            showToast('File "' + file.name + '" selected. Import processing will be available soon.', 'info');
+        }
         function refreshReturnsList() { document.getElementById('kebabDropdown').classList.remove('show'); prSelectedIds.clear(); updatePrBulkBar(); loadReturns(); showToast('List refreshed'); }
         function openPreferences() { document.getElementById('kebabDropdown').classList.remove('show'); showToast('Preferences coming soon'); }
 

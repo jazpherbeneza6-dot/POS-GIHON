@@ -163,18 +163,19 @@ router.post('/', async (req, res) => {
             items
         } = req.body;
 
-        // ===== TRANSACTION GUARD: Prevent duplicate draft returns for the same PO =====
+        // ===== STRICT ASSOCIATION GUARD: One PO can only have ONE return =====
         if (purchase_order_id) {
-            const existingDraft = await pool.query(
-                `SELECT id, prn_number FROM purchase_returns WHERE purchase_order_id = $1 AND UPPER(COALESCE(status,'')) = 'DRAFT'`,
+            const existingReturn = await pool.query(
+                `SELECT id, prn_number, status FROM purchase_returns WHERE purchase_order_id = $1 LIMIT 1`,
                 [purchase_order_id]
             );
-            if (existingDraft.rows.length > 0) {
-                const draft = existingDraft.rows[0];
+            if (existingReturn.rows.length > 0) {
+                const existing = existingReturn.rows[0];
                 return res.status(400).json({
-                    error: `Cannot create a new return while a draft return (${draft.prn_number}) already exists for this PO.`,
-                    existing_draft_id: draft.id,
-                    existing_draft_number: draft.prn_number
+                    error: `This Purchase Order has already been returned. An existing return (${existing.prn_number}) is linked to this PO.`,
+                    existing_return_id: existing.id,
+                    existing_return_number: existing.prn_number,
+                    existing_return_status: existing.status
                 });
             }
         }

@@ -18,7 +18,8 @@
 
         .main-layout {
             display: flex;
-            min-height: 100vh;
+            height: 100vh;
+            overflow: hidden;
         }
 
         .content {
@@ -26,6 +27,8 @@
             background: #f5f5f5;
             display: flex;
             flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
         }
 
         .page-layout {
@@ -39,8 +42,116 @@
             width: 240px;
             background: white;
             border-right: 1px solid #e9ecef;
-            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
             flex-shrink: 0;
+            height: 100%;
+        }
+
+        .po-sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px;
+            border-bottom: 1px solid #e9ecef;
+            flex-shrink: 0;
+            gap: 8px;
+            background: white;
+            z-index: 2;
+        }
+
+        .po-sidebar-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .po-sidebar-title:hover {
+            color: #4285f4;
+        }
+
+        .po-sidebar-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .po-sidebar-btn {
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .po-sidebar-btn.green {
+            background: #16a34a;
+            color: white;
+        }
+
+        .po-sidebar-btn.green:hover {
+            background: #15803d;
+        }
+
+        .po-sidebar-btn.gray {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .po-sidebar-btn.gray:hover {
+            background: #e0e0e0;
+        }
+
+        .po-sidebar-items {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        /* Sidebar filter dropdown */
+        .po-sidebar-title-wrap {
+            position: relative;
+        }
+
+        .po-sidebar-filter-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            z-index: 100;
+            min-width: 190px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .po-sidebar-filter-dropdown.open {
+            display: block;
+        }
+
+        .po-sidebar-filter-item {
+            padding: 8px 14px;
+            font-size: 12px;
+            color: #333;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+
+        .po-sidebar-filter-item:hover {
+            background: #f5f5f5;
+        }
+
+        .po-sidebar-filter-item.active {
+            background: #e8f0fe;
+            color: #1a73e8;
+            font-weight: 600;
         }
 
         .sidebar-list-item {
@@ -751,8 +862,29 @@
     <div class="main-layout">
         <div class="content" id="content">
             <div class="page-layout">
-                <!-- Left sidebar list -->
-                <div class="sidebar-list" id="poSidebarList"></div>
+                <div class="sidebar-list">
+                    <div class="po-sidebar-header">
+                        <div class="po-sidebar-title-wrap">
+                            <span class="po-sidebar-title" id="poSidebarFilterLabel" onclick="toggleSidebarFilter()">All Purchase Orders ▾</span>
+                            <div class="po-sidebar-filter-dropdown" id="poSidebarFilterDropdown">
+                                <div class="po-sidebar-filter-item active" data-filter="all" onclick="selectSidebarFilter('all', 'All Purchase Orders')">All Purchase Orders</div>
+                                <div class="po-sidebar-filter-item" data-filter="draft" onclick="selectSidebarFilter('draft', 'Draft')">Draft</div>
+                                <div class="po-sidebar-filter-item" data-filter="issued" onclick="selectSidebarFilter('issued', 'Issued')">Issued</div>
+                                <div class="po-sidebar-filter-item" data-filter="closed" onclick="selectSidebarFilter('closed', 'Closed')">Closed</div>
+                                <div class="po-sidebar-filter-item" data-filter="cancelled" onclick="selectSidebarFilter('cancelled', 'Cancelled')">Cancelled</div>
+                                <div class="po-sidebar-filter-item" data-filter="received" onclick="selectSidebarFilter('received', 'Received')">Received</div>
+                                <div class="po-sidebar-filter-item" data-filter="partially_received" onclick="selectSidebarFilter('partially_received', 'Partially Received')">Partially Received</div>
+                                <div class="po-sidebar-filter-item" data-filter="billed" onclick="selectSidebarFilter('billed', 'Billed')">Billed</div>
+                                <div class="po-sidebar-filter-item" data-filter="partially_billed" onclick="selectSidebarFilter('partially_billed', 'Partially Billed')">Partially Billed</div>
+                            </div>
+                        </div>
+                        <div class="po-sidebar-actions">
+                            <button class="po-sidebar-btn green" onclick="window.location.href='/new-purchase-order.html'" title="New Purchase Order">+</button>
+                            <button class="po-sidebar-btn gray" title="More options">⋯</button>
+                        </div>
+                    </div>
+                    <div class="po-sidebar-items" id="poSidebarList"></div>
+                </div>
 
                 <!-- Right detail panel -->
                 <div class="detail-panel" id="detailPanel">
@@ -1112,33 +1244,90 @@
         }
 
         // ===== PO SIDEBAR =====
+        let allSidebarPOs = [];
+        let sidebarFilter = 'all';
+
         async function loadPOList() {
             try {
                 const response = await fetch('/api/purchases?limit=50');
-                const purchases = await response.json();
-                const container = document.getElementById('poSidebarList');
-                if (purchases.length === 0) {
-                    container.innerHTML = '<div style="padding:24px;text-align:center;color:#999;font-size:13px;">No purchase orders yet</div>';
-                    return;
-                }
-                let html = '';
-                purchases.forEach(po => {
-                    const isActive = po.id == currentPOId;
-                    const date = po.date ? new Date(po.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
-                    const mainStatus = (po.status || 'DRAFT').toUpperCase();
-                    const statusColors = { 'DRAFT': '#856404', 'ISSUED': '#084298', 'CLOSED': '#0a3622', 'CANCELLED': '#842029', 'APPROVED': '#0d6efd', 'AWAITING REPLACEMENT': '#e65100' };
-                    html += `<div class="sidebar-list-item ${isActive ? 'active' : ''}" onclick="navigateToPO(${po.id})">
-                        <div>
-                            <div class="sidebar-vendor">${po.supplier_name || 'Unknown Vendor'}</div>
-                            <div class="sidebar-po-number">${po.po_number || 'PO-' + po.id} • ${date}</div>
-                            <div class="sidebar-status" style="color:${statusColors[mainStatus] || '#666'}">${mainStatus}</div>
-                        </div>
-                        <div><div class="sidebar-amount">${po.currency_code || 'PHP'}${parseFloat(po.total_amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}${(po.currency_code && po.currency_code !== 'PHP') ? '<br><span style="font-size:11px;color:#888;font-weight:400;">PHP' + (parseFloat(po.total_amount || 0) * (parseFloat(po.exchange_rate) || 1)).toLocaleString('en-PH', { minimumFractionDigits: 2 }) + '</span>' : ''}</div></div>
-                    </div>`;
-                });
-                container.innerHTML = html;
+                allSidebarPOs = await response.json();
+                renderSidebarPOs();
             } catch (error) { console.error('Error loading PO list:', error); }
         }
+
+        function renderSidebarPOs() {
+            const container = document.getElementById('poSidebarList');
+            let list = allSidebarPOs;
+
+            // Apply filter
+            if (sidebarFilter !== 'all') {
+                list = allSidebarPOs.filter(po => {
+                    const status = (po.status || 'DRAFT').toUpperCase();
+                    const recvStatus = (po.receive_status || '').toUpperCase();
+                    const billSt = (po.bill_status || '').toUpperCase();
+                    switch (sidebarFilter) {
+                        case 'draft': return status === 'DRAFT';
+                        case 'issued': return status === 'ISSUED';
+                        case 'closed': return status === 'CLOSED';
+                        case 'cancelled': return status === 'CANCELLED' || status === 'CANCELED';
+                        case 'received': return recvStatus === 'RECEIVED';
+                        case 'partially_received': return recvStatus === 'PARTIALLY RECEIVED';
+                        case 'billed': return billSt === 'BILLED';
+                        case 'partially_billed': return billSt === 'PARTIALLY BILLED';
+                        default: return true;
+                    }
+                });
+            }
+
+            if (list.length === 0) {
+                container.innerHTML = '<div style="padding:24px;text-align:center;color:#999;font-size:13px;">No purchase orders found</div>';
+                return;
+            }
+
+            let html = '';
+            list.forEach(po => {
+                const isActive = po.id == currentPOId;
+                const date = po.date ? new Date(po.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+                const mainStatus = (po.status || 'DRAFT').toUpperCase();
+                const statusColors = { 'DRAFT': '#856404', 'ISSUED': '#084298', 'CLOSED': '#0a3622', 'CANCELLED': '#842029', 'APPROVED': '#0d6efd', 'AWAITING REPLACEMENT': '#e65100' };
+                html += `<div class="sidebar-list-item ${isActive ? 'active' : ''}" onclick="navigateToPO(${po.id})">
+                    <div>
+                        <div class="sidebar-vendor">${po.supplier_name || 'Unknown Vendor'}</div>
+                        <div class="sidebar-po-number">${po.po_number || 'PO-' + po.id} • ${date}</div>
+                        <div class="sidebar-status" style="color:${statusColors[mainStatus] || '#666'}">${mainStatus}</div>
+                    </div>
+                    <div><div class="sidebar-amount">${po.currency_code || 'PHP'}${parseFloat(po.total_amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}${(po.currency_code && po.currency_code !== 'PHP') ? '<br><span style="font-size:11px;color:#888;font-weight:400;">PHP' + (parseFloat(po.total_amount || 0) * (parseFloat(po.exchange_rate) || 1)).toLocaleString('en-PH', { minimumFractionDigits: 2 }) + '</span>' : ''}</div></div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function toggleSidebarFilter() {
+            const dropdown = document.getElementById('poSidebarFilterDropdown');
+            dropdown.classList.toggle('open');
+        }
+
+        function selectSidebarFilter(filter, label) {
+            sidebarFilter = filter;
+            document.getElementById('poSidebarFilterLabel').textContent = label + ' ▾';
+
+            // Update active state
+            document.querySelectorAll('.po-sidebar-filter-item').forEach(item => {
+                item.classList.toggle('active', item.getAttribute('data-filter') === filter);
+            });
+
+            document.getElementById('poSidebarFilterDropdown').classList.remove('open');
+            renderSidebarPOs();
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('poSidebarFilterDropdown');
+            const label = document.getElementById('poSidebarFilterLabel');
+            if (dropdown && !dropdown.contains(e.target) && e.target !== label) {
+                dropdown.classList.remove('open');
+            }
+        });
 
         // ===== LOAD PO DETAIL =====
         async function loadPODetail(poId) {

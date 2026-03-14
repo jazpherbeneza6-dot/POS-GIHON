@@ -1460,6 +1460,130 @@
             background: #4285f4;
             color: white;
         }
+
+        /* ========== PDF/Print Dropdown ========== */
+        .pdf-print-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .pdf-print-btn {
+            padding: 8px 16px;
+            background: white;
+            color: #333;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pdf-print-btn:hover {
+            background: #f9fafb;
+        }
+
+        .pdf-print-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 4px);
+            right: 0;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+            z-index: 500;
+            min-width: 160px;
+            overflow: hidden;
+        }
+
+        .pdf-print-menu.show {
+            display: block;
+        }
+
+        .pdf-print-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .pdf-print-menu-item:hover {
+            background: #f0f5ff;
+        }
+
+        .pdf-print-menu-item:first-child {
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        /* ========== Print Styles ========== */
+        @media print {
+            #sidebarContainer,
+            .detail-header,
+            .detail-tabs,
+            .detail-left,
+            .pdf-print-wrapper {
+                display: none !important;
+            }
+
+            body,
+            .main-layout,
+            .content {
+                margin: 0 !important;
+                padding: 0 !important;
+                background: white !important;
+                overflow: visible !important;
+                height: auto !important;
+            }
+
+            .content {
+                margin-left: 0 !important;
+            }
+
+            .detail-body {
+                display: block !important;
+                overflow: visible !important;
+            }
+
+            .detail-right {
+                width: 100% !important;
+                overflow: visible !important;
+            }
+
+            .tab-content-area {
+                display: none !important;
+            }
+
+            #tab-statement {
+                display: block !important;
+                padding: 0 !important;
+            }
+
+            .statement-header-info {
+                display: none !important;
+            }
+
+            .statement-document {
+                box-shadow: none !important;
+                border: none !important;
+                margin: 0 !important;
+                padding: 20px !important;
+                max-width: 100% !important;
+            }
+
+            @page {
+                margin: 15mm;
+            }
+        }
     </style>
 </head>
 
@@ -1475,11 +1599,40 @@
                     <h1 class="vendor-title" id="vendorTitle">Loading...</h1>
                 </div>
                 <div class="detail-header-actions">
-                    <button class="btn-edit" onclick="editVendor()">Edit</button>
-                    <button class="btn-info" title="Info">ⓘ</button>
+                    <button class="btn-edit" onclick="editVendor()" title="Edit this vendor's information">Edit</button>
+                    <div class="pdf-print-wrapper">
+                        <button class="pdf-print-btn" onclick="togglePdfPrintMenu(event)" title="Download PDF or print this vendor's statement">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                <polyline points="14 2 14 8 20 8" />
+                                <line x1="16" y1="13" x2="8" y2="13" />
+                                <line x1="16" y1="17" x2="8" y2="17" />
+                            </svg> PDF/Print ▾
+                        </button>
+                        <div class="pdf-print-menu" id="pdfPrintMenu">
+                            <button class="pdf-print-menu-item" onclick="downloadPDF()" title="Save vendor statement as PDF">
+                                <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                    <polyline points="7 10 12 15 17 10" />
+                                    <line x1="12" y1="15" x2="12" y2="3" />
+                                </svg></span> PDF
+                            </button>
+                            <button class="pdf-print-menu-item" onclick="printVendor()" title="Open print preview for vendor statement">
+                                <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 6 2 18 2 18 9" />
+                                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                                    <rect x="6" y="14" width="12" height="8" />
+                                </svg></span> Print
+                            </button>
+                        </div>
+                    </div>
+                    <button class="btn-info" title="View vendor information">ⓘ</button>
                     <div class="txn-dropdown-wrapper">
-                        <button class="btn-new-transaction" onclick="toggleTxnDropdown(event)">New Transaction</button>
-                        <button class="btn-new-transaction-dropdown" onclick="toggleTxnDropdown(event)">▼</button>
+                        <button class="btn-new-transaction" onclick="toggleTxnDropdown(event)" title="Create a new transaction for this vendor">New Transaction</button>
+                        <button class="btn-new-transaction-dropdown" onclick="toggleTxnDropdown(event)" title="Show transaction options">▼</button>
                         <div class="txn-dropdown-menu" id="txnDropdownMenu">
                             <div class="txn-dropdown-category">PURCHASES</div>
                             <div class="txn-dropdown-item" onclick="handleTxnAction('bill')">Bill</div>
@@ -1493,21 +1646,21 @@
                         </div>
                     </div>
                     <div style="display: flex;">
-                        <button class="btn-more-detail">More</button>
-                        <button class="btn-more-dropdown">▼</button>
+                        <button class="btn-more-detail" title="More actions">More</button>
+                        <button class="btn-more-dropdown" title="Show more options">▼</button>
                     </div>
-                    <button class="btn-close-detail" onclick="goBack()">×</button>
+                    <button class="btn-close-detail" onclick="goBack()" title="Go back to vendors list">×</button>
                 </div>
             </div>
 
             <!-- Tabs -->
             <div class="detail-tabs">
-                <div class="detail-tab active" data-tab="overview" onclick="switchTab('overview', this)">Overview</div>
-                <div class="detail-tab" data-tab="comments" onclick="switchTab('comments', this)">Comments</div>
-                <div class="detail-tab" data-tab="transactions" onclick="switchTab('transactions', this)">Transactions
+                <div class="detail-tab active" data-tab="overview" onclick="switchTab('overview', this)" title="View vendor overview, payables, and timeline">Overview</div>
+                <div class="detail-tab" data-tab="comments" onclick="switchTab('comments', this)" title="View and add comments for this vendor">Comments</div>
+                <div class="detail-tab" data-tab="transactions" onclick="switchTab('transactions', this)" title="View all transactions with this vendor">Transactions
                 </div>
 
-                <div class="detail-tab" data-tab="statement" onclick="switchTab('statement', this)">Statement</div>
+                <div class="detail-tab" data-tab="statement" onclick="switchTab('statement', this)" title="View vendor's statement of accounts">Statement</div>
             </div>
 
             <!-- Main Content body -->
@@ -1527,12 +1680,12 @@
                             <div class="vendor-contact-details" id="vendorContactDetails">
                                 <!-- Filled dynamically -->
                             </div>
-                            <span class="vendor-settings-icon">⚙</span>
+                            <span class="vendor-settings-icon" title="Vendor settings">⚙</span>
                         </div>
                     </div>
 
                     <!-- ADDRESS Section -->
-                    <div class="section-header" onclick="toggleSection('address')">
+                    <div class="section-header" onclick="toggleSection('address')" title="Click to expand/collapse address section">
                         <span class="section-title">ADDRESS</span>
                         <span class="section-toggle" id="addressToggle">▲</span>
                     </div>
@@ -1541,18 +1694,18 @@
                             <div class="detail-label">Billing Address</div>
                             <div class="detail-value" id="billingAddressDisplay">No Billing Address</div>
                             <div class="detail-value link" style="font-size: 12px; margin-top: 4px;"
-                                onclick="openAddressModal('billing')">+ New Address</div>
+                                onclick="openAddressModal('billing')" title="Add or edit billing address">+ New Address</div>
                         </div>
                         <div class="detail-row" style="margin-top: 14px;">
                             <div class="detail-label">Shipping Address</div>
                             <div class="detail-value" id="shippingAddressDisplay">No Shipping Address</div>
                             <div class="detail-value link" style="font-size: 12px; margin-top: 4px;"
-                                onclick="openAddressModal('shipping')">+ New Address</div>
+                                onclick="openAddressModal('shipping')" title="Add or edit shipping address">+ New Address</div>
                         </div>
                     </div>
 
                     <!-- OTHER DETAILS Section -->
-                    <div class="section-header" onclick="toggleSection('otherDetails')">
+                    <div class="section-header" onclick="toggleSection('otherDetails')" title="Click to expand/collapse other details">
                         <span class="section-title">OTHER DETAILS</span>
                         <span class="section-toggle" id="otherDetailsToggle">▲</span>
                     </div>
@@ -1564,7 +1717,7 @@
                     </div>
 
                     <!-- CONTACT PERSONS Section -->
-                    <div class="contacts-header" onclick="toggleSection('contacts')">
+                    <div class="contacts-header" onclick="toggleSection('contacts')" title="Click to expand/collapse contact persons">
                         <span class="section-title">CONTACT PERSONS</span>
                         <div class="contacts-actions">
                             <button class="add-contact-icon" onclick="event.stopPropagation(); addContactPerson()"
@@ -1578,7 +1731,7 @@
                     </div>
 
                     <!-- RECORD INFO Section -->
-                    <div class="section-header" onclick="toggleSection('recordInfo')">
+                    <div class="section-header" onclick="toggleSection('recordInfo')" title="Click to expand/collapse record info">
                         <span class="section-title">RECORD INFO</span>
                         <span class="section-toggle" id="recordInfoToggle">▼</span>
                     </div>
@@ -1610,16 +1763,16 @@
                                 purchases.
                             </div>
                             <div class="whats-next-actions">
-                                <button class="btn-wn btn-wn-primary">New Bill</button>
-                                <button class="btn-wn btn-wn-outline">New Purchase Order</button>
-                                <button class="btn-wn-more">⋮</button>
+                                <button class="btn-wn btn-wn-primary" title="Create a new bill for this vendor">New Bill</button>
+                                <button class="btn-wn btn-wn-outline" title="Create a new purchase order for this vendor">New Purchase Order</button>
+                                <button class="btn-wn-more" title="More actions">⋮</button>
                             </div>
                         </div>
 
                         <!-- Payment Info -->
                         <div class="payment-info">
                             <div class="payment-row">
-                                <div class="payment-label">Payment due period</div>
+                                <div class="payment-label" title="Vendor's default payment terms">Payment due period</div>
                                 <div class="payment-value" id="paymentTermsDisplay">Due on Receipt</div>
                             </div>
 
@@ -1643,11 +1796,11 @@
 
                             <div class="items-summary">
                                 <div class="items-summary-item">
-                                    <span class="items-summary-label">Items to be received:</span>
+                                    <span class="items-summary-label" title="Number of items pending delivery from this vendor">Items to be received:</span>
                                     <span class="items-summary-value" id="itemsToReceive">0</span>
                                 </div>
                                 <div class="items-summary-item">
-                                    <span class="items-summary-label">Total items ordered:</span>
+                                    <span class="items-summary-label" title="Total items ordered from this vendor across all purchase orders">Total items ordered:</span>
                                     <span class="items-summary-value" id="totalItemsOrdered">0</span>
                                 </div>
                             </div>
@@ -1670,7 +1823,7 @@
                                     onclick="execFormat('underline')" style="text-decoration:underline;">U</button>
                             </div>
                             <div class="comment-input" id="commentEditor" contenteditable="true"></div>
-                            <button class="comment-add-btn" onclick="addVendorComment()">Add Comment</button>
+                            <button class="comment-add-btn" onclick="addVendorComment()" title="Post this comment">Add Comment</button>
                         </div>
 
                         <!-- All Comments Section -->
@@ -2803,6 +2956,170 @@
             document.getElementById('stmtCreditsApplied').textContent = `${currencyPrefix} ${totalCredits.toFixed(3)}`;
             document.getElementById('stmtBalanceDue').textContent = `${currencyPrefix} ${runningBalance.toFixed(3)}`;
             document.getElementById('stmtFinalBalance').textContent = `${currencyPrefix} ${runningBalance.toFixed(3)}`;
+        }
+
+        // ====== PDF/Print Dropdown ======
+        function togglePdfPrintMenu(e) {
+            e.stopPropagation();
+            document.getElementById('pdfPrintMenu').classList.toggle('show');
+        }
+
+        // Close PDF/Print dropdown on outside click
+        document.addEventListener('click', function (e) {
+            const pdfMenu = document.getElementById('pdfPrintMenu');
+            if (pdfMenu && !e.target.closest('.pdf-print-wrapper')) {
+                pdfMenu.classList.remove('show');
+            }
+        });
+
+        // ====== Generate Vendor Statement Document HTML ======
+        function generateVendorStatementDocument() {
+            if (!vendorData) return '';
+            const v = vendorData;
+            const vendorName = v.display_name || v.name || 'Vendor';
+            const currencyPrefix = v.currency === 'usd' || v.currency === 'USD' ? 'USD' : 'PHP';
+
+            const now = new Date();
+            const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+            const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            const fmtDate = (d) => d.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
+
+            // Build transactions from bills (excluding drafts)
+            const allowedStatuses = ['open', 'overdue', 'partially paid'];
+            const bills = (v.bills || []).filter(b => {
+                const status = (b.status || '').toLowerCase().trim();
+                if (status === 'draft') return false;
+                return allowedStatuses.includes(status);
+            });
+            const openBillIds = new Set(bills.map(b => b.id));
+            const payments = (v.payments_made || []).filter(p => {
+                if (p.bill_id) return openBillIds.has(p.bill_id);
+                return true;
+            });
+
+            const transactions = [];
+            bills.forEach(b => {
+                transactions.push({
+                    date: b.bill_date ? new Date(b.bill_date) : new Date(),
+                    type: 'Bill', ref: b.bill_number || '',
+                    amount: parseFloat(b.total_amount || 0), payment: 0
+                });
+            });
+            payments.forEach(p => {
+                const detail = p.bill_number ? 'Payment for ' + p.bill_number : 'Payment';
+                transactions.push({
+                    date: p.payment_date ? new Date(p.payment_date) : new Date(),
+                    type: detail, ref: p.payment_number || '',
+                    amount: 0, payment: parseFloat(p.amount_paid || 0)
+                });
+            });
+            transactions.sort((a, b) => a.date - b.date);
+
+            let runningBalance = 0, totalBilled = 0, totalPayments = 0;
+            let txnRows = `<tr><td style="padding:10px 12px;font-size:12px;border-bottom:1px solid #e0e0e0;">${fmtDate(firstDay)}</td><td style="padding:10px 12px;font-size:12px;font-weight:600;border-bottom:1px solid #e0e0e0;">***Opening Balance***</td><td style="padding:10px 12px;font-size:12px;border-bottom:1px solid #e0e0e0;"></td><td style="padding:10px 12px;font-size:12px;border-bottom:1px solid #e0e0e0;">0.00</td><td style="padding:10px 12px;font-size:12px;border-bottom:1px solid #e0e0e0;"></td><td style="padding:10px 12px;font-size:12px;border-bottom:1px solid #e0e0e0;">0.00</td></tr>`;
+
+            transactions.forEach(txn => {
+                runningBalance += txn.amount - txn.payment;
+                totalBilled += txn.amount;
+                totalPayments += txn.payment;
+                txnRows += `<tr>
+                    <td style="padding:10px 12px;font-size:12px;border-bottom:1px solid #e0e0e0;">${fmtDate(txn.date)}</td>
+                    <td style="padding:10px 12px;font-size:12px;border-bottom:1px solid #e0e0e0;">${txn.ref}</td>
+                    <td style="padding:10px 12px;font-size:12px;border-bottom:1px solid #e0e0e0;">${txn.type}</td>
+                    <td style="padding:10px 12px;font-size:12px;border-bottom:1px solid #e0e0e0;">${txn.amount > 0 ? txn.amount.toFixed(3) : ''}</td>
+                    <td style="padding:10px 12px;font-size:12px;color:#2e7d32;border-bottom:1px solid #e0e0e0;">${txn.payment > 0 ? txn.payment.toFixed(3) : ''}</td>
+                    <td style="padding:10px 12px;font-size:12px;border-bottom:1px solid #e0e0e0;">${runningBalance.toFixed(3)}</td>
+                </tr>`;
+            });
+
+            return `<div style="font-family:'Inter','Helvetica Neue',Arial,sans-serif;max-width:750px;margin:0 auto;padding:40px;color:#333;background:white;">
+                <div style="text-align:right;margin-bottom:30px;">
+                    <div style="font-size:15px;font-weight:700;color:#333;">GIHON</div>
+                    <div style="font-size:12px;color:#555;">Philippines</div>
+                    <div style="font-size:12px;color:#555;">bitembling413@gmail.com</div>
+                </div>
+                <div style="margin-bottom:20px;">
+                    <div style="font-size:11px;color:#888;margin-bottom:2px;">To</div>
+                    <div style="font-size:14px;font-weight:600;color:#4285f4;">${vendorName}</div>
+                </div>
+                <div style="text-align:right;margin-bottom:20px;">
+                    <div style="font-size:18px;font-weight:700;color:#333;">Statement of Accounts</div>
+                    <div style="height:3px;background:linear-gradient(90deg,transparent,#e85d26);margin:4px 0 4px auto;width:280px;"></div>
+                    <div style="font-size:11px;color:#888;">${fmtDate(firstDay)} To ${fmtDate(lastDay)}</div>
+                </div>
+                <div style="border:1px solid #e0e0e0;margin-bottom:24px;width:280px;margin-left:auto;">
+                    <div style="font-size:12px;font-weight:700;color:#333;text-align:center;padding:8px;border-bottom:1px solid #e0e0e0;background:#fafafa;">Account Summary</div>
+                    <div style="display:flex;justify-content:space-between;padding:6px 12px;font-size:12px;border-bottom:1px solid #f0f0f0;"><span style="color:#555;">Opening Balance</span><span style="color:#333;font-weight:500;">${currencyPrefix} 0.00</span></div>
+                    <div style="display:flex;justify-content:space-between;padding:6px 12px;font-size:12px;border-bottom:1px solid #f0f0f0;"><span style="color:#555;">Billed Amount</span><span style="color:#e85d26;font-weight:500;">${currencyPrefix} ${totalBilled.toFixed(3)}</span></div>
+                    <div style="display:flex;justify-content:space-between;padding:6px 12px;font-size:12px;border-bottom:1px solid #f0f0f0;"><span style="color:#555;">Amount Paid</span><span style="color:#333;font-weight:500;">${currencyPrefix} ${totalPayments.toFixed(3)}</span></div>
+                    <div style="display:flex;justify-content:space-between;padding:6px 12px;font-size:12px;"><span style="color:#555;">Balance Due</span><span style="color:#333;font-weight:500;">${currencyPrefix} ${runningBalance.toFixed(3)}</span></div>
+                </div>
+                <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+                    <thead><tr>
+                        <th style="text-align:left;padding:10px 12px;font-size:11px;font-weight:700;color:#333;border-bottom:2px solid #333;">Date</th>
+                        <th style="text-align:left;padding:10px 12px;font-size:11px;font-weight:700;color:#333;border-bottom:2px solid #333;">Transactions</th>
+                        <th style="text-align:left;padding:10px 12px;font-size:11px;font-weight:700;color:#333;border-bottom:2px solid #333;">Details</th>
+                        <th style="text-align:left;padding:10px 12px;font-size:11px;font-weight:700;color:#333;border-bottom:2px solid #333;">Amount</th>
+                        <th style="text-align:left;padding:10px 12px;font-size:11px;font-weight:700;color:#333;border-bottom:2px solid #333;">Payments</th>
+                        <th style="text-align:left;padding:10px 12px;font-size:11px;font-weight:700;color:#333;border-bottom:2px solid #333;">Balance</th>
+                    </tr></thead>
+                    <tbody>${txnRows}</tbody>
+                </table>
+                <div style="display:flex;justify-content:flex-end;gap:40px;padding:12px 0;font-size:14px;font-weight:700;border-top:2px solid #333;margin-top:16px;">
+                    <span>Balance Due</span>
+                    <span>${currencyPrefix} ${runningBalance.toFixed(3)}</span>
+                </div>
+            </div>`;
+        }
+
+        // ====== Download PDF (Save to download) ======
+        async function downloadPDF() {
+            document.getElementById('pdfPrintMenu').classList.remove('show');
+            if (!vendorData) { alert('No vendor data loaded'); return; }
+
+            // Load html2pdf.js if not already loaded
+            if (!window.html2pdf) {
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+                document.head.appendChild(script);
+                await new Promise((resolve, reject) => { script.onload = resolve; script.onerror = reject; });
+            }
+
+            const htmlContent = generateVendorStatementDocument();
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = htmlContent;
+            document.body.appendChild(tempDiv);
+
+            const vendorName = vendorData.display_name || vendorData.name || 'Vendor';
+            try {
+                await html2pdf().set({
+                    margin: [10, 10, 10, 10],
+                    filename: vendorName + '-Statement.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2 },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                }).from(tempDiv.firstElementChild).save();
+            } catch (err) {
+                console.error('Error generating PDF:', err);
+                alert('Error generating PDF');
+            } finally {
+                document.body.removeChild(tempDiv);
+            }
+        }
+
+        // ====== Print — triggers native print dialog on CURRENT page (no new window) ======
+        function printVendor() {
+            document.getElementById('pdfPrintMenu').classList.remove('show');
+            if (!vendorData) { alert('No vendor data loaded'); return; }
+
+            // Auto-switch to Statement tab so the @media print CSS shows the SOA
+            const stmtTab = document.querySelector('[data-tab="statement"]');
+            if (stmtTab) switchTab('statement', stmtTab);
+
+            // Brief delay for tab to render, then open native print dialog
+            setTimeout(function () {
+                window.print();
+            }, 300);
         }
     </script>
 </body>

@@ -2557,6 +2557,53 @@
                 transform: translateY(0);
             }
         }
+
+        /* ===== Print Styles ===== */
+        @media print {
+            #sidebarContainer,
+            .detail-left,
+            .detail-header,
+            .detail-tabs,
+            .stmt-toolbar,
+            #listView,
+            .bulk-action-bar,
+            .page-header,
+            .nav-sidebar {
+                display: none !important;
+            }
+
+            body, .main-layout, .content, .detail-wrapper, .detail-right {
+                margin: 0 !important;
+                padding: 0 !important;
+                background: white !important;
+                overflow: visible !important;
+                height: auto !important;
+            }
+
+            .detail-wrapper {
+                display: block !important;
+            }
+
+            .tab-content-area {
+                display: none !important;
+            }
+
+            #dtab-statement {
+                display: block !important;
+                padding: 0 !important;
+            }
+
+            #stmtPrintArea {
+                box-shadow: none !important;
+                border: none !important;
+                margin: 0 !important;
+                padding: 20px !important;
+            }
+
+            @page {
+                margin: 15mm;
+            }
+        }
     </style>
 </head>
 
@@ -2779,14 +2826,6 @@
                         <div class="detail-header-name" id="detailName"></div>
                         <div class="detail-header-actions">
                             <button class="btn-edit" onclick="editCustomer()">Edit</button>
-                            <button class="btn-print" onclick="printCustomer()"><svg viewBox="0 0 24 24" width="16"
-                                    height="16" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="6 9 6 2 18 2 18 9" />
-                                    <path
-                                        d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
-                                    <rect x="6" y="14" width="12" height="8" />
-                                </svg></button>
                             <div class="dropdown-wrapper">
                                 <button class="btn-transaction" onclick="toggleDropdown('transactionDropdown')">New
                                     Transaction ▾</button>
@@ -3163,7 +3202,14 @@
                                     <option value="last_year">Last Year</option>
                                 </select>
                             </div>
-                            <div>
+                            <div style="display:flex;gap:8px;">
+                                <button class="stmt-print-btn" onclick="downloadStatementPDF()"><svg width="14" height="14"
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                        <polyline points="7 10 12 15 17 10" />
+                                        <line x1="12" y1="15" x2="12" y2="3" />
+                                    </svg> Download PDF</button>
                                 <button class="stmt-print-btn" onclick="printStatement()"><svg width="14" height="14"
                                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                         stroke-linecap="round" stroke-linejoin="round">
@@ -4816,46 +4862,42 @@
 
         function printStatement() {
             const content = document.getElementById('stmtPrintArea');
-            if (!content) return;
-            // Use hidden iframe to print without opening a new tab
-            let printFrame = document.getElementById('stmtPrintFrame');
-            if (!printFrame) {
-                printFrame = document.createElement('iframe');
-                printFrame.id = 'stmtPrintFrame';
-                printFrame.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:0;height:0;border:none;';
-                document.body.appendChild(printFrame);
+            if (!content) {
+                alert('Please load a statement first.');
+                return;
             }
-            const doc = printFrame.contentDocument || printFrame.contentWindow.document;
-            doc.open();
-            doc.write(`<html><head><title>Statement of Account</title><style>
-                body{font-family:'Segoe UI',Arial,sans-serif;padding:20px;color:#333;}
-                .stmt-card{padding:0;border:none;}
-                .stmt-company-info{display:none;}
-                .stmt-header-centered{text-align:center;margin-bottom:25px;}
-                .stmt-customer-name{font-size:16px;font-weight:700;text-transform:uppercase;}
-                .stmt-main-title{font-size:18px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;}
-                .stmt-date-range{font-size:13px;font-weight:600;text-decoration:underline;}
-                .stmt-txn-table{border-collapse:collapse;font-size:12px;margin-bottom:16px;}
-                .stmt-txn-table th{background:#e8e8e8;padding:5px 8px;text-align:left;font-weight:700;font-size:12px;border:1px solid #bbb;}
-                .stmt-txn-table td{padding:4px 8px;border:1px solid #ccc;vertical-align:top;}
-                .amt{text-align:right;}
-                .stmt-total-row td{border-top:2px solid #333;padding-top:10px;}
-                .stmt-balance-due{text-align:right;font-size:14px;font-weight:700;padding:10px 0;margin-top:8px;}
-                .stmt-unpaid-section{margin-top:24px;}
-                .stmt-unpaid-title{font-weight:700;font-size:14px;margin-bottom:10px;border-bottom:2px solid #333;padding-bottom:6px;}
-                .stmt-unpaid-table{border-collapse:collapse;font-size:12px;min-width:280px;}
-                .stmt-unpaid-table th{text-align:left;padding:8px 14px;font-weight:600;font-size:11px;border-bottom:1px solid #ccc;text-transform:uppercase;}
-                .stmt-unpaid-table td{padding:8px 14px;border-bottom:1px solid #eee;}
-                .stmt-unpaid-total td{border-top:2px solid #333;padding-top:10px;font-weight:700;}
-                .stmt-columns-wrapper{display:flex;gap:0;align-items:flex-start;}
-                .stmt-column{flex:1;min-width:0;}
-                .stmt-column .stmt-txn-table{width:100%;}
-                .stmt-amount-due-box{text-align:right;margin-bottom:12px;font-size:13px;}
-                .stmt-amount-due-box .label{font-weight:700;text-transform:uppercase;}
-                .stmt-amount-due-box .value{font-weight:700;margin-left:8px;}
-            </style></head><body>${content.innerHTML}</body></html>`);
-            doc.close();
-            setTimeout(() => { printFrame.contentWindow.print(); }, 300);
+            window.print();
+        }
+
+        async function downloadStatementPDF() {
+            const content = document.getElementById('stmtPrintArea');
+            if (!content) {
+                alert('Please load a statement first.');
+                return;
+            }
+
+            // Load html2pdf.js if not already loaded
+            if (!window.html2pdf) {
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+                document.head.appendChild(script);
+                await new Promise((resolve, reject) => {
+                    script.onload = resolve;
+                    script.onerror = reject;
+                });
+            }
+
+            const customerName = (document.getElementById('detailName')?.textContent || 'Customer').trim();
+            const period = document.getElementById('stmtPeriod')?.selectedOptions[0]?.textContent || '';
+            const filename = `Statement_${customerName}${period ? '_' + period.replace(/\s+/g, '_') : ''}.pdf`;
+
+            await html2pdf().set({
+                margin: [10, 10, 10, 10],
+                filename: filename,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            }).from(content).save();
         }
 
         // ===== COMMENTS FUNCTIONALITY =====

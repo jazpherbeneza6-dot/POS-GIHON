@@ -3255,6 +3255,41 @@
         .modal-btn-save:hover {
             background: #3367d6;
         }
+        /* ========== Print Styles ========== */
+        @media print {
+            /* Hide EVERYTHING first */
+            body * {
+                visibility: hidden;
+            }
+
+            /* Then show ONLY the statement card and its children */
+            #vendorStmtCard,
+            #vendorStmtCard * {
+                visibility: visible !important;
+            }
+
+            /* Position statement card at top-left of page */
+            #vendorStmtCard {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 10px !important;
+                box-shadow: none !important;
+                border: none !important;
+            }
+
+            body {
+                background: white !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            @page {
+                margin: 15mm;
+            }
+        }
     </style>
 </head>
 
@@ -3970,7 +4005,7 @@
                                 </div>
                             </div>
                             <div class="stmt-toolbar-right">
-                                <button class="stmt-icon-btn" title="PDF" onclick="printVendorStatement()"><svg
+                                <button class="stmt-icon-btn" title="Download as PDF" onclick="downloadVendorStatementPDF()"><svg
                                         width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -3978,7 +4013,7 @@
                                         <line x1="16" y1="13" x2="8" y2="13" />
                                         <line x1="16" y1="17" x2="8" y2="17" />
                                     </svg></button>
-                                <button class="stmt-icon-btn" title="Print" onclick="printVendorStatement()"><svg
+                                <button class="stmt-icon-btn" title="Print" onclick="printVendorStatementInPage()"><svg
                                         width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M6 9V2h12v7" />
@@ -5330,8 +5365,9 @@
                     // Render detail panel
                     renderDetailPanel();
 
-                    // Reset to Overview tab
-                    switchDetailTab('overview', document.querySelector('.detail-tab[data-tab="overview"]'));
+                    // Restore last active tab (or default to Overview)
+                    const savedTab = sessionStorage.getItem('vendorDetailTab') || 'overview';
+                    switchDetailTab(savedTab, document.querySelector('.detail-tab[data-tab="' + savedTab + '"]'));
                 }
 
                 function closeDetailView() {
@@ -5621,6 +5657,8 @@
                     if (tabEl) tabEl.classList.add('active');
                     const area = document.getElementById('dtab-' + tabName);
                     if (area) area.classList.add('active');
+                    // Save active tab so it persists on refresh
+                    sessionStorage.setItem('vendorDetailTab', tabName);
                     if (tabName === 'transactions' && currentVendorId) loadVendorTransactions();
                     if (tabName === 'statement' && currentVendorId) loadVendorStatement();
                     if (tabName === 'comments' && currentVendorId) loadVendorListComments();
@@ -6117,23 +6155,41 @@
                 }
 
                 function printVendorStatement() {
+                    // Legacy — kept for backward compat, now calls in-page print
+                    printVendorStatementInPage();
+                }
+
+                // ====== Print — triggers print dialog on current page (no redirect) ======
+                function printVendorStatementInPage() {
+                    window.print();
+                }
+
+                // ====== PDF — download as PDF file ======
+                async function downloadVendorStatementPDF() {
                     const card = document.getElementById('vendorStmtCard');
                     if (!card) return;
-                    // Use hidden iframe to print without opening a new tab
-                    let printFrame = document.getElementById('vendorStmtPrintFrame');
-                    if (!printFrame) {
-                        printFrame = document.createElement('iframe');
-                        printFrame.id = 'vendorStmtPrintFrame';
-                        printFrame.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:0;height:0;border:none;';
-                        document.body.appendChild(printFrame);
+
+                    // Load html2pdf.js if not already loaded
+                    if (!window.html2pdf) {
+                        const script = document.createElement('script');
+                        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+                        document.head.appendChild(script);
+                        await new Promise((resolve, reject) => { script.onload = resolve; script.onerror = reject; });
                     }
-                    const doc = printFrame.contentDocument || printFrame.contentWindow.document;
-                    doc.open();
-                    doc.write('<html><head><title>Vendor Statement</title><style>body{font-family:Inter,sans-serif;padding:20px;}table{width:100%;border-collapse:collapse;}th{background:#4285f4;color:#fff;padding:8px 10px;font-size:11px;text-align:left;}td{padding:8px 10px;font-size:12px;border-bottom:1px solid #eee;}th:nth-child(4),th:nth-child(5),th:nth-child(6),td:nth-child(4),td:nth-child(5),td:nth-child(6){text-align:right;}</style></head><body>');
-                    doc.write(card.innerHTML);
-                    doc.write('</body></html>');
-                    doc.close();
-                    setTimeout(() => { printFrame.contentWindow.print(); }, 300);
+
+                    const vendorName = (document.getElementById('vendorStmtToName') || {}).textContent || 'Vendor';
+                    try {
+                        await html2pdf().set({
+                            margin: [10, 10, 10, 10],
+                            filename: vendorName.trim() + '-Statement.pdf',
+                            image: { type: 'jpeg', quality: 0.98 },
+                            html2canvas: { scale: 2 },
+                            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                        }).from(card).save();
+                    } catch (err) {
+                        console.error('Error generating PDF:', err);
+                        alert('Error generating PDF. Please try again.');
+                    }
                 }
 
                 function toggleDetailSection(name) {

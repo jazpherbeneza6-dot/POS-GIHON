@@ -120,11 +120,18 @@
             background: #fff;
             outline: none;
             width: 100%;
+            appearance: auto;
             -webkit-appearance: auto;
         }
 
         .sr-select:focus {
             border-color: #1a73e8;
+        }
+
+        .sr-select:disabled {
+            background: #f5f5f5;
+            color: #999;
+            cursor: not-allowed;
         }
 
         .sr-input-wrap {
@@ -368,7 +375,9 @@
                     </select>
 
                     <label class="sr-label">Purchase Order#</label>
-                    <input type="text" class="sr-input" id="poNumber" placeholder="Optional">
+                    <select class="sr-select" id="poNumber" onchange="onPOChange()" disabled>
+                        <option value="">Select a vendor first</option>
+                    </select>
 
                     <label class="sr-label">Reason</label>
                     <textarea class="sr-textarea" id="returnReason" placeholder="Enter reason for return..."></textarea>
@@ -450,7 +459,7 @@
             <div class="sr-footer">
                 <button class="sr-btn primary" id="btnSaveDraft" onclick="savePurchaseReturn('DRAFT')">Save as
                     Draft</button>
-                <button class="sr-btn" onclick="savePurchaseReturn('CONFIRMED')">Save and Confirm</button>
+                <button class="sr-btn" id="btnSaveConfirm" onclick="savePurchaseReturn('CONFIRMED')">Save and Confirm</button>
                 <button class="sr-btn cancel" onclick="goBack()">Cancel</button>
                 <span class="sr-total-items" id="totalItemsLabel">Total Items : 0</span>
             </div>
@@ -536,7 +545,18 @@
                         document.getElementById('returnDate').value = formatDateDisplay(new Date(editReturnData.return_date));
                         document.getElementById('vendorName').value = editReturnData.vendor_name || '';
                         document.getElementById('warehouseLocation').value = editReturnData.warehouse_location || 'Head Office';
-                        document.getElementById('poNumber').value = editReturnData.purchase_order_number || '';
+                        // Set PO dropdown for edit mode
+                        const poSelect = document.getElementById('poNumber');
+                        const poNum = editReturnData.purchase_order_number || '';
+                        const poId = editReturnData.purchase_order_id || '';
+                        if (poNum) {
+                            poSelect.innerHTML = '<option value="' + poId + '" data-po-number="' + poNum + '">' + poNum + '</option>';
+                            poSelect.value = poId;
+                            poSelect.disabled = true;
+                        } else {
+                            poSelect.innerHTML = '<option value="">No PO linked</option>';
+                            poSelect.disabled = true;
+                        }
                         document.getElementById('returnReason').value = editReturnData.reason || '';
                         // Restore resolution type radio
                         const resType = editReturnData.resolution_type || 'credit';
@@ -554,6 +574,18 @@
                             rate: parseFloat(item.rate || 0)
                         }));
                         renderItems();
+
+                        // Adjust footer buttons based on current status
+                        const editStatus = (editReturnData.status || '').toUpperCase();
+                        if (editStatus !== 'DRAFT') {
+                            // Non-draft: show Save (keep current status) + Cancel only
+                            document.getElementById('btnSaveDraft').textContent = 'Save';
+                            document.getElementById('btnSaveDraft').onclick = function() { savePurchaseReturn(editStatus); };
+                            document.getElementById('btnSaveConfirm').style.display = 'none';
+                        } else {
+                            // Draft: show Save + Save and Confirm + Cancel
+                            document.getElementById('btnSaveDraft').textContent = 'Save';
+                        }
                     }
                 } catch (e) { console.error(e); }
                 return;
@@ -570,7 +602,7 @@
 
             // ── AUTO-POPULATE FROM PURCHASE ORDER ──
             if (fromPoId) {
-                await loadFromPO(fromPoId);
+                await loadFromPO(fromPoId, { fromUrl: true });
                 return;
             }
 
@@ -581,7 +613,7 @@
             }
         }
 
-        async function loadFromPO(poId) {
+        async function loadFromPO(poId, opts = {}) {
             try {
                 const poRes = await fetch('/api/purchases/' + poId);
                 if (!poRes.ok) { alert('Purchase Order not found.'); return; }
@@ -589,12 +621,16 @@
 
                 sourcePOId = parseInt(poId);
 
-                // Auto-fill header fields
-                document.getElementById('vendorName').value = po.supplier_name || '';
-                document.getElementById('poNumber').value = po.po_number || '';
-                // Lock vendor and PO fields since they come from PO
-                document.getElementById('vendorName').disabled = true;
-                document.getElementById('poNumber').readOnly = true;
+                // Only lock fields when coming from URL param (from_po=)
+                if (opts.fromUrl) {
+                    document.getElementById('vendorName').value = po.supplier_name || '';
+                    document.getElementById('vendorName').disabled = true;
+                    // Set PO dropdown to show the PO number
+                    const poSelect = document.getElementById('poNumber');
+                    poSelect.innerHTML = '<option value="' + poId + '">' + (po.po_number || '') + '</option>';
+                    poSelect.value = poId;
+                    poSelect.disabled = true;
+                }
 
                 // Fetch received quantities per item for this PO
                 let receivedByItem = {};
@@ -716,17 +752,19 @@
                 // Auto-fill header fields
                 document.getElementById('vendorName').value = recv.supplier_name || '';
                 document.getElementById('vendorName').disabled = true;
+                const poSelect = document.getElementById('poNumber');
                 if (sourcePOId) {
                     // Fetch PO for the PO number
                     try {
                         const poRes = await fetch('/api/purchases/' + sourcePOId);
                         if (poRes.ok) {
                             const po = await poRes.json();
-                            document.getElementById('poNumber').value = po.po_number || '';
+                            poSelect.innerHTML = '<option value="' + sourcePOId + '" data-po-number="' + (po.po_number || '') + '">' + (po.po_number || '') + '</option>';
+                            poSelect.value = sourcePOId;
                         }
                     } catch (e) { }
                 }
-                document.getElementById('poNumber').readOnly = true;
+                poSelect.disabled = true;
 
                 // Fetch already returned quantities from existing PRNs for this PO
                 let returnedByItem = {};
@@ -841,8 +879,99 @@
             } catch (e) { console.error('Error loading Receive:', e); }
         }
 
-        function onVendorChange() {
-            // Could auto-load POs for this vendor in the future
+        async function onVendorChange() {
+            const vendorName = document.getElementById('vendorName').value;
+            const poSelect = document.getElementById('poNumber');
+
+            // Reset PO dropdown and items
+            poSelect.innerHTML = '<option value="">Loading...</option>';
+            poSelect.disabled = true;
+            returnItems = [];
+            sourcePOId = null;
+            isPOBilled = false;
+            renderItems();
+
+            if (!vendorName) {
+                poSelect.innerHTML = '<option value="">Select a vendor first</option>';
+                return;
+            }
+
+            try {
+                // Fetch POs and existing returns in parallel
+                const [posRes, returnsRes] = await Promise.all([
+                    fetch('/api/purchases'),
+                    fetch('/api/purchase-returns')
+                ]);
+                if (!posRes.ok) throw new Error('Failed to fetch POs');
+
+                const allPOs = await posRes.json();
+                const allReturns = returnsRes.ok ? await returnsRes.json() : [];
+
+                // Build a Set of PO IDs that already have a return associated (strict 1:1 rule)
+                const usedPOIds = new Set();
+                allReturns.forEach(ret => {
+                    if (ret.purchase_order_id) {
+                        usedPOIds.add(parseInt(ret.purchase_order_id));
+                    }
+                });
+
+                // Filter: vendor match + received status + NOT already returned
+                const eligiblePOs = allPOs.filter(po => {
+                    const nameMatch = (po.supplier_name || '').toLowerCase() === vendorName.toLowerCase();
+                    const recvStatus = (po.receive_status || '').toUpperCase();
+                    const isReceived = recvStatus === 'RECEIVED' || recvStatus === 'PARTIALLY RECEIVED';
+                    const notReturned = !usedPOIds.has(po.id);
+                    return nameMatch && isReceived && notReturned;
+                });
+
+                // Also count how many were excluded by the return filter (for messaging)
+                const allVendorReceivedPOs = allPOs.filter(po => {
+                    const nameMatch = (po.supplier_name || '').toLowerCase() === vendorName.toLowerCase();
+                    const recvStatus = (po.receive_status || '').toUpperCase();
+                    return nameMatch && (recvStatus === 'RECEIVED' || recvStatus === 'PARTIALLY RECEIVED');
+                });
+
+                poSelect.innerHTML = '<option value="">\u2014 Select Purchase Order (optional) \u2014</option>';
+                if (eligiblePOs.length === 0) {
+                    if (allVendorReceivedPOs.length > 0) {
+                        poSelect.innerHTML += '<option value="" disabled>All received POs already have a return</option>';
+                    } else {
+                        poSelect.innerHTML += '<option value="" disabled>No received POs found for this vendor</option>';
+                    }
+                } else {
+                    eligiblePOs.forEach(po => {
+                        const statusLabel = (po.receive_status || '').replace(/_/g, ' ');
+                        const dateStr = po.date ? new Date(po.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+                        const opt = document.createElement('option');
+                        opt.value = po.id;
+                        opt.textContent = (po.po_number || 'PO-?') + ' \u2014 ' + statusLabel + (dateStr ? ' \u2014 ' + dateStr : '');
+                        opt.dataset.poNumber = po.po_number || '';
+                        poSelect.appendChild(opt);
+                    });
+                }
+                poSelect.disabled = false;
+            } catch (e) {
+                console.error('Error loading vendor POs:', e);
+                poSelect.innerHTML = '<option value="">Error loading POs</option>';
+                poSelect.disabled = false;
+            }
+        }
+
+        async function onPOChange() {
+            const poSelect = document.getElementById('poNumber');
+            const selectedPOId = poSelect.value;
+
+            // Clear items when PO is deselected
+            if (!selectedPOId) {
+                returnItems = [];
+                sourcePOId = null;
+                isPOBilled = false;
+                renderItems();
+                return;
+            }
+
+            // Load items from the selected PO
+            await loadFromPO(selectedPOId);
         }
 
         function addItemManually() {
@@ -888,7 +1017,7 @@
                 // Reference note
                 let refNote = '';
                 if (ordered > 0 && received > 0) {
-                    refNote = `<div style="font-size:11px;color:#888;margin-top:4px;line-height:1.4;">You ordered <strong>${ordered}</strong> units but received <strong>${received}</strong>.${returnQty > 0 ? ' You are currently returning <strong>' + returnQty + '</strong> unit' + (returnQty > 1 ? 's' : '') + '.' : ''}</div>`;
+                    refNote = `<div id="refNote-${idx}" style="font-size:11px;color:#888;margin-top:4px;line-height:1.4;">You ordered <strong>${ordered}</strong> units but received <strong>${received}</strong>.${returnQty > 0 ? ' You are currently returning <strong>' + returnQty + '</strong> unit' + (returnQty > 1 ? 's' : '') + '.' : ''}</div>`;
                 }
 
                 // Split indicator
@@ -907,7 +1036,7 @@
                 <td style="text-align:center;">${item.already_returned || 0}</td>
                 <td>
                     <div class="sr-return-qty-wrap">
-                        <input type="number" class="sr-return-qty-input" value="${returnQty}" min="0"${maxAttr} data-idx="${idx}" onchange="updateReturnQty(${idx}, this.value, this)">
+                        <input type="number" class="sr-return-qty-input" value="${returnQty}" min="0"${maxAttr} data-idx="${idx}" oninput="updateReturnQty(${idx}, this.value, this)">
                         ${item.max_returnable !== undefined && item.max_returnable !== Infinity ? '<div style="font-size:11px;color:#888;text-align:right;">Max: ' + item.max_returnable + '</div>' : ''}
                     </div>
                 </td>
@@ -948,6 +1077,14 @@
             updateTotalItems();
             generateAutoNote();
             checkResolutionVisibility();
+
+            // Live-update the reference note text without re-rendering the table
+            const item = returnItems[idx];
+            const refNoteEl = document.getElementById('refNote-' + idx);
+            if (refNoteEl && item.ordered_quantity > 0 && item.received_quantity > 0) {
+                const currentQty = item.return_quantity || 0;
+                refNoteEl.innerHTML = 'You ordered <strong>' + item.ordered_quantity + '</strong> units but received <strong>' + item.received_quantity + '</strong>.' + (currentQty > 0 ? ' You are currently returning <strong>' + currentQty + '</strong> unit' + (currentQty > 1 ? 's' : '') + '.' : '');
+            }
         }
 
         function updateReturnReason(idx, reason) {
@@ -1084,7 +1221,9 @@
             const vendorName = vendorSelect.value || vendorSelect.options[vendorSelect.selectedIndex]?.text || '';
             const reason = document.getElementById('returnReason').value;
             const warehouseLocation = document.getElementById('warehouseLocation').value;
-            const poNumber = document.getElementById('poNumber').value;
+            const poSelect = document.getElementById('poNumber');
+            const selectedPOOption = poSelect.options[poSelect.selectedIndex];
+            const poNumber = (selectedPOOption && selectedPOOption.dataset.poNumber) ? selectedPOOption.dataset.poNumber : (selectedPOOption ? selectedPOOption.textContent.split(' — ')[0].trim() : '');
 
             if (!vendorName) {
                 alert('Please select a vendor.');
