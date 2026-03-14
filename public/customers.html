@@ -4817,8 +4817,17 @@
         function printStatement() {
             const content = document.getElementById('stmtPrintArea');
             if (!content) return;
-            const w = window.open('', '_blank');
-            w.document.write(`<html><head><title>Statement of Account</title><style>
+            // Use hidden iframe to print without opening a new tab
+            let printFrame = document.getElementById('stmtPrintFrame');
+            if (!printFrame) {
+                printFrame = document.createElement('iframe');
+                printFrame.id = 'stmtPrintFrame';
+                printFrame.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:0;height:0;border:none;';
+                document.body.appendChild(printFrame);
+            }
+            const doc = printFrame.contentDocument || printFrame.contentWindow.document;
+            doc.open();
+            doc.write(`<html><head><title>Statement of Account</title><style>
                 body{font-family:'Segoe UI',Arial,sans-serif;padding:20px;color:#333;}
                 .stmt-card{padding:0;border:none;}
                 .stmt-company-info{display:none;}
@@ -4845,8 +4854,8 @@
                 .stmt-amount-due-box .label{font-weight:700;text-transform:uppercase;}
                 .stmt-amount-due-box .value{font-weight:700;margin-left:8px;}
             </style></head><body>${content.innerHTML}</body></html>`);
-            w.document.close();
-            w.print();
+            doc.close();
+            setTimeout(() => { printFrame.contentWindow.print(); }, 300);
         }
 
         // ===== COMMENTS FUNCTIONALITY =====

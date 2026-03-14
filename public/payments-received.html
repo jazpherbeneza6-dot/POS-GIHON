@@ -1249,6 +1249,91 @@
         .pr-bulk-more-item.danger:hover {
             background: #fef2f2;
         }
+
+        /* ===== PDF/Print Dropdown ===== */
+        .pr-pdf-dropdown-wrap {
+            position: relative;
+            display: inline-block;
+        }
+
+        .pr-pdf-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            box-shadow: 0 10px 32px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            z-index: 9999;
+            padding: 6px 0;
+            animation: prDropFadeIn 0.18s ease;
+        }
+
+        @keyframes prDropFadeIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(-6px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        .pr-pdf-dropdown.show {
+            display: block;
+        }
+
+        .pr-pdf-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 18px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+
+        .pr-pdf-dropdown-item:first-child {
+            border-radius: 10px 10px 0 0;
+        }
+
+        .pr-pdf-dropdown-item:last-child {
+            border-radius: 0 0 10px 10px;
+        }
+
+        .pr-pdf-dropdown-item:hover {
+            background: #f0f5ff;
+            color: #1a73e8;
+        }
+
+        .pr-pdf-dropdown-item .pr-pdf-icon {
+            width: 20px;
+            text-align: center;
+            color: #666;
+            flex-shrink: 0;
+        }
+
+        .pr-pdf-dropdown-item:hover .pr-pdf-icon {
+            color: #1a73e8;
+        }
+
+        /* ===== SOA Print Styles ===== */
+        @media print {
+            body * { visibility: hidden; }
+            #prPrintArea, #prPrintArea * { visibility: visible; }
+            #prPrintArea { position: absolute; left: 0; top: 0; width: 100%; }
+        }
+
+        /* Hidden iframe for printing */
+        #prPrintIframe {
+            position: fixed;
+            top: -9999px;
+            left: -9999px;
+            width: 0;
+            height: 0;
+            border: none;
+            visibility: hidden;
+        }
     </style>
 </head>
 
@@ -1447,16 +1532,28 @@
                             </svg>
                             Edit</button>
                         <div class="detail-action-separator"></div>
-                        <button class="detail-action-btn" onclick="printPaymentDetail()"><svg width="14" height="14"
-                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round"
-                                style="vertical-align:-2px;margin-right:4px;">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                <polyline points="14 2 14 8 20 8" />
-                                <line x1="16" y1="13" x2="8" y2="13" />
-                                <line x1="16" y1="17" x2="8" y2="17" />
-                                <polyline points="10 9 9 9 8 9" />
-                            </svg>PDF/Print</button>
+                        <div class="pr-pdf-dropdown-wrap">
+                            <button class="detail-action-btn" onclick="togglePrPdfDropdown(event)"><svg width="14" height="14"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round"
+                                    style="vertical-align:-2px;margin-right:4px;">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                    <polyline points="14 2 14 8 20 8" />
+                                    <line x1="16" y1="13" x2="8" y2="13" />
+                                    <line x1="16" y1="17" x2="8" y2="17" />
+                                    <polyline points="10 9 9 9 8 9" />
+                                </svg>PDF/Print <span style="font-size:10px;margin-left:2px;">▾</span></button>
+                            <div class="pr-pdf-dropdown" id="prPdfDropdown">
+                                <div class="pr-pdf-dropdown-item" onclick="printPaymentDetail()">
+                                    <span class="pr-pdf-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg></span>
+                                    Print
+                                </div>
+                                <div class="pr-pdf-dropdown-item" onclick="downloadPaymentPDF()">
+                                    <span class="pr-pdf-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
+                                    Download PDF
+                                </div>
+                            </div>
+                        </div>
                         <div class="detail-action-separator"></div>
                         <button class="detail-action-btn" id="btnRefund" style="display:none;"
                             onclick="confirmRefund()">↩️ Refund</button>
@@ -2124,45 +2221,531 @@
             renderPaymentsCards();
         }
 
+        // ===== PDF/Print Dropdown Toggle =====
+        function togglePrPdfDropdown(e) {
+            e.stopPropagation();
+            document.getElementById('prPdfDropdown').classList.toggle('show');
+        }
+        document.addEventListener('click', function () {
+            var dd = document.getElementById('prPdfDropdown');
+            if (dd) dd.classList.remove('show');
+        });
+
+        // ===== Build Print HTML that matches the preview receipt card =====
+        function buildPaymentPrintHTML(payment) {
+            if (!payment) return '';
+            const date = payment.payment_date ? new Date(payment.payment_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+            const amount = parseFloat(payment.amount_received || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+            const ribbonText = payment.status === 'PAID' ? 'Paid' : (payment.status === 'REFUNDED' ? 'Refunded' : (payment.status === 'VOID' ? 'Void' : 'Draft'));
+            const ribbonClass = payment.status === 'PAID' ? 'paid' : (payment.status === 'REFUNDED' ? 'refunded' : (payment.status === 'VOID' ? 'voided' : 'draft'));
+
+            // Build address
+            let addressHTML = '';
+            if (payment.billing_street) addressHTML += payment.billing_street + '<br>';
+            if (payment.billing_city) addressHTML += payment.billing_city;
+            if (payment.billing_state) addressHTML += ' ' + payment.billing_state;
+            if (payment.billing_zip) addressHTML += '<br>' + payment.billing_zip;
+            if (payment.billing_country) addressHTML += '<br>' + payment.billing_country;
+
+            // Build invoice rows
+            const invoiceEntries = (payment.invoice_number || '').split(',').map(s => s.trim()).filter(Boolean);
+            let invoiceRowsHTML = invoiceEntries.map(entry => {
+                const parts = entry.split('|');
+                const invNum = parts[0] || '';
+                const invDate = date;
+                const invAmt = parts[1] ? 'PHP' + parseFloat(parts[1]).toLocaleString('en-PH', { minimumFractionDigits: 2 }) : '-';
+                const payAmt = parts[2] ? 'PHP' + parseFloat(parts[2]).toLocaleString('en-PH', { minimumFractionDigits: 2 }) : '-';
+                return `<tr>
+                    <td style="color:#4285f4;font-weight:500;">${invNum}</td>
+                    <td>${invDate}</td>
+                    <td>${invAmt}</td>
+                    <td>${payAmt}</td>
+                </tr>`;
+            }).join('');
+
+            return `
+                <div class="receipt-card-print">
+                    <!-- Status Ribbon -->
+                    <div class="ribbon-print ${ribbonClass}">
+                        <span>${ribbonText}</span>
+                    </div>
+
+                    <!-- Company Info -->
+                    <div class="company-info-print">
+                        <div class="company-name-print">GIHON</div>
+                        <div class="company-details-print">${payment.salesperson_name || ''}</div>
+                    </div>
+
+                    <!-- Receipt Title -->
+                    <div class="receipt-title-print">PAYMENT RECEIPT</div>
+
+                    <!-- Payment Info Grid -->
+                    <div class="payment-info-grid-print">
+                        <div class="payment-info-left-print">
+                            <span class="info-label-print">Payment Date</span>
+                            <span class="info-value-print">${date}</span>
+                            <span class="info-label-print">Reference Number</span>
+                            <span class="info-value-print">${payment.reference_number || ''}</span>
+                            <span class="info-label-print">Payment Mode</span>
+                            <span class="info-value-print">${payment.payment_mode || 'Cash'}</span>
+                        </div>
+                        <div class="amount-box-print">
+                            <div class="amount-label-print">AMOUNT RECEIVED</div>
+                            <div class="amount-value-print">PHP${amount}</div>
+                        </div>
+                    </div>
+
+                    <!-- Received From -->
+                    <div class="received-from-print">
+                        <div class="received-from-label-print">Received From</div>
+                        <div class="received-from-name-print">${payment.customer_name || ''}</div>
+                        <div class="received-from-address-print">${addressHTML || ''}</div>
+                    </div>
+
+                    <!-- Payment For -->
+                    <div class="payment-for-title-print">Payment for</div>
+                    <table class="payment-for-table-print">
+                        <thead>
+                            <tr>
+                                <th>Invoice Number</th>
+                                <th>Invoice Date</th>
+                                <th>Invoice Amount</th>
+                                <th>Payment Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${invoiceRowsHTML}
+                        </tbody>
+                    </table>
+
+                    ${parseFloat(payment.bank_charges || 0) > 0 ? `
+                    <div class="bank-charges-print">
+                        <span>Bank Charges:</span>
+                        <span>PHP${parseFloat(payment.bank_charges).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span>
+                    </div>` : ''}
+
+                    ${payment.notes ? `<div class="notes-print"><strong>Notes:</strong> ${payment.notes}</div>` : ''}
+                </div>
+            `;
+        }
+
+        // ===== Print Stylesheet that matches the preview design =====
+        function getPaymentPrintCSS() {
+            return `
+                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                @page { size: A4; margin: 20mm 20mm; }
+                body {
+                    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+                    -webkit-font-smoothing: antialiased;
+                    color: #333;
+                    background: #fff;
+                    padding: 0;
+                }
+
+                .receipt-card-print {
+                    max-width: 700px;
+                    margin: 30px auto;
+                    background: white;
+                    border: 1px solid #e0e0e0;
+                    border-radius: 2px;
+                    position: relative;
+                    padding: 40px 48px;
+                }
+
+                /* Ribbon */
+                .ribbon-print {
+                    position: absolute;
+                    top: -6px;
+                    left: -6px;
+                    width: 80px;
+                    height: 80px;
+                    overflow: hidden;
+                }
+                .ribbon-print span {
+                    display: block;
+                    position: absolute;
+                    width: 120px;
+                    padding: 6px 0;
+                    background: #43a047;
+                    color: white;
+                    font-size: 11px;
+                    font-weight: 700;
+                    text-align: center;
+                    text-transform: uppercase;
+                    transform: rotate(-45deg);
+                    top: 20px;
+                    left: -28px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+                .ribbon-print.draft span { background: #9e9e9e; }
+                .ribbon-print.refunded span { background: #e53935; }
+                .ribbon-print.voided span { background: #ff9800; }
+                .ribbon-print.paid span { background: #43a047; }
+
+                /* Company Info */
+                .company-info-print { margin-bottom: 24px; }
+                .company-name-print {
+                    font-size: 18px;
+                    font-weight: 700;
+                    color: #333;
+                    margin: 0 0 4px 0;
+                }
+                .company-details-print {
+                    font-size: 12px;
+                    color: #666;
+                    line-height: 1.5;
+                }
+
+                /* Receipt Title */
+                .receipt-title-print {
+                    text-align: center;
+                    font-size: 14px;
+                    font-weight: 600;
+                    color: #555;
+                    letter-spacing: 1px;
+                    margin: 24px 0;
+                    text-transform: uppercase;
+                }
+
+                /* Payment Info Grid */
+                .payment-info-grid-print {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: flex-start;
+                    margin-bottom: 32px;
+                }
+                .payment-info-left-print {
+                    display: grid;
+                    grid-template-columns: 130px 1fr;
+                    gap: 8px 16px;
+                    font-size: 13px;
+                }
+                .info-label-print { color: #666; }
+                .info-value-print { color: #333; font-weight: 500; }
+
+                /* Amount Box */
+                .amount-box-print {
+                    background: #43a047;
+                    color: white;
+                    padding: 16px 24px;
+                    border-radius: 4px;
+                    text-align: center;
+                    min-width: 160px;
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+                .amount-label-print {
+                    font-size: 11px;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    margin-bottom: 4px;
+                    color: rgba(255,255,255,0.85);
+                }
+                .amount-value-print {
+                    font-size: 20px;
+                    font-weight: 700;
+                }
+
+                /* Received From */
+                .received-from-print { margin-bottom: 32px; }
+                .received-from-label-print {
+                    font-size: 13px;
+                    color: #666;
+                    margin-bottom: 6px;
+                }
+                .received-from-name-print {
+                    font-size: 14px;
+                    font-weight: 600;
+                    color: #4285f4;
+                    margin-bottom: 4px;
+                }
+                .received-from-address-print {
+                    font-size: 12px;
+                    color: #555;
+                    line-height: 1.6;
+                }
+
+                /* Payment For */
+                .payment-for-title-print {
+                    font-size: 15px;
+                    font-weight: 700;
+                    color: #333;
+                    margin-bottom: 12px;
+                }
+                .payment-for-table-print {
+                    width: 100%;
+                    border-collapse: collapse;
+                }
+                .payment-for-table-print th {
+                    text-align: left;
+                    padding: 10px 12px;
+                    font-size: 11px;
+                    font-weight: 600;
+                    color: #555;
+                    background: #f5f5f5;
+                    border-bottom: 1px solid #e0e0e0;
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+                .payment-for-table-print th:last-child,
+                .payment-for-table-print td:last-child { text-align: right; }
+                .payment-for-table-print th:nth-child(3),
+                .payment-for-table-print td:nth-child(3) { text-align: right; }
+                .payment-for-table-print td {
+                    padding: 10px 12px;
+                    font-size: 13px;
+                    color: #333;
+                    border-bottom: 1px solid #f0f0f0;
+                }
+
+                /* Bank Charges */
+                .bank-charges-print {
+                    display: flex;
+                    justify-content: flex-end;
+                    gap: 16px;
+                    font-size: 13px;
+                    color: #666;
+                    margin-top: 16px;
+                    padding: 8px 0;
+                    border-top: 1px solid #eee;
+                }
+                .bank-charges-print span:last-child { font-weight: 600; color: #333; }
+
+                /* Notes */
+                .notes-print {
+                    margin-top: 20px;
+                    font-size: 12px;
+                    color: #666;
+                    border-top: 1px solid #eee;
+                    padding-top: 10px;
+                }
+
+                @media print {
+                    body { padding: 0; }
+                    .receipt-card-print {
+                        max-width: 100%;
+                        margin: 0;
+                        border: none;
+                        padding: 20px 30px;
+                    }
+                }
+            `;
+        }
+
+        // ===== Print Payment (uses hidden iframe, no new tab) =====
         function printPaymentDetail() {
-            var content = document.getElementById('detailContent');
-            if (!content) return;
-            var printWin = window.open('', '_blank', 'width=800,height=600');
-            printWin.document.write('<!DOCTYPE html><html><head><title>Payment Receipt</title>');
-            printWin.document.write('<style>');
-            printWin.document.write('* { margin: 0; padding: 0; box-sizing: border-box; }');
-            printWin.document.write('body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 40px; color: #333; }');
-            printWin.document.write('.receipt-card { max-width: 700px; margin: 0 auto; position: relative; }');
-            printWin.document.write('.receipt-ribbon { position: absolute; top: 0; right: 30px; background: #28a745; color: #fff; padding: 6px 18px; font-size: 13px; font-weight: 600; border-radius: 0 0 6px 6px; }');
-            printWin.document.write('.receipt-ribbon.draft { background: #6c757d; }');
-            printWin.document.write('.company-info { margin-bottom: 20px; }');
-            printWin.document.write('.company-name { font-size: 22px; font-weight: 700; color: #1a73e8; }');
-            printWin.document.write('.company-details { font-size: 13px; color: #666; margin-top: 4px; }');
-            printWin.document.write('.receipt-title { font-size: 20px; font-weight: 700; color: #333; margin: 20px 0 16px; text-transform: uppercase; }');
-            printWin.document.write('.payment-info-grid { display: flex; justify-content: space-between; margin-bottom: 20px; }');
-            printWin.document.write('.payment-info-left { display: flex; flex-direction: column; gap: 4px; }');
-            printWin.document.write('.info-label { font-size: 12px; color: #888; font-weight: 600; text-transform: uppercase; margin-top: 8px; }');
-            printWin.document.write('.info-value { font-size: 14px; color: #333; }');
-            printWin.document.write('.amount-box { background: #f0f7ff; border: 1px solid #d0e3f7; border-radius: 8px; padding: 16px 24px; text-align: right; }');
-            printWin.document.write('.amount-label { font-size: 12px; color: #888; font-weight: 600; text-transform: uppercase; }');
-            printWin.document.write('.amount-value { font-size: 22px; font-weight: 700; color: #1a73e8; }');
-            printWin.document.write('.received-from { margin: 16px 0; }');
-            printWin.document.write('.received-from-label { font-size: 12px; color: #888; font-weight: 600; text-transform: uppercase; }');
-            printWin.document.write('.received-from-name { font-size: 15px; font-weight: 600; color: #1a73e8; margin-top: 4px; }');
-            printWin.document.write('.received-from-address { font-size: 13px; color: #666; margin-top: 2px; }');
-            printWin.document.write('.payment-for-title { font-size: 14px; font-weight: 700; margin: 20px 0 8px; }');
-            printWin.document.write('.payment-for-table { width: 100%; border-collapse: collapse; font-size: 13px; }');
-            printWin.document.write('.payment-for-table th { background: #f5f7fa; padding: 10px 12px; text-align: left; font-weight: 600; border-bottom: 2px solid #e0e0e0; }');
-            printWin.document.write('.payment-for-table td { padding: 10px 12px; border-bottom: 1px solid #eee; }');
-            printWin.document.write('.invoice-link { color: #1a73e8; text-decoration: none; }');
-            printWin.document.write('.btn-mark-paid { display: none; }');
-            printWin.document.write('@media print { body { padding: 20px; } }');
-            printWin.document.write('</style></head><body>');
-            printWin.document.write(content.innerHTML);
-            printWin.document.write('</body></html>');
-            printWin.document.close();
-            printWin.focus();
-            setTimeout(function () { printWin.print(); }, 300);
+            document.getElementById('prPdfDropdown').classList.remove('show');
+            var payment = getCurrentPaymentData();
+            if (!payment) return;
+
+            var printHTML = buildPaymentPrintHTML(payment);
+            var printCSS = getPaymentPrintCSS();
+
+            // Remove old iframe if exists
+            var oldIframe = document.getElementById('prPrintIframe');
+            if (oldIframe) oldIframe.remove();
+
+            // Create hidden iframe
+            var iframe = document.createElement('iframe');
+            iframe.id = 'prPrintIframe';
+            iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:800px;height:1200px;border:none;visibility:hidden;';
+            document.body.appendChild(iframe);
+
+            var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+            iframeDoc.open();
+            iframeDoc.write('<!DOCTYPE html><html><head><title>Payment Receipt - ' + (payment.payment_number || '') + '</title>');
+            iframeDoc.write('<style>' + printCSS + '</style>');
+            iframeDoc.write('</head><body>');
+            iframeDoc.write(printHTML);
+            iframeDoc.write('</body></html>');
+            iframeDoc.close();
+
+            // Wait for fonts and rendering, then print
+            setTimeout(function () {
+                iframe.contentWindow.focus();
+                iframe.contentWindow.print();
+            }, 500);
+        }
+
+        // ===== Build receipt HTML string with ALL inline styles for PDF =====
+        function buildPaymentPdfInlineHTML(payment) {
+            if (!payment) return '';
+            const date = payment.payment_date ? new Date(payment.payment_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+            const amount = parseFloat(payment.amount_received || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+            const ribbonText = payment.status === 'PAID' ? 'Paid' : (payment.status === 'REFUNDED' ? 'Refunded' : (payment.status === 'VOID' ? 'Void' : 'Draft'));
+            const ribbonBg = payment.status === 'PAID' ? '#43a047' : (payment.status === 'REFUNDED' ? '#e53935' : (payment.status === 'VOID' ? '#ff9800' : '#9e9e9e'));
+
+            // Address
+            let addrParts = [];
+            if (payment.billing_street) addrParts.push(payment.billing_street);
+            if (payment.billing_city) addrParts.push(payment.billing_city);
+            if (payment.billing_state) addrParts.push(payment.billing_state);
+            if (payment.billing_zip) addrParts.push(payment.billing_zip);
+            if (payment.billing_country) addrParts.push(payment.billing_country);
+
+            // Invoice rows
+            const invoiceEntries = (payment.invoice_number || '').split(',').map(s => s.trim()).filter(Boolean);
+            let invoiceRowsHTML = invoiceEntries.map(entry => {
+                const parts = entry.split('|');
+                const invNum = parts[0] || '';
+                const invAmt = parts[1] ? 'PHP' + parseFloat(parts[1]).toLocaleString('en-PH', { minimumFractionDigits: 2 }) : '-';
+                const payAmt = parts[2] ? 'PHP' + parseFloat(parts[2]).toLocaleString('en-PH', { minimumFractionDigits: 2 }) : '-';
+                return '<tr>' +
+                    '<td style="padding:10px 12px;font-size:13px;color:#4285f4;font-weight:500;border-bottom:1px solid #f0f0f0;">' + invNum + '</td>' +
+                    '<td style="padding:10px 12px;font-size:13px;color:#333;border-bottom:1px solid #f0f0f0;">' + date + '</td>' +
+                    '<td style="padding:10px 12px;font-size:13px;color:#333;border-bottom:1px solid #f0f0f0;text-align:right;">' + invAmt + '</td>' +
+                    '<td style="padding:10px 12px;font-size:13px;color:#333;border-bottom:1px solid #f0f0f0;text-align:right;">' + payAmt + '</td>' +
+                    '</tr>';
+            }).join('');
+
+            let bankHTML = '';
+            if (parseFloat(payment.bank_charges || 0) > 0) {
+                bankHTML = '<div style="display:flex;justify-content:flex-end;gap:16px;font-size:13px;color:#666;margin-top:16px;padding:8px 0;border-top:1px solid #eee;">' +
+                    '<span>Bank Charges:</span>' +
+                    '<span style="font-weight:600;color:#333;">PHP' + parseFloat(payment.bank_charges).toLocaleString('en-PH', { minimumFractionDigits: 2 }) + '</span>' +
+                    '</div>';
+            }
+
+            let notesHTML = '';
+            if (payment.notes) {
+                notesHTML = '<div style="margin-top:20px;font-size:12px;color:#666;border-top:1px solid #eee;padding-top:10px;"><strong>Notes:</strong> ' + payment.notes + '</div>';
+            }
+
+            return '<div id="pdfContent" style="max-width:700px;margin:20px auto;background:#fff;border:1px solid #e0e0e0;border-radius:2px;position:relative;padding:40px 48px;font-family:Segoe UI,Arial,Helvetica,sans-serif;">' +
+
+                // Ribbon
+                '<div style="position:absolute;top:-6px;left:-6px;width:80px;height:80px;overflow:hidden;">' +
+                '<span style="display:block;position:absolute;width:120px;padding:6px 0;background:' + ribbonBg + ';color:#fff;font-size:11px;font-weight:700;text-align:center;text-transform:uppercase;transform:rotate(-45deg);top:20px;left:-28px;box-shadow:0 2px 4px rgba(0,0,0,0.2);">' + ribbonText + '</span>' +
+                '</div>' +
+
+                // Company
+                '<div style="margin-bottom:24px;">' +
+                '<div style="font-size:18px;font-weight:700;color:#333;margin:0 0 4px 0;">GIHON</div>' +
+                '<div style="font-size:12px;color:#666;line-height:1.5;">' + (payment.salesperson_name || '') + '</div>' +
+                '</div>' +
+
+                // Title
+                '<div style="text-align:center;font-size:14px;font-weight:600;color:#555;letter-spacing:1px;margin:24px 0;text-transform:uppercase;">PAYMENT RECEIPT</div>' +
+
+                // Payment Info Grid
+                '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;">' +
+                '<table style="border-collapse:collapse;font-size:13px;">' +
+                '<tr><td style="padding:4px 16px 4px 0;color:#666;">Payment Date</td><td style="padding:4px 0;color:#333;font-weight:500;">' + date + '</td></tr>' +
+                '<tr><td style="padding:4px 16px 4px 0;color:#666;">Reference Number</td><td style="padding:4px 0;color:#333;font-weight:500;">' + (payment.reference_number || '') + '</td></tr>' +
+                '<tr><td style="padding:4px 16px 4px 0;color:#666;">Payment Mode</td><td style="padding:4px 0;color:#333;font-weight:500;">' + (payment.payment_mode || 'Cash') + '</td></tr>' +
+                '</table>' +
+
+                // Amount Box
+                '<div style="background:#43a047;color:#fff;padding:16px 24px;border-radius:4px;text-align:center;min-width:160px;">' +
+                '<div style="font-size:11px;font-weight:600;text-transform:uppercase;margin-bottom:4px;color:rgba(255,255,255,0.85);">AMOUNT RECEIVED</div>' +
+                '<div style="font-size:20px;font-weight:700;">PHP' + amount + '</div>' +
+                '</div>' +
+                '</div>' +
+
+                // Received From
+                '<div style="margin-bottom:32px;">' +
+                '<div style="font-size:13px;color:#666;margin-bottom:6px;">Received From</div>' +
+                '<div style="font-size:14px;font-weight:600;color:#4285f4;margin-bottom:4px;">' + (payment.customer_name || '') + '</div>' +
+                '<div style="font-size:12px;color:#555;line-height:1.6;">' + (addrParts.join('<br>') || '') + '</div>' +
+                '</div>' +
+
+                // Payment For
+                '<div style="font-size:15px;font-weight:700;color:#333;margin-bottom:12px;">Payment for</div>' +
+                '<table style="width:100%;border-collapse:collapse;">' +
+                '<thead><tr>' +
+                '<th style="text-align:left;padding:10px 12px;font-size:11px;font-weight:600;color:#555;background:#f5f5f5;border-bottom:1px solid #e0e0e0;">Invoice Number</th>' +
+                '<th style="text-align:left;padding:10px 12px;font-size:11px;font-weight:600;color:#555;background:#f5f5f5;border-bottom:1px solid #e0e0e0;">Invoice Date</th>' +
+                '<th style="text-align:right;padding:10px 12px;font-size:11px;font-weight:600;color:#555;background:#f5f5f5;border-bottom:1px solid #e0e0e0;">Invoice Amount</th>' +
+                '<th style="text-align:right;padding:10px 12px;font-size:11px;font-weight:600;color:#555;background:#f5f5f5;border-bottom:1px solid #e0e0e0;">Payment Amount</th>' +
+                '</tr></thead>' +
+                '<tbody>' + invoiceRowsHTML + '</tbody>' +
+                '</table>' +
+
+                bankHTML + notesHTML +
+                '</div>';
+        }
+
+        // ===== Download PDF using isolated iframe (bulletproof approach) =====
+        async function downloadPaymentPDF() {
+            document.getElementById('prPdfDropdown').classList.remove('show');
+            var payment = getCurrentPaymentData();
+            if (!payment) { alert('No payment data. Please select a payment first.'); return; }
+
+            var receiptHTML = buildPaymentPdfInlineHTML(payment);
+            var filename = (payment.payment_number || 'Payment-Receipt') + '.pdf';
+
+            // Show loading overlay on parent page
+            var overlay = document.createElement('div');
+            overlay.id = 'prPdfOverlay';
+            overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(255,255,255,0.95);z-index:999999;display:flex;align-items:center;justify-content:center;';
+            overlay.innerHTML = '<div style="text-align:center;font-family:Segoe UI,Arial,sans-serif;"><div style="font-size:32px;margin-bottom:12px;">📄</div><div style="font-size:16px;font-weight:600;color:#333;">Generating PDF...</div><div style="font-size:13px;color:#888;margin-top:6px;">Please wait a moment</div></div>';
+            document.body.appendChild(overlay);
+
+            // Create a visible iframe with clean DOM — no parent CSS interference
+            var iframe = document.createElement('iframe');
+            iframe.id = 'prPdfIframe';
+            iframe.style.cssText = 'position:fixed;top:0;left:0;width:850px;height:1200px;z-index:999998;border:none;opacity:0.01;';
+            document.body.appendChild(iframe);
+
+            var iDoc = iframe.contentDocument || iframe.contentWindow.document;
+            iDoc.open();
+            iDoc.write('<!DOCTYPE html><html><head><meta charset="UTF-8">' +
+                '<style>*{margin:0;padding:0;box-sizing:border-box;}body{background:#fff;padding:10px;}</style>' +
+                '</head><body>' + receiptHTML + '</body></html>');
+            iDoc.close();
+
+            // Wait for iframe to render
+            await new Promise(function (r) { setTimeout(r, 400); });
+
+            // Load html2pdf.js inside the iframe
+            var script = iDoc.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+            iDoc.head.appendChild(script);
+
+            await new Promise(function (resolve, reject) {
+                script.onload = resolve;
+                script.onerror = function () { reject(new Error('Failed to load html2pdf')); };
+            });
+
+            // Wait a bit after script load
+            await new Promise(function (r) { setTimeout(r, 300); });
+
+            try {
+                var el = iDoc.getElementById('pdfContent');
+                if (!el) { el = iDoc.body; }
+
+                await iframe.contentWindow.html2pdf().set({
+                    margin: 10,
+                    filename: filename,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: {
+                        scale: 2,
+                        useCORS: true,
+                        logging: false,
+                        backgroundColor: '#ffffff'
+                    },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                }).from(el).save();
+            } catch (err) {
+                console.error('PDF generation error:', err);
+                alert('Failed to generate PDF. Please try the Print option instead.');
+            } finally {
+                // Cleanup
+                var f = document.getElementById('prPdfIframe');
+                if (f) f.remove();
+                var o = document.getElementById('prPdfOverlay');
+                if (o) o.remove();
+            }
+        }
+
+        // ===== Get Current Payment Data from cache =====
+        var _currentPaymentCache = null;
+        function getCurrentPaymentData() {
+            return _currentPaymentCache;
         }
 
         function confirmRefund() {
@@ -2246,6 +2829,7 @@
         }
 
         function renderDetail(payment) {
+            _currentPaymentCache = payment;
             const date = payment.payment_date ? new Date(payment.payment_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
             const amount = parseFloat(payment.amount_received).toLocaleString('en-PH', { minimumFractionDigits: 2 });
             const ribbonClass = payment.status === 'PAID' ? '' : (payment.status === 'REFUNDED' ? 'refunded' : (payment.status === 'VOID' ? 'voided' : 'draft'));
@@ -2291,9 +2875,8 @@
                     <div class="receipt-ribbon ${ribbonClass}"><span>${ribbonText}</span></div>
 
                     <div class="company-info">
-                        <div class="company-name">SOLO</div>
+                        <div class="company-name">GIHON</div>
                         <div class="company-details">
-                            Philippines<br>
                             ${payment.salesperson_name || ''}
                         </div>
                     </div>

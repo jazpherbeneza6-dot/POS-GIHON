@@ -6119,12 +6119,21 @@
                 function printVendorStatement() {
                     const card = document.getElementById('vendorStmtCard');
                     if (!card) return;
-                    const w = window.open('', '_blank');
-                    w.document.write('<html><head><title>Vendor Statement</title><style>body{font-family:Inter,sans-serif;padding:20px;}table{width:100%;border-collapse:collapse;}th{background:#4285f4;color:#fff;padding:8px 10px;font-size:11px;text-align:left;}td{padding:8px 10px;font-size:12px;border-bottom:1px solid #eee;}th:nth-child(4),th:nth-child(5),th:nth-child(6),td:nth-child(4),td:nth-child(5),td:nth-child(6){text-align:right;}</style></head><body>');
-                    w.document.write(card.innerHTML);
-                    w.document.write('</body></html>');
-                    w.document.close();
-                    w.print();
+                    // Use hidden iframe to print without opening a new tab
+                    let printFrame = document.getElementById('vendorStmtPrintFrame');
+                    if (!printFrame) {
+                        printFrame = document.createElement('iframe');
+                        printFrame.id = 'vendorStmtPrintFrame';
+                        printFrame.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:0;height:0;border:none;';
+                        document.body.appendChild(printFrame);
+                    }
+                    const doc = printFrame.contentDocument || printFrame.contentWindow.document;
+                    doc.open();
+                    doc.write('<html><head><title>Vendor Statement</title><style>body{font-family:Inter,sans-serif;padding:20px;}table{width:100%;border-collapse:collapse;}th{background:#4285f4;color:#fff;padding:8px 10px;font-size:11px;text-align:left;}td{padding:8px 10px;font-size:12px;border-bottom:1px solid #eee;}th:nth-child(4),th:nth-child(5),th:nth-child(6),td:nth-child(4),td:nth-child(5),td:nth-child(6){text-align:right;}</style></head><body>');
+                    doc.write(card.innerHTML);
+                    doc.write('</body></html>');
+                    doc.close();
+                    setTimeout(() => { printFrame.contentWindow.print(); }, 300);
                 }
 
                 function toggleDetailSection(name) {

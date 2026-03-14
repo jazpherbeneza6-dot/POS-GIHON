@@ -3616,24 +3616,40 @@
             return `<!DOCTYPE html><html><head><title>Sales Orders</title></head><body style="margin:0;">${pages}</body></html>`;
         }
 
+        // Helper: get or create hidden print iframe
+        function getOrCreatePrintFrame(id) {
+            let frame = document.getElementById(id);
+            if (!frame) {
+                frame = document.createElement('iframe');
+                frame.id = id;
+                frame.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:0;height:0;border:none;';
+                document.body.appendChild(frame);
+            }
+            return frame;
+        }
+
         async function bulkPrintOrders() {
             const ids = getSelectedOrderIds();
             if (ids.length === 0) return;
             const html = await buildPrintHTML(ids);
-            const w = window.open('', '_blank');
-            w.document.write(html);
-            w.document.close();
-            setTimeout(function () { w.print(); }, 500);
+            const frame = getOrCreatePrintFrame('soBulkPrintFrame');
+            const doc = frame.contentDocument || frame.contentWindow.document;
+            doc.open();
+            doc.write(html);
+            doc.close();
+            setTimeout(function () { frame.contentWindow.print(); }, 500);
         }
 
         async function bulkExportPDF() {
             const ids = getSelectedOrderIds();
             if (ids.length === 0) return;
             const html = await buildPrintHTML(ids);
-            const w = window.open('', '_blank');
-            w.document.write(html);
-            w.document.close();
-            setTimeout(function () { w.print(); }, 500);
+            const frame = getOrCreatePrintFrame('soBulkPrintFrame');
+            const doc = frame.contentDocument || frame.contentWindow.document;
+            doc.open();
+            doc.write(html);
+            doc.close();
+            setTimeout(function () { frame.contentWindow.print(); }, 500);
         }
 
         // ===== LOAD TABLE LIST =====
@@ -4213,8 +4229,10 @@
             const fmtSubTotal = subTotal.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             const fmtTotal = parseFloat(order.total || subTotal).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(`<!DOCTYPE html>
+            const printFrame = getOrCreatePrintFrame('soPrintFrame');
+            const printDoc = printFrame.contentDocument || printFrame.contentWindow.document;
+            printDoc.open();
+            printDoc.write(`<!DOCTYPE html>
 <html>
 <head>
     <title>${soNum} | ${printTime}</title>
@@ -4459,15 +4477,12 @@
 </div>
 
 <script>
-    window.onload = function() {
-        window.print();
-        window.onafterprint = function() { window.close(); };
-    };
 <\/script>
 </body>
 </html>`);
-            printWindow.document.close();
-            return printWindow;
+            printDoc.close();
+            setTimeout(() => { printFrame.contentWindow.print(); }, 300);
+            return printFrame;
         }
 
         function printSalesOrder() {
@@ -4475,10 +4490,161 @@
             openPrintWindow();
         }
 
-        function downloadSalesOrderPdf() {
+        async function downloadSalesOrderPdf() {
             document.getElementById('pdfDropdown').classList.remove('open');
-            openPrintWindow();
-            // The browser's print dialog allows the user to choose "Save as PDF"
+            if (!selectedOrderId) { alert('No sales order selected.'); return; }
+
+            // Load html2pdf.js if not yet loaded
+            if (!window.html2pdf) {
+                const s = document.createElement('script');
+                s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+                document.head.appendChild(s);
+                await new Promise(resolve => { s.onload = resolve; });
+            }
+
+            // Fetch order data
+            let order;
+            try {
+                const res = await fetch('/api/sales-orders/' + selectedOrderId);
+                if (!res.ok) throw new Error('Failed');
+                order = await res.json();
+            } catch (e) {
+                alert('Could not load sales order data.');
+                return;
+            }
+
+            const items = order.items || [];
+            const soNum = order.order_number || 'SO-' + order.id;
+            const orderDate = order.order_date ? new Date(order.order_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+            const now = new Date();
+            const printTime = now.toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
+            const custName = order.customer_name || '';
+            const refNum = order.reference_number || '';
+            const deliveryMethod = order.delivery_method || '';
+            const salesperson = order.salesperson_name || '';
+
+            const addrParts = [order.billing_street, order.billing_city, order.billing_state, order.billing_zip, order.billing_country].filter(p => p && p.trim());
+            const custAddress = addrParts.join(', ');
+
+            let subTotal = 0;
+            const itemRows = items.map((item, i) => {
+                const qty = parseFloat(item.quantity) || 0;
+                const rate = parseFloat(item.rate) || 0;
+                const amount = parseFloat(item.amount) || (rate * qty);
+                subTotal += amount;
+                const unit = item.unit || 'pcs';
+                const desc = item.description || '';
+                const brand = item.brand || order.brand || '';
+
+                let parsedDiscs = item.discounts || [];
+                if (typeof parsedDiscs === 'string') {
+                    try { parsedDiscs = JSON.parse(parsedDiscs); } catch (e) { parsedDiscs = []; }
+                }
+                let discText = '—';
+                if (parsedDiscs.length > 0) {
+                    const parts = parsedDiscs.filter(d => d.value > 0).map(d => d.type === '%' ? d.value + '%' : '₱' + d.value);
+                    if (parts.length > 0) discText = parts.join(', ');
+                }
+
+                return `<tr>
+                    <td class="c num">${i + 1}</td>
+                    <td>
+                        <span class="item-name">${item.item_name || ''}</span>
+                        ${desc ? '<span class="item-desc">' + desc + '</span>' : ''}
+                    </td>
+                    <td class="c">${brand}</td>
+                    <td class="c">${qty.toFixed(2)}<span class="unit-label">${unit}</span></td>
+                    <td class="r">${rate.toFixed(2)}</td>
+                    <td class="r">${discText}</td>
+                    <td class="r bold">${amount.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                </tr>`;
+            }).join('');
+
+            if (items.length === 0) subTotal = parseFloat(order.sub_total) || 0;
+
+            const fmtSubTotal = subTotal.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            const fmtTotal = parseFloat(order.total || subTotal).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            // Build the same HTML layout as print preview
+            const htmlContent = `
+<div style="font-family:Arial,Helvetica,sans-serif;color:#000;font-size:9.5pt;line-height:1.35;padding:12mm 14mm;">
+    <div style="text-align:right;font-size:8.5pt;font-weight:600;color:#333;margin-bottom:2px;">${soNum}</div>
+    <div style="text-align:center;font-size:30pt;font-weight:900;letter-spacing:3px;color:#000;padding:6px 0 12px 0;">GIHON</div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:0 0 14px 0;border-bottom:2px solid #333;">
+        <div style="max-width:55%;font-size:9.5pt;">
+            <div style="margin-bottom:3px;"><span style="font-weight:700;">Ordered By:</span> ${custName}</div>
+            <div style="margin-bottom:3px;"><span style="font-weight:700;">Address:</span> ${custAddress}</div>
+            <div style="margin-bottom:3px;"><span style="font-weight:700;">Delivery Method:</span> ${deliveryMethod}</div>
+        </div>
+        <div style="font-size:9.5pt;text-align:left;">
+            <div style="margin-bottom:3px;"><span style="font-weight:700;">SO#:</span> ${soNum}</div>
+            <div style="margin-bottom:3px;"><span style="font-weight:700;">Date:</span> ${orderDate}</div>
+            <div style="margin-bottom:3px;"><span style="font-weight:700;">P.O#:</span> ${refNum}</div>
+            <div style="margin-bottom:3px;"><span style="font-weight:700;">Salesperson:</span> ${salesperson}</div>
+        </div>
+    </div>
+
+    <table style="width:100%;border-collapse:collapse;margin-top:10px;">
+        <thead>
+            <tr>
+                <th style="font-size:7pt;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#333;padding:6px;border-bottom:1.5px solid #333;border-top:1.5px solid #333;text-align:center;width:22px;">#</th>
+                <th style="font-size:7pt;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#333;padding:6px;border-bottom:1.5px solid #333;border-top:1.5px solid #333;text-align:left;">ITEM & DESCRIPTION</th>
+                <th style="font-size:7pt;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#333;padding:6px;border-bottom:1.5px solid #333;border-top:1.5px solid #333;text-align:center;width:60px;">BRAND</th>
+                <th style="font-size:7pt;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#333;padding:6px;border-bottom:1.5px solid #333;border-top:1.5px solid #333;text-align:center;width:50px;">QTY</th>
+                <th style="font-size:7pt;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#333;padding:6px;border-bottom:1.5px solid #333;border-top:1.5px solid #333;text-align:right;width:60px;">RATE</th>
+                <th style="font-size:7pt;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#333;padding:6px;border-bottom:1.5px solid #333;border-top:1.5px solid #333;text-align:right;width:65px;">DISCOUNT</th>
+                <th style="font-size:7pt;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#333;padding:6px;border-bottom:1.5px solid #333;border-top:1.5px solid #333;text-align:right;width:70px;">AMOUNT</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${itemRows || '<tr><td colspan="7" style="text-align:center;padding:20px;color:#999;">No items</td></tr>'}
+        </tbody>
+    </table>
+
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-top:8px;padding-top:8px;border-top:1.5px solid #333;">
+        <div style="font-size:9pt;font-weight:700;">TOTAL ITEMS: ${items.length}</div>
+        <div style="text-align:right;min-width:200px;">
+            <div style="display:flex;justify-content:space-between;padding:2px 0;font-size:9pt;color:#333;">
+                <span>Sub Total</span>
+                <span style="font-weight:600;color:#000;">${fmtSubTotal}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:5px 0 2px;font-size:11pt;border-top:1.5px solid #000;margin-top:3px;">
+                <span style="font-weight:900;color:#000;">Total</span>
+                <span style="font-weight:900;color:#000;">PHP ${fmtTotal}</span>
+            </div>
+        </div>
+    </div>
+
+    <div style="margin-top:35px;display:flex;justify-content:space-between;align-items:flex-end;">
+        <div style="font-size:7pt;color:#aaa;">${soNum}</div>
+        <div style="display:flex;gap:40px;">
+            <div style="display:flex;flex-direction:column;gap:2px;">
+                <div style="border-bottom:1px solid #000;width:140px;height:22px;"></div>
+                <div style="font-size:7.5pt;color:#444;">Received by:</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:2px;">
+                <div style="border-bottom:1px solid #000;width:140px;height:22px;"></div>
+                <div style="font-size:7.5pt;color:#444;">Date:</div>
+            </div>
+        </div>
+    </div>
+</div>`;
+
+            // Create temp element and download
+            const tmp = document.createElement('div');
+            tmp.innerHTML = htmlContent;
+            document.body.appendChild(tmp);
+            try {
+                await html2pdf().set({
+                    margin: 0,
+                    filename: soNum + '.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2 },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                }).from(tmp.firstElementChild).save();
+            } finally {
+                document.body.removeChild(tmp);
+            }
         }
 
         // ===== CONVERT TO INVOICE =====
